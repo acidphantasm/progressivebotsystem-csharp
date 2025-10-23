@@ -1,0 +1,46 @@
+{
+    "pmcUSEC": {
+        "appearance": {
+            "body": {
+                "5cde95d97d6c8b647a3769b0": 5
+            },
+            "feet": {
+                "5cde95ef7d6c8b04713c4f2d": 5
+            },
+            "hands": {
+                "5cde95fa7d6c8b04737c2d13": 1
+            },
+            "head": {
+                "5cde96047d6c8b20b577f016": 1,
+                "5fdb4139e4ed5b5ea251e4ed": 1,
+                "5fdb5950f5264a66150d1c6e": 1,
+                "60a6aa8fd559ae040d0d951f": 1,
+                "619f9e338858a474c8685cc9": 1,
+                "62aca6a1310e67685a2fc2e7": 1,
+                "6574aabee0423b9ebe0c79cf": 1
+            }
+        }
+    },
+    "pmcBEAR": {
+        "appearance": {
+            "body": {
+                "5cc0858d14c02e000c6bea66": 5
+            },
+            "feet": {
+                "5cc085bb14c02e000e67a5c5": 5
+            },
+            "hands": {
+                "5cc0876314c02e000c6bea6b": 1
+            },
+            "head": {
+                "5cc084dd14c02e000b0550a3": 1,
+                "5fdb50bb2b730a787b3f78cf": 1,
+                "5fdb7571e4ed5b5ea251e529": 1,
+                "60a6aaad42fd2735e4589978": 1,
+                "619f94f5b90286142b59d45f": 1,
+                "62a9e7d15ea3b87d6f642a28": 1,
+                "6574aa9a1b144de18c0fba45": 1
+            }
+        }
+    }
+}

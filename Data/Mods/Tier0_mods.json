@@ -1,0 +1,68 @@
+{
+  "66015072e9f84d5680039678": {
+    "mod_magazine": [
+      "66015dc4aaad2f54cb04c56a"
+    ],
+    "patron_in_weapon": [
+      "6601546f86889319850bd566"
+    ]
+  },
+  "66015dc4aaad2f54cb04c56a" : {
+    "cartridges": [
+      "6601546f86889319850bd566"
+    ]
+  },
+  "62a09d79de7ac81993580530": {
+    "Soft_armor_front": [
+      "6572e048371fccfbf909d5d8"
+    ],
+    "Soft_armor_back": [
+      "6572e059371fccfbf909d5dc"
+    ],
+    "Soft_armor_left": [
+      "6572e06219b4b511af012f89"
+    ],
+    "soft_armor_right": [
+      "6572e06819b4b511af012f8d"
+    ]
+  },
+  "5aa7d03ae5b5b00016327db5": {
+    "helmet_top": [
+      "654a90aff4f81a421b0a7c86"
+    ],
+    "helmet_back": [
+      "654a91068e1ce698150fd1e2"
+    ],
+    "helmet_ears": [
+      "654a9189bcc67a392b056c79"
+    ]
+  },
+  "5ab8e4ed86f7742d8e50c7fa": {
+    "Soft_armor_front": [
+      "657044e971369562b300ce9b"
+    ],
+    "Soft_armor_back": [
+      "657045741bd9beedc40b7299"
+    ],
+    "Soft_armor_left": [
+      "657045b97e80617cee095bda"
+    ],
+    "soft_armor_right": [
+      "6570460471369562b300ce9f"
+    ]
+  },
+  "607f20859ee58b18e41ecd90": {
+    "Soft_armor_front": [
+      "65703d866584602f7d057a8a"
+    ],
+    "Soft_armor_back": [
+      "65703fa06584602f7d057a8e"
+    ],
+    "Soft_armor_left": [
+      "65703fe46a912c8b5c03468b"
+    ],
+    "soft_armor_right": [
+      "657040374e67e8ec7a0d261c"
+    ]
+  }
+}

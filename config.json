@@ -1,0 +1,1127 @@
+﻿{
+  "usePreset": false,
+  "presetName": "example",
+  "compatibilityConfig": {
+    "enableModdedWeapons": false,
+    "enableModdedEquipment": false,
+    "enableModdedClothing": false,
+    "enableModdedAttachments": false,
+    "initalTierAppearance": 3,
+    "pmcWeaponWeights": 8,
+    "scavWeaponWeights": 1,
+    "followerWeaponWeights": 6,
+    "enableSafeGuard": true,
+    "enableMPRSafeGuard": true,
+    "PackNStrap_UnlootablePMCArmbandBelts": true,
+    "Realism_AddGasMasksToBots": false,
+    "General_SecureContainerAmmoStacks": 20
+  },
+  "normalizedHealthPool": {
+    "enable": false,
+    "healthHead": 35,
+    "healthChest": 85,
+    "healthStomach": 70,
+    "healthLeftArm": 60,
+    "healthRightArm": 60,
+    "healthLeftLeg": 65,
+    "healthRightLeg": 65,
+    "excludedBots": [],
+    "normalizeSkills": false
+  },
+  "generalConfig": {
+    "enablePerWeaponTypeAttachmentChances": true,
+    "enableLargeCapacityMagazineLimit": true,
+    "largeCapacityMagazineCount": 2,
+    "forceStock": false,
+    "stockButtpadChance": 50,
+    "forceDustCover": false,
+    "forceScopeSlot": false,
+    "forceMuzzle": false,
+    "muzzleChance": [
+      10,
+      25,
+      40,
+      55,
+      65,
+      75,
+      75
+    ],
+    "forceChildrenMuzzle": false,
+    "forceWeaponModLimits": true,
+    "scopeLimit": 2,
+    "tacticalLimit": 1,
+    "onlyChads": false,
+    "tarkovAndChill": false,
+    "blickyMode": false,
+    "enableT7Thermals": false,
+    "startTier": 6,
+    "mapRangeWeighting": {
+      "bigmap": {
+        "LongRange": 20,
+        "ShortRange": 80
+      },
+      "RezervBase": {
+        "LongRange": 20,
+        "ShortRange": 80
+      },
+      "laboratory": {
+        "LongRange": 10,
+        "ShortRange": 90
+      },
+      "factory4_night": {
+        "LongRange": 5,
+        "ShortRange": 95
+      },
+      "factory4_day": {
+        "LongRange": 5,
+        "ShortRange": 95
+      },
+      "Interchange": {
+        "LongRange": 20,
+        "ShortRange": 80
+      },
+      "Sandbox": {
+        "LongRange": 15,
+        "ShortRange": 85
+      },
+      "Sandbox_high": {
+        "LongRange": 15,
+        "ShortRange": 85
+      },
+      "Woods": {
+        "LongRange": 60,
+        "ShortRange": 40
+      },
+      "Shoreline": {
+        "LongRange": 50,
+        "ShortRange": 50
+      },
+      "Lighthouse": {
+        "LongRange": 30,
+        "ShortRange": 70
+      },
+      "TarkovStreets": {
+        "LongRange": 20,
+        "ShortRange": 80
+      }
+    },
+    "plateChances": {
+      "enable": false,
+      "pmcMainPlateChance": [
+        65,
+        75,
+        90,
+        90,
+        95,
+        100,
+        100
+      ],
+      "pmcSidePlateChance": [
+        15,
+        25,
+        35,
+        55,
+        75,
+        95,
+        100
+      ],
+      "scavMainPlateChance": [
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25
+      ],
+      "scavSidePlateChance": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ],
+      "bossMainPlateChance": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "bossSidePlateChance": [
+        75,
+        75,
+        75,
+        75,
+        75,
+        75,
+        75
+      ],
+      "followerMainPlateChance": [
+        75,
+        75,
+        75,
+        75,
+        75,
+        75,
+        75
+      ],
+      "followerSidePlateChance": [
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50
+      ],
+      "specialMainPlateChance": [
+        75,
+        75,
+        75,
+        75,
+        75,
+        75,
+        75
+      ],
+      "specialSidePlateChance": [
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50
+      ]
+    },
+    "plateClasses": {
+      "pmc": {
+        "tier1": {
+          "front_plate": {
+            "2": 0,
+            "3": 90,
+            "4": 10,
+            "5": 0,
+            "6": 0
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 90,
+            "4": 10,
+            "5": 0,
+            "6": 0
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 90,
+            "4": 10,
+            "5": 0,
+            "6": 0
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 90,
+            "4": 10,
+            "5": 0,
+            "6": 0
+          }
+        },
+        "tier2": {
+          "front_plate": {
+            "2": 0,
+            "3": 65,
+            "4": 33,
+            "5": 2,
+            "6": 0
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 65,
+            "4": 33,
+            "5": 2,
+            "6": 0
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 65,
+            "4": 33,
+            "5": 2,
+            "6": 0
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 65,
+            "4": 33,
+            "5": 2,
+            "6": 0
+          }
+        },
+        "tier3": {
+          "front_plate": {
+            "2": 0,
+            "3": 15,
+            "4": 70,
+            "5": 10,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 15,
+            "4": 70,
+            "5": 10,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 15,
+            "4": 70,
+            "5": 10,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 15,
+            "4": 70,
+            "5": 10,
+            "6": 5
+          }
+        },
+        "tier4": {
+          "front_plate": {
+            "2": 0,
+            "3": 1,
+            "4": 50,
+            "5": 39,
+            "6": 10
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 1,
+            "4": 50,
+            "5": 39,
+            "6": 10
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 1,
+            "4": 50,
+            "5": 39,
+            "6": 10
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 1,
+            "4": 50,
+            "5": 39,
+            "6": 10
+          }
+        },
+        "tier5": {
+          "front_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 20,
+            "5": 70,
+            "6": 10
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 20,
+            "5": 70,
+            "6": 10
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 20,
+            "5": 70,
+            "6": 10
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 20,
+            "5": 70,
+            "6": 10
+          }
+        },
+        "tier6": {
+          "front_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 10,
+            "5": 70,
+            "6": 20
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 10,
+            "5": 70,
+            "6": 20
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 10,
+            "5": 70,
+            "6": 20
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 10,
+            "5": 70,
+            "6": 20
+          }
+        },
+        "tier7": {
+          "front_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 5,
+            "5": 75,
+            "6": 20
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 5,
+            "5": 75,
+            "6": 20
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 5,
+            "5": 75,
+            "6": 20
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 0,
+            "4": 5,
+            "5": 75,
+            "6": 20
+          }
+        }
+      },
+      "scav": {
+        "tier1": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        },
+        "tier2": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        },
+        "tier3": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        },
+        "tier4": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        },
+        "tier5": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        },
+        "tier6": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        },
+        "tier7": {
+          "front_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 85,
+            "4": 9,
+            "5": 5,
+            "6": 1
+          }
+        }
+      },
+      "bossAndSpecial": {
+        "tier1": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        },
+        "tier2": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        },
+        "tier3": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        },
+        "tier4": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        },
+        "tier5": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        },
+        "tier6": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        },
+        "tier7": {
+          "front_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "back_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "left_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          },
+          "right_side_plate": {
+            "2": 0,
+            "3": 10,
+            "4": 50,
+            "5": 35,
+            "6": 5
+          }
+        }
+      }
+    }
+  },
+  "pmcBots": {
+    "enable": true,
+    "resourceRandomization": {
+      "enable": true,
+      "foodRateMaxChance": 10,
+      "foodRateUsagePercent": 33,
+      "medRateMaxChance": 10,
+      "medRateUsagePercent": 33
+    },
+    "weaponDurability": {
+      "enable": true,
+      "min": 95,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 5,
+      "minLimitPercent": 90,
+      "enhancementChance": 10
+    },
+    "lootConfig": {
+      "enable": false,
+      "blacklist": []
+    },
+    "rerollConfig": {
+      "enable": false,
+      "chance": 50
+    },
+    "toploadConfig": {
+      "enable": true,
+      "chance": 30,
+      "percent": 30
+    },
+    "questConfig": {
+      "enable": true,
+      "chance": 5
+    },
+    "povertyConfig": {
+      "enable": true,
+      "chance": 5
+    },
+    "additionalOptions": {
+      "enablePrestiging": true,
+      "enablePrestigeAnyLevel": true,
+      "seasonalPmcAppearance": true,
+      "ammoTierSliding": {
+        "enable": false,
+        "slideAmount": 1,
+        "slideChance": 33
+      },
+      "gameVersionWeighting": {
+        "enable": false,
+        "standard": 20,
+        "leftBehind": 10,
+        "prepareForEscape": 10,
+        "edgeOfDarkness": 40,
+        "unheardEdition": 20
+      }
+    },
+    "secrets": {
+      "developerSettings": {
+        "devNames": {
+          "enable": true,
+          "nameList": [
+            "Chomp",
+            "Dirtbikercj",
+            "Clodan",
+            "CWX",
+            "DrakiaXYZ",
+            "Kaeno",
+            "Refringe",
+            "Waffle",
+            "AcidPhantasm",
+            "Archangel"
+          ]
+        },
+        "devLevels": {
+          "enable": false,
+          "min": 30,
+          "max": 79
+        }
+      }
+    }
+  },
+  "scavBots": {
+    "enable": true,
+    "resourceRandomization": {
+      "enable": true,
+      "foodRateMaxChance": 10,
+      "foodRateUsagePercent": 10,
+      "medRateMaxChance": 10,
+      "medRateUsagePercent": 10
+    },
+    "weaponDurability": {
+      "enable": true,
+      "min": 70,
+      "max": 90,
+      "minDelta": 5,
+      "maxDelta": 20,
+      "minLimitPercent": 50,
+      "enhancementChance": 1
+    },
+    "lootConfig": {
+      "enable": true,
+      "blacklist": []
+    },
+    "rerollConfig": {
+      "enable": true,
+      "chance": 50
+    },
+    "toploadConfig": {
+      "enable": false,
+      "chance": 30,
+      "percent": 30
+    },
+    "keyConfig": {
+      "addAllKeysToScavs": false,
+      "addOnlyMechanicalKeysToScavs": false,
+      "addOnlyKeyCardsToScavs": false
+    },
+    "additionalOptions": {
+      "enableScavAttachmentTiering": false,
+      "enableScavEqualEquipmentTiering": false
+    }
+  },
+  "bossBots": {
+    "enable": true,
+    "resourceRandomization": {
+      "enable": true,
+      "foodRateMaxChance": 50,
+      "foodRateUsagePercent": 50,
+      "medRateMaxChance": 50,
+      "medRateUsagePercent": 50
+    },
+    "weaponDurability": {
+      "enable": true,
+      "min": 90,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 5,
+      "minLimitPercent": 85,
+      "enhancementChance": 0
+    },
+    "lootConfig": {
+      "enable": true,
+      "blacklist": []
+    },
+    "rerollConfig": {
+      "enable": true,
+      "chance": 50
+    },
+    "toploadConfig": {
+      "enable": false,
+      "chance": 30,
+      "percent": 30
+    }
+  },
+  "followerBots": {
+    "enable": true,
+    "resourceRandomization": {
+      "enable": true,
+      "foodRateMaxChance": 25,
+      "foodRateUsagePercent": 25,
+      "medRateMaxChance": 25,
+      "medRateUsagePercent": 25
+    },
+    "weaponDurability": {
+      "enable": true,
+      "min": 90,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 15,
+      "minLimitPercent": 75,
+      "enhancementChance": 0
+    },
+    "lootConfig": {
+      "enable": true,
+      "blacklist": []
+    },
+    "rerollConfig": {
+      "enable": true,
+      "chance": 50
+    },
+    "toploadConfig": {
+      "enable": false,
+      "chance": 30,
+      "percent": 30
+    }
+  },
+  "specialBots": {
+    "enable": true,
+    "resourceRandomization": {
+      "enable": true,
+      "foodRateMaxChance": 15,
+      "foodRateUsagePercent": 25,
+      "medRateMaxChance": 15,
+      "medRateUsagePercent": 25
+    },
+    "weaponDurability": {
+      "enable": true,
+      "min": 90,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 10,
+      "minLimitPercent": 80,
+      "enhancementChance": 0
+    },
+    "lootConfig": {
+      "enable": true,
+      "blacklist": []
+    },
+    "rerollConfig": {
+      "enable": true,
+      "chance": 50
+    },
+    "toploadConfig": {
+      "enable": false,
+      "chance": 30,
+      "percent": 30
+    }
+  },
+  "customLevelDeltas": {
+    "enable": false,
+    "tier1": {
+      "min": 10,
+      "max": 5
+    },
+    "tier2": {
+      "min": 10,
+      "max": 5
+    },
+    "tier3": {
+      "min": 15,
+      "max": 7
+    },
+    "tier4": {
+      "min": 20,
+      "max": 10
+    },
+    "tier5": {
+      "min": 30,
+      "max": 15
+    },
+    "tier6": {
+      "min": 40,
+      "max": 20
+    },
+    "tier7": {
+      "min": 50,
+      "max": 20
+    }
+  },
+  "customScavLevelDeltas": {
+    "enable": false,
+    "tier1": {
+      "min": 10,
+      "max": 0
+    },
+    "tier2": {
+      "min": 10,
+      "max": -10
+    },
+    "tier3": {
+      "min": 15,
+      "max": -10
+    },
+    "tier4": {
+      "min": 20,
+      "max": -10
+    },
+    "tier5": {
+      "min": 30,
+      "max": -10
+    },
+    "tier6": {
+      "min": 40,
+      "max": -10
+    },
+    "tier7": {
+      "min": 50,
+      "max": -10
+    }
+  },
+  "enableDebugLog": false,
+  "configAppSettings": {
+    "showUndo": true,
+    "showDefault": false,
+    "disableAnimations": false
+  }
+}

@@ -1,0 +1,938 @@
+{
+    "pmcUSEC": {
+        "equipment": {
+          "FirstPrimaryWeapon_LongRange": {},
+          "FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 10,
+                "57e26fc7245977162a14b800": 10,
+                "54491bb74bdc2d09088b4567": 10,
+                "5bffdc370db834001d23eca8": 10,
+                "65ca457b4aafb5d7fc0dcb5d": 5,
+                "5c07df7f0db834001b73588a": 1,
+                "57cd379a24597778e7682ecf": 9,
+                "5c012ffc0db834001d23f03f": 2,
+                "5bead2e00db834001c062938": 2,
+                "5bc9c1e2d4351e00367fbcf0": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {
+                "5b3f16c486f7747c327f55f7": 10,
+                "5b3f3ade86f7746b6b790d8e": 10,
+                "5b3f3af486f774679e752c1f": 10,
+                "5b3f3b0186f774021a2afef7": 10,
+                "5b3f3b0e86f7746752107cda": 10,
+                "619bc61e86e01e16f839a999": 1,
+                "619bdfd4c9546643a67df6fa": 1
+            },
+            "ArmorVest": {
+                "5ab8e4ed86f7742d8e50c7fa": 1
+            },
+            "Backpack": {
+                "5f5e45cc5021ce62144be7aa": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {},
+            "Headwear": {
+                "5aa7d03ae5b5b00016327db5": 1
+            },
+            "TacticalVest": {
+                "5fd4c4fa16cac650092f6771": 1
+            },
+            "ArmouredRig": {
+                "5fd4c4fa16cac650092f6771": 1
+            }
+        }        
+    },
+    "pmcBEAR": {
+        "equipment": {
+          "FirstPrimaryWeapon_LongRange": {},
+          "FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 10,
+                "57e26fc7245977162a14b800": 10,
+                "54491bb74bdc2d09088b4567": 10,
+                "5bffdc370db834001d23eca8": 10,
+                "65ca457b4aafb5d7fc0dcb5d": 5,
+                "5c07df7f0db834001b73588a": 1,
+                "57cd379a24597778e7682ecf": 9,
+                "5c012ffc0db834001d23f03f": 2,
+                "5bead2e00db834001c062938": 2,
+                "5bc9c1e2d4351e00367fbcf0": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {
+                "5b3f16c486f7747c327f55f7": 10,
+                "5b3f3ade86f7746b6b790d8e": 10,
+                "5b3f3af486f774679e752c1f": 10,
+                "5b3f3b0186f774021a2afef7": 10,
+                "5b3f3b0e86f7746752107cda": 10,
+                "5f9949d869e2777a0e779ba5": 1,
+                "60b0f988c4449e4cb624c1da": 1,
+                "619bc61e86e01e16f839a999": 1,
+                "619bdd8886e01e16f839a99c": 1,
+                "619bde7fc9546643a67df6f4": 1,
+                "619bdef8c9546643a67df6f6": 1
+            },
+            "ArmorVest": {
+                "5ab8e4ed86f7742d8e50c7fa": 1
+            },
+            "Backpack": {
+                "5f5e45cc5021ce62144be7aa": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {},
+            "Headwear": {
+                "5aa7d03ae5b5b00016327db5": 1
+            },
+            "TacticalVest": {
+                "5fd4c4fa16cac650092f6771": 1
+            },
+            "ArmouredRig": {
+                "5fd4c4fa16cac650092f6771": 1
+            }
+        }
+    },
+    "scav": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {
+                "5f9949d869e2777a0e779ba5": 1
+            },
+            "ArmorVest": {
+                "607f20859ee58b18e41ecd90": 1
+            },
+            "Backpack": {
+                "59e763f286f7742ee57895da": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {
+                "5e71f70186f77429ee09f183": 1
+            },
+            "FaceCover": {
+                "5e71f6be86f77429f2683c44": 1,
+                "5e71fad086f77422443d4604": 1,
+                "607f201b3c672b3b3a24a800": 1
+            },
+            "Headwear": {
+                "5f99418230835532b445e954": 1,
+                "5f994730c91ed922dd355de3": 1
+            },
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bossboar": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26fc7245977162a14b800": 100,
+                "5c07df7f0db834001b73588a": 15,
+                "5bffdc370db834001d23eca8": 100,
+                "57e26ea924597715ca604a09": 100,
+                "601948682627df266209af05": 15
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "64cbd95a29b9b4283e216ff5": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bossboarsniper": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "5c012ffc0db834001d23f03f": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bossbully": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {},
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bossgluhar": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {},
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosskilla": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bossknight": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {},
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosskojaniy": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "5c0126f40db834002a125382": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "60c7272c204bc17802313365": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosskolontay": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "6540d2162ae6d96b540afcaf": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "64cbd95a29b9b4283e216ff5": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosssanitar": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosstagilla": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "6087e570b998180e9f76dc24": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "60c7272c204bc17802313365": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosspartisan": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 100,
+                "57e26fc7245977162a14b800": 100,
+                "5bead2e00db834001c062938": 100,
+                "5c012ffc0db834001d23f03f": 100,
+                "54491bb74bdc2d09088b4567": 100,
+                "5bffdc370db834001d23eca8": 100,
+                "5c0126f40db834002a125382": 50
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "64cbd95a29b9b4283e216ff5": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "bosszryachiy": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {},
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "60c7272c204bc17802313365": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "exusec": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "pmcbot": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "followerbigpipe": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "followerbirdeye": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {},
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "sectantpriest": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "5fc64ea372b0dd78d51159dc": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "5af99e9186f7747c447120b8": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "sectantwarrior": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "5fc64ea372b0dd78d51159dc": 1
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 1
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    },
+    "default": {
+        "equipment": {
+            "FirstPrimaryWeapon_LongRange": {},"FirstPrimaryWeapon_ShortRange": {},
+            "Holster": {
+                "66015072e9f84d5680039678": 1
+            },
+            "Scabbard": {
+                "57e26ea924597715ca604a09": 15,
+                "57e26fc7245977162a14b800": 15,
+                "54491bb74bdc2d09088b4567": 15,
+                "5bffdc370db834001d23eca8": 15,
+                "5c07df7f0db834001b73588a": 2,
+                "5c012ffc0db834001d23f03f": 1,
+                "5bead2e00db834001c062938": 4,
+                "5bc9c1e2d4351e00367fbcf0": 4
+            },
+          "SecondPrimaryWeapon_LongRange": {},
+          "SecondPrimaryWeapon_ShortRange": {},
+            "Pockets": {
+                "557ffd194bdc2d28148b457f": 80,
+                "60c7272c204bc17802313365": 5,
+                "5af99e9186f7747c447120b8": 15
+            },
+            "SecuredContainer": {
+                "5c0a794586f77461c458f892": 1
+            },
+            "ArmBand": {},
+            "ArmorVest": {
+                "62a09d79de7ac81993580530": 1
+            },
+            "Backpack": {
+                "61b9e1aaef9a1b5d6a79899a": 1
+            },
+            "Earpiece": {},
+            "Eyewear": {},
+            "FaceCover": {
+                "5b4326435acfc433000ed01d": 1
+            },
+            "Headwear": {},
+            "TacticalVest": {
+                "6034d0230ca681766b6a0fb5": 1
+            },
+            "ArmouredRig": {
+                "6034d0230ca681766b6a0fb5": 1
+            }
+        }
+    }
+}

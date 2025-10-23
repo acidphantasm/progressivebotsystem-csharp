@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>_progressiveBotSystem</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+    <Version>2.0.0</Version>
+    <!-- The two lines below will set the output path for the binaries -->
+    <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)-$(Version)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    </PropertyGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="SPTarkov.Common" Version="4.0.2-pre.202510202154" />
+    <PackageReference Include="SPTarkov.DI" Version="4.0.2-pre.202510202154" />
+    <PackageReference Include="SPTarkov.Reflection" Version="4.0.2-pre.202510202154" />
+    <PackageReference Include="SPTarkov.Server.Core" Version="4.0.2-pre.202510202154" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="release\SPT\user\mods\acidphantasm-reffriendlyquests\config.json" />
+    <None Include="release\SPT\user\mods\acidphantasm-reffriendlyquests\config.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <Content Remove="release\SPT\user\mods\acidphantasm-reffriendlyquests\db\quests.json" />
+    <None Include="release\SPT\user\mods\acidphantasm-reffriendlyquests\db\quests.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Utils\Logger\" />
+  </ItemGroup>
+
+</Project>
