@@ -416,7 +416,6 @@ public class CustomBotInventoryGenerator
         
         // Roll dice on equipment item
         var shouldSpawn = _randomUtil.GetChance100(spawnChance.Value);
-        if (settings.RootEquipmentSlot == ApbsEquipmentSlots.Headwear && settings.BotData.Role.Contains("pmc")) Console.WriteLine($"[{settings.BotData.Role}] PoolCount: {settings.RootEquipmentPool.Count} | Level: {settings.BotData.Level} | Tier: {settings.BotData.Tier} | Spawn Chance: {spawnChance.Value} | Rolled to have? {shouldSpawn}");
         if (shouldSpawn && settings.RootEquipmentPool?.Count != 0)
         {
             TemplateItem? pickedItemDb = null;
@@ -429,7 +428,6 @@ public class CustomBotInventoryGenerator
             {
                 if (settings.RootEquipmentPool.Count == 0)
                 {
-                    if (settings.RootEquipmentSlot == ApbsEquipmentSlots.Headwear && settings.BotData.Role.Contains("pmc")) Console.WriteLine($"[{settings.BotData.Role}] POOL EMPTY | PoolCount: {settings.RootEquipmentPool.Count} | Level: {settings.BotData.Level} | Tier: {settings.BotData.Tier} ");
                     return false;
                 }
 
@@ -511,7 +509,6 @@ public class CustomBotInventoryGenerator
             // Does item have slots for sub-mods to be inserted into
             if (pickedItemDb.Properties?.Slots is not null && pickedItemDb.Properties.Slots.Any() && !itemIsOnGenerateModBlacklist)
             {
-                if (settings.RootEquipmentSlot == ApbsEquipmentSlots.Headwear && settings.BotData.Role.Contains("pmc")) Console.WriteLine($"[{settings.BotData.Role}] Helmet wMods | {settings.BotId} | Level: {settings.BotData.Level} | Tier: {settings.BotData.Tier} | Spawn Chance: {spawnChance.Value} | Rolled to have? {shouldSpawn}");
                 var childItemsToAdd = _customBotEquipmentModGenerator.GenerateModsForEquipment(
                     [item],
                     id,

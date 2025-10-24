@@ -364,19 +364,19 @@ public class PlateClasses
 public class PlateClassList
 {
     [JsonPropertyName("tier1")]
-    public required PlateTierList Tier1 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier1 { get; set; }
     [JsonPropertyName("tier2")]
-    public required PlateTierList Tier2 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier2 { get; set; }
     [JsonPropertyName("tier3")]
-    public required PlateTierList Tier3 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier3 { get; set; }
     [JsonPropertyName("tier4")]
-    public required PlateTierList Tier4 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier4 { get; set; }
     [JsonPropertyName("tier5")]
-    public required PlateTierList Tier5 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier5 { get; set; }
     [JsonPropertyName("tier6")]
-    public required PlateTierList Tier6 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier6 { get; set; }
     [JsonPropertyName("tier7")]
-    public required PlateTierList Tier7 { get; set; }
+    public required Dictionary<string,Dictionary<string,double>> Tier7 { get; set; }
 }
 public class PlateTierList
 {

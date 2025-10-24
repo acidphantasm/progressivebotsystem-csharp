@@ -22,7 +22,7 @@ public class AddDogTagToBot_Patch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(BotGenerator).GetMethod("AddDogtagToBot", BindingFlags.NonPublic | BindingFlags.Instance);
+        return AccessTools.Method(typeof(BotGenerator),"AddDogtagToBot");
     }
 
     [PatchPrefix]

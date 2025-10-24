@@ -1,29 +1,42 @@
 ﻿using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
+using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
 namespace _progressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class BotEquipmentHelper {
+public class BotEquipmentHelper : IOnLoad {
     private readonly RandomUtil _randomUtil;
     private readonly DataLoader _dataLoader;
     private readonly ICloner _cloner;
+    private readonly ApbsLogger _apbsLogger;
 
     public BotEquipmentHelper(
         RandomUtil randomUtil, 
         DataLoader dataLoader,
-        ICloner cloner)
+        ICloner cloner,
+        ApbsLogger apbsLogger)
     {
         _randomUtil = randomUtil;
         _dataLoader = dataLoader;
         _cloner = cloner;
+        _apbsLogger = apbsLogger;
     }
+
+    public Task OnLoad()
+    {
+        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotConfigHelper.OnLoad()");
+        return Task.CompletedTask;
+    }
+    
     private int CheckChadOrChill(int tierNumber)
     {
         if (ModConfig.Config.GeneralConfig.OnlyChads && ModConfig.Config.GeneralConfig.TarkovAndChill) return _randomUtil.GetInt(1, 7);
@@ -34,7 +47,7 @@ public class BotEquipmentHelper {
         return tierNumber;
     }
     
-    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
+    public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
         switch (tierNumber)
@@ -61,7 +74,7 @@ public class BotEquipmentHelper {
         }
     }
 
-    private ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
+    public ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
         switch (tierNumber)
@@ -114,10 +127,8 @@ public class BotEquipmentHelper {
                 return _cloner.Clone(_dataLoader.Tier1AmmoData);
         }
     }
-    
-    
 
-    private EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
+    public EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
         switch (tierNumber)
@@ -141,6 +152,33 @@ public class BotEquipmentHelper {
             default:
                 Console.WriteLine("Equipment Data Unknown tier number: " + tierNumber);
                 return _cloner.Clone(_dataLoader.Tier1EquipmentData);
+        }
+    }
+    
+    private AppearanceTierData GetTierAppearance(int tierNumber, bool ignoreCheck = false)
+    {
+        if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
+        switch (tierNumber)
+        {
+            case 0:
+                return _cloner.Clone(_dataLoader.Tier0AppearanceData);
+            case 1:
+                return _cloner.Clone(_dataLoader.Tier1AppearanceData);
+            case 2:
+                return _cloner.Clone(_dataLoader.Tier2AppearanceData);
+            case 3:
+                return _cloner.Clone(_dataLoader.Tier3AppearanceData);
+            case 4:
+                return _cloner.Clone(_dataLoader.Tier4AppearanceData);
+            case 5:
+                return _cloner.Clone(_dataLoader.Tier5AppearanceData);
+            case 6:
+                return _cloner.Clone(_dataLoader.Tier6AppearanceData);
+            case 7:
+                return _cloner.Clone(_dataLoader.Tier7AppearanceData);
+            default:
+                Console.WriteLine("Appearance Data Unknown tier number: " + tierNumber);
+                return _cloner.Clone(_dataLoader.Tier1AppearanceData);
         }
     }
 
@@ -361,6 +399,40 @@ public class BotEquipmentHelper {
             "marksman" or "cursedassault" or "assault" => tieredAmmoData.ScavAmmo,
             "pmcusec" or "pmcbear" => tieredAmmoData.PmcAmmo,
             _ => tieredAmmoData.BossAmmo
+        };
+    }
+
+    public Appearance GetAppearanceByBotRole(string botRole, int tierNumber, Season season, bool seasonal = false)
+    {
+        var tieredAppearanceData = GetTierAppearance(tierNumber);
+        if (!seasonal || tierNumber == 0)
+            return botRole is "pmcBEAR"
+                ? tieredAppearanceData.PmcBear["appearance"]
+                : tieredAppearanceData.PmcUsec["appearance"];
+        
+        return botRole switch
+        {
+            "pmcUSEC" => season switch
+            {
+                Season.SPRING_EARLY => tieredAppearanceData.SpringEarly.PmcUsec["appearance"],
+                Season.SPRING => tieredAppearanceData.Spring.PmcUsec["appearance"],
+                Season.SUMMER or Season.STORM => tieredAppearanceData.Summer.PmcUsec["appearance"],
+                Season.AUTUMN or Season.AUTUMN_LATE => tieredAppearanceData.Autumn.PmcUsec["appearance"],
+                Season.WINTER => tieredAppearanceData.Winter.PmcUsec["appearance"],
+                _ => tieredAppearanceData.Summer.PmcUsec["appearance"]
+            },
+            "pmcBEAR" => season switch
+            {
+                Season.SPRING_EARLY => tieredAppearanceData.SpringEarly.PmcBear["appearance"],
+                Season.SPRING => tieredAppearanceData.Spring.PmcBear["appearance"],
+                Season.SUMMER or Season.STORM => tieredAppearanceData.Summer.PmcBear["appearance"],
+                Season.AUTUMN or Season.AUTUMN_LATE => tieredAppearanceData.Autumn.PmcBear["appearance"],
+                Season.WINTER => tieredAppearanceData.Winter.PmcBear["appearance"],
+                _ => tieredAppearanceData.Summer.PmcBear["appearance"]
+            },
+            _ => botRole is "pmcBEAR"
+                ? tieredAppearanceData.PmcBear["appearance"]
+                : tieredAppearanceData.PmcUsec["appearance"]
         };
     }
     

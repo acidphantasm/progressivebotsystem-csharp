@@ -1,0 +1,65 @@
+﻿[
+  {
+    "Tier": 1,
+    "PlayerMinLevel": 1,
+    "PlayerMaxLevel": 10,
+    "BotMinLevelVariance": 10,
+    "BotMaxLevelVariance": 5,
+    "ScavMinLevelVariance": 10,
+    "ScavMaxLevelVariance": 5
+  },
+  {
+    "Tier": 2,
+    "PlayerMinLevel": 11,
+    "PlayerMaxLevel": 20,
+    "BotMinLevelVariance": 10,
+    "BotMaxLevelVariance": 5,
+    "ScavMinLevelVariance": 10,
+    "ScavMaxLevelVariance": 5
+  },
+  {
+    "Tier": 3,
+    "PlayerMinLevel": 21,
+    "PlayerMaxLevel": 30,
+    "BotMinLevelVariance": 15,
+    "BotMaxLevelVariance": 7,
+    "ScavMinLevelVariance": 15,
+    "ScavMaxLevelVariance": 7
+  },
+  {
+    "Tier": 4,
+    "PlayerMinLevel": 31,
+    "PlayerMaxLevel": 40,
+    "BotMinLevelVariance": 20,
+    "BotMaxLevelVariance": 10,
+    "ScavMinLevelVariance": 20,
+    "ScavMaxLevelVariance": 10
+  },
+  {
+    "Tier": 5,
+    "PlayerMinLevel": 41,
+    "PlayerMaxLevel": 50,
+    "BotMinLevelVariance": 30,
+    "BotMaxLevelVariance": 15,
+    "ScavMinLevelVariance": 30,
+    "ScavMaxLevelVariance": 15
+  },
+  {
+    "Tier": 6,
+    "PlayerMinLevel": 51,
+    "PlayerMaxLevel": 60,
+    "BotMinLevelVariance": 40,
+    "BotMaxLevelVariance": 20,
+    "ScavMinLevelVariance": 40,
+    "ScavMaxLevelVariance": 20
+  },
+  {
+    "Tier": 7,
+    "PlayerMinLevel": 61,
+    "PlayerMaxLevel": 100,
+    "BotMinLevelVariance": 50,
+    "BotMaxLevelVariance": 20,
+    "ScavMinLevelVariance": 50,
+    "ScavMaxLevelVariance": 20
+  }
+]

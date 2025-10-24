@@ -25,6 +25,7 @@ public class GenerateBotLevel : AbstractPatch
     private static DatabaseService? _databaseService;
     private static RandomUtil? _randomUtil;
     private static ProfileHelper? _profileHelper;
+    private static TierHelper? _tierHelper;
     
     protected override MethodBase GetTargetMethod()
     {
@@ -37,6 +38,7 @@ public class GenerateBotLevel : AbstractPatch
         _databaseService ??= ServiceLocator.ServiceProvider.GetService<DatabaseService>();
         _randomUtil ??= ServiceLocator.ServiceProvider.GetService<RandomUtil>();
         _profileHelper ??= ServiceLocator.ServiceProvider.GetService<ProfileHelper>();
+        _tierHelper ??= ServiceLocator.ServiceProvider.GetService<TierHelper>();
 
         if (_databaseService is null || _randomUtil is null || _profileHelper is null) return true;
         
@@ -44,7 +46,7 @@ public class GenerateBotLevel : AbstractPatch
         {
             var scavLevel = _profileHelper.GetPmcProfile(RaidInformation.CurrentSessionId)?.Info?.Level ?? 1;
             var scavExp = _profileHelper.GetExperience(scavLevel);
-            bot.Info.AddToExtensionData("Tier", TierHelper.GetTierByLevel(scavLevel));
+            bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel));
             bot.Info.PrestigeLevel = SetBotPrestigeInfo(scavLevel, botGenerationDetails);
             __result = new RandomisedBotLevelResult { Exp = scavExp, Level = scavLevel };
             return false;
@@ -57,7 +59,7 @@ public class GenerateBotLevel : AbstractPatch
         var maxLevelIndex = expTable.Length - 1;
         level = Math.Clamp(level, 0, maxLevelIndex + 1);
         
-        bot.Info.AddToExtensionData("Tier", TierHelper.GetTierByLevel(level));
+        bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(level));
         bot.Info.PrestigeLevel = SetBotPrestigeInfo(level, botGenerationDetails);
         
         var baseExp = expTable.Take(level).Sum(entry => entry.Experience);
@@ -93,16 +95,22 @@ public class GenerateBotLevel : AbstractPatch
             ? Math.Min(levelOverride.Max, maxAvailableLevel)
             : Math.Min(levelDetails.Max, maxAvailableLevel);
 
-        var minLevel = playerLevel - TierHelper.GetTierLowerLevelDeviation(playerLevel);
-        var maxLevel = playerLevel + TierHelper.GetTierUpperLevelDeviation(playerLevel);
+        var minLevel = playerLevel - _tierHelper.GetTierLowerLevelDeviation(playerLevel);
+        var maxLevel = playerLevel + _tierHelper.GetTierUpperLevelDeviation(playerLevel);
 
         if (!botGenerationDetails.IsPmc && (botGenerationDetails.Role.Contains("assault") ||
                                             botGenerationDetails.Role.Contains("marksman")))
         {
-            minLevel = playerLevel - TierHelper.GetScavTierLowerLevelDeviation(playerLevel);
-            maxLevel = playerLevel + TierHelper.GetScavTierUpperLevelDeviation(playerLevel);
+            minLevel = playerLevel - _tierHelper.GetScavTierLowerLevelDeviation(playerLevel);
+            maxLevel = playerLevel + _tierHelper.GetScavTierUpperLevelDeviation(playerLevel);
         }
 
+        if (ModConfig.Config.PmcBots.AdditionalOptions.EnablePrestiging && ModConfig.Config.PmcBots.AdditionalOptions.EnablePrestigeAnyLevel && RaidInformation.HighestPrestigeLevel != 0)
+        {
+            maxLevel = 79;
+            minLevel = 1;
+        }
+        
         maxLevel = Math.Clamp(maxLevel, minPossibleLevel, maxPossibleLevel);
         minLevel = Math.Clamp(minLevel, minPossibleLevel, maxPossibleLevel);
 
@@ -111,6 +119,9 @@ public class GenerateBotLevel : AbstractPatch
 
     private static int SetBotPrestigeInfo(int level, BotGenerationDetails botGenerationDetails)
     {
+        if (!ModConfig.Config.PmcBots.AdditionalOptions.EnablePrestiging) return 0;
+        if (!botGenerationDetails.IsPmc) return 0;
+        
         var playerLevel = botGenerationDetails.PlayerLevel ?? 1;
         var isPlayerPrestiged = RaidInformation.HighestPrestigeLevel != 0 ? true : false;
         var playerPrestigeLevel = RaidInformation.HighestPrestigeLevel;

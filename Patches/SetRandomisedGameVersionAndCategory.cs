@@ -22,19 +22,19 @@ namespace _progressiveBotSystem.Patches;
 
 public class SetRandomisedGameVersionAndCategory_Patch : AbstractPatch
 {
+    private static TierHelper? _tierHelper;
     protected override MethodBase GetTargetMethod()
     {
-        return typeof(BotGenerator).GetMethod("SetRandomisedGameVersionAndCategory", BindingFlags.NonPublic | BindingFlags.Instance);
+        return AccessTools.Method(typeof(BotGenerator),"SetRandomisedGameVersionAndCategory");
     }
 
     [PatchPrefix]
     public static bool Prefix(Info botInfo)
     {
+        _tierHelper ??= ServiceLocator.ServiceProvider.GetService<TierHelper>();
+        
         if (!ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable &&
-            !ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevLevels.Enable)
-        {
-            return true;
-        }
+            !ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevLevels.Enable) return true;
 
         if (ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname))
         {
@@ -55,7 +55,7 @@ public class SetRandomisedGameVersionAndCategory_Patch : AbstractPatch
                 botInfo.Level = level;
                 
                 var botInfoExtensionData = botInfo.GetExtensionData();
-                botInfoExtensionData["Tier"] = TierHelper.GetTierByLevel(level);
+                botInfoExtensionData["Tier"] = _tierHelper.GetTierByLevel(level);
             }
         }
         

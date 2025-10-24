@@ -27,11 +27,6 @@ public class GenerateInventory_Patch : AbstractPatch
     public static bool Prefix(BotInventoryGenerator __instance, ref BotBaseInventory __result, MongoId botId, MongoId sessionId, BotType botJsonTemplate, BotGenerationDetails botGenerationDetails)
     {
         var botActivityHelper = ServiceLocator.ServiceProvider.GetService<BotActivityHelper>();
-        if (botActivityHelper is null || !botActivityHelper.IsBotEnabled(botGenerationDetails.Role))
-        {
-            return true;
-        }
-        
         var customBotInventoryGenerator = ServiceLocator.ServiceProvider.GetService<CustomBotInventoryGenerator>();
         var profileActivityService = ServiceLocator.ServiceProvider.GetService<ProfileActivityService>();
         var botLootGenerator = ServiceLocator.ServiceProvider.GetService<BotLootGenerator>();
@@ -40,6 +35,9 @@ public class GenerateInventory_Patch : AbstractPatch
         var botEquipmentHelper = ServiceLocator.ServiceProvider.GetService<BotEquipmentHelper>();
         var randomUtil = ServiceLocator.ServiceProvider.GetService<RandomUtil>();
         var apbsLogger = ServiceLocator.ServiceProvider.GetService<ApbsLogger>();
+        var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
+        
+        if (botActivityHelper is null || !botActivityHelper.IsBotEnabled(botGenerationDetails.Role)) return true;
 
         if (customBotInventoryGenerator is null ||
             profileActivityService is null ||
@@ -59,7 +57,7 @@ public class GenerateInventory_Patch : AbstractPatch
         var raidConfig = profileActivityService.GetProfileActivityRaidData(sessionId)?.RaidConfiguration;
 
         // Get initial tier
-        var tierNumber = TierHelper.GetTierByLevel(botGenerationDetails.BotLevel);
+        var tierNumber = tierHelper.GetTierByLevel(botGenerationDetails.BotLevel);
         
         // Check if bot should quest, and select one if possible
         QuestData? questData = null;

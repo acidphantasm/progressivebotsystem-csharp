@@ -1,5 +1,6 @@
 ﻿using System.Collections.Frozen;
 using System.Globalization;
+using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
@@ -115,7 +116,6 @@ public class CustomBotEquipmentModGenerator(
         // Iterate over mod pool and choose mods to add to item
         foreach (var (modSlotName, modPool) in compatibleModsPool ?? [])
         {
-            if (settings.RootEquipmentSlot == ApbsEquipmentSlots.Headwear && settings.BotData.Role.Contains("pmc")) Console.WriteLine($"[{settings.BotData.Role}] Helmet wMods | {settings.BotId} | Level: {settings.BotData.Level} | Tier: {settings.BotData.Tier} || Slot: {modSlotName} | PARENT: {parentTemplate.Id}");
             // Get the templates slot object from db
             var itemSlotTemplate = GetModItemSlotFromDbTemplate(modSlotName, parentTemplate);
             if (itemSlotTemplate is null)
@@ -558,6 +558,11 @@ public class CustomBotEquipmentModGenerator(
                 continue;
             }
 
+            if (VanillaButtPads.vanillaButtPads.Contains(modToAddTemplate.Id))
+            {
+                if (!randomUtil.GetChance100(ModConfig.Config.GeneralConfig.StockButtpadChance)) continue;
+            }
+
             // If item is a mount for scopes, set scope chance to 100%, this helps fix empty mounts appearing on weapons
             if (ModSlotCanHoldScope(modSlot, modToAddTemplate.Parent))
             {
@@ -574,11 +579,14 @@ public class CustomBotEquipmentModGenerator(
             }
 
             // If picked item is muzzle adapter that can hold a child, adjust spawn chance
-            if (ModSlotCanHoldMuzzleDevices(modSlot, modToAddTemplate.Parent))
+            if (ModConfig.Config.GeneralConfig.ForceChildrenMuzzle)
             {
-                List<string> muzzleSlots = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
-                // Make chance of muzzle devices 95%, nearly certain but not guaranteed
-                AdjustSlotSpawnChances(request.ModSpawnChances, muzzleSlots, 95);
+                if (ModSlotCanHoldMuzzleDevices(modSlot, modToAddTemplate.Parent))
+                {
+                    List<string> muzzleSlots = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
+                    // Make chance of muzzle devices 95%, nearly certain but not guaranteed
+                    AdjustSlotSpawnChances(request.ModSpawnChances, muzzleSlots, 95);
+                }
             }
 
             // If front/rear sight are to be added, set opposite to 100% chance
@@ -1183,7 +1191,7 @@ public class CustomBotEquipmentModGenerator(
         };
 
         // Limit how many attempts to find a compatible mod can occur before giving up
-        var maxBlockedAttempts = Math.Round(modPool.Count * 0.75); // 75% of pool size
+        var maxBlockedAttempts = modPool.Count; // 75% of pool size
         var blockedAttemptCount = 0;
         while (exhaustableModPool.HasValues())
         {

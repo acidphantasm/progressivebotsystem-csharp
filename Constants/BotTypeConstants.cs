@@ -55,7 +55,7 @@ public class FollowerBots
 
 public class SpecialBots
 {
-    public const string ArenaFighter = "arenafigighter";
+    public const string ArenaFighter = "arenafighter";
     public const string ArenaFighterEvent = "arenafighterevent";
     public const string ExUsec = "exusec";
     public const string PmcBot = "pmcbot";
@@ -85,6 +85,7 @@ public class ScavBots
 public class EventBots
 {
     public const string Gifter = "gifter";
+    public const string Zombie = "zombie";
     public const string InfectedAssault = "infectedassault";
     public const string InfectedCivil = "infectedcivil";
     public const string InfectedLaborant = "infectedlaborant";

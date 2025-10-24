@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections;
+using System.Text.Json.Serialization;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
@@ -125,6 +126,7 @@ public class ChancesTierData
     public BotChancesData PmcBot { get; set; }
     [JsonPropertyName("default")]
     public BotChancesData Default { get; set; }
+
 }
 
 public class AmmoTierData
@@ -142,17 +144,26 @@ public class AmmoTierData
 public class AppearanceTierData
 {
     [JsonPropertyName("pmcUSEC")]
-    public Dictionary<string, Dictionary<string, Appearance>> PmcUsec { get; set; }
+    public Dictionary<string, Appearance> PmcUsec { get; set; }
     [JsonPropertyName("pmcBEAR")]
-    public Dictionary<string, Dictionary<string, Appearance>> PmcBear { get; set; }
+    public Dictionary<string, Appearance> PmcBear { get; set; }
     [JsonPropertyName("springEarly")]
-    public Dictionary<string, Dictionary<string, Dictionary<string, Appearance>>> SpringEarly { get; set; }
+    public SeasonAppearance SpringEarly { get; set; }
     [JsonPropertyName("spring")]
-    public Dictionary<string, Dictionary<string, Dictionary<string, Appearance>>> Spring { get; set; }
+    public SeasonAppearance Spring { get; set; }
     [JsonPropertyName("summer")]
-    public Dictionary<string, Dictionary<string, Dictionary<string, Appearance>>> Summer { get; set; }
+    public SeasonAppearance Summer { get; set; }
     [JsonPropertyName("autumn")]
-    public Dictionary<string, Dictionary<string, Dictionary<string, Appearance>>> Autumn { get; set; }
+    public SeasonAppearance Autumn { get; set; }
     [JsonPropertyName("winter")]
-    public Dictionary<string, Dictionary<string, Dictionary<string, Appearance>>> Winter { get; set; }
+    public SeasonAppearance Winter { get; set; }
+}
+
+public class SeasonAppearance
+{
+    [JsonPropertyName("pmcUSEC")]
+    public Dictionary<string, Appearance> PmcUsec { get; set; }
+
+    [JsonPropertyName("pmcBEAR")]
+    public Dictionary<string, Appearance> PmcBear { get; set; }
 }
