@@ -4,6 +4,7 @@ using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
+using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;
@@ -41,7 +42,8 @@ public class CustomBotEquipmentModGenerator(
     ServerLocalisationService serverLocalisationService,
     BotEquipmentModPoolService botEquipmentModPoolService,
     ConfigServer configServer,
-    ICloner cloner
+    ICloner cloner,
+    ApbsLogger apbsLogger
 )
 {
     protected static readonly FrozenSet<string> _modSightIds = ["mod_sight_front", "mod_sight_rear"];
@@ -558,7 +560,7 @@ public class CustomBotEquipmentModGenerator(
                 continue;
             }
 
-            if (VanillaButtPads.vanillaButtPads.Contains(modToAddTemplate.Id))
+            if (VanillaItemConstants.VanillaButtPads.Contains(modToAddTemplate.Id))
             {
                 if (!randomUtil.GetChance100(ModConfig.Config.GeneralConfig.StockButtpadChance)) continue;
             }

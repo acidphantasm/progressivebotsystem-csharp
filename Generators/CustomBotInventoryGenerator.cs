@@ -361,7 +361,13 @@ public class CustomBotInventoryGenerator
         QuestData? questData)
     {
         var weaponSlotsToFill = GetDesiredWeaponsForBot(equipmentChances);
-        foreach (var desiredWeapons in weaponSlotsToFill)
+
+        var weaponSlotsToFillAsList = weaponSlotsToFill.ToList();
+        var hasPrimary = weaponSlotsToFillAsList.Any(x => x is { ShouldSpawn: true, Slot: EquipmentSlots.FirstPrimaryWeapon });
+        var hasSecondary = weaponSlotsToFillAsList.Any(x => x is { ShouldSpawn: true, Slot: EquipmentSlots.SecondPrimaryWeapon });
+        var hasBothPrimary = hasPrimary && hasSecondary;
+        
+        foreach (var desiredWeapons in weaponSlotsToFillAsList)
             // Add weapon to bot if true and bot json has something to put into the slot
         {
             if (desiredWeapons.ShouldSpawn && templateInventory.Equipment[desiredWeapons.Slot].Any())
@@ -376,7 +382,9 @@ public class CustomBotInventoryGenerator
                     botGenerationDetails,
                     itemGenerationLimitsMinMax,
                     tierNumber,
-                    questData
+                    questData,
+                    botGenerationDetails.BotLevel,
+                    hasBothPrimary
                 );
             }
         }
@@ -570,7 +578,9 @@ public class CustomBotInventoryGenerator
         BotGenerationDetails botGenerationDetails,
         ApbsGeneration itemGenerationWeights,
         int tierNumber,
-        QuestData? questData
+        QuestData? questData,
+        int botLevel,
+        bool hasBothPrimary
     )
     {
         var generatedWeapon = _customBotWeaponGenerator.GenerateRandomWeapon(
@@ -581,6 +591,8 @@ public class CustomBotInventoryGenerator
             botInventory.Equipment.Value,
             equipmentChances,
             tierNumber,
+            botLevel,
+            hasBothPrimary,
             questData
         );
 
@@ -591,7 +603,9 @@ public class CustomBotInventoryGenerator
             generatedWeapon,
             itemGenerationWeights.Items.Magazines,
             botInventory,
-            botGenerationDetails.RoleLowercase
+            botGenerationDetails.RoleLowercase,
+            botLevel,
+            tierNumber
         );
     }
 }

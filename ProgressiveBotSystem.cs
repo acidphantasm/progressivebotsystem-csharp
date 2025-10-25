@@ -33,7 +33,7 @@ public record ModMetadata : AbstractModMetadata
     public override string? License { get; init; } = "MIT";
 }
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader)]
+[Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public class ProgressiveBotSystem(
     ISptLogger<ProgressiveBotSystem> logger,
     DatabaseService databaseService,

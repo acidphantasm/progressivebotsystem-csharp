@@ -1,4 +1,5 @@
-﻿using _progressiveBotSystem.Globals;
+﻿using _progressiveBotSystem.Constants;
+using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
@@ -35,18 +36,26 @@ public class CustomBotWeaponGenerator(
     RepairService repairService,
     ICloner cloner,
     ConfigServer configServer,
-    IEnumerable<IInventoryMagGen> inventoryMagGenComponents,
+    IEnumerable<IApbsInventoryMagGen> inventoryMagGenComponents,
     BotEquipmentHelper botEquipmentHelper,
     CustomBotEquipmentModGenerator customBotEquipmentModGenerator
 )
 {
     private const string ModMagazineSlotId = "mod_magazine";
     private readonly BotConfig BotConfig = configServer.GetConfig<BotConfig>();
-    private readonly IEnumerable<IInventoryMagGen> InventoryMagGenComponents = MagGenSetUp(inventoryMagGenComponents);
+    private readonly IEnumerable<IApbsInventoryMagGen> InventoryMagGenComponents = MagGenSetUp(inventoryMagGenComponents);
     private readonly PmcConfig PMCConfig = configServer.GetConfig<PmcConfig>();
     private readonly RepairConfig RepairConfig = configServer.GetConfig<RepairConfig>();
+    
+    private readonly IEnumerable<string> AlwaysDisabled = typeof(AlwaysDisabledBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
 
-    private static List<IInventoryMagGen> MagGenSetUp(IEnumerable<IInventoryMagGen> components)
+    private static List<IApbsInventoryMagGen> MagGenSetUp(IEnumerable<IApbsInventoryMagGen> components)
     {
         var inventoryMagGens = components.ToList();
         inventoryMagGens.Sort((a, b) => a.GetPriority() - b.GetPriority());
@@ -71,6 +80,8 @@ public class CustomBotWeaponGenerator(
         MongoId weaponParentId,
         ApbsChances modChances,
         int tierNumber,
+        int botLevel,
+        bool hasBothPrimary,
         QuestData? questData
     )
     {
@@ -84,6 +95,8 @@ public class CustomBotWeaponGenerator(
             modChances,
             botGenerationDetails,
             tierNumber,
+            botLevel,
+            hasBothPrimary,
             questData
         );
     }
@@ -131,6 +144,8 @@ public class CustomBotWeaponGenerator(
         ApbsChances modChances,
         BotGenerationDetails botGenerationDetails,
         int tierNumber,
+        int botLevel,
+        bool hasBothPrimary,
         QuestData? questData
     )
     {
@@ -484,7 +499,9 @@ public class CustomBotWeaponGenerator(
         GenerateWeaponResult generatedWeaponResult,
         GenerationData magWeights,
         BotBaseInventory inventory,
-        string botRole
+        string botRole,
+        int botLevel,
+        int tier
     )
     {
         var weaponAndMods = generatedWeaponResult.Weapon;
@@ -511,10 +528,10 @@ public class CustomBotWeaponGenerator(
         // Has an UBGL
         if (generatedWeaponResult.ChosenUbglAmmoTemplate is not null && !generatedWeaponResult.ChosenUbglAmmoTemplate.Value.IsEmpty)
         {
-            AddUbglGrenadesToBotInventory(botId, weaponAndMods, generatedWeaponResult, inventory);
+            AddUbglGrenadesToBotInventory(botId, weaponAndMods, generatedWeaponResult, inventory, botRole, botLevel, tier);
         }
 
-        var inventoryMagGenModel = new InventoryMagGen(magWeights, magTemplate, weaponTemplate, ammoTemplate.Value, inventory, botId);
+        var inventoryMagGenModel = new ApbsInventoryMagGen(magWeights, magTemplate, weaponTemplate, ammoTemplate.Value, inventory, botId, botRole, botLevel, tier, GetToploadConfig(botRole), GetRerollConfig(botRole));
 
         InventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(inventoryMagGenModel)).Process(inventoryMagGenModel);
 
@@ -539,7 +556,10 @@ public class CustomBotWeaponGenerator(
         MongoId botId,
         List<Item> weaponMods,
         GenerateWeaponResult generatedWeaponResult,
-        BotBaseInventory inventory
+        BotBaseInventory inventory,
+        string botRole,
+        int botLevel,
+        int tier
     )
     {
         // Find ubgl mod item + get details of it from db
@@ -557,7 +577,7 @@ public class CustomBotWeaponGenerator(
         var ubglAmmoDbTemplate = itemHelper.GetItem(generatedWeaponResult.ChosenUbglAmmoTemplate.Value).Value;
 
         // Add grenades to bot inventory
-        var ubglAmmoGenModel = new InventoryMagGen(ubglMinMax, ubglDbTemplate, ubglDbTemplate, ubglAmmoDbTemplate, inventory, botId);
+        var ubglAmmoGenModel = new ApbsInventoryMagGen(ubglMinMax, ubglDbTemplate, ubglDbTemplate, ubglAmmoDbTemplate, inventory, botId, botRole, botLevel, tier, GetToploadConfig(botRole), GetRerollConfig(botRole));
         InventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(ubglAmmoGenModel)).Process(ubglAmmoGenModel);
 
         // Store extra grenades in secure container
@@ -648,7 +668,7 @@ public class CustomBotWeaponGenerator(
     /// <param name="cartridgePool">Dictionary of all cartridges keyed by type e.g. Caliber556x45NATO</param>
     /// <param name="weaponTemplate">Weapon details from database we want to pick ammo for</param>
     /// <returns>Ammo template that works with the desired gun</returns>
-    protected MongoId GetWeightedCompatibleAmmo(Dictionary<string, Dictionary<MongoId, double>> cartridgePool, TemplateItem weaponTemplate)
+    private MongoId GetWeightedCompatibleAmmo(Dictionary<string, Dictionary<MongoId, double>> cartridgePool, TemplateItem weaponTemplate)
     {
         var desiredCaliber = GetWeaponCaliber(weaponTemplate);
         if (!cartridgePool.TryGetValue(desiredCaliber, out var cartridgePoolForWeapon) || cartridgePoolForWeapon?.Count == 0)
@@ -935,5 +955,35 @@ public class CustomBotWeaponGenerator(
                 camora.Upd = new Upd { StackObjectsCount = 1 };
             }
         }
+    }
+
+    private EnableChance GetRerollConfig(string botRole)
+    {
+        if (Bosses.Contains(botRole)) return ModConfig.Config.BossBots.RerollConfig;
+        if (Followers.Contains(botRole)) return ModConfig.Config.FollowerBots.RerollConfig;
+        if (Pmcs.Contains(botRole)) return ModConfig.Config.PmcBots.RerollConfig;
+        if (Scavs.Contains(botRole)) return ModConfig.Config.ScavBots.RerollConfig;
+        if (Specials.Contains(botRole)) return ModConfig.Config.SpecialBots.RerollConfig;
+        return new EnableChance()
+        {
+            Enable = false,
+            Chance = 0
+        };
+    }
+
+    private ToploadConfig GetToploadConfig(string botRole)
+    {
+        if (Bosses.Contains(botRole)) return ModConfig.Config.BossBots.ToploadConfig;
+        if (Followers.Contains(botRole)) return ModConfig.Config.FollowerBots.ToploadConfig;
+        if (Pmcs.Contains(botRole)) return ModConfig.Config.PmcBots.ToploadConfig;
+        if (Scavs.Contains(botRole)) return ModConfig.Config.ScavBots.ToploadConfig;
+        if (Specials.Contains(botRole)) return ModConfig.Config.SpecialBots.ToploadConfig;
+        
+        return new ToploadConfig()
+        {
+            Enable = false,
+            Chance = 0,
+            Percent = 0
+        };
     }
 }
