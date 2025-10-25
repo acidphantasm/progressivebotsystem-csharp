@@ -69,7 +69,7 @@ public class BotEquipmentHelper : IOnLoad {
             case 7:
                 return _cloner.Clone(_dataLoader.Tier7ModsData);
             default:
-                Console.WriteLine("Mods Data Unknown tier number: " + tierNumber);
+                _apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
                 return _cloner.Clone(_dataLoader.Tier1ModsData);
         }
     }
@@ -96,7 +96,7 @@ public class BotEquipmentHelper : IOnLoad {
             case 7:
                 return _cloner.Clone(_dataLoader.Tier7ChancesData);
             default:
-                Console.WriteLine("Chances Unknown tier number: " + tierNumber);
+                _apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
                 return _cloner.Clone(_dataLoader.Tier1ChancesData);
         }
     }
@@ -123,7 +123,7 @@ public class BotEquipmentHelper : IOnLoad {
             case 7:
                 return _cloner.Clone(_dataLoader.Tier7AmmoData);
             default:
-                Console.WriteLine("Ammo Data Unknown tier number: " + tierNumber);
+                _apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
                 return _cloner.Clone(_dataLoader.Tier1AmmoData);
         }
     }
@@ -150,7 +150,7 @@ public class BotEquipmentHelper : IOnLoad {
             case 7:
                 return _cloner.Clone(_dataLoader.Tier7EquipmentData);
             default:
-                Console.WriteLine("Equipment Data Unknown tier number: " + tierNumber);
+                _apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
                 return _cloner.Clone(_dataLoader.Tier1EquipmentData);
         }
     }
@@ -177,7 +177,7 @@ public class BotEquipmentHelper : IOnLoad {
             case 7:
                 return _cloner.Clone(_dataLoader.Tier7AppearanceData);
             default:
-                Console.WriteLine("Appearance Data Unknown tier number: " + tierNumber);
+                _apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
                 return _cloner.Clone(_dataLoader.Tier1AppearanceData);
         }
     }

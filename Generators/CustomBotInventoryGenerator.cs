@@ -298,6 +298,14 @@ public class CustomBotInventoryGenerator
             }, questData
         );
 
+        if (questData is not null)
+        {
+            if (questData.RequiredEquipmentSlots.Contains("TacticalVest") || questData.RequiredEquipmentSlots.Contains("ArmorVest"))
+            {
+                wornItemChances.EquipmentChances["ArmorVest"] = 100;
+            }
+        }
+
         var hasArmorVest = GenerateEquipment(
             new ApbsGenerateEquipmentProperties
             {
@@ -412,6 +420,22 @@ public class CustomBotInventoryGenerator
             _logger.Warning(_serverLocalisationService.GetText("bot-no_spawn_chance_defined_for_equipment_slot", settings.RootEquipmentSlot));
 
             return false;
+        }
+
+        if (questData is not null)
+        {
+            var rootEquipmentSlot = settings.RootEquipmentSlot.ToString();
+            if (questData.RequiredEquipmentSlots.Contains(rootEquipmentSlot))
+            {
+                var newEquipmentPool =  new Dictionary<MongoId, double>();
+                foreach (var itemTpl in (List<string>)questData[rootEquipmentSlot])
+                {
+                    settings.SpawnChances.EquipmentChances[rootEquipmentSlot] = 100;
+                    newEquipmentPool.TryAdd(itemTpl, 1);
+                }
+
+                settings.RootEquipmentPool = newEquipmentPool;
+            }
         }
 
         // Give armoured vest instead of tactical rig if they have no vest

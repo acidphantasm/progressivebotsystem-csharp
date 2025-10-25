@@ -1,4 +1,5 @@
 ﻿using _progressiveBotSystem.Constants;
+using _progressiveBotSystem.Generators.WeaponGen;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
@@ -85,20 +86,18 @@ public class CustomBotWeaponGenerator(
         QuestData? questData
     )
     {
-        var weaponTpl = PickWeightedWeaponTemplateFromPool(equipmentSlot, botTemplateInventory, botGenerationDetails.Role, tierNumber);
-        return GenerateWeaponByTpl(
-            sessionId,
-            weaponTpl,
-            equipmentSlot,
-            botTemplateInventory,
-            weaponParentId,
-            modChances,
-            botGenerationDetails,
-            tierNumber,
-            botLevel,
-            hasBothPrimary,
-            questData
-        );
+        if (questData is null || equipmentSlot == ApbsEquipmentSlots.Holster.ToString() || questData.PrimaryWeapon.Count == 0)
+        {
+            var weaponTpl = (hasBothPrimary && botGenerationDetails.IsPmc)
+                ? PickWeightedWeaponTemplateFromPoolWithBothPrimary(equipmentSlot, botTemplateInventory, botGenerationDetails.Role, tierNumber)
+                : PickWeightedWeaponTemplateFromPool(equipmentSlot, botTemplateInventory, botGenerationDetails.Role, tierNumber);
+            return GenerateWeaponByTpl(sessionId, weaponTpl, equipmentSlot, botTemplateInventory, weaponParentId, modChances, botGenerationDetails, tierNumber, botLevel, hasBothPrimary, questData);
+        }
+        
+        var questWeaponTpl = (hasBothPrimary && botGenerationDetails.IsPmc)
+            ? PickQuestWeightedWeaponTemplateFromPoolWithBothPrimary(equipmentSlot, botTemplateInventory, botGenerationDetails.Role, tierNumber, questData)
+            : PickQuestWeightedWeaponTemplateFromPool(equipmentSlot, botTemplateInventory, botGenerationDetails.Role, tierNumber, questData);
+        return GenerateWeaponByTpl(sessionId, questWeaponTpl, equipmentSlot, botTemplateInventory, weaponParentId, modChances, botGenerationDetails, tierNumber, botLevel, hasBothPrimary, questData);
     }
 
     /// <summary>
@@ -107,9 +106,9 @@ public class CustomBotWeaponGenerator(
     /// <param name="equipmentSlot">Primary/secondary/holster</param>
     /// <param name="botTemplateInventory">e.g. assault.json</param>
     /// <returns>Weapon template</returns>
-    public MongoId PickWeightedWeaponTemplateFromPool(string equipmentSlot, BotTypeInventory botTemplateInventory, string botRole, int tierNumber)
+    private MongoId PickWeightedWeaponTemplateFromPool(string equipmentSlot, BotTypeInventory botTemplateInventory, string botRole, int tierNumber)
     {
-        if (equipmentSlot == "SecondPrimaryWeapon" || equipmentSlot == "FirstPrimaryWeapon")
+        if (equipmentSlot is "SecondPrimaryWeapon" or "FirstPrimaryWeapon")
         {
             var mapWeightings = ModConfig.Config.GeneralConfig.MapRangeWeighting[RaidInformation.RaidLocation].ToDictionary();
             var rangeType = weightedRandomHelper.GetWeightedValue<string>(mapWeightings);
@@ -120,6 +119,82 @@ public class CustomBotWeaponGenerator(
             logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
         }
 
+        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, key);
+        return weightedRandomHelper.GetWeightedValue(weaponPool);
+    }
+    
+    private MongoId PickWeightedWeaponTemplateFromPoolWithBothPrimary(string equipmentSlot, BotTypeInventory botTemplateInventory, string botRole, int tierNumber)
+    {
+        var rangeType = "ShortRange";
+        if (equipmentSlot is "FirstPrimaryWeapon")
+        {
+            if (RaidInformation.RaidLocation == "Woods") rangeType = "LongRange";
+            equipmentSlot += "_" + rangeType;
+        }
+        if (equipmentSlot is "SecondPrimaryWeapon")
+        {
+            if (RaidInformation.RaidLocation != "Woods") rangeType = "LongRange";
+            equipmentSlot += "_" + rangeType;
+        }
+        if (!Enum.TryParse(equipmentSlot, out ApbsEquipmentSlots key))
+        {
+            logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
+        }
+        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, key);
+        return weightedRandomHelper.GetWeightedValue(weaponPool);
+    }
+    private MongoId PickQuestWeightedWeaponTemplateFromPool(string equipmentSlot, BotTypeInventory botTemplateInventory, string botRole, int tierNumber, QuestData questData)
+    {
+        var newEquipmentPool = new Dictionary<MongoId, double>();
+        foreach (var itemTpl in (List<string>)questData["PrimaryWeapon"])
+        {
+            newEquipmentPool.TryAdd(itemTpl, 1);
+        }
+        return weightedRandomHelper.GetWeightedValue(newEquipmentPool);
+    }
+    
+    private MongoId PickQuestWeightedWeaponTemplateFromPoolWithBothPrimary(string equipmentSlot, BotTypeInventory botTemplateInventory, string botRole, int tierNumber, QuestData questData)
+    {
+        var newEquipmentPool =  new Dictionary<MongoId, double>();
+        if (questData.QuestName == "Fishing Gear")
+        {
+            if (equipmentSlot is "SecondPrimaryWeapon")
+            {
+                foreach (var itemTpl in (List<string>)questData["PrimaryWeapon"])
+                {
+                    newEquipmentPool.TryAdd(itemTpl, 1);
+                }
+                return weightedRandomHelper.GetWeightedValue(newEquipmentPool);
+            }
+            var likelyShoreline = ModConfig.Config.GeneralConfig.MapRangeWeighting[RaidInformation.RaidLocation].ToDictionary();
+            var questRange = weightedRandomHelper.GetWeightedValue<string>(likelyShoreline);
+            equipmentSlot += "_" + questRange;
+            if (!Enum.TryParse(equipmentSlot, out ApbsEquipmentSlots questKey))
+            {
+                logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
+            }
+            var questWeaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, questKey);
+            return weightedRandomHelper.GetWeightedValue(questWeaponPool);
+        }
+        
+        var rangeType = "LongRange";
+        if (questData.RequiredEquipmentSlots.Contains("ShortRange")) rangeType = "ShortRange";
+        if (equipmentSlot is "FirstPrimaryWeapon")
+        {
+            foreach (var itemTpl in (List<string>)questData["PrimaryWeapon"])
+            {
+                newEquipmentPool.TryAdd(itemTpl, 1);
+            }
+            return weightedRandomHelper.GetWeightedValue(newEquipmentPool);
+        }
+        if (equipmentSlot is "SecondPrimaryWeapon")
+        {
+            equipmentSlot += "_" + rangeType;
+        }
+        if (!Enum.TryParse(equipmentSlot, out ApbsEquipmentSlots key))
+        {
+            logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
+        }
         var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, key);
         return weightedRandomHelper.GetWeightedValue(weaponPool);
     }
@@ -254,7 +329,7 @@ public class CustomBotWeaponGenerator(
                 WeaponStats = new WeaponStats(),
                 ConflictingItemTpls = [],
             };
-            weaponWithModsArray = customBotEquipmentModGenerator.GenerateModsForWeapon(sessionId, generateWeaponModsRequest);
+            weaponWithModsArray = customBotEquipmentModGenerator.GenerateModsForWeapon(sessionId, generateWeaponModsRequest, questData, weaponTpl);
         }
 
         // Use weapon preset from globals.json if weapon isn't valid

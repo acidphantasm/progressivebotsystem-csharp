@@ -102,7 +102,7 @@
     },{
       "isQuestEnabled": true,
       "questName": "Punisher Part 1",
-      "requiredMap": [],
+      "requiredMap": [ "shoreline" ],
       "requiredWeaponMods": [],
       "requiredWeaponModSlots": [],
       "requiredWeaponModBaseClasses": [],

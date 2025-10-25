@@ -1,16 +1,14 @@
 ﻿using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Utils;
-using HarmonyLib.Tools;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 
-namespace SPTarkov.Server.Core.Generators.WeaponGen;
+namespace _progressiveBotSystem.Generators.WeaponGen;
 
 [Injectable]
 public class ApbsInventoryMagGen()

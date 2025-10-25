@@ -446,7 +446,7 @@ public class CustomBotEquipmentModGenerator(
     /// <param name="sessionId">Session id</param>
     /// <param name="request">Data used to generate the weapon</param>
     /// <returns>Weapon + mods array</returns>
-    public List<Item> GenerateModsForWeapon(MongoId sessionId, GenerateWeaponRequest request)
+    public List<Item> GenerateModsForWeapon(MongoId sessionId, GenerateWeaponRequest request, QuestData? questData, string weaponTpl)
     {
         if (request.ParentTemplate.HasNoSlotsCartridgesOrChambers())
         {
@@ -510,6 +510,23 @@ public class CustomBotEquipmentModGenerator(
 
             // Check spawn chance of mod
             var modSpawnResult = ShouldModBeSpawned(modsParentSlot, modSlot, request.ModSpawnChances, botEquipConfig);
+
+            if (questData is not null && !itemHelper.IsOfBaseclasses(weaponTpl, [BaseClasses.PISTOL, BaseClasses.REVOLVER]))
+            {
+                if (questData.RequiredWeaponModSlots.Contains(modSlot))
+                {
+                    if (questData.PrimaryWeapon.Contains(weaponTpl) || questData.PrimaryWeapon.Count != 0)
+                    {
+                        modSpawnResult = ModSpawn.SPAWN;
+                    }
+                }
+
+                if (!questData.RequiredWeaponModSlots.Contains(modSlot) && questData.QuestName == "Fishing Gear" &&
+                    questData.PrimaryWeapon.Contains(weaponTpl))
+                {
+                    modSpawnResult = ModSpawn.SKIP;
+                }
+            }
             if (modSpawnResult == ModSpawn.SKIP)
             {
                 continue;
@@ -532,7 +549,7 @@ public class CustomBotEquipmentModGenerator(
                 ConflictingItemTpls = request.ConflictingItemTpls,
                 BotData = request.BotData,
             };
-            var modToAdd = ChooseModToPutIntoSlot(modToSpawnRequest);
+            var modToAdd = ChooseModToPutIntoSlot(modToSpawnRequest, questData, weaponTpl);
 
             // Compatible mod not found
             if (modToAdd is null)
@@ -712,7 +729,7 @@ public class CustomBotEquipmentModGenerator(
                         ConflictingItemTpls = request.ConflictingItemTpls,
                     };
                     // Call self recursively to add mods to this mod
-                    GenerateModsForWeapon(sessionId, recursiveRequestData);
+                    GenerateModsForWeapon(sessionId, recursiveRequestData, questData, weaponTpl);
                 }
             }
         }
@@ -972,7 +989,7 @@ public class CustomBotEquipmentModGenerator(
     /// </summary>
     /// <param name="request">Data used to choose an appropriate mod with</param>
     /// <returns>itemHelper.getItem() result</returns>
-    public KeyValuePair<bool, TemplateItem>? ChooseModToPutIntoSlot(ModToSpawnRequest request)
+    public KeyValuePair<bool, TemplateItem>? ChooseModToPutIntoSlot(ModToSpawnRequest request, QuestData? questData, string weaponTpl)
     {
         // Slot mod will fill
         var parentSlot = request.ParentTemplate.Properties.Slots?.FirstOrDefault(i => i.Name == request.ModSlot);
@@ -1041,6 +1058,49 @@ public class CustomBotEquipmentModGenerator(
             modPool = GetFilteredMagazinePoolByCapacity(request, modPool).ToHashSet();
         }
 
+        if (questData is not null)
+        {
+            if (questData.QuestName != "Fishing Gear")
+            {
+                if (questData.PrimaryWeapon.Contains(weaponTpl) && questData.RequiredWeaponMods.Count != 0 &&
+                    (questData.RequiredWeaponModSlots.Contains(request.ModSlot) ||
+                     request.ModSlot.Contains("mod_scope_")))
+                {
+                    var newModPool = GetModPoolForSpecificSlots(request.ParentTemplate, questData, request.ModSlot);
+                    if (newModPool.Count != 0) modPool = newModPool;
+                }
+
+                if (!itemHelper.IsOfBaseclasses(weaponTpl, [BaseClasses.PISTOL, BaseClasses.REVOLVER]) &&
+                    questData.RequiredWeaponModBaseClasses.Contains(BaseClasses.SILENCER))
+                {
+                    if (request.ModSlot == modBarrelKey && questData.RequiredWeaponModSlots.Contains("mod_muzzle"))
+                    {
+                        var barrelModPool = GetBarrelModsForSilencer(request.ParentTemplate);
+                        if (barrelModPool.Count != 0) modPool = barrelModPool;
+                    }
+
+                    if (request.ModSlot == "mod_muzzle" && questData.RequiredWeaponModSlots.Contains("mod_muzzle"))
+                    {
+                        var muzzleModPool = GetMuzzleModsForSilencer(request.ParentTemplate);
+                        if (muzzleModPool.Count != 0) modPool = muzzleModPool;
+                    }
+                }
+            }
+            else if (questData.QuestName == "Fishing Gear" && questData.PrimaryWeapon.Contains(weaponTpl))
+            {
+                modPool = request.ModSlot switch
+                {
+                    "mod_stock" => [ItemTpl.STOCK_SV98_WOODEN],
+                    "mod_bipod" => [ItemTpl.BIPOD_SV98],
+                    "mod_muzzle" => [ItemTpl.FLASHHIDER_SV98_762X54R_MUZZLE_DEVICE],
+                    "mod_tactical" => [ItemTpl.AUXILIARYMOD_SV98_ANTIHEAT_RIBBON],
+                    "mod_sight_rear" => [ItemTpl.IRONSIGHT_SV98_REAR_SIGHT],
+                    "mod_magazine" => [ItemTpl.MAGAZINE_762X54R_SV98_10RND],
+                    _ => modPool
+                };
+            }
+        }
+
         // Pick random mod that's compatible
         var chosenModResult = GetCompatibleWeaponModTplForSlotFromPool(
             request,
@@ -1093,6 +1153,151 @@ public class CustomBotEquipmentModGenerator(
         }
 
         return itemHelper.GetItem(chosenModResult.ChosenTemplate.Value);
+    }
+
+    private HashSet<MongoId>? GetBarrelModsForSilencer(TemplateItem requestParentTemplate)
+    {
+        var barrelModPool = new List<MongoId>();
+        // Get the mod_barrel slot data
+        var modSlot = requestParentTemplate.Properties.Slots.FirstOrDefault(slot => slot.Name == "mod_barrel");
+        if (modSlot is not null)
+        {
+            // Get all possible valid mods in that slot
+            var modSlotPool = modSlot.Properties.Filters.Where(slotFilter => slotFilter.Filter is not null).SelectMany(filterIndex => filterIndex.Filter).Where(templateId => itemHelper.GetItem(templateId).Value is not null).ToList() ?? [];
+            if (modSlotPool.Count != 0)
+            {
+                var childrenWithMuzzleDevices = modSlotPool.Where(templateId => itemHelper.GetItem(templateId).Value.Properties.Slots.Any(slot => slot.Name == "mod_muzzle")).ToList();
+                if (childrenWithMuzzleDevices.Count > 0)
+                {
+                    barrelModPool.AddRange(childrenWithMuzzleDevices);
+                    return barrelModPool.ToHashSet();
+                }
+            }
+        }
+        return null;
+    }
+
+    private HashSet<MongoId> GetMuzzleModsForSilencer(TemplateItem parentTemplate)
+    {
+        var muzzleModPool = new List<MongoId>();
+
+        // Get the mod_muzzle slot data
+        var modSlot = parentTemplate.Properties.Slots.FirstOrDefault(slot => slot.Name == "mod_muzzle");
+        if (modSlot is not null)
+        {
+            // Get all possible valid mods in that slot
+            var modSlotPool = modSlot.Properties.Filters.Where(slotFilter => slotFilter.Filter is not null).SelectMany(filterIndex => filterIndex.Filter).Where(templateId => itemHelper.GetItem(templateId).Value is not null).ToList() ?? [];
+            if (modSlotPool.Count != 0)
+            {
+                // Filter for muzzle devices
+                var allMuzzles = modSlotPool.Where(tpl => itemHelper.IsOfBaseclass(tpl, BaseClasses.MUZZLE)).ToList();
+                foreach (var tpl in allMuzzles)
+                {
+                    var itemData = itemHelper.GetItem(tpl).Value;
+
+                    // Push silencers immediately
+                    if (itemHelper.IsOfBaseclass(itemData.Id, BaseClasses.SILENCER))
+                    {
+                        muzzleModPool.Add(itemData.Id);
+                        continue;
+                    }
+
+                    // Recursively check if it or its children can accept a silencer
+                    if (CanHoldSilencer(itemData))
+                    {
+                        if (!muzzleModPool.Contains(itemData.Id))
+                            muzzleModPool.Add(itemData.Id);
+                    }
+                }
+            }
+        }
+        return muzzleModPool.ToHashSet();
+    }
+
+    private bool CanHoldSilencer(TemplateItem parentTemplate)
+    {
+        var muzzleSlot = parentTemplate.Properties?.Slots?.FirstOrDefault(slot => slot.Name == "mod_muzzle");
+        if (muzzleSlot is not null)
+        {
+            var candidateIds = muzzleSlot.Properties.Filters.Where(slotFilter => slotFilter.Filter is not null).SelectMany(filterIndex => filterIndex.Filter).Where(tpl => itemHelper.GetItem(tpl).Value is not null).ToList() ?? [];
+
+            // Filter for items that are silencers or can hold them
+            foreach (var tpl in candidateIds)
+            {
+                if (itemHelper.IsOfBaseclasses(tpl, [BaseClasses.SILENCER, BaseClasses.MUZZLE_COMBO]))
+                    return true;
+
+                var childItem = itemHelper.GetItem(tpl).Value;
+                if (CanHoldSilencer(childItem))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private HashSet<MongoId>? GetModPoolForSpecificSlots(TemplateItem requestParentTemplate, QuestData questData, string requestModSlot)
+    {
+        // Determine banned slots
+        var bannedSlots = requestModSlot.Contains("mod_scope") ? new List<string> { "mod_mount", "mod_scope_001" } : new List<string>();
+        var modPoolToReturn = new List<MongoId>();
+
+        // Find the requested slot in the parent
+        var slot = requestParentTemplate.Properties?.Slots?.FirstOrDefault(slot => slot.Name == requestModSlot);
+
+        if (slot is not null)
+        {
+            // Get all possible mods for this slot
+            var parentModPool = slot.Properties.Filters.Where(slotFilter => slotFilter.Filter is not null).SelectMany(slotFilter => slotFilter.Filter).Where(templateId => itemHelper.GetItem(templateId).Value is not null).ToList();
+            foreach (var tpl in parentModPool)
+            {
+                var item = itemHelper.GetItem(tpl).Value;
+                if (item is null) continue;
+
+                // Skip banned slots
+                bool hasBannedSlot = item.Properties?.Slots?.Any(s => bannedSlots.Contains(s.Name)) == true;
+                if (hasBannedSlot)
+                    continue;
+
+                // Check if this item or its children contain a required weapon mod
+                if (ContainsRequiredMod(item, questData))
+                {
+                    if (!modPoolToReturn.Contains(item.Id))
+                        modPoolToReturn.Add(item.Id);
+                }
+            }
+        }
+
+        return modPoolToReturn.ToHashSet();
+    }
+    
+    private bool ContainsRequiredMod(TemplateItem item, QuestData questData)
+    {
+        if (questData.RequiredWeaponMods.Contains(item.Id))
+            return true;
+
+        var slots = item.Properties?.Slots ?? new List<Slot>();
+        foreach (var slot in slots)
+        {
+            var filters = slot.Properties?.Filters?.FirstOrDefault()?.Filter;
+            if (filters is not null)
+            {
+                
+                foreach (var tpl in filters)
+                {
+                    var child = itemHelper.GetItem(tpl).Value;
+                    if (child == null)
+                        continue;
+
+                    // If a required mod is found directly or within its children
+                    if (questData.RequiredWeaponMods.Contains(tpl) ||
+                        ContainsRequiredMod(child, questData))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /// <summary>

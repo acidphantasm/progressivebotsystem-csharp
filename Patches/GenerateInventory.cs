@@ -36,6 +36,7 @@ public class GenerateInventory_Patch : AbstractPatch
         var randomUtil = ServiceLocator.ServiceProvider.GetService<RandomUtil>();
         var apbsLogger = ServiceLocator.ServiceProvider.GetService<ApbsLogger>();
         var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
+        var customBotLootGenerator = ServiceLocator.ServiceProvider.GetService<CustomBotLootGenerator>();
         
         if (botActivityHelper is null || !botActivityHelper.IsBotEnabled(botGenerationDetails.Role)) return true;
 
@@ -47,7 +48,7 @@ public class GenerateInventory_Patch : AbstractPatch
             botEquipmentHelper is null ||
             randomUtil is null)
         {
-            Console.WriteLine("Generate Inventory Failed");
+            apbsLogger.Error("Generate Inventory Patch Failed - Generating Vanilla Bot");
             return true;
         }
         
@@ -97,7 +98,7 @@ public class GenerateInventory_Patch : AbstractPatch
         customBotInventoryGenerator.GenerateAndAddEquipmentToBot(botId, sessionId, templateInventory, chances, botInventory, botGenerationDetails, raidConfig, tierNumber, questData);
         customBotInventoryGenerator.GenerateAndAddWeaponsToBot(botId, templateInventory, chances, sessionId, botInventory, botGenerationDetails, generation, tierNumber, questData);
         
-        botLootGenerator.GenerateLoot(botId, sessionId, botJsonTemplate, botGenerationDetails, botInventory);
+        customBotLootGenerator.GenerateLoot(botId, sessionId, botJsonTemplate, botGenerationDetails, botInventory, botGenerationDetails.BotLevel, tierNumber);
         
         if (botGenerationDetails.ClearBotContainerCacheAfterGeneration)
         {

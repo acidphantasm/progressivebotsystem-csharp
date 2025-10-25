@@ -42,8 +42,12 @@ public class ApbsLogger
         }
     }
         
-    public void Warning(string message1, string message2 = "", string message3 = "", string message4 = "", string message5 = "", string message6 = "", string message7 = "", string message8 = "") => EnqueueLog(new LogMessage { Timestamp = DateTime.Now, Level = "WARNING", Message = CreateMessage(Logging.Warning, message1, message2, message3, message4, message5, message6, message7, message8) });
-    public void Error(string message1, string message2 = "", string message3 = "", string message4 = "", string message5 = "", string message6 = "", string message7 = "", string message8 = "") => EnqueueLog(new LogMessage { Timestamp = DateTime.Now, Level = "ERROR", Message = CreateMessage(Logging.Error, message1, message2, message3, message4, message5, message6, message7, message8) });
+    public void Warning(string message1, string message2 = "", string message3 = "", string message4 = "",
+        string message5 = "", string message6 = "", string message7 = "", string message8 = "") 
+        => EnqueueLog(new LogMessage { Timestamp = DateTime.Now, Level = "WARNING", Message = CreateMessage(Logging.Warning, message1, message2, message3, message4, message5, message6, message7, message8) });
+    public void Error(string message1, string message2 = "", string message3 = "", string message4 = "", 
+        string message5 = "", string message6 = "", string message7 = "", string message8 = "") 
+        => EnqueueLog(new LogMessage { Timestamp = DateTime.Now, Level = "ERROR", Message = CreateMessage(Logging.Error, message1, message2, message3, message4, message5, message6, message7, message8) });
     
     private void EnqueueLog(LogMessage message)
     {

@@ -42,4 +42,31 @@ public class QuestData
     public int MinLevel { get; set; }
     [JsonPropertyName("maxLevel")]
     public int MaxLevel { get; set; }
+    
+    public object this[string key]
+    {
+        get => key switch
+        {
+            nameof(IsQuestEnabled) => IsQuestEnabled,
+            nameof(QuestName) => QuestName,
+            nameof(RequiredMap) => RequiredMap,
+            nameof(RequiredWeaponMods) => RequiredWeaponMods,
+            nameof(RequiredWeaponModSlots) => RequiredWeaponModSlots,
+            nameof(RequiredWeaponModBaseClasses) => RequiredWeaponModBaseClasses,
+            nameof(RequiredEquipmentSlots) => RequiredEquipmentSlots,
+            nameof(Headwear) => Headwear,
+            nameof(Earpiece) => Earpiece,
+            nameof(FaceCover) => FaceCover,
+            nameof(ArmorVest) => ArmorVest,
+            nameof(Eyewear) => Eyewear,
+            nameof(TacticalVest) => TacticalVest,
+            nameof(Backpack) => Backpack,
+            nameof(PrimaryWeapon) => PrimaryWeapon,
+            nameof(Holster) => Holster,
+            nameof(Scabbard) => Scabbard,
+            nameof(MinLevel) => MinLevel,
+            nameof(MaxLevel) => MaxLevel,
+            _ => throw new KeyNotFoundException($"Property '{key}' not found")
+        };
+    }
 }

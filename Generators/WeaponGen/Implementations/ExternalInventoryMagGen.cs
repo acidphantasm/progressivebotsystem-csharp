@@ -12,7 +12,7 @@ using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
-namespace SPTarkov.Server.Core.Generators.WeaponGen.Implementations;
+namespace _progressiveBotSystem.Generators.WeaponGen.Implementations;
 
 [Injectable]
 public class ApbsExternalInventoryMagGen(
