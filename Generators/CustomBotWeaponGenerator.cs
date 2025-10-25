@@ -295,9 +295,14 @@ public class CustomBotWeaponGenerator(
             )
             .ToList();
 
-        // Chance to add randomised weapon enhancement
-        if (botGenerationDetails.IsPmc && randomUtil.GetChance100(PMCConfig.WeaponHasEnhancementChancePercent))
-        // Add buff to weapon root
+        var weaponEnhancementChance = 0;
+        if (Pmcs.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.PmcBots.WeaponDurability.EnhancementChance;
+        if (Scavs.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance;
+        if (Bosses.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.BossBots.WeaponDurability.EnhancementChance;
+        if (Followers.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.FollowerBots.WeaponDurability.EnhancementChance;
+        if (Specials.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.SpecialBots.WeaponDurability.EnhancementChance;
+
+        if (randomUtil.GetChance100(weaponEnhancementChance))
         {
             repairService.AddBuff(RepairConfig.RepairKit.Weapon, weaponWithModsArray[0]);
         }
