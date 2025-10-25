@@ -90,6 +90,16 @@ public class StaticRouterHooks : StaticRouter
                 ) =>
                 {
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/game/start");
+                    try
+                    {
+                        var fullProfile =
+                            ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
+                        RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped;
+                    }
+                    catch (Exception ex)
+                    {
+                        _apbsLogger.Error("Game Start Router hook failed.");
+                    }
                     return output;
                 }),
             
@@ -103,6 +113,16 @@ public class StaticRouterHooks : StaticRouter
                 ) =>
                 {
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/profile/status");
+                    try
+                    {
+                        var fullProfile =
+                            ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
+                        RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped;
+                    }
+                    catch (Exception ex)
+                    {
+                        _apbsLogger.Error("Game Start Router hook failed.");
+                    }
                     return output;
                 })
         ];

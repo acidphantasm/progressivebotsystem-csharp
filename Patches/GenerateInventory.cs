@@ -37,7 +37,9 @@ public class GenerateInventory_Patch : AbstractPatch
         var apbsLogger = ServiceLocator.ServiceProvider.GetService<ApbsLogger>();
         var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
         var customBotLootGenerator = ServiceLocator.ServiceProvider.GetService<CustomBotLootGenerator>();
-        
+
+        if (RaidInformation.FreshProfile is null) return true;
+        if (RaidInformation.FreshProfile.Value) return true;
         if (botActivityHelper is null || !botActivityHelper.IsBotEnabled(botGenerationDetails.Role)) return true;
 
         if (customBotInventoryGenerator is null ||

@@ -20,10 +20,10 @@
     </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="SPTarkov.Common" Version="4.0.2-pre.202510202154" />
-    <PackageReference Include="SPTarkov.DI" Version="4.0.2-pre.202510202154" />
-    <PackageReference Include="SPTarkov.Reflection" Version="4.0.2-pre.202510202154" />
-    <PackageReference Include="SPTarkov.Server.Core" Version="4.0.2-pre.202510202154" />
+    <PackageReference Include="SPTarkov.Common" Version="4.0.1" />
+    <PackageReference Include="SPTarkov.DI" Version="4.0.1" />
+    <PackageReference Include="SPTarkov.Reflection" Version="4.0.1" />
+    <PackageReference Include="SPTarkov.Server.Core" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>

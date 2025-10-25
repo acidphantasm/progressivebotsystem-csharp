@@ -41,13 +41,15 @@ public class GenerateBotLevel : AbstractPatch
         _tierHelper ??= ServiceLocator.ServiceProvider.GetService<TierHelper>();
 
         if (_databaseService is null || _randomUtil is null || _profileHelper is null) return true;
+        if (RaidInformation.FreshProfile is not null && RaidInformation.FreshProfile.Value) return true;
+        if (RaidInformation.FreshProfile is null) return true;
         
         if (botGenerationDetails.IsPlayerScav)
         {
-            var scavLevel = _profileHelper.GetPmcProfile(RaidInformation.CurrentSessionId)?.Info?.Level ?? 1;
-            var scavExp = _profileHelper.GetExperience(scavLevel);
-            bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel));
-            bot.Info.PrestigeLevel = SetBotPrestigeInfo(scavLevel, botGenerationDetails);
+            var scavLevel = _profileHelper.GetPmcProfile(RaidInformation.CurrentSessionId)?.Info?.Level;
+            var scavExp = _profileHelper.GetExperience(scavLevel.Value);
+            bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel.Value));
+            bot.Info.PrestigeLevel = SetBotPrestigeInfo(scavLevel.Value, botGenerationDetails);
             __result = new RandomisedBotLevelResult { Exp = scavExp, Level = scavLevel };
             return false;
         }
