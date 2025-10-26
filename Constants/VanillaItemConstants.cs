@@ -30,12 +30,13 @@ public class VanillaItemConstants
 
     public static readonly List<MongoId> LabyrinthKeys = new List<MongoId>
     {
-        "679baa2c61f588ae2b062a24",
-        "679baa4f59b8961f370dd683",
-        "679baa5a59b8961f370dd685",
-        "679baa9091966fe40408f149",
-        "67ab3d4b83869afd170fdd3f",
-        "679bab714e9ca6b3d80586b4",
-        "678fa929819ddc4c350c0317"
+        "679baa2c61f588ae2b062a24", // Key 01
+        "679baa4f59b8961f370dd683", // Key 02
+        "679baa5a59b8961f370dd685", // Key 03
+        "679baa9091966fe40408f149", // Key 04
+        "67ab3d4b83869afd170fdd3f", // BBQ-S43 Gas Torch
+        "679bab714e9ca6b3d80586b4", // Corpse Room Key
+        "678fa929819ddc4c350c0317", // Valve Handwheel
+        "67e183377c6c2011970f3149"  // Ariadne key
     };
 }
