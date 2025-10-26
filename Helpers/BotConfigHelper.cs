@@ -266,8 +266,8 @@ public class BotConfigHelper : IOnLoad
             !ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs) return;
 
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Key Loot");
-        var assaultType = _databaseService.GetBots().Types.TryGetValue("assault", out var assaultBot);
-        var marksmanType = _databaseService.GetBots().Types.TryGetValue("marksman", out var marksmanBot);
+        _databaseService.GetBots().Types.TryGetValue("assault", out var assaultBot);
+        _databaseService.GetBots().Types.TryGetValue("marksman", out var marksmanBot);
 
         var itemValueCollection = _databaseService.GetItems().Values;
         var filteredKeyItems = itemValueCollection.Where(item => _itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()));
@@ -276,6 +276,8 @@ public class BotConfigHelper : IOnLoad
         var marksmanBotCount = 0;
         foreach (var item in filteredKeyItems ?? [])
         {
+            if (VanillaItemConstants.LabyrinthKeys.Contains(item.Id)) continue;
+            
             if (assaultBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var assaultItemWeight)) assaultItemWeight = 1;
             else
             {
