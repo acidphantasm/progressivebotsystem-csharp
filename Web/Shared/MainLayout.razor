@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using _progressiveBotSystem.Models.Enums
+@inherits LayoutComponentBase
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -25,8 +26,8 @@
                 </MudButton>
             </MudOverlay>
             <MudSpacer/>
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Inherit" OnClick="@((e) => RefreshData())">Reload config</MudButton>
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Inherit" OnClick="@((e) => SaveData())">Save config</MudButton>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Inherit" OnClick="@((e) => RefreshData())" Disabled="_isReloading">Reload Config</MudButton>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Inherit" OnClick="@((e) => SaveData())" Disabled="_isSaving">Save Config</MudButton>
         </MudAppBar>
         <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Temporary" Breakpoint="Breakpoint.None">
             <MudDrawerHeader>
@@ -161,10 +162,11 @@
 
 @code {
     bool _drawerOpen = false;
-
     public bool _isInRaid = false;
-
     static bool _unsavedChanges = false;
+    
+    private static bool _isSaving = false;
+    private static bool _isReloading = false;
     
     public static bool _appUndoButtonToggle
     {
@@ -234,56 +236,58 @@
     }
     private async Task SaveData()
     {
-        var taskRan = Task.Run(ModConfig.SaveConfig);
-        await taskRan;
-        if (taskRan.Result && taskRan.IsCompletedSuccessfully)
+        try
         {
-            Snackbar.Add("Config saved", Severity.Info, config => { config.ShowCloseIcon = false; });
-            pendingChanges.Clear();
-            Utils.callerList.Clear();
-            _unsavedChanges = false;
-        }
-        else if (taskRan.Result)
-        {
-            Snackbar.Add("Config failed to save", Severity.Error, config => { config.ShowCloseIcon = false; });
-        }
-        else
-        {
-            Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
-            _isInRaid = true;
-        }
-        
-        StateHasChanged();
-    }
-    private async Task RefreshData()
-    {
-        if (!_unsavedChanges && pendingChanges.Count == 0)
-        {
-            var taskRan = Task.Run(ModConfig.ReloadConfig);
-            await taskRan;
-            if (taskRan.Result && taskRan.IsCompletedSuccessfully)
+            _isSaving = true;
+            StateHasChanged();
+
+            var result = await ModConfig.SaveConfig();
+
+            StateHasChanged();
+            switch (result)
             {
-                _isInRaid = false;
-                Snackbar.Add("Config reloaded", Severity.Info, config => { config.ShowCloseIcon = false; });
-                _unsavedChanges = false;
-                pendingChanges.Clear();
-                Utils.callerList.Clear();
+                case ConfigOperationResult.Success:
+                    Snackbar.Add("Config saved successfully.", Severity.Info, config => { config.ShowCloseIcon = false; });
+                    pendingChanges.Clear();
+                    Utils.callerList.Clear();
+                    _unsavedChanges = false;
+                    _isInRaid = false;
+                    break;
+                case ConfigOperationResult.InRaid:
+                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
+                    _isInRaid = true;
+                    break;
+                case ConfigOperationResult.ActiveProcess:
+                    Snackbar.Add("Another save/load operation is still running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
+                    break;
+                case ConfigOperationResult.Failure:
+                default:
+                    Snackbar.Add("Config failed to save.", Severity.Error, config => { config.ShowCloseIcon = false; });
+                    break;
             }
-            else if (taskRan.Result)
-            {
-                Snackbar.Add("Config failed to reload", Severity.Error, config => { config.ShowCloseIcon = false; });
-            }
-            else
-            {
-                Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
-                _isInRaid = true;
-            }
-        
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+        finally
+        {
+            _isSaving = false;
             StateHasChanged();
         }
-        else
+    }
+    
+    private async Task RefreshData()
+    {
+        if (_unsavedChanges || pendingChanges.Count > 0)
         {
-            var changeCount = pendingChanges.Count > 1 ? $"{pendingChanges.Count} unsaved changes" : $"{pendingChanges.Count} unsaved change";
+            var changeCount = pendingChanges.Count switch
+            {
+                > 1 => $"{pendingChanges.Count} unsaved changes",
+                1 => "1 unsaved change",
+                _ => "unsaved changes"
+            };
+
             var parameters = new DialogParameters<RefreshWarningDialog>
             {
                 { x => x.ChangeList, pendingChanges },
@@ -291,21 +295,66 @@
                 { x => x.Color, Color.Secondary }
             };
 
-            var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
 
             var dialog = await DialogService.ShowAsync<RefreshWarningDialog>($"You have {changeCount}.", parameters, options);
             var result = await dialog.Result;
 
-            if (result != null)
+            if (result is not null && !result.Canceled)
+                await DiscardChangesAndReload();
+
+            return;
+        }
+
+        try
+        {
+            _isReloading = true;
+            StateHasChanged();
+
+            var result = await ModConfig.ReloadConfig();
+            StateHasChanged();
+
+            switch (result)
             {
-                if (!result.Canceled) DiscardChangesAndReload();
-            }            
+                case ConfigOperationResult.Success:
+                    Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
+                    _isInRaid = false;
+                    _unsavedChanges = false;
+                    pendingChanges.Clear();
+                    Utils.callerList.Clear();
+                    break;
+                case ConfigOperationResult.InRaid:
+                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    _isInRaid = true;
+                    break;
+                case ConfigOperationResult.ActiveProcess:
+                    Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    break;
+                case ConfigOperationResult.Failure:
+                default:
+                    Snackbar.Add("Config failed to reload.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+        }
+        finally
+        {
+            _isReloading = false;
+            StateHasChanged();
         }
     }
 
     private async Task ShowPendingChanges()
     {
-        var changeCount = pendingChanges.Count > 1 ? $"{pendingChanges.Count} unsaved changes" : $"{pendingChanges.Count} unsaved change";
+        var changeCount = pendingChanges.Count switch
+        {
+            > 1 => $"{pendingChanges.Count} changes",
+            1 => "1 change",
+            _ => "changes"
+        };
         var parameters = new DialogParameters<RefreshWarningDialog>
             {
                 { x => x.ChangeList, pendingChanges },
@@ -321,28 +370,54 @@
 
     private async Task DiscardChangesAndReload()
     {
-        var changeCount = pendingChanges.Count > 1 ? $"{pendingChanges.Count} changes" : $"{pendingChanges.Count} change";
-        var taskRan = Task.Run(ModConfig.ReloadConfig);
-        await taskRan;
-        if (taskRan.Result && taskRan.IsCompletedSuccessfully)
+        var changeCount = pendingChanges.Count switch
         {
-            _isInRaid = false;
-            Snackbar.Add($"{changeCount} discarded", Severity.Warning, config => { config.ShowCloseIcon = false; });
-            pendingChanges.Clear();
-            Utils.callerList.Clear();
-            _unsavedChanges = false;
-        }
-        else if (taskRan.Result)
+            > 1 => $"{pendingChanges.Count} changes",
+            1 => "1 change",
+            _ => "changes"
+        };
+
+        try
         {
-            Snackbar.Add("Config failed to reload", Severity.Error, config => { config.ShowCloseIcon = false; });
+            _isReloading = true;
+            StateHasChanged();
+
+            var result = await ModConfig.ReloadConfig();
+
+            switch (result)
+            {
+                case ConfigOperationResult.Success:
+                    _isInRaid = false;
+                    Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    pendingChanges.Clear();
+                    Utils.callerList.Clear();
+                    _unsavedChanges = false;
+                    break;
+
+                case ConfigOperationResult.InRaid:
+                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    _isInRaid = true;
+                    break;
+
+                case ConfigOperationResult.ActiveProcess:
+                    Snackbar.Add("Another process is currently running. Try again later.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    break;
+
+                case ConfigOperationResult.Failure:
+                default:
+                    Snackbar.Add("Config failed to reload.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    break;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
-            _isInRaid = true;
+            Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, cfg => cfg.ShowCloseIcon = false);
         }
-        
-        StateHasChanged();
+        finally
+        {
+            _isReloading = false;
+            StateHasChanged();
+        }
     }
 
     private void RefreshPage()

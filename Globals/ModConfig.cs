@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
+using _progressiveBotSystem.Models.Enums;
 using _progressiveBotSystem.Utils;
 using _progressiveBotSystem.Web.Shared;
 using SPTarkov.DI.Annotations;
@@ -40,6 +41,9 @@ public class ModConfig : IOnLoad
     public static ApbsBlacklistConfig Blacklist { get; private set; } = null!;
     public static ApbsBlacklistConfig OriginalBlacklist { get; private set; } = null!;
 
+    private static int IsActivelyProcessingFlag = 0;
+
+
     public async Task OnLoad()
     {
         var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
@@ -55,40 +59,88 @@ public class ModConfig : IOnLoad
         if (Config.EnableDebugLog) _apbsLogger.Debug("ModConfig.OnLoad()");
     }
 
-    public static async Task<bool> ReloadConfig()
+    public static async Task<ConfigOperationResult> ReloadConfig()
     {
-        if (RaidInformation.IsInRaid) return false;
-        
-        var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
-        Config = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(pathToMod + "/config.json") ?? throw new ArgumentNullException();
-        OriginalConfig = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(pathToMod + "/config.json") ?? throw new ArgumentNullException();
-        
-        Blacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(pathToMod + "/blacklists.json") ?? throw new ArgumentNullException();
-        OriginalBlacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(pathToMod + "/blacklists.json") ?? throw new ArgumentNullException();
-        
-        var reapplied = Task.Run(() => _botConfigHelper.ReapplyConfig());
-        reapplied.Wait();
-        if (reapplied.IsCompletedSuccessfully) _apbsLogger.Warning("ModConfig Reloaded.");
+        if (Interlocked.CompareExchange(ref IsActivelyProcessingFlag, 1, 0) != 0)
+            return ConfigOperationResult.ActiveProcess;
 
-        return true;
+        try
+        {
+            if (RaidInformation.IsInRaid)
+                return ConfigOperationResult.InRaid;
+            
+            var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
+
+            var configPath = Path.Combine(pathToMod, "config.json");
+            var blacklistPath = Path.Combine(pathToMod, "blacklists.json");
+
+            var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(configPath);
+            var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(blacklistPath);
+
+            await Task.WhenAll(configTask, blacklistTask);
+
+            Config = configTask.Result ?? throw new ArgumentNullException(nameof(Config));
+            OriginalConfig = DeepClone(Config);
+            Blacklist = blacklistTask.Result ?? throw new ArgumentNullException(nameof(Blacklist));
+            OriginalBlacklist = DeepClone(Blacklist);
+
+            await Task.Run(() => _botConfigHelper.ReapplyConfig());
+
+            _apbsLogger.Warning("ModConfig reloaded successfully.");
+            return ConfigOperationResult.Success;
+        }
+        catch (Exception ex)
+        {
+            _apbsLogger.Error($"Failed to reload config: {ex.Message}");
+            return ConfigOperationResult.Failure;
+        }
+        finally
+        {
+            Interlocked.Exchange(ref IsActivelyProcessingFlag, 0);
+        }
     }
     
-    public static async Task<bool> SaveConfig()
+    public static async Task<ConfigOperationResult> SaveConfig()
     {
-        if (RaidInformation.IsInRaid) return false;
-        
-        var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
-        
-        var serializedConfig = _jsonUtil.Serialize<ApbsServerConfig>(Config, true);
-        await _fileUtil.WriteFileAsync(pathToMod + "/config.json", serializedConfig!);
-        
-        var serializedBlacklistConfig = _jsonUtil.Serialize<ApbsBlacklistConfig>(Blacklist, true);
-        await _fileUtil.WriteFileAsync(pathToMod + "/blacklists.json", serializedBlacklistConfig!);
-        
-        var reapplied = Task.Run(() => _botConfigHelper.ReapplyConfig());
-        reapplied.Wait();
-        if (reapplied.IsCompletedSuccessfully) _apbsLogger.Warning("ModConfig Saved.");
-        
-        return true;
+        if (Interlocked.CompareExchange(ref IsActivelyProcessingFlag, 1, 0) != 0)
+            return ConfigOperationResult.ActiveProcess;
+
+        try
+        {
+            if (RaidInformation.IsInRaid)
+                return ConfigOperationResult.InRaid;
+            
+            var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
+            var configPath = Path.Combine(pathToMod, "config.json");
+            var blacklistPath = Path.Combine(pathToMod, "blacklists.json");
+
+            var serializedConfigTask = Task.Run(() => _jsonUtil.Serialize(Config, true));
+            var serializedBlacklistTask = Task.Run(() => _jsonUtil.Serialize(Blacklist, true));
+            await Task.WhenAll(serializedConfigTask, serializedBlacklistTask);
+
+            var writeConfigTask = _fileUtil.WriteFileAsync(configPath, serializedConfigTask.Result!);
+            var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
+            await Task.WhenAll(writeConfigTask, writeBlacklistTask);
+
+            await Task.Run(() => _botConfigHelper.ReapplyConfig());
+
+            _apbsLogger.Warning("ModConfig saved successfully.");
+            return ConfigOperationResult.Success;
+        }
+        catch (Exception ex)
+        {
+            _apbsLogger.Error($"Failed to save config: {ex.Message}");
+            return ConfigOperationResult.Failure;
+        }
+        finally
+        {
+            Interlocked.Exchange(ref IsActivelyProcessingFlag, 0);
+        }
+    }
+    
+    private static T DeepClone<T>(T source)
+    {
+        var json = _jsonUtil.Serialize(source);
+        return _jsonUtil.Deserialize<T>(json)!;
     }
 }
