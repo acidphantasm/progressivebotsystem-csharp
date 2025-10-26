@@ -258,7 +258,7 @@
                     _isInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
-                    Snackbar.Add("Another save/load operation is still running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
+                    Snackbar.Add("Another process is already running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
                     break;
                 case ConfigOperationResult.Failure:
                 default:
@@ -400,7 +400,7 @@
                     break;
 
                 case ConfigOperationResult.ActiveProcess:
-                    Snackbar.Add("Another process is currently running. Try again later.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
                     break;
 
                 case ConfigOperationResult.Failure:
