@@ -24,6 +24,7 @@
     <PackageReference Include="SPTarkov.DI" Version="4.0.1" />
     <PackageReference Include="SPTarkov.Reflection" Version="4.0.1" />
     <PackageReference Include="SPTarkov.Server.Core" Version="4.0.1" />
+    <PackageReference Include="SPTarkov.Server.Web" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,10 +36,15 @@
     <None Include="release\SPT\user\mods\acidphantasm-reffriendlyquests\db\quests.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Include="wwwroot\images\background.jpg" />
+    <None Update="LICENSE">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Utils\Logger\" />
+    <Folder Include="Web\Resources\" />
   </ItemGroup>
 
 </Project>

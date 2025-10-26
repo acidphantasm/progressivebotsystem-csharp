@@ -92,7 +92,7 @@ public class ScavBotData
     public required ScavSpecificConfig AdditionalOptions { get; set; }
 }
 
-public class ApbsServerBlacklistConfig
+public class ApbsBlacklistConfig
 {
     [JsonPropertyName("weaponBlacklist")]
     public required TierBlacklistConfig WeaponBlacklist { get; set; }
@@ -271,6 +271,9 @@ public class MapRangeWeights
     [JsonPropertyName("TarkovStreets")]
     public required LongShortRange TarkovStreets { get; set; }
 
+    [JsonPropertyName("Labyrinth")]
+    public required LongShortRange Labyrinth { get; set; }
+
     private Dictionary<string, LongShortRange> ToDictionary() => new()
     {
         ["bigmap"] = Bigmap,
@@ -284,7 +287,8 @@ public class MapRangeWeights
         ["Woods"] = Woods,
         ["Shoreline"] = Shoreline,
         ["Lighthouse"] = Lighthouse,
-        ["TarkovStreets"] = TarkovStreets
+        ["TarkovStreets"] = TarkovStreets,
+        ["Labyrinth"] = Labyrinth
     };
 
     public LongShortRange this[string key]
@@ -305,6 +309,7 @@ public class MapRangeWeights
                 "Shoreline" => Shoreline,
                 "Lighthouse" => Lighthouse,
                 "TarkovStreets" => TarkovStreets,
+                "Labyrinth" => Labyrinth,
                 _ => throw new KeyNotFoundException($"Map '{key}' not found.")
             };
         }

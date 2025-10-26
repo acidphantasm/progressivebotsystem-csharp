@@ -1,24 +1,17 @@
 using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
 using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
-using SPTarkov.Server.Core.Models.Common;
-using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Enums;
-using SPTarkov.Server.Core.Models.Enums.Hideout;
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Web;
 using Path = System.IO.Path;
 
 namespace _progressiveBotSystem;
 
-public record ModMetadata : AbstractModMetadata
+public record ModMetadata : AbstractModMetadata, IModWebMetadata
 {
     public override string ModGuid { get; init; } = "com.acidphantasm.progressivebotsystem";
     public override string Name { get; init; } = "Acid's Progressive Bot System";

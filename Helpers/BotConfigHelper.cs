@@ -64,6 +64,22 @@ public class BotConfigHelper : IOnLoad
         
         return Task.CompletedTask;
     }
+
+    public Task ReapplyConfig()
+    {
+        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotConfigHelper.ReapplyConfig()");
+        PmcConfigs();
+        ScavConfigs();
+        BossConfigs();
+        FollowerConfigs();
+        SpecialConfigs();
+        AllBotConfigs();
+        AllBotsConfigsBypassEnableCheck();
+        SpecialHandlingConfigs();
+        
+        return Task.CompletedTask;
+    }
+    
     private void PmcConfigs()
     {
         if (!ModConfig.Config.PmcBots.Enable) return;

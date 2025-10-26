@@ -1,0 +1,47 @@
+{
+        "weaponBlacklist": {
+                "tier1Blacklist": [],
+                "tier2Blacklist": [],
+                "tier3Blacklist": [],
+                "tier4Blacklist": [],
+                "tier5Blacklist": [],
+                "tier6Blacklist": [],
+                "tier7Blacklist": []
+        },
+        "equipmentBlacklist": {
+                "tier1Blacklist": [],
+                "tier2Blacklist": [],
+                "tier3Blacklist": [],
+                "tier4Blacklist": [],
+                "tier5Blacklist": [],
+                "tier6Blacklist": [],
+                "tier7Blacklist": []
+        },
+        "ammoBlacklist": {
+                "tier1Blacklist": [],
+                "tier2Blacklist": [],
+                "tier3Blacklist": [],
+                "tier4Blacklist": [],
+                "tier5Blacklist": [],
+                "tier6Blacklist": [],
+                "tier7Blacklist": []
+        },
+        "attachmentBlacklist": {
+                "tier1Blacklist": [],
+                "tier2Blacklist": [],
+                "tier3Blacklist": [],
+                "tier4Blacklist": [],
+                "tier5Blacklist": [],
+                "tier6Blacklist": [],
+                "tier7Blacklist": []
+        },
+        "clothingBlacklist": {
+                "tier1Blacklist": [],
+                "tier2Blacklist": [],
+                "tier3Blacklist": [],
+                "tier4Blacklist": [],
+                "tier5Blacklist": [],
+                "tier6Blacklist": [],
+                "tier7Blacklist": []
+        }
+}

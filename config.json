@@ -103,6 +103,10 @@
       "TarkovStreets": {
         "LongRange": 20,
         "ShortRange": 80
+      },
+      "Labyrinth": {
+        "LongRange": 5,
+        "ShortRange": 95
       }
     },
     "plateChances": {

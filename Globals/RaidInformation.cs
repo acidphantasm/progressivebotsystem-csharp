@@ -7,4 +7,5 @@ public class RaidInformation
     public static int HighestPrestigeLevel { get; set; } = 0;
     public static string? RaidLocation { get; set; }
     public static bool NightTime { get; set; } = false;
+    public static bool IsInRaid { get; set; } = false;
 }

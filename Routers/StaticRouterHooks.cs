@@ -2,6 +2,7 @@
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Utils;
+using _progressiveBotSystem.Web.Shared;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.DI;
@@ -72,11 +73,29 @@ public class StaticRouterHooks : StaticRouter
                     
                     RaidInformation.RaidLocation = info.Location;
                     RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
+                    RaidInformation.IsInRaid = true;
                     
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/match/local/start");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
+                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
+                    return output;
+                }),
+            
+            new RouteAction<EndLocalRaidRequestData>(
+                "/client/match/local/end",
+                async (
+                    url,
+                    info,
+                    sessionId,
+                    output
+                ) =>
+                {
+                    RaidInformation.IsInRaid = false;
+                    
+                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/match/local/end");
+                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     return output;
                 }),
             

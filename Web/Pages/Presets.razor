@@ -1,0 +1,110 @@
+﻿@page "/apbs/presets"
+@layout MainLayout
+
+
+<MudMainContent>
+    <MudContainer>
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h5" Align="Align.Center">Editor coming soon...</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudContainer>
+</MudMainContent>
+
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Preset" Expanded=true>
+                <MudGrid>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows you to load a preset specified by name." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Preset</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_presetEnable" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_presetEnable</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle && (
+                                   MainLayout.pendingChanges.Contains("_presetEnable") ||
+                                   MainLayout.pendingChanges.Contains("_presetName")))
+                        {
+                            <MudButton @onclick="undoPresetDetails" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle && (
+                        _presetEnable != false ||
+                        _presetName != "example"))
+                        {
+                            <MudButton @onclick="defaultPresetDetails" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_presetEnable)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Preset Options" Expanded=true>
+                    <MudGrid>
+
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudTooltip Text="Specify folder name of your preset here." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Preset Folder Name</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTextField @bind-Value="_presetName" Label="Folder Name" Variant="Variant.Text"></MudTextField>
+                            </MudPaper>
+                        </MudItem>
+
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    private bool _presetEnable
+    {
+        get => ModConfig.Config.UsePreset;
+        set
+        {
+            ModConfig.Config.UsePreset = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.UsePreset);
+        }
+    }
+    private string _presetName
+    {
+        get => ModConfig.Config.PresetName;
+        set
+        {
+            ModConfig.Config.PresetName = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PresetName);
+        }
+    }
+
+    private void undoPresetDetails()
+    {
+        _presetEnable = ModConfig.OriginalConfig.UsePreset;
+        _presetName = ModConfig.OriginalConfig.PresetName;
+    }
+    private void defaultPresetDetails()
+    {
+        _presetEnable = false;
+        _presetName = "example";
+    }
+
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+}
