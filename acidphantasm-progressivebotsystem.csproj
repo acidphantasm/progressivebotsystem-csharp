@@ -29,22 +29,153 @@
 
   <ItemGroup>
     <Content Remove="release\SPT\user\mods\acidphantasm-reffriendlyquests\config.json" />
-    <None Include="release\SPT\user\mods\acidphantasm-reffriendlyquests\config.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
     <Content Remove="release\SPT\user\mods\acidphantasm-reffriendlyquests\db\quests.json" />
-    <None Include="release\SPT\user\mods\acidphantasm-reffriendlyquests\db\quests.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
     <None Include="wwwroot\images\background.jpg" />
     <None Update="LICENSE">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier1_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier0_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier2_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier3_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier4_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier5_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier6_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier7_ammo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\blacklists.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\config.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <None Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\LICENSE">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier0_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier1_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier2_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier3_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier4_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier5_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier6_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier7_mods.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Quests\QuestData.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Tiers\TierData.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier0_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier1_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier2_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier3_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier4_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier5_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier6_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier7_equipment.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier0_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier1_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier2_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier3_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier4_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier5_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier6_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier7_chances.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier0_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier1_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier2_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier3_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier4_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier5_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier6_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier7_appearance.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\background.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Utils\Logger\" />
-    <Folder Include="Web\Resources\" />
   </ItemGroup>
 
 </Project>
