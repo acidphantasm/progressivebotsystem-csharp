@@ -29,7 +29,6 @@ public class PatchManager : IOnLoad
         new SetBotAppearance_Patch().Enable();
         new AddDogTagToBot_Patch().Enable();
         new SetRandomisedGameVersionAndCategory_Patch().Enable();
-        new GetRandomizedResourceValue_Patch().Enable();
         
         return Task.CompletedTask;
     }
