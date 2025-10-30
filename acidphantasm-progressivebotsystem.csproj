@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <Version>2.0.0</Version>
     <!-- The two lines below will set the output path for the binaries -->
-    <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)-$(Version)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -17,6 +17,9 @@
         <DebugSymbols>false</DebugSymbols>
         <GenerateDependencyFile>false</GenerateDependencyFile>
         <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT 4.0.0 DEV\</TarkovDir>
     </PropertyGroup>
     
   <ItemGroup>
@@ -27,9 +30,28 @@
     <PackageReference Include="SPTarkov.Server.Web" Version="4.0.2" />
   </ItemGroup>
 
+
+<PropertyGroup>
+   
+</PropertyGroup>
+    
+<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+        <ServerComponents Include="$(ProjectDir)/bin/Release/$(ProjectName)/*.*" />
+        <Data Include="$(ProjectDir)Data\**\*.*" />
+        <WebAssets Include="$(ProjectDir)wwwroot\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(TarkovDir)SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Data)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\Data\%(RecursiveDir)" />
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
+    <RemoveDir Directories="$(ProjectDir)release" />
+    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Data)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\Data\%(RecursiveDir)" />
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
+    <ZipDirectory SourceDirectory="$(ProjectDir)release\$(ProjectName)\" DestinationFile="$(ProjectDir)release\$(ProjectName).zip" />
+</Target>
+
   <ItemGroup>
-    <Content Remove="release\SPT\user\mods\acidphantasm-reffriendlyquests\config.json" />
-    <Content Remove="release\SPT\user\mods\acidphantasm-reffriendlyquests\db\quests.json" />
     <None Include="wwwroot\images\background.jpg" />
     <None Update="LICENSE">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -173,6 +195,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\files\ReleaseNotes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -30,6 +30,7 @@ public class ModConfig : IOnLoad
         _jsonUtil = jsonUtil;
         _fileUtil = fileUtil;
         _botConfigHelper = botConfigHelper;
+        _modPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
     }
     private static ApbsLogger _apbsLogger;
     private static ModHelper _modHelper;
@@ -41,17 +42,17 @@ public class ModConfig : IOnLoad
     public static ApbsBlacklistConfig Blacklist { get; private set; } = null!;
     public static ApbsBlacklistConfig OriginalBlacklist { get; private set; } = null!;
 
-    private static int IsActivelyProcessingFlag = 0;
+    private static int _isActivelyProcessingFlag = 0;
+    public static string _modPath = string.Empty;
 
 
     public async Task OnLoad()
     {
-        var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
-        Config = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(pathToMod + "/config.json") ?? throw new ArgumentNullException();
-        OriginalConfig = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(pathToMod + "/config.json") ?? throw new ArgumentNullException();
+        Config = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
+        OriginalConfig = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
         
-        Blacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(pathToMod + "/blacklists.json") ?? throw new ArgumentNullException();
-        OriginalBlacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(pathToMod + "/blacklists.json") ?? throw new ArgumentNullException();
+        Blacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(_modPath + "/blacklists.json") ?? throw new ArgumentNullException();
+        OriginalBlacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(_modPath + "/blacklists.json") ?? throw new ArgumentNullException();
         
 #if DEBUG
         Config.EnableDebugLog = true;
@@ -61,7 +62,7 @@ public class ModConfig : IOnLoad
 
     public static async Task<ConfigOperationResult> ReloadConfig()
     {
-        if (Interlocked.CompareExchange(ref IsActivelyProcessingFlag, 1, 0) != 0)
+        if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
 
         try
@@ -69,10 +70,8 @@ public class ModConfig : IOnLoad
             if (RaidInformation.IsInRaid)
                 return ConfigOperationResult.InRaid;
             
-            var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
-
-            var configPath = Path.Combine(pathToMod, "config.json");
-            var blacklistPath = Path.Combine(pathToMod, "blacklists.json");
+            var configPath = Path.Combine(_modPath, "config.json");
+            var blacklistPath = Path.Combine(_modPath, "blacklists.json");
 
             var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(configPath);
             var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(blacklistPath);
@@ -96,13 +95,13 @@ public class ModConfig : IOnLoad
         }
         finally
         {
-            Interlocked.Exchange(ref IsActivelyProcessingFlag, 0);
+            Interlocked.Exchange(ref _isActivelyProcessingFlag, 0);
         }
     }
     
     public static async Task<ConfigOperationResult> SaveConfig()
     {
-        if (Interlocked.CompareExchange(ref IsActivelyProcessingFlag, 1, 0) != 0)
+        if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
 
         try
@@ -134,7 +133,7 @@ public class ModConfig : IOnLoad
         }
         finally
         {
-            Interlocked.Exchange(ref IsActivelyProcessingFlag, 0);
+            Interlocked.Exchange(ref _isActivelyProcessingFlag, 0);
         }
     }
     

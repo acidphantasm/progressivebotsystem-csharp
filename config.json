@@ -1126,6 +1126,7 @@
   "configAppSettings": {
     "showUndo": true,
     "showDefault": false,
-    "disableAnimations": false
+    "disableAnimations": false,
+    "allowUpdateChecks": false
   }
 }

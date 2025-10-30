@@ -56,6 +56,7 @@
             <MudCheckBox @bind-Value="_appUndoButtonToggle" Label="Show Undo Button"></MudCheckBox>
             <MudCheckBox @bind-Value="_appDefaultButtonToggle" Label="Show Default Button"></MudCheckBox>
             <MudCheckBox @bind-Value="_appDisableAnimations" Label="Disable Animations"></MudCheckBox>
+            <MudCheckBox @bind-Value="_appAllowUpdateChecks" Label="Enable Update Checks"></MudCheckBox>
             <MudSpacer/>
             @if (pendingChanges.Count > 0)
             {
@@ -127,7 +128,7 @@
         -moz-filter: blur(4px);
         filter: blur(4px);
         animation-name: transitionBG;
-        animation-duration: 3s;
+        animation-duration: 3.5s;
         animation-delay: 1s;
         animation-fill-mode: forwards;
     }
@@ -167,6 +168,8 @@
     
     private static bool _isSaving = false;
     private static bool _isReloading = false;
+    public static bool AlreadyCheckedForUpdate = false;
+    public static bool UpdateAvailable = false;
     
     public static bool _appUndoButtonToggle
     {
@@ -195,6 +198,16 @@
             ModConfig.Config.ConfigAppSettings.DisableAnimations = value;
             if (!pendingChanges.Contains("_appDisableAnimations")) pendingChanges.Add("_appDisableAnimations");
             else pendingChanges.Remove("_appDisableAnimations");
+        }
+    }
+    public static bool _appAllowUpdateChecks
+    {
+        get => ModConfig.Config.ConfigAppSettings.AllowUpdateChecks;
+        set
+        {
+            ModConfig.Config.ConfigAppSettings.AllowUpdateChecks = value;
+            if (!pendingChanges.Contains("_appAllowUpdateChecks")) pendingChanges.Add("_appAllowUpdateChecks");
+            else pendingChanges.Remove("_appAllowUpdateChecks");
         }
     }
 

@@ -1,0 +1,33 @@
+﻿[
+  {
+    "Version": "2.0.1",
+    "ReleaseDate": "October 30, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Added Checkbox to allow the Web Configuration to Check for Updates to APBS",
+      "Added Release Notes to Web Configuration"
+    ],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved known issue with Bosses Have Lega Medals"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.0",
+    "ReleaseDate": "October 27, 2025",
+    "IsLatest": false,
+    "NewFeatures": [
+      "Configuration Application has been replaced with this fancy web configuration instead"
+    ],
+    "Changes": [
+      "Configuration can be edited while the server is running, data can be reloaded or saved while nobody is in raid",
+      "Temporarily removed Presets",
+      "Temporarily removed Mod Importing"
+    ],
+    "BugFixes": [],
+    "KnownIssues": [
+      "Bosses Have Lega Medals may not work with APBS"
+    ]
+  }
+]

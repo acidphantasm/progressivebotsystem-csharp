@@ -567,4 +567,6 @@ public class ConfigAppSettings
     public bool ShowDefault { get; set; }
     [JsonPropertyName("disableAnimations")]
     public bool DisableAnimations { get; set; }
+    [JsonPropertyName("allowUpdateChecks")]
+    public bool AllowUpdateChecks { get; set; }
 }
