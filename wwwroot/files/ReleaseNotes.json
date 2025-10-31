@@ -4,12 +4,19 @@
     "ReleaseDate": "October 30, 2025",
     "IsLatest": true,
     "NewFeatures": [
-      "Added Checkbox to allow the Web Configuration to Check for Updates to APBS",
+      "Added Checkbox to allow the Web Configuration page to check for updates to APBS",
       "Added Release Notes to Web Configuration"
     ],
-    "Changes": [],
+    "Changes": [
+      "Skipped extra magazine generation for the SV98 if PMC is assigned `Fishing Gear` quest"
+    ],
     "BugFixes": [
-      "Resolved known issue with Bosses Have Lega Medals"
+      "Resolved Fika Headless not being able to generate a profile if you install mods first (That's on you for not following the Fika Wiki)",
+      "Resolved Fika Headless bot generation issues if you install APBS before creating a user profile and completing a raid",
+      "Resolved PMC Item Limits not being set",
+      "Resolved PMC Weapon Mod Limits not being set",
+      "Resolved Large Magazine Limit not working properly",
+      "Resolved Boss, Follower, and Special loot not generating at all despite being enabled"
     ],
     "KnownIssues": []
   },
