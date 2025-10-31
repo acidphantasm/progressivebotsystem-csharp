@@ -255,7 +255,7 @@ public class CustomBotLootCacheService(
         var (healingItemsInWhitelist, addHealingItems) = GetGenerationWeights(realWhitelist.Healing?.Whitelist);
         var (drugItemsInWhitelist, addDrugItems) = GetGenerationWeights(realWhitelist.Drugs?.Whitelist);
         var (foodItemsInWhitelist, addFoodItems) = GetGenerationWeights(realWhitelist.Food?.Whitelist);
-        var (drinkItemsInWhitelist, addDrinkItems) = GetGenerationWeights(realWhitelist.Food?.Whitelist);
+        var (drinkItemsInWhitelist, addDrinkItems) = GetGenerationWeights(realWhitelist.Drink?.Whitelist);
         var (currencyItemsInWhitelist, addCurrencyItems) = GetGenerationWeights(realWhitelist.Currency?.Whitelist);
         var (stimItemsInWhitelist, addStimItems) = GetGenerationWeights(realWhitelist.Stims?.Whitelist);
         var (grenadeItemsInWhitelist, addGrenadeItems) = GetGenerationWeights(realWhitelist.Grenades?.Whitelist);
