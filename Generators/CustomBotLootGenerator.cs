@@ -1,6 +1,7 @@
 ﻿using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Services;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Helpers;
@@ -19,7 +20,7 @@ using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace _progressiveBotSystem.Generators;
 
-[Injectable]
+[Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
 public class CustomBotLootGenerator(
     ISptLogger<CustomBotLootGenerator> logger,
     RandomUtil randomUtil,
@@ -70,9 +71,9 @@ public class CustomBotLootGenerator(
         int tier
     )
     {
-        var chances = botEquipmentHelper.GetChancesByBotRole(botGenerationDetails.Role.ToLower(), tier);
+        var chances = botEquipmentHelper.GetChancesByBotRole(botGenerationDetails.RoleLowercase, tier);
         // Limits on item types to be added as loot
-        var itemCounts = botJsonTemplate.BotGeneration?.Items;
+        var itemCounts = chances.Generation.Items;
 
         if (
             itemCounts?.BackpackLoot.Weights is null
@@ -515,7 +516,6 @@ public class CustomBotLootGenerator(
             if (!key)
             {
                 logger.Warning($"Unable to process item tpl: {weightedItemTpl} for slots: {equipmentSlots} on bot: {botRole}");
-
                 continue;
             }
 
@@ -568,6 +568,7 @@ public class CustomBotLootGenerator(
                     }
                 }
             }
+            
 
             // Some items (ammoBox/ammo) need extra changes
             AddRequiredChildItemsToParent(itemToAddTemplate, itemWithChildrenToAdd, isPmc, botRole);
