@@ -50,6 +50,34 @@ public class BotConfigHelper : IOnLoad
     private BotEquipmentHelper _botEquipmentHelper;
     private TierInformation _tierInformation;
     
+    private Dictionary<MongoId, double> _pmcItemLimits = new()
+    {
+        ["5448e8d04bdc2ddf718b4569"] = 1,
+        ["5448e8d64bdc2dce718b4568"] = 1,
+        ["5448f39d4bdc2d0a728b4568"] = 1,
+        ["5448f3a64bdc2d60728b456a"] = 2,
+        ["5448f3ac4bdc2dce718b4569"] = 1,
+        ["5448f3a14bdc2d27728b4569"] = 1,
+        ["5c99f98d86f7745c314214b3"] = 1,
+        ["5c164d2286f774194c5e69fa"] = 1,
+        ["550aa4cd4bdc2dd8348b456c"] = 2,
+        ["55818add4bdc2d5b648b456f"] = 1,
+        ["55818ad54bdc2ddc698b4569"] = 1,
+        ["55818aeb4bdc2ddc698b456a"] = 1,
+        ["55818ae44bdc2dde698b456c"] = 1,
+        ["55818af64bdc2d5b648b4570"] = 1,
+        ["5448e54d4bdc2dcc718b4568"] = 1,
+        ["5447e1d04bdc2dff2f8b4567"] = 1,
+        ["5a341c4686f77469e155819e"] = 1,
+        ["55818b164bdc2ddc698b456c"] = 2,
+        ["5448bc234bdc2d3c308b4569"] = 2,
+        ["543be5dd4bdc2deb348b4569"] = 1,
+        ["543be5cb4bdc2deb348b4568"] = 2,
+        ["5485a8684bdc2da71d8b4567"] = 2,
+        ["5d650c3e815116009f6201d2"] = 2,
+        ["543be6564bdc2df4348b4568"] = 4
+    };
+    
     public Task OnLoad()
     {
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotConfigHelper.OnLoad()");
@@ -95,7 +123,7 @@ public class BotConfigHelper : IOnLoad
     private void PmcItemLimits()
     {
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Item Limits");
-        _botConfig.ItemSpawnLimits["pmc"] = new Dictionary<MongoId, double>();
+        _botConfig.ItemSpawnLimits["pmc"] = _pmcItemLimits;
     }
     private void PmcLoot()
     {
@@ -431,7 +459,7 @@ public class BotConfigHelper : IOnLoad
     #region BossConfigs
     private void BossLoot()
     {
-        if (!ModConfig.Config.BossBots.LootConfig.Enable) return;
+        if (ModConfig.Config.BossBots.LootConfig.Enable) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Boss Loot");
         var bossBotTypes = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var botType in bossBotTypes)
@@ -525,7 +553,7 @@ public class BotConfigHelper : IOnLoad
     #region FollowerConfigs
     private void FollowerLoot()
     {
-        if (!ModConfig.Config.FollowerBots.LootConfig.Enable) return;
+        if (ModConfig.Config.FollowerBots.LootConfig.Enable) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Follower Loot");
         var followerBotTypes = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var botType in followerBotTypes)
@@ -619,7 +647,7 @@ public class BotConfigHelper : IOnLoad
     #region SpecialConfigs
     private void SpecialLoot()
     {
-        if (!ModConfig.Config.SpecialBots.LootConfig.Enable) return;
+        if (ModConfig.Config.SpecialBots.LootConfig.Enable) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Special Bot Loot");
         var specialBotTypes = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var botType in specialBotTypes)
@@ -917,7 +945,7 @@ public class BotConfigHelper : IOnLoad
         {
             if (!_botActivityHelper.IsBotEnabled(botType)) continue;
 
-            botConfigEquipment[botType]!.WeaponModLimits ??= new ModLimits()
+            botConfigEquipment[botType].WeaponModLimits ??= new ModLimits()
             {
                 ScopeLimit = 2,
                 LightLaserLimit = 1
@@ -925,6 +953,9 @@ public class BotConfigHelper : IOnLoad
             botConfigEquipment[botType]!.WeaponModLimits!.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
             botConfigEquipment[botType]!.WeaponModLimits!.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
         }
+        
+        botConfigEquipment["pmc"].WeaponModLimits.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
+        botConfigEquipment["pmc"].WeaponModLimits.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
     }
     private void AmmoStackCompatibility()
     {
