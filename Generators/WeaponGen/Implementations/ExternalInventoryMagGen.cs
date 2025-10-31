@@ -43,10 +43,12 @@ public class ApbsExternalInventoryMagGen(
         // Magazine Db template
         var magTemplate = inventoryMagGen.GetMagazineTemplate();
         var magazineTpl = magTemplate.Id;
+        
+        HashSet<MongoId> attemptedMagBlacklist = [];
+        
         var weapon = inventoryMagGen.GetWeaponTemplate();
         var ammoCaliber = inventoryMagGen.GetAmmoTemplate().Properties.Caliber;
         var selectedAmmoId = inventoryMagGen.GetAmmoTemplate().Id;
-        HashSet<MongoId> attemptedMagBlacklist = [];
         var defaultMagazineTpl = weapon.GetWeaponsDefaultMagazineTpl();
         var isShotgun = itemHelper.IsOfBaseclass(weapon.Id, BaseClasses.SHOTGUN);
 
@@ -65,20 +67,22 @@ public class ApbsExternalInventoryMagGen(
         
         var randomizedMagazineCount = botWeaponGeneratorHelper.GetRandomizedMagazineCount(inventoryMagGen.GetMagCount());
         if (itemHelper.IsOfBaseclass(weapon.Id, BaseClasses.PISTOL)) randomizedMagazineCount = randomUtil.GetInt(1, 2);
+        
         for (var i = 0; i < randomizedMagazineCount; i++)
         {
-            if (ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit && !hasSwitchedToSmallerMags &&
-                !VanillaItemConstants.WeaponsWithNoSmallMagazines.Contains(weapon.Id))
+            if (ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit &&
+                !VanillaItemConstants.WeaponsWithNoSmallMagazines.Contains(weapon.Id) && 
+                !hasSwitchedToSmallerMags)
             {
                 modPool.TryGetValue(weapon.Id, out var weaponModPool);
-                HashSet<MongoId> magazinePool = null!;
-                if (weaponModPool != null) weaponModPool.TryGetValue("mod_magazine", out magazinePool);
-                if (magazinePool is not null && magTemplate.Properties!.Cartridges!.Any(x => x.MaxCount.HasValue) && magazinePool.Count != 0)
+                HashSet<MongoId>? magazinePool = null;
+                weaponModPool?.TryGetValue("mod_magazine", out magazinePool);
+                
+                if (magazinePool is not null && magazinePool.Count != 0)
                 {
-                    var currentMagazineCountSize = magTemplate.Properties!.Cartridges!.Sum(x => x.MaxCount!.Value);
+                    var currentMagazineSize = magTemplate.Properties.Cartridges.Max(x => x.MaxCount.Value);
 
-                    if (currentMagazineCountSize > 35 &&
-                        i >= (ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1))
+                    if (currentMagazineSize > 35 && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1)
                     {
                         isTryingSmallerMags = true;
                         var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool);
@@ -92,15 +96,20 @@ public class ApbsExternalInventoryMagGen(
             }
 
             var selectedAmmoForMag = selectedAmmoId;
-            List<Item> magazineWithAmmo = new List<Item>();
-
             if (shouldBotRerollAmmo)
             {
                 selectedAmmoForMag = inventoryMagGen.GetWeightedCompatibleAmmo(ammoTable, weapon);
             }
+            
+            List<Item> magazineWithAmmo = new List<Item>();
             if (shouldBotTopload)
             {
-                magazineWithAmmo = inventoryMagGen.CreateMagazineWithAmmo(magazineTpl, selectedAmmoForMag, ammoTable, ammoCaliber, magTemplate,
+                magazineWithAmmo = inventoryMagGen.CreateMagazineWithAmmo(
+                    magazineTpl, 
+                    selectedAmmoForMag, 
+                    ammoTable, 
+                    ammoCaliber, 
+                    magTemplate,
                     toploadConfig.Percent);
             }
             else
@@ -215,6 +224,7 @@ public class ApbsExternalInventoryMagGen(
             // Reset fit counter now it succeeded
             {
                 fitAttempts = 0;
+                if (isTryingSmallerMags) hasSwitchedToSmallerMags = true;
             }
         }
     }
