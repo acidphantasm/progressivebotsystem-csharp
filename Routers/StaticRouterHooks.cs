@@ -75,7 +75,6 @@ public class StaticRouterHooks : StaticRouter
                     RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
                     RaidInformation.IsInRaid = true;
                     
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/match/local/start");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
@@ -94,7 +93,6 @@ public class StaticRouterHooks : StaticRouter
                 {
                     RaidInformation.IsInRaid = false;
                     
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/match/local/end");
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     return output;
                 }),
@@ -113,7 +111,8 @@ public class StaticRouterHooks : StaticRouter
                     {
                         var fullProfile =
                             ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
-                        RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped;
+                        RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
+                        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }
                     catch (Exception ex)
                     {
@@ -134,9 +133,9 @@ public class StaticRouterHooks : StaticRouter
                     if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/profile/status");
                     try
                     {
-                        var fullProfile =
-                            ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
-                        RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped;
+                        var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
+                        RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
+                        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }
                     catch (Exception ex)
                     {

@@ -17,6 +17,7 @@ using SPTarkov.Server.Core.Services;
 using _progressiveBotSystem.Utils;
 using HarmonyLib;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Models.Enums;
 
 namespace _progressiveBotSystem.Patches;
 
@@ -41,15 +42,19 @@ public class GenerateBotLevel : AbstractPatch
         _tierHelper ??= ServiceLocator.ServiceProvider.GetService<TierHelper>();
 
         if (_databaseService is null || _randomUtil is null || _profileHelper is null) return true;
-        if (RaidInformation.FreshProfile is not null && RaidInformation.FreshProfile.Value) return true;
-        if (RaidInformation.FreshProfile is null) return true;
+        if (RaidInformation.FreshProfile) return true;
         
         if (botGenerationDetails.IsPlayerScav)
         {
-            var scavLevel = _profileHelper.GetPmcProfile(RaidInformation.CurrentSessionId)?.Info?.Level;
-            var scavExp = _profileHelper.GetExperience(scavLevel.Value);
-            bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel.Value));
-            bot.Info.PrestigeLevel = SetBotPrestigeInfo(scavLevel.Value, botGenerationDetails);
+            var scavLevel = 1;
+            if (RaidInformation.CurrentSessionId is not null)
+            {
+                scavLevel = _profileHelper.GetPmcProfile(RaidInformation.CurrentSessionId).Info.Level ?? 1;
+            }
+            var scavExp = _profileHelper.GetExperience(scavLevel);
+            bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel));
+            botGenerationDetails.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel));
+            bot.Info.PrestigeLevel = 0;
             __result = new RandomisedBotLevelResult { Exp = scavExp, Level = scavLevel };
             return false;
         }
@@ -59,9 +64,10 @@ public class GenerateBotLevel : AbstractPatch
         
         var level = ChooseBotLevel(botLevelRange.Min, botLevelRange.Max, 1, 1.15);
         var maxLevelIndex = expTable.Length - 1;
-        level = Math.Clamp(level, 0, maxLevelIndex + 1);
+        level = Math.Clamp(level, 1, maxLevelIndex + 1);
         
         bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(level));
+        botGenerationDetails.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(level));
         bot.Info.PrestigeLevel = SetBotPrestigeInfo(level, botGenerationDetails);
         
         var baseExp = expTable.Take(level).Sum(entry => entry.Experience);
@@ -84,7 +90,7 @@ public class GenerateBotLevel : AbstractPatch
     )
     {
         var levelOverride = botGenerationDetails.LocationSpecificPmcLevelOverride;
-        var playerLevel = botGenerationDetails.PlayerLevel ?? 1;
+        var playerLevel = Math.Max(1, botGenerationDetails.PlayerLevel ?? 1);
         
         var minPossibleLevel = levelOverride is not null
             ? Math.Min(

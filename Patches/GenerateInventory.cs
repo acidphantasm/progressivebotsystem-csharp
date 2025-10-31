@@ -13,6 +13,7 @@ using SPTarkov.Server.Core.Services;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Utils;
+using SPTarkov.Common.Extensions;
 
 namespace _progressiveBotSystem.Patches;
 
@@ -37,20 +38,20 @@ public class GenerateInventory_Patch : AbstractPatch
         var apbsLogger = ServiceLocator.ServiceProvider.GetService<ApbsLogger>();
         var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
         var customBotLootGenerator = ServiceLocator.ServiceProvider.GetService<CustomBotLootGenerator>();
+        
 
-        if (RaidInformation.FreshProfile is null) return true;
-        if (RaidInformation.FreshProfile.Value) return true;
-        if (botActivityHelper is null || !botActivityHelper.IsBotEnabled(botGenerationDetails.Role)) return true;
-
-        if (customBotInventoryGenerator is null ||
+        if (RaidInformation.FreshProfile ||
+            RaidInformation.CurrentSessionId is null ||
+            botActivityHelper is null ||
+            customBotInventoryGenerator is null ||
             profileActivityService is null ||
             botLootGenerator is null ||
             botInventoryContainerService is null ||
             botQuestHelper is null ||
             botEquipmentHelper is null ||
-            randomUtil is null)
+            randomUtil is null ||
+            !botActivityHelper.IsBotEnabled(botGenerationDetails.Role))
         {
-            apbsLogger.Error("Generate Inventory Patch Failed - Generating Vanilla Bot");
             return true;
         }
         
@@ -60,7 +61,7 @@ public class GenerateInventory_Patch : AbstractPatch
         var raidConfig = profileActivityService.GetProfileActivityRaidData(sessionId)?.RaidConfiguration;
 
         // Get initial tier
-        var tierNumber = tierHelper.GetTierByLevel(botGenerationDetails.BotLevel);
+        var tierNumber = (int)botGenerationDetails.GetExtensionData()["Tier"];
         
         // Check if bot should quest, and select one if possible
         QuestData? questData = null;
