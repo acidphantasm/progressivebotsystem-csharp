@@ -622,6 +622,10 @@ public class CustomBotInventoryGenerator
 
         botInventory.Items.AddRange(generatedWeapon.Weapon);
 
+        if (questData is not null)
+            if (questData.QuestName == "Fishing Gear" && weaponSlot.Slot == EquipmentSlots.SecondPrimaryWeapon)
+                return;
+        
         _customBotWeaponGenerator.AddExtraMagazinesToInventory(
             botId,
             generatedWeapon,
