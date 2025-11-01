@@ -1050,6 +1050,8 @@ public class BotConfigHelper : IOnLoad
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Removing T7 Thermals from Database");
         for (var i = 1; i <= 7; i++)
         {
+            if (ModConfig.Config.GeneralConfig.EnableT7Thermals && i >= ModConfig.Config.GeneralConfig.StartTier) continue;
+            
             var modsData = _botEquipmentHelper.GetTierMods(i, true);
             
             if (!modsData.TryGetValue(ItemTpl.MOUNT_NOROTOS_TITANIUM_ADVANCED_TACTICAL, out var tatmMods)) continue;
