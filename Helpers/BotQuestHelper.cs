@@ -56,7 +56,7 @@ public class BotQuestHelper : IOnLoad
             if (!quest.IsQuestEnabled) continue;
             if (quest.MinLevel <= botLevel && quest.MaxLevel >= botLevel)
             {
-                if (quest.RequiredMap.Count != 0 && !quest.RequiredMap.Contains(location.ToLower())) continue;
+                if (quest.RequiredMap.Count != 0 && !quest.RequiredMap.Contains(location.ToLowerInvariant())) continue;
                 
                 availableQuests.Add(quest);
             }

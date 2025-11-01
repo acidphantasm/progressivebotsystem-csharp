@@ -1051,14 +1051,12 @@ public class BotConfigHelper : IOnLoad
         for (var i = 1; i <= 7; i++)
         {
             var modsData = _botEquipmentHelper.GetTierMods(i, true);
-            if (modsData.TryGetValue(ItemTpl.MOUNT_NOROTOS_TITANIUM_ADVANCED_TACTICAL, out var tatmMods))
-            {
-                if (ModConfig.Config.GeneralConfig.EnableT7Thermals &&
-                    i >= ModConfig.Config.GeneralConfig.StartTier) continue;
-                
-                _apbsLogger.Debug($"[THERMAL] Removed T7's from tier {i}");
-                tatmMods.Remove(ItemTpl.MOUNT_PVS7_WILCOX_ADAPTER);
-            }
+            
+            if (!modsData.TryGetValue(ItemTpl.MOUNT_NOROTOS_TITANIUM_ADVANCED_TACTICAL, out var tatmMods)) continue;
+            if (!tatmMods.TryGetValue("mod_nvg", out var nvgSlot)) continue;
+            if (!nvgSlot.Remove(ItemTpl.MOUNT_PVS7_WILCOX_ADAPTER)) continue;
+            
+            if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"[THERMAL] Removed T7’s from Tier{i}");
         }
     }
     private void SetPlateChances()
