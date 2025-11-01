@@ -1,8 +1,20 @@
 ﻿[
   {
+    "Version": "2.0.2",
+    "ReleaseDate": "November 1, 2025",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved T-7 Thermal Adapter not being removed correctly",
+      "Resolved PMC Quests for Location not selecting correctly all the time"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.1",
     "ReleaseDate": "October 31, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Added Checkbox to allow the Web Configuration page to check for updates to APBS",
       "Added Release Notes to Web Configuration"
