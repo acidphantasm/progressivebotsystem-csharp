@@ -1,13 +1,26 @@
 ﻿[
   {
-    "Version": "2.0.2",
-    "ReleaseDate": "November 1, 2025",
+    "Version": "2.0.3",
+    "ReleaseDate": "November 4, 2025",
     "IsLatest": true,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [
+      "Resolved Pmc dog tags not being the correct one",
+      "Resolved Pmc sometimes not being able to Prestige when they should be able to",
+      "Resolved Stack Overflow from recursive method `ContainsRequiredMod`"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.2",
+    "ReleaseDate": "November 1, 2025",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
       "Resolved T-7 Thermal Adapter not being removed correctly",
-      "Resolved PMC Quests for Location not selecting correctly all the time"
+      "Resolved Pmc Quests for Location not selecting correctly all the time"
     ],
     "KnownIssues": []
   },
@@ -20,13 +33,13 @@
       "Added Release Notes to Web Configuration"
     ],
     "Changes": [
-      "Skipped extra magazine generation for the SV98 if PMC is assigned `Fishing Gear` quest"
+      "Skipped extra magazine generation for the SV98 if Pmc is assigned `Fishing Gear` quest"
     ],
     "BugFixes": [
       "Resolved Fika Headless not being able to generate a profile if you install mods first (That's on you for not following the Fika Wiki)",
       "Resolved Fika Headless bot generation issues if you install APBS before creating a user profile and completing a raid",
-      "Resolved PMC Item Limits not being set",
-      "Resolved PMC Weapon Mod Limits not being set",
+      "Resolved Pmc Item Limits not being set",
+      "Resolved Pmc Weapon Mod Limits not being set",
       "Resolved Large Magazine Limit not working properly",
       "Resolved Boss, Follower, and Special loot not generating at all despite being enabled"
     ],
