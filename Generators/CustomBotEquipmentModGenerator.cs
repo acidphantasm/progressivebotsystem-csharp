@@ -1270,8 +1270,12 @@ public class CustomBotEquipmentModGenerator(
         return modPoolToReturn.ToHashSet();
     }
     
-    private bool ContainsRequiredMod(TemplateItem item, QuestData questData)
+    private bool ContainsRequiredMod(TemplateItem item, QuestData questData, int callCount = 0)
     {
+        var MaxCallCount = 3;
+
+        if (callCount >= MaxCallCount) return false;
+        
         if (questData.RequiredWeaponMods.Contains(item.Id))
             return true;
 
@@ -1290,7 +1294,7 @@ public class CustomBotEquipmentModGenerator(
 
                     // If a required mod is found directly or within its children
                     if (questData.RequiredWeaponMods.Contains(tpl) ||
-                        ContainsRequiredMod(child, questData))
+                        ContainsRequiredMod(child, questData, callCount + 1))
                     {
                         return true;
                     }
