@@ -57,7 +57,7 @@
     "Tier": 7,
     "PlayerMinLevel": 61,
     "PlayerMaxLevel": 100,
-    "BotMinLevelVariance": 50,
+    "BotMinLevelVariance": 79,
     "BotMaxLevelVariance": 20,
     "ScavMinLevelVariance": 50,
     "ScavMaxLevelVariance": 20

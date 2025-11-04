@@ -74,7 +74,6 @@ public class GenerateBotLevel : AbstractPatch
         var fractionalExp = level < maxLevelIndex ? _randomUtil.GetInt(0, expTable[level].Experience - 1) : 0;
         
         __result = new RandomisedBotLevelResult { Exp = baseExp + fractionalExp, Level = level };
-        
         return false;
     }
     
