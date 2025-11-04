@@ -43,21 +43,22 @@ public class AddDogTagToBot_Patch : AbstractPatch
 
     private static MongoId GetDogtagTplByGameVersionAndSide(string side, string gameVersion, int? prestigeLevel)
     {
-        var result = (side.ToLower(), gameVersion, prestigeLevel) switch
+        
+        var result = (side.ToLowerInvariant(), gameVersion, prestigeLevel) switch
         {
             ("usec", GameEditions.UNHEARD, 0) => ItemTpl.BARTER_DOGTAG_USEC_TUE,
             ("usec", GameEditions.EDGE_OF_DARKNESS, 0) => ItemTpl.BARTER_DOGTAG_USEC_EOD,
             ("usec", _, 1) => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_1,
             ("usec", _, 2) => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_2,
             ("usec", _, 3) => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_3,
-            ("usec", _, 4) => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
+            ("usec", _, >= 4) => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
             ("usec", _, 0) => ItemTpl.BARTER_DOGTAG_USEC,
             ("bear", GameEditions.UNHEARD, 0) => ItemTpl.BARTER_DOGTAG_BEAR_TUE,
             ("bear", GameEditions.EDGE_OF_DARKNESS, 0) => ItemTpl.BARTER_DOGTAG_BEAR_EOD,
             ("bear", _, 1) => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_1,
             ("bear", _, 2) => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_2,
             ("bear", _, 3) => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_3,
-            ("bear", _, 4) => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
+            ("bear", _, >= 4) => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
             ("bear", _, 0) => ItemTpl.BARTER_DOGTAG_BEAR,
             (_, _, _) => ItemTpl.BARTER_DOGTAGT
         };
