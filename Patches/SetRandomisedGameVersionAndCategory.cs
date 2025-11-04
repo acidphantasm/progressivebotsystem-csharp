@@ -22,21 +22,15 @@ namespace _progressiveBotSystem.Patches;
 
 public class SetRandomisedGameVersionAndCategory_Patch : AbstractPatch
 {
-    private static TierHelper? _tierHelper;
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(BotGenerator),"SetRandomisedGameVersionAndCategory");
     }
 
     [PatchPrefix]
-    public static bool Prefix(Info botInfo)
+    public static bool Prefix(Info botInfo, string __result)
     {
-        _tierHelper ??= ServiceLocator.ServiceProvider.GetService<TierHelper>();
-        
-        if (!ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable &&
-            !ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevLevels.Enable) return true;
-
-        if (ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname))
+        if (ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname))
         {
             botInfo.GameVersion = GameEditions.UNHEARD;
             botInfo.MemberCategory = MemberCategory.Developer;
@@ -54,11 +48,16 @@ public class SetRandomisedGameVersionAndCategory_Patch : AbstractPatch
                 botInfo.Experience = exp;
                 botInfo.Level = level;
                 
+                
+                var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
                 var botInfoExtensionData = botInfo.GetExtensionData();
-                botInfoExtensionData["Tier"] = _tierHelper.GetTierByLevel(level);
+                botInfoExtensionData["Tier"] = tierHelper.GetTierByLevel(level);
             }
+
+            __result = botInfo.GameVersion;
+            return false;
         }
         
-        return false;
+        return true;
     }
 }
