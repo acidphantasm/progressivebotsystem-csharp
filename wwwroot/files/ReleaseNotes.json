@@ -1,14 +1,16 @@
 ﻿[
   {
     "Version": "2.0.4",
-    "ReleaseDate": "November 10, 2025",
+    "ReleaseDate": "November 11, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "Presets have returned."
     ],
     "Changes": [],
     "BugFixes": [],
-    "KnownIssues": []
+    "KnownIssues": [
+      "Plate Chances via config have been reported to not work. Will be investigated and resolved in the next update."
+    ]
   },
   {
     "Version": "2.0.3",
