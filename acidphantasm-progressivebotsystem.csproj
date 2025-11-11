@@ -39,14 +39,17 @@
     <ItemGroup>
         <ServerComponents Include="$(ProjectDir)/bin/Release/$(ProjectName)/*.*" />
         <Data Include="$(ProjectDir)Data\**\*.*" />
+        <Presets Include="$(ProjectDir)Presets\**\*.*" />
         <WebAssets Include="$(ProjectDir)wwwroot\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(TarkovDir)SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(Data)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\Data\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Presets)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\Presets\%(RecursiveDir)" />
     <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
     <RemoveDir Directories="$(ProjectDir)release" />
     <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(Data)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\Data\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Presets)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\Presets\%(RecursiveDir)" />
     <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
     <ZipDirectory SourceDirectory="$(ProjectDir)release\$(ProjectName)\" DestinationFile="$(ProjectDir)release\$(ProjectName).zip" />
 </Target>
@@ -203,6 +206,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Presets\ExamplePreset\" />
     <Folder Include="Utils\Logger\" />
   </ItemGroup>
 

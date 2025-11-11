@@ -1,6 +1,6 @@
 ﻿{
   "usePreset": false,
-  "presetName": "example",
+  "presetName": "ExamplePreset",
   "compatibilityConfig": {
     "enableModdedWeapons": false,
     "enableModdedEquipment": false,

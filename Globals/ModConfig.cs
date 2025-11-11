@@ -23,13 +23,15 @@ public class ModConfig : IOnLoad
         ApbsLogger apbsLogger,
         JsonUtil jsonUtil,
         FileUtil fileUtil,
-        BotConfigHelper botConfigHelper)
+        BotConfigHelper botConfigHelper,
+        DataLoader dataLoader)
     {
         _apbsLogger = apbsLogger;
         _modHelper = modHelper;
         _jsonUtil = jsonUtil;
         _fileUtil = fileUtil;
         _botConfigHelper = botConfigHelper;
+        _dataLoader = dataLoader;
         _modPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
     }
     private static ApbsLogger _apbsLogger;
@@ -37,6 +39,7 @@ public class ModConfig : IOnLoad
     private static JsonUtil _jsonUtil;
     private static FileUtil _fileUtil;
     private static BotConfigHelper _botConfigHelper;
+    private static DataLoader _dataLoader;
     public static ApbsServerConfig Config {get; private set;} = null!;
     public static ApbsServerConfig OriginalConfig {get; private set;} = null!;
     public static ApbsBlacklistConfig Blacklist { get; private set; } = null!;
@@ -49,10 +52,10 @@ public class ModConfig : IOnLoad
     public async Task OnLoad()
     {
         Config = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
-        OriginalConfig = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
+        OriginalConfig = DeepClone(Config);
         
         Blacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(_modPath + "/blacklists.json") ?? throw new ArgumentNullException();
-        OriginalBlacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(_modPath + "/blacklists.json") ?? throw new ArgumentNullException();
+        OriginalBlacklist = DeepClone(Blacklist);
         
 #if DEBUG
         Config.EnableDebugLog = true;
@@ -85,7 +88,7 @@ public class ModConfig : IOnLoad
 
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
 
-            _apbsLogger.Warning("ModConfig reloaded successfully.");
+            _apbsLogger.Success("ModConfig reloaded successfully.");
             return ConfigOperationResult.Success;
         }
         catch (Exception ex)
@@ -121,9 +124,23 @@ public class ModConfig : IOnLoad
             var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
 
+            
+            // Special handling for presets
+            if (Config.UsePreset && !OriginalConfig.UsePreset || Config.PresetName != OriginalConfig.PresetName && Config.UsePreset)
+            {
+                await _dataLoader.AssignJsonDataFromPreset(_modPath);
+            }
+            else if (!Config.UsePreset && OriginalConfig.UsePreset)
+            {
+                await _dataLoader.AssignJsonData(_modPath);
+            }
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
 
-            _apbsLogger.Warning("ModConfig saved successfully.");
+            // Update 'Original' config stuff since we've saved so the 'Undo' function works
+            OriginalConfig = DeepClone(Config);
+            OriginalBlacklist = DeepClone(Blacklist);
+            
+            _apbsLogger.Success("ModConfig saved successfully.");
             return ConfigOperationResult.Success;
         }
         catch (Exception ex)

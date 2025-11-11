@@ -2,6 +2,7 @@
 
 public class Logging
 {
+    public const string Success = "success";
     public const string Warning = "warnings";
     public const string Error = "errors";
     public const string Debug = "debug";
