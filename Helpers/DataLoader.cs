@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.Json;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Models;
@@ -87,9 +88,52 @@ public class DataLoader(
         else await AssignJsonData(pathToMod);
         
         await AssignTierData(pathToMod);
-        
-        if (ModConfig.Config.EnableDebugLog) apbsLogger.Debug("Database Loaded");
+
+        try
+        {
+            InternalFileValidation(pathToMod);
+            if (ModConfig.Config.EnableDebugLog) apbsLogger.Debug("Database Loaded and hash-verified");
+        }
+        catch (Exception ex)
+        {
+            apbsLogger.Error("Data has been tampered with. If you have any issues you did this to yourself. No support.");
+        }
     }
+
+    private void InternalFileValidation(string pathToMod)
+    {
+        string dataDir = Path.Combine(pathToMod, "Data");
+        bool allValid = true;
+
+        foreach (var kvp in JsonFileHashes.Hashes)
+        {
+            string relativePath = kvp.Key;
+            string expectedHash = kvp.Value;
+
+            string fullPath = Path.Combine(dataDir, relativePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+            if (!File.Exists(fullPath))
+            {
+                apbsLogger.Error($"Missing file: {relativePath}");
+                allValid = false;
+                continue;
+            }
+
+            using var sha = SHA256.Create();
+            byte[] bytes = File.ReadAllBytes(fullPath);
+            string fileHash = Convert.ToHexString(sha.ComputeHash(bytes));
+
+            if (!string.Equals(fileHash, expectedHash, StringComparison.OrdinalIgnoreCase))
+            {
+                apbsLogger.Error($"Hash mismatch: {relativePath}");
+                allValid = false;
+            }
+        }
+
+        if (!allValid)
+            throw new InvalidOperationException();
+    }
+
 
     public async Task AssignJsonData(string pathToMod)
     {

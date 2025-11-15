@@ -569,4 +569,8 @@ public class ConfigAppSettings
     public bool DisableAnimations { get; set; }
     [JsonPropertyName("allowUpdateChecks")]
     public bool AllowUpdateChecks { get; set; }
+    [JsonPropertyName("requireAuthCode")]
+    public bool RequireAuthCode { get; set; }
+    [JsonPropertyName("authCode")]
+    public string AuthCode { get; set; }
 }

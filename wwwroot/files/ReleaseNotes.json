@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.0.5",
+    "ReleaseDate": "November 15, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Option to lock web config behind an authorization code - you cannot enable or change the code in the WebApp. You must do this in the config.json yourself. You can disable it via WebApp, if you have it enabled and have authorized yourself."
+    ],
+    "Changes": [],
+    "BugFixes": [],
+    "KnownIssues": [
+      "Plate Chances via config have been reported to not work. Will be investigated and resolved in the next update."
+    ]
+  },
+  {
     "Version": "2.0.4",
     "ReleaseDate": "November 11, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Presets have returned."
     ],

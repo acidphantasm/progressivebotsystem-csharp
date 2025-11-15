@@ -21,6 +21,10 @@
     <PropertyGroup>
         <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT 4.0.0 DEV\</TarkovDir>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
     
   <ItemGroup>
     <PackageReference Include="SPTarkov.Common" Version="4.0.2" />
@@ -30,12 +34,12 @@
     <PackageReference Include="SPTarkov.Server.Web" Version="4.0.2" />
   </ItemGroup>
 
-
-<PropertyGroup>
-   
-</PropertyGroup>
     
-<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Target Name="GenerateJsonHashes" BeforeTargets="BeforeBuild">
+        <Exec Command="dotnet exec &quot;$(MSBuildProjectDirectory)..\..\datavalidation\DataValidation\DataValidation\bin\Debug\net9.0\DataValidation.dll&quot; &quot;$(ProjectDir)Data&quot; &quot;$(ProjectDir)\Constants\JsonFileHashes.cs&quot;" />
+    </Target>
+    
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
         <ServerComponents Include="$(ProjectDir)/bin/Release/$(ProjectName)/*.*" />
         <Data Include="$(ProjectDir)Data\**\*.*" />
@@ -208,6 +212,7 @@
   <ItemGroup>
     <Folder Include="Presets\ExamplePreset\" />
     <Folder Include="Utils\Logger\" />
+    <Folder Include="Web\Service\" />
   </ItemGroup>
 
 </Project>
