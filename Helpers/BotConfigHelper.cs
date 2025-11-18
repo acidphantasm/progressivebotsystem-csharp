@@ -792,48 +792,64 @@ public class BotConfigHelper : IOnLoad
     }
     private void SetWeaponDurability()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Weapon Durability");
+        if (ModConfig.Config.EnableDebugLog)
+            _apbsLogger.Debug("Setting Bot Weapon Durability");
+
+        List<ValueTuple<string, WeaponDurabilityConfig, List<string>>> spawnTypes =
+        [
+            (typeof(ScavBots).Name,
+             ModConfig.Config.ScavBots.WeaponDurability,
+             typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(BossBots).Name,
+             ModConfig.Config.BossBots.WeaponDurability,
+             typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(FollowerBots).Name,
+             ModConfig.Config.FollowerBots.WeaponDurability,
+             typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(SpecialBots).Name,
+             ModConfig.Config.SpecialBots.WeaponDurability,
+             typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+        ];
+
         var botDurability = _botConfig.Durability;
+
         foreach (var (botType, data) in botDurability.BotDurabilities)
         {
-            if (!_botActivityHelper.IsBotEnabled(botType)) continue;
-            if (typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.ScavBots.WeaponDurability.Enable)
+            if (!_botActivityHelper.IsBotEnabled(botType))
+                continue;
+
+            bool unknown = true;
+
+            foreach (var (configName, wdc, configNameList) in spawnTypes)
             {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.ScavBots.WeaponDurability.Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.ScavBots.WeaponDurability.Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.ScavBots.WeaponDurability.MinDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent;
+                if (!configNameList.Contains(botType))
+                    continue;
+
+                unknown = false;
+
+                if (!wdc.Enable)
+                    break;
+
+                botDurability.BotDurabilities[botType].Weapon.HighestMax = wdc.Max;
+                botDurability.BotDurabilities[botType].Weapon.LowestMax = wdc.Min;
+                botDurability.BotDurabilities[botType].Weapon.MaxDelta = wdc.MaxDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinDelta = wdc.MinDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = wdc.MinLimitPercent;
+                break;
             }
-            else if (typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.BossBots.WeaponDurability.Enable)
+
+            if (unknown)
             {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.BossBots.WeaponDurability.Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.BossBots.WeaponDurability.Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.BossBots.WeaponDurability.MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.BossBots.WeaponDurability.MinDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.BossBots.WeaponDurability.MinLimitPercent;
+                _apbsLogger.Error($"[DURABILITY] Unknown bot type: {botType}");
+                continue;
             }
-            else if (typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.FollowerBots.WeaponDurability.Enable)
-            {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.FollowerBots.WeaponDurability.Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.FollowerBots.WeaponDurability.Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.FollowerBots.WeaponDurability.MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.FollowerBots.WeaponDurability.MinDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.FollowerBots.WeaponDurability.MinLimitPercent;
-            }
-            else if (typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.SpecialBots.WeaponDurability.Enable)
-            {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.SpecialBots.WeaponDurability.Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.SpecialBots.WeaponDurability.Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.SpecialBots.WeaponDurability.MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.SpecialBots.WeaponDurability.MinDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.SpecialBots.WeaponDurability.MinLimitPercent;
-            }
-            else _apbsLogger.Error($"[DURABILITY] Unknown bot type: {botType}");
         }
 
-        if (!ModConfig.Config.PmcBots.WeaponDurability.Enable) return;
-        
+        if (!ModConfig.Config.PmcBots.WeaponDurability.Enable)
+            return;
         botDurability.Pmc.Weapon.HighestMax = ModConfig.Config.PmcBots.WeaponDurability.Max;
         botDurability.Pmc.Weapon.LowestMax = ModConfig.Config.PmcBots.WeaponDurability.Min;
         botDurability.Pmc.Weapon.MaxDelta = ModConfig.Config.PmcBots.WeaponDurability.MaxDelta;
@@ -859,62 +875,74 @@ public class BotConfigHelper : IOnLoad
     }
     private void SetItemResourceRandomization()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Food and Medical Item Randomisation");
+        if (ModConfig.Config.EnableDebugLog)
+            _apbsLogger.Debug("Setting Bot Food and Medical Item Randomisation");
+
+        List<ValueTuple<string, ResourceRandomizationConfig, List<string>>> spawnTypes =
+        [
+            (typeof(PmcBots).Name,
+             ModConfig.Config.PmcBots.ResourceRandomization,
+             typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(ScavBots).Name,
+             ModConfig.Config.ScavBots.ResourceRandomization,
+             typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(BossBots).Name,
+             ModConfig.Config.BossBots.ResourceRandomization,
+             typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(FollowerBots).Name,
+             ModConfig.Config.FollowerBots.ResourceRandomization,
+             typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+
+            (typeof(SpecialBots).Name,
+             ModConfig.Config.SpecialBots.ResourceRandomization,
+             typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().ToList()),
+        ];
+
         // Loop the bot types instead of the botconfig, even though the actual values exist in the bot config - I need proper bot names
         var botTable = _databaseService.GetBots().Types;
+
         foreach (var (botType, data) in botTable)
         {
-            if (!_botActivityHelper.IsBotEnabled(botType)) continue;
-            
-            var setValues = false;
+            if (!_botActivityHelper.IsBotEnabled(botType))
+                continue;
+
+            bool unknown = true;
+            bool enabled = false;
+
             var foodMaxChance = 100;
             var medMaxChange = 100;
             var foodResourcePercent = 60;
             var medResourcePercent = 60;
 
-            if (typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.PmcBots.ResourceRandomization.Enable)
+            foreach (var (configName, rrc, configNameList) in spawnTypes)
             {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.PmcBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.PmcBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.PmcBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.PmcBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.ScavBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.ScavBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.ScavBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.ScavBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.ScavBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.BossBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.BossBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.BossBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.BossBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.BossBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.FollowerBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.FollowerBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.FollowerBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.FollowerBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.FollowerBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.SpecialBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.SpecialBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.SpecialBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.SpecialBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.SpecialBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else _apbsLogger.Error($"[RESOURCERANDOMIZATION] Unknown bot type: {botType}");
+                if (!configNameList.Contains(botType))
+                    continue;
 
-            if (!setValues) continue;
+                unknown = false;
+                enabled = rrc.Enable;
+
+                if (!enabled)
+                    break;
+
+                foodMaxChance = rrc.FoodRateMaxChance;
+                medMaxChange = rrc.MedRateMaxChance;
+                foodResourcePercent = rrc.FoodRateUsagePercent;
+                medResourcePercent = rrc.MedRateUsagePercent;
+                break;
+            }
+
+            if (unknown)
+            {
+                _apbsLogger.Error($"[RESOURCERANDOMIZATION] Unknown bot type: {botType}");
+                continue;
+            }
+
+            if (!enabled)
+                continue;
 
             if (!_botConfig.LootItemResourceRandomization.TryGetValue(botType, out var randomizdResourceDetails))
             {
