@@ -829,7 +829,6 @@ public class BotConfigHelper : IOnLoad
                 botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.SpecialBots.WeaponDurability.MinDelta;
                 botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.SpecialBots.WeaponDurability.MinLimitPercent;
             }
-            else _apbsLogger.Error($"[DURABILITY] Unknown bot type: {botType}");
         }
 
         if (!ModConfig.Config.PmcBots.WeaponDurability.Enable) return;
@@ -912,7 +911,6 @@ public class BotConfigHelper : IOnLoad
                 foodResourcePercent = ModConfig.Config.SpecialBots.ResourceRandomization.FoodRateUsagePercent;
                 medResourcePercent = ModConfig.Config.SpecialBots.ResourceRandomization.MedRateUsagePercent;
             }
-            else _apbsLogger.Error($"[RESOURCERANDOMIZATION] Unknown bot type: {botType}");
 
             if (!setValues) continue;
 

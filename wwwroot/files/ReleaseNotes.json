@@ -1,15 +1,28 @@
 ﻿[
   {
+    "Version": "2.0.6",
+    "ReleaseDate": "November 17, 2025",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Removed incorrect logging on Resource Randomization & Weapon Durability configs"
+    ],
+    "BugFixes": [],
+    "KnownIssues": [
+      "Plate Chances via config have been reported to not work. Will be investigated and resolved in future update (eventually)."
+    ]
+  },
+  {
     "Version": "2.0.5",
     "ReleaseDate": "November 15, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Option to lock web config behind an authorization code."
     ],
     "Changes": [],
     "BugFixes": [],
     "KnownIssues": [
-      "Plate Chances via config have been reported to not work. Will be investigated and resolved in the next update."
+      "Plate Chances via config have been reported to not work. Will be investigated and resolved in future update."
     ]
   },
   {
@@ -22,7 +35,7 @@
     "Changes": [],
     "BugFixes": [],
     "KnownIssues": [
-      "Plate Chances via config have been reported to not work. Will be investigated and resolved in the next update."
+      "Plate Chances via config have been reported to not work. Will be investigated and resolved in future update."
     ]
   },
   {
