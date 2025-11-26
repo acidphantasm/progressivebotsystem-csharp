@@ -1,8 +1,18 @@
-﻿@using _progressiveBotSystem.Models.Enums
+﻿@using System.Collections
+@using _progressiveBotSystem.Helpers
+@using _progressiveBotSystem.Models
+@using _progressiveBotSystem.Models.Enums
+@using SPTarkov.Server.Core.Models.Common
+@using SPTarkov.Server.Core.Models.Eft.Common.Tables
+@using Color = MudBlazor.Color
 @inherits LayoutComponentBase
+
+@implements IAsyncDisposable
+@inject NavigationManager NavManager
+@inject DataLoader Dataloader
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 
 <HeadContent>
     <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
@@ -183,10 +193,15 @@ else
 
 
 @code {
+    private static MainLayout? _app;
+    public static event Action? OnPresetChanged;
+    private IDisposable _locationChangingRegistration;
+    
     bool _drawerOpen = false;
     public bool _isInRaid = false;
-    static bool _unsavedChanges = false;
     
+    static bool _unsavedChanges = false;
+    public static List<string> pendingChanges = new();
     private static bool _isSaving = false;
     private static bool _isReloading = false;
     public static bool AlreadyCheckedForUpdate = false;
@@ -196,13 +211,35 @@ else
     private string _authCode;
     private bool _authFailed;
     
+    
+    // Equipment Tracking Changes
+    public static Dictionary<string, double> EquipmentWeightChanges = new();
+    public static HashSet<string> EquipmentRemovedItems = new();
+    public static HashSet<string> EquipmentAddedItems = new();
+    
+    // Ammo Tracking Changes
+    public static Dictionary<string, double> AmmoWeightChanges = new();
+    public static HashSet<string> AmmoRemovedItems = new();
+    public static HashSet<string> AmmoAddedItems = new();
+    
+    // Chances Tracking
+    public static Dictionary<string, double> ChancesWeightChanges = new();
+    public static Dictionary<string, double> GenerationWeightChanges = new();
+    public static Dictionary<string, double> GenerationWhitelistWeightChanges = new();
+    public static HashSet<string> GenerationWhitelistRemovedItems = new();
+    public static HashSet<string> GenerationWhitelistAddedItems = new();
+    
+    // Appearance Tracking Changes
+    public static Dictionary<string, double> AppearanceWeightChanges = new();
+    public static HashSet<string> AppearanceRemovedItems = new();
+    public static HashSet<string> AppearanceAddedItems = new();
+    
     public static bool _appRequireAuthCode
     {
         get => ModConfig.Config.ConfigAppSettings.RequireAuthCode; 
         set {
             ModConfig.Config.ConfigAppSettings.RequireAuthCode = value;
-            if (!pendingChanges.Contains("_appRequireAuthCode")) pendingChanges.Add("_appRequireAuthCode");
-            else pendingChanges.Remove("_appRequireAuthCode");
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.RequireAuthCode);
         }
     }
     
@@ -211,8 +248,7 @@ else
         get => ModConfig.Config.ConfigAppSettings.ShowUndo; 
         set { 
             ModConfig.Config.ConfigAppSettings.ShowUndo = value;
-            if (!pendingChanges.Contains("_appUndoButtonToggle")) pendingChanges.Add("_appUndoButtonToggle");
-            else pendingChanges.Remove("_appUndoButtonToggle");
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowUndo);
         }
     }
     public static bool _appDefaultButtonToggle
@@ -221,8 +257,7 @@ else
         set
         {
             ModConfig.Config.ConfigAppSettings.ShowDefault = value;
-            if (!pendingChanges.Contains("_appDefaultButtonToggle")) pendingChanges.Add("_appDefaultButtonToggle");
-            else pendingChanges.Remove("_appDefaultButtonToggle");
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowDefault);
         }
     }
     public static bool _appDisableAnimations
@@ -231,8 +266,7 @@ else
         set
         {
             ModConfig.Config.ConfigAppSettings.DisableAnimations = value;
-            if (!pendingChanges.Contains("_appDisableAnimations")) pendingChanges.Add("_appDisableAnimations");
-            else pendingChanges.Remove("_appDisableAnimations");
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.DisableAnimations);
         }
     }
     public static bool _appAllowUpdateChecks
@@ -241,8 +275,7 @@ else
         set
         {
             ModConfig.Config.ConfigAppSettings.AllowUpdateChecks = value;
-            if (!pendingChanges.Contains("_appAllowUpdateChecks")) pendingChanges.Add("_appAllowUpdateChecks");
-            else pendingChanges.Remove("_appAllowUpdateChecks");
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.AllowUpdateChecks);
         }
     }
     
@@ -252,7 +285,7 @@ else
         {
             _isAuthenticated = true;
 
-            await JS.InvokeVoidAsync("sessionStorage.setItem", "modAuth", "true");
+            await Js.InvokeVoidAsync("sessionStorage.setItem", "modAuth", "true");
             StateHasChanged();
         }
         else
@@ -261,15 +294,120 @@ else
         }
     }
     
+    protected override void OnInitialized()
+    {
+        _locationChangingRegistration = NavManager.RegisterLocationChangingHandler(OnLocationChanging);
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var stored = await JS.InvokeAsync<string>("sessionStorage.getItem", "modAuth");
+            var stored = await Js.InvokeAsync<string>("sessionStorage.getItem", "modAuth");
             _isAuthenticated = stored == "true";
 
             StateHasChanged();
         }
+    }
+    
+    private ValueTask OnLocationChanging(LocationChangingContext context)
+    {
+        if (HasPendingChanges())
+        {
+            context.PreventNavigation();
+            ShowPendingChangesDialog();
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    private bool HasPendingChanges()
+    {
+        return EquipmentWeightChanges.Count > 0
+           || AmmoWeightChanges.Count > 0
+           || ChancesWeightChanges.Count > 0
+           || GenerationWeightChanges.Count > 0
+           || GenerationWhitelistWeightChanges.Count > 0
+           || EquipmentAddedItems.Count > 0
+           || EquipmentRemovedItems.Count > 0
+           || AmmoAddedItems.Count > 0
+           || AmmoRemovedItems.Count > 0
+           || GenerationWhitelistAddedItems.Count > 0
+           || GenerationWhitelistRemovedItems.Count > 0 
+           || AppearanceWeightChanges.Count > 0 
+           || AppearanceAddedItems.Count > 0 
+           || AppearanceRemovedItems.Count > 0;
+    }
+
+    private void ClearPendingChanges()
+    {
+        pendingChanges.Clear();
+        EquipmentWeightChanges.Clear();
+        EquipmentRemovedItems.Clear();
+        EquipmentAddedItems.Clear();
+        AmmoWeightChanges.Clear();
+        AmmoRemovedItems.Clear();
+        AmmoAddedItems.Clear();
+        ChancesWeightChanges.Clear();
+        GenerationWeightChanges.Clear();
+        GenerationWhitelistWeightChanges.Clear();
+        GenerationWhitelistRemovedItems.Clear();
+        GenerationWhitelistAddedItems.Clear();
+        AppearanceAddedItems.Clear();
+        AppearanceRemovedItems.Clear();
+        AppearanceWeightChanges.Clear();
+        Utils.callerList.Clear();
+    }
+
+    private async void ShowPendingChangesDialog()
+    {
+        // Build a list of all changed items
+        var changeList = new List<string>();
+
+        changeList.AddRange(EquipmentAddedItems.Select(x => $"Equipment Added: {x}"));
+        changeList.AddRange(EquipmentRemovedItems.Select(x => $"Equipment Removed: {x}"));
+        changeList.AddRange(EquipmentWeightChanges.Select(x => $"Equipment Weight Changed: {x.Key}"));
+
+        changeList.AddRange(AmmoAddedItems.Select(x => $"Ammo Added: {x}"));
+        changeList.AddRange(AmmoRemovedItems.Select(x => $"Ammo Removed: {x}"));
+        changeList.AddRange(AmmoWeightChanges.Select(x => $"Ammo Weight Changed: {x.Key}"));
+
+        changeList.AddRange(ChancesWeightChanges.Select(x => $"Chance Weight Changed: {x.Key}"));
+
+        changeList.AddRange(GenerationWeightChanges.Select(x => $"Generation Weight Changed: {x.Key}"));
+        changeList.AddRange(GenerationWhitelistWeightChanges.Select(x => $"Generation Whitelist Weight Changed: {x.Key}"));
+        changeList.AddRange(GenerationWhitelistAddedItems.Select(x => $"Generation Whitelist Added: {x}"));
+        changeList.AddRange(GenerationWhitelistRemovedItems.Select(x => $"Generation Whitelist Removed: {x}"));
+
+        changeList.AddRange(AppearanceAddedItems.Select(x => $"Appearance Added: {x}"));
+        changeList.AddRange(AppearanceRemovedItems.Select(x => $"Appearance Removed: {x}"));
+        changeList.AddRange(AppearanceWeightChanges.Select(x => $"Appearance Weight Changed: {x.Key}"));
+
+        // Show a default message if there are no changes
+        if (!changeList.Any())
+            changeList.Add("No pending changes detected.");
+
+        var parameters = new DialogParameters<RefreshWarningDialog>
+        {
+            { x => x.ChangeList, changeList },
+            { x => x.ButtonText, "Save Changes" },
+            { x => x.Color, Color.Primary }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
+        var dialog = await DialogService.ShowAsync<RefreshWarningDialog>("Unsaved Changes", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await SaveData();
+        }
+    }
+
+    
+    public async ValueTask DisposeAsync()
+    {
+        _locationChangingRegistration?.Dispose();
     }
 
     MudTheme APBSThemeAdjustments = new MudTheme()
@@ -283,10 +421,6 @@ else
         },
         
     };
-
-    public static List<string> pendingChanges = new List<string>();
-
-    private static MainLayout? _app;
 
     public MainLayout()
     {
@@ -315,15 +449,22 @@ else
             _isSaving = true;
             StateHasChanged();
 
-            var result = await ModConfig.SaveConfig();
+            var updatePresetOnDisk = false;
+
+            if (HasPendingChanges())
+            {
+                updatePresetOnDisk = true;
+
+                ApplyPresetChanges();
+            }
+            var result = await ModConfig.SaveConfig(updatePresetOnDisk);
 
             StateHasChanged();
             switch (result)
             {
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config saved successfully.", Severity.Info, config => { config.ShowCloseIcon = false; });
-                    pendingChanges.Clear();
-                    Utils.callerList.Clear();
+                    ClearPendingChanges();
                     _unsavedChanges = false;
                     _isInRaid = false;
                     break;
@@ -346,6 +487,11 @@ else
         }
         finally
         {
+
+            if (ModConfig.Config.UsePreset)
+            {
+                OnPresetChanged?.Invoke();
+            }
             _isSaving = false;
             StateHasChanged();
         }
@@ -394,8 +540,7 @@ else
                     Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
                     _isInRaid = false;
                     _unsavedChanges = false;
-                    pendingChanges.Clear();
-                    Utils.callerList.Clear();
+                    ClearPendingChanges();
                     break;
                 case ConfigOperationResult.InRaid:
                     Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
@@ -463,8 +608,7 @@ else
                 case ConfigOperationResult.Success:
                     _isInRaid = false;
                     Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
-                    pendingChanges.Clear();
-                    Utils.callerList.Clear();
+                    ClearPendingChanges();
                     _unsavedChanges = false;
                     break;
 
@@ -498,5 +642,393 @@ else
     {
         _isInRaid = RaidInformation.IsInRaid;
         StateHasChanged();
+    }
+    
+    private void ApplyPresetChanges()
+    {
+        ApplyEquipmentChangesToTier(Dataloader.Tier1EquipmentData, "1");
+        ApplyEquipmentChangesToTier(Dataloader.Tier2EquipmentData, "2");
+        ApplyEquipmentChangesToTier(Dataloader.Tier3EquipmentData, "3");
+        ApplyEquipmentChangesToTier(Dataloader.Tier4EquipmentData, "4");
+        ApplyEquipmentChangesToTier(Dataloader.Tier5EquipmentData, "5");
+        ApplyEquipmentChangesToTier(Dataloader.Tier6EquipmentData, "6");
+        ApplyEquipmentChangesToTier(Dataloader.Tier7EquipmentData, "7");
+        
+        ApplyAmmoChangesToTier(Dataloader.Tier1AmmoData, "1");
+        ApplyAmmoChangesToTier(Dataloader.Tier2AmmoData, "2");
+        ApplyAmmoChangesToTier(Dataloader.Tier3AmmoData, "3");
+        ApplyAmmoChangesToTier(Dataloader.Tier4AmmoData, "4");
+        ApplyAmmoChangesToTier(Dataloader.Tier5AmmoData, "5");
+        ApplyAmmoChangesToTier(Dataloader.Tier6AmmoData, "6");
+        ApplyAmmoChangesToTier(Dataloader.Tier7AmmoData, "7");
+        
+        ApplyChancesChangesToTier(Dataloader.Tier1ChancesData, "1");
+        ApplyChancesChangesToTier(Dataloader.Tier2ChancesData, "2");
+        ApplyChancesChangesToTier(Dataloader.Tier3ChancesData, "3");
+        ApplyChancesChangesToTier(Dataloader.Tier4ChancesData, "4");
+        ApplyChancesChangesToTier(Dataloader.Tier5ChancesData, "5");
+        ApplyChancesChangesToTier(Dataloader.Tier6ChancesData, "6");
+        ApplyChancesChangesToTier(Dataloader.Tier7ChancesData, "7");
+
+        ApplyAppearanceChangesToTier(Dataloader.Tier1AppearanceData, "1");
+        ApplyAppearanceChangesToTier(Dataloader.Tier2AppearanceData, "2");
+        ApplyAppearanceChangesToTier(Dataloader.Tier3AppearanceData, "3");
+        ApplyAppearanceChangesToTier(Dataloader.Tier4AppearanceData, "4");
+        ApplyAppearanceChangesToTier(Dataloader.Tier5AppearanceData, "5");
+        ApplyAppearanceChangesToTier(Dataloader.Tier6AppearanceData, "6");
+        ApplyAppearanceChangesToTier(Dataloader.Tier7AppearanceData, "7");
+    }
+    
+    private static readonly Dictionary<string, ApbsEquipmentSlots> _stringToSlot = new()
+    {
+        { "Headwear", ApbsEquipmentSlots.Headwear },
+        { "Earpiece", ApbsEquipmentSlots.Earpiece },
+        { "FaceCover", ApbsEquipmentSlots.FaceCover },
+        { "ArmorVest", ApbsEquipmentSlots.ArmorVest },
+        { "Eyewear", ApbsEquipmentSlots.Eyewear },
+        { "ArmBand", ApbsEquipmentSlots.ArmBand },
+        { "TacticalVest", ApbsEquipmentSlots.TacticalVest },
+        { "Pockets", ApbsEquipmentSlots.Pockets },
+        { "Backpack", ApbsEquipmentSlots.Backpack },
+        { "SecuredContainer", ApbsEquipmentSlots.SecuredContainer },
+        { "FirstPrimaryWeapon_LongRange", ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange },
+        { "FirstPrimaryWeapon_ShortRange", ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange },
+        { "SecondPrimaryWeapon_LongRange", ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange },
+        { "SecondPrimaryWeapon_ShortRange", ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange },
+        { "Holster", ApbsEquipmentSlots.Holster },
+        { "Scabbard", ApbsEquipmentSlots.Scabbard },
+        { "ArmouredRig", ApbsEquipmentSlots.ArmouredRig }
+    };
+
+    
+    private void ApplyEquipmentChangesToTier(EquipmentTierData tier, string tierIndex)
+    {
+        foreach (var key in EquipmentRemovedItems.Concat(EquipmentAddedItems).Concat(EquipmentWeightChanges.Keys))
+        {
+            var parts = key.Split('_');
+            if (parts.Length < 4) return;
+
+            var keyTier = parts[0];
+            var botName = parts[1];
+            
+            var idStr = parts[^1];
+            
+            var categoryStr = string.Join("_", parts[2..^1]);
+
+            if (!keyTier.Equals($"Tier{tierIndex}", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var botProp = typeof(EquipmentTierData).GetProperty(botName);
+            if (botProp == null) continue;
+
+            var botData = (ApbsEquipmentBot)botProp.GetValue(tier)!;
+
+            if (!_stringToSlot.TryGetValue(categoryStr, out var slot))
+                continue;
+
+            var equipmentDict = botData.Equipment;
+            var id = new MongoId(idStr);
+
+            if (!equipmentDict.TryGetValue(slot, out var items))
+            {
+                items = new Dictionary<MongoId, double>();
+                equipmentDict[slot] = items;
+            }
+            
+            if (EquipmentRemovedItems.Contains(key))
+            {
+                items.Remove(id);
+            }
+            
+            if (EquipmentAddedItems.Contains(key))
+            {
+                double weight = EquipmentWeightChanges.TryGetValue(key, out var w) ? w : 1;
+                items[id] = weight;
+            }
+            
+            if (EquipmentWeightChanges.TryGetValue(key, out var newWeight))
+            {
+                items[id] = newWeight;
+            }
+        }
+    }
+
+    private void ApplyAmmoChangesToTier(AmmoTierData tier, string tierIndex)
+    {
+        foreach (var prop in typeof(AmmoTierData).GetProperties())
+        {
+            string botName = prop.Name;
+            var botData = (Dictionary<string, Dictionary<MongoId, double>>)prop.GetValue(tier)!;
+
+            void ApplyToAmmo(string key, Action<Dictionary<MongoId, double>, MongoId> action)
+            {
+                var parts = key.Split('_');
+                if (parts.Length < 4) return;
+
+                var keyTier = parts[0];
+                var keyBot = parts[1];
+                var idStr = parts[^1];
+                var category = string.Join("_", parts[2..^1]);
+
+                if (!keyTier.Equals($"Tier{tierIndex}", StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                if (!keyBot.Equals(botName, StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                if (!botData.TryGetValue(category, out var items))
+                {
+                    items = new Dictionary<MongoId, double>();
+                    botData[category] = items;
+                }
+
+                var mongoId = new MongoId(idStr);
+                action(items, mongoId);
+            }
+            
+            foreach (var key in AmmoRemovedItems)
+                ApplyToAmmo(key, (items, id) => items.Remove(id));
+            
+            foreach (var key in AmmoAddedItems)
+                ApplyToAmmo(key, (items, id) =>
+                {
+                    double weight = AmmoWeightChanges.TryGetValue(key, out var w) ? w : 1;
+                    items[id] = weight;
+                });
+            
+            foreach (var (key, weight) in AmmoWeightChanges)
+                ApplyToAmmo(key, (items, id) =>
+                {
+                    if (items.ContainsKey(id))
+                        items[id] = weight;
+                });
+        }
+    }
+
+    private static void ApplyChancesChangesToTier(ChancesTierData tierData, string tier)
+    {
+        foreach (var botProp in typeof(ChancesTierData).GetProperties())
+        {
+            string botType = botProp.Name;
+            var botData = botProp.GetValue(tierData) as BotChancesData;
+            if (botData?.Chances == null) continue;
+
+            var chances = botData.Chances;
+            
+            foreach (var dictProp in typeof(ApbsChances).GetProperties())
+            {
+                if (dictProp.Name.Equals("Generation", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var dict = dictProp.GetValue(chances) as IDictionary;
+                if (dict == null) continue;
+
+                string category = dictProp.Name;
+
+                var keys = ChancesWeightChanges
+                    .Where(kvp =>
+                    {
+                        var parts = kvp.Key.Split('_', 4);
+                        return parts.Length == 4
+                               && parts[0] == $"Tier{tier}"
+                               && parts[1] == botType
+                               && parts[2] == category;
+                    });
+
+                foreach (var kvp in keys)
+                {
+                    string id = kvp.Key.Split('_', 4)[3];
+                    if (dict.Contains(id))
+                        dict[id] = kvp.Value;
+                }
+            }
+            
+            var genItems = chances.Generation?.Items;
+            if (genItems == null) continue;
+
+            foreach (var genProp in typeof(ApbsGenerationWeightingItems).GetProperties())
+            {
+                var genData = genProp.GetValue(genItems) as ApbsGenerationData;
+                if (genData == null) continue;
+
+                string genCategory = genProp.Name;
+                
+                var whitelistKeys = GenerationWhitelistWeightChanges
+                    .Where(kvp =>
+                    {
+                        var parts = kvp.Key.Split('_', 4);
+                        return parts.Length == 4
+                               && parts[0] == $"Tier{tier}"
+                               && parts[1] == botType
+                               && parts[2] == genCategory;
+                    });
+
+                foreach (var kvp in whitelistKeys)
+                {
+                    string id = kvp.Key.Split('_', 4)[3];
+                    try
+                    {
+                        var mongoId = new MongoId(id);
+                        if (genData.Whitelist.ContainsKey(mongoId))
+                            genData.Whitelist[mongoId] = kvp.Value;
+                    }
+                    catch
+                    {
+                    }
+                }
+                
+                if (GenerationWeightChanges != null)
+                {
+                    for (int slotIndex = 0; slotIndex < 8; slotIndex++)
+                    {
+                        var key = $"Tier{tier}_{botType}_{genCategory}_{slotIndex}";
+                        double value;
+
+                        if (GenerationWeightChanges.TryGetValue(key, out var changedValue))
+                        {
+                            // Use the user-modified value
+                            value = changedValue;
+                        }
+                        else if (genData.Weights.TryGetValue(slotIndex, out var existingValue))
+                        {
+                            // Keep the original value
+                            value = existingValue;
+                        }
+                        else
+                        {
+                            // Default if missing
+                            value = 0;
+                        }
+
+                        genData.Weights[slotIndex] = value;
+                    }
+                }
+                
+                foreach (var key in GenerationWhitelistAddedItems.Concat(GenerationWhitelistRemovedItems))
+                {
+                    var parts = key.Split('_', 4);
+                    if (parts.Length != 4 || parts[0] != $"Tier{tier}" || parts[1] != botType || parts[2] != genCategory)
+                        continue;
+
+                    string id = parts[3];
+                    try
+                    {
+                        var mongoId = new MongoId(id);
+                        if (GenerationWhitelistAddedItems.Contains(key))
+                        {
+                            if (!genData.Whitelist.ContainsKey(mongoId))
+                                genData.Whitelist[mongoId] = 1;
+                        }
+                        else if (GenerationWhitelistRemovedItems.Contains(key))
+                        {
+                            genData.Whitelist.Remove(mongoId);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+    }
+    
+   private void ApplyAppearanceChangesToTier(AppearanceTierData tierData, string tierIndex)
+    {
+        void ApplyToAppearance(string key, Action<Dictionary<MongoId, double>, MongoId> action)
+        {
+            var parts = key.Split('_');
+            if (parts.Length < 4) return;
+
+            string keyTier = parts[0];
+            string botType = parts[1];
+            string category = parts[2];
+            string idStr = parts[3];
+
+            if (!keyTier.Equals($"Tier{tierIndex}", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            if (category.Equals("voice", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var mongoId = new MongoId(idStr);
+
+            Dictionary<MongoId, double>? dict = null;
+
+            Dictionary<string, Appearance>? GetBotAppearances() => botType switch
+            {
+                "PmcUsec" => tierData.PmcUsec,
+                "PmcBear" => tierData.PmcBear,
+                _ => null
+            };
+
+            if (botType.Contains("-")) // season bots
+            {
+                var seasonParts = botType.Split('-', 2);
+                string seasonName = seasonParts[0];
+                string seasonBot = seasonParts[1];
+
+                SeasonAppearance? season = seasonName.ToLower() switch
+                {
+                    "springearly" => tierData.SpringEarly,
+                    "spring" => tierData.Spring,
+                    "summer" => tierData.Summer,
+                    "autumn" => tierData.Autumn,
+                    "winter" => tierData.Winter,
+                    _ => null
+                };
+                if (season == null) return;
+
+                Dictionary<string, Appearance>? botAppearances = seasonBot switch
+                {
+                    "PmcUsec" => season.PmcUsec,
+                    "PmcBear" => season.PmcBear,
+                    _ => null
+                };
+                if (botAppearances == null) return;
+
+                if (botAppearances.Values.FirstOrDefault() is not Appearance app) return;
+
+                dict = category.ToLower() switch
+                {
+                    "body" => app.Body,
+                    "feet" => app.Feet,
+                    "hands" => app.Hands,
+                    "head" => app.Head,
+                    _ => null
+                };
+            }
+            else
+            {
+                var botAppearances = GetBotAppearances();
+                if (botAppearances == null) return;
+
+                if (botAppearances.Values.FirstOrDefault() is not Appearance app) return;
+
+                dict = category.ToLower() switch
+                {
+                    "body" => app.Body,
+                    "feet" => app.Feet,
+                    "hands" => app.Hands,
+                    "head" => app.Head,
+                    _ => null
+                };
+            }
+
+            if (dict != null)
+                action(dict, mongoId);
+        }
+
+        foreach (var key in AppearanceRemovedItems)
+            ApplyToAppearance(key, (dict, id) => dict.Remove(id));
+
+        foreach (var key in AppearanceAddedItems)
+            ApplyToAppearance(key, (dict, id) =>
+            {
+                double weight = AppearanceWeightChanges.TryGetValue(key, out var w) ? w : 1;
+                dict[id] = weight;
+            });
+
+        foreach (var kvp in AppearanceWeightChanges)
+            ApplyToAppearance(kvp.Key, (dict, id) => dict[id] = kvp.Value);
     }
 }

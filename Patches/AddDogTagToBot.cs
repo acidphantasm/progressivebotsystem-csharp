@@ -31,13 +31,13 @@ public class AddDogTagToBot_Patch : AbstractPatch
         Item inventoryItem = new()
         {
             Id = new MongoId(),
-            Template = GetDogtagTplByGameVersionAndSide(bot.Info.Side, bot.Info.GameVersion, bot.Info.PrestigeLevel),
-            ParentId = bot.Inventory.Equipment,
+            Template = GetDogtagTplByGameVersionAndSide(bot.Info!.Side!, bot.Info!.GameVersion!, bot.Info.PrestigeLevel),
+            ParentId = bot.Inventory!.Equipment,
             SlotId = Slots.Dogtag,
             Upd = new Upd { SpawnedInSession = true },
         };
 
-        bot.Inventory.Items.Add(inventoryItem);
+        bot.Inventory!.Items!.Add(inventoryItem);
         return false;
     }
 

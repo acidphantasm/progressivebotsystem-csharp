@@ -59,6 +59,7 @@ namespace _progressiveBotSystem.Web.Core
                 MainLayout.EnableUnsavedChangesButton();
             }
         }
+
         public static void UpdateView(bool holder, bool originalConfigValue, [CallerMemberName] string caller = "")
         {
             switch (MainLayout.pendingChanges.Contains(caller))
@@ -173,6 +174,32 @@ namespace _progressiveBotSystem.Web.Core
                         MainLayout.pendingChanges.Add(caller);
                     }
                     break;
+            }
+
+            MainLayout.TriggerUIRefresh();
+        }
+        public static void UpdateView([CallerMemberName] string caller = "")
+        {
+            switch (MainLayout.pendingChanges.Contains(caller))
+            {
+                case true:
+                    MainLayout.pendingChanges.Remove(caller);
+                    break;
+                case false:
+                    MainLayout.pendingChanges.Add(caller);
+                    break;
+            }
+
+            MainLayout.TriggerUIRefresh();
+        }
+        public static void UpdateView(bool isWeightChange, [CallerMemberName] string caller = "")
+        {
+            if (isWeightChange)
+            {
+                if (!MainLayout.pendingChanges.Contains(caller))
+                {
+                    MainLayout.pendingChanges.Add(caller);
+                }
             }
 
             MainLayout.TriggerUIRefresh();

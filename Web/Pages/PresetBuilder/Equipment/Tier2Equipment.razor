@@ -1,0 +1,39 @@
+﻿@page "/progressivebotsystem/presets/tier2/equipment"
+@layout MainLayout
+
+@using _progressiveBotSystem.Helpers
+
+@inject DataLoader dataloader
+
+<MudMainContent Class="pa-6">
+    @if (ModConfig.Config.UsePreset)
+    {
+        <TierEquipmentEditorComponent EquipmentData="@dataloader.Tier2EquipmentData" Tier="2"/>
+    }
+    else
+    {
+        <MudPaper Elevation="4" Class="pa-6 ma-4 d-flex justify-center align-center" Style="height:200px;">
+            <MudText Typo="Typo.h6" Align="Align.Center">
+                You don't have a preset loaded. What are you doing here?
+            </MudText>
+        </MudPaper>
+    }
+</MudMainContent>
+
+@code {
+    protected override void OnInitialized()
+    {
+        MainLayout.OnPresetChanged += HandlePresetChanged;
+    }
+
+    private void HandlePresetChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        MainLayout.OnPresetChanged -= HandlePresetChanged;
+    }
+
+}

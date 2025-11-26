@@ -1,0 +1,336 @@
+﻿@using _progressiveBotSystem.Models
+@using SPTarkov.Server.Core.Models.Common
+@using SPTarkov.Server.Core.Utils
+@using SPTarkov.Server.Core.Helpers
+
+@inject ISnackbar Snackbar
+
+@inject ItemHelper ItemHelper
+@inject JsonUtil JsonUtil
+
+@if (_loading)
+{
+    <MudOverlay Visible="true" DarkBackground="true">
+        <div style="width:100vw; height:100vh;" class="d-flex justify-center align-center">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
+        </div>
+    </MudOverlay>
+}
+else
+{
+    <MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#2E2E38;">
+        <MudTabs>
+            @foreach (var botType in _botTypes.Keys)
+            {
+                <MudTabPanel Text="@botType">
+                    @foreach (var category in _masterItemsPerCategory.Keys)
+                    {
+                        <MudDivider DividerType="DividerType.Inset" />
+                        <div class="d-flex mb-4 pa-2 w-100" style="gap: 1rem;">
+                            <!-- Used Items -->
+                            <div style="flex:1 1 0; display:flex; flex-direction:column;">
+                                <MudText Typo="Typo.subtitle2" Style="height:28px;">@category</MudText>
+                                <div class="rounded mud-background-gray pa-2 flex-grow-1" style="height:300px; overflow-y:auto;">
+                                    @foreach (var item in _botTypes[botType].Where(i => i.Category == category))
+                                    {
+                                        <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center" Style="gap:0.5rem;">
+                                            <MudNumericField T="double"
+                                                             Min="0.0"
+                                                             Value="item.Weight"
+                                                             ValueChanged="@(v => OnWeightChanged(botType, category, item, v))"
+                                                             Variant="Variant.Outlined"
+                                                             HideSpinButtons="true"
+                                                             Margin="Margin.None"
+                                                             Style="width:72px; height:28px; font-size:0.8rem; padding:0 4px;" />
+
+                                            <MudText Typo="Typo.subtitle2" Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                                @item.DisplayName
+                                            </MudText>
+                                            <MudSpacer/>
+                                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
+                                                       OnClick="@(() => MoveToAvailable(botType, category, item))">&gt;</MudButton>
+                                        </MudPaper>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Available Items -->
+                            <div style="flex:1 1 0; display:flex; flex-direction:column;">
+                                <div class="d-flex align-center mb-2">
+                                    <MudText Typo="Typo.subtitle2">Available Items</MudText>
+                                    <MudTextField T="string"
+                                                  Value="@(_searchTextPerCategory.GetValueOrDefault(category, string.Empty))"
+                                                  ValueChanged="@(v => _searchTextPerCategory[category] = v)"
+                                                  Placeholder="Search..."
+                                                  Adornment="Adornment.Start"
+                                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                                  Immediate="true"
+                                                  Class="ml-2"
+                                                  Style="width:200px; height:20px; font-size:0.875rem;"/>
+                                </div>
+
+                                <div class="rounded mud-background-gray pa-2 flex-grow-1" style="height:280px; overflow-y:auto;">
+                                    @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, "")))
+                                    {
+                                        <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center" Style="gap:0.5rem;">
+                                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
+                                                       OnClick="@(() => MoveToUsed(botType, category, item))">&lt;</MudButton>
+
+                                            <div style="flex:1; display:flex; justify-content:center;">
+                                                <MudText Typo="Typo.subtitle2" Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                                    @item.DisplayName
+                                                </MudText>
+                                            </div>
+                                        </MudPaper>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </MudTabPanel>
+            }
+        </MudTabs>
+    </MudPaper>
+}
+
+@code {
+    [Parameter, EditorRequired] public AmmoTierData AmmoData { get; set; }
+    [Parameter, EditorRequired] public string Tier { get; set; }
+
+    private bool _loading = true;
+    private readonly Dictionary<string, string> _searchTextPerCategory = new();
+    private readonly Dictionary<string, List<PresetItemView>> _masterItemsPerCategory = new();
+    private readonly Dictionary<string, List<PresetItemView>> _originalBotTypes = new();
+    private readonly Dictionary<string, List<PresetItemView>> _botTypes = new();
+    private readonly Dictionary<MongoId, string> _cachedItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        await Task.Yield();
+
+        _botTypes.Clear();
+        _originalBotTypes.Clear();
+        _masterItemsPerCategory.Clear();
+        _cachedItems.Clear();
+
+        try
+        {
+            foreach (var prop in typeof(AmmoTierData).GetProperties())
+            {
+                var botClass = prop.Name;
+                var caliberData = prop.GetValue(AmmoData) as Dictionary<string, Dictionary<MongoId, double>>;
+                if (caliberData == null) continue;
+
+                var usedItems = new List<PresetItemView>();
+
+                foreach (var categoryKvp in caliberData)
+                {
+                    var category = categoryKvp.Key;
+
+                    foreach (var itemKvp in categoryKvp.Value)
+                    {
+                        usedItems.Add(new PresetItemView
+                        {
+                            Id = itemKvp.Key,
+                            DisplayName = GetOrAddCachedName(itemKvp.Key),
+                            Category = category,
+                            CurrentDropZone = category,
+                            Weight = itemKvp.Value,
+                            botType = botClass
+                        });
+                    }
+
+                    if (!_masterItemsPerCategory.ContainsKey(category))
+                    {
+                        _masterItemsPerCategory[category] = GetAvailableItemsForCategory(category)
+                            .Select(id => new PresetItemView
+                            {
+                                Id = id,
+                                DisplayName = GetOrAddCachedName(id),
+                                Category = category,
+                                CurrentDropZone = $"Available-{category}",
+                                botType = botClass,
+                                Weight = 1
+                            })
+                            .ToList();
+                    }
+                }
+
+                _botTypes[botClass] = usedItems;
+                _originalBotTypes[botClass] = usedItems
+                    .Select(i => new PresetItemView
+                    {
+                        Id = i.Id,
+                        Category = i.Category,
+                        Weight = i.Weight,
+                        botType = i.botType
+                    })
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetOrAddCachedName(MongoId itemId)
+    {
+        if (_cachedItems.TryGetValue(itemId, out var name))
+            return string.IsNullOrEmpty(name) ? itemId : name;
+
+        _cachedItems[itemId] = ItemHelper.GetItemName(itemId);
+        return _cachedItems[itemId];
+    }
+
+    private IEnumerable<PresetItemView> GetAvailableItems(string botType, string category, string searchText)
+    {
+        searchText ??= string.Empty;
+        var usedIds = _botTypes[botType].Where(i => i.Category == category).Select(i => i.Id).ToHashSet();
+        return _masterItemsPerCategory[category]
+            .Where(i => !usedIds.Contains(i.Id) && i.DisplayName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void MoveToUsed(string botType, string category, PresetItemView item)
+    {
+        var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
+        var weightKey = key + "_weight";
+
+        PresetItemView? originalItem = null;
+        if (_originalBotTypes.TryGetValue(botType, out var originalList))
+            originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category);
+
+        if (originalItem != null)
+            item.Weight = originalItem.Weight;
+
+        if (!_botTypes[botType].Any(i => i.Id == item.Id && i.Category == category))
+            _botTypes[botType].Add(item);
+
+        UpdatePendingChanges(botType, category, item);
+        Utils.UpdateView(key);
+        if (originalItem != null && item.Weight == originalItem.Weight && MainLayout.pendingChanges.Contains(weightKey))
+            Utils.UpdateView(weightKey);
+    }
+
+    private void MoveToAvailable(string botType, string category, PresetItemView item)
+    {
+        var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
+        var weightKey = key + "_weight";
+
+        var currentItemsInCategory = _botTypes[botType].Count(i => i.Category == category);
+        if (currentItemsInCategory <= 1)
+        {
+            Snackbar.Add("You cannot remove all items from an Ammo Caliber.", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return;
+        }
+
+        _botTypes[botType].RemoveAll(i => i.Id == item.Id && i.Category == category);
+
+        item.Weight = 1;
+
+        UpdatePendingChanges(botType, category, item);
+        Utils.UpdateView(key);
+        if (MainLayout.pendingChanges.Contains(weightKey))
+            Utils.UpdateView(weightKey);
+    }
+
+    private void OnWeightChanged(string botType, string category, PresetItemView item, double newValue)
+    {
+        item.Weight = newValue;
+        
+        UpdatePendingChanges(botType, category, item);
+    }
+    
+    private void UpdatePendingChanges(string botType, string category, PresetItemView item)
+    {
+        var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
+
+        if (!_botTypes.ContainsKey(botType)) return;
+
+        if (_originalBotTypes.TryGetValue(botType, out var originalList))
+        {
+            var originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category);
+            var currentItem = _botTypes[botType].FirstOrDefault(i => i.Id == item.Id && i.Category == category);
+
+            var added = originalItem == null && currentItem != null;
+            var removed = originalItem != null && currentItem == null;
+            var weightChanged = originalItem != null && currentItem != null && currentItem.Weight != originalItem.Weight;
+            var unchanged = (originalItem == null && currentItem == null) ||
+                            (originalItem != null && currentItem != null && currentItem.Weight == originalItem.Weight);
+
+            var wasPending = MainLayout.AmmoWeightChanges.ContainsKey(key);
+            var isPending = (originalItem == null && currentItem != null) ||
+                            (originalItem != null && currentItem == null) ||
+                            (originalItem != null && currentItem != null && currentItem.Weight != originalItem.Weight);
+
+            if (added)
+            {
+                MainLayout.AmmoAddedItems.Add(key);
+                MainLayout.AmmoRemovedItems.Remove(key);
+                MainLayout.AmmoWeightChanges.Remove(key);
+            }
+            else if (removed)
+            {
+                MainLayout.AmmoRemovedItems.Add(key);
+                MainLayout.AmmoAddedItems.Remove(key);
+                MainLayout.AmmoWeightChanges.Remove(key);
+            }
+            else if (weightChanged)
+            {
+                MainLayout.AmmoWeightChanges[key] = currentItem.Weight;
+                MainLayout.AmmoAddedItems.Remove(key);
+                MainLayout.AmmoRemovedItems.Remove(key);
+            }
+            else if (unchanged)
+            {
+                MainLayout.AmmoAddedItems.Remove(key);
+                MainLayout.AmmoRemovedItems.Remove(key);
+                MainLayout.AmmoWeightChanges.Remove(key);
+            }
+
+            if (wasPending != isPending)
+                Utils.UpdateView(key + "_weight");
+        }
+    }
+
+    
+    private List<string> GetAvailableItemsForCategory(string category)
+    {
+        return LoadIdsForCategory(category);
+    }
+
+    private List<string> LoadIdsForCategory(string category)
+    {
+        var folderPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH");
+        var path = Path.Combine(folderPath, $"{category}.json");
+        if (!File.Exists(path)) return new List<string>();
+
+        try
+        {
+            var dict = JsonUtil.DeserializeFromFile<Dictionary<string, string>>(path);
+            if (dict != null)
+            {
+                foreach (var kv in dict)
+                    _cachedItems[kv.Key] = kv.Value;
+            }
+            return dict?.Keys.ToList() ?? new List<string>();
+        }
+        catch
+        {
+            return new List<string>();
+        }
+    }
+}

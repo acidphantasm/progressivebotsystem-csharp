@@ -75,11 +75,6 @@ public class EquipmentTierData
     public ApbsEquipmentBot Default { get; set; }
 }
 
-public class ModsTierData
-{
-    public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Mods { get; set; }
-}
-
 public class ChancesTierData
 {
     [JsonPropertyName("pmcUSEC")]

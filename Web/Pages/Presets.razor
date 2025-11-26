@@ -1,24 +1,29 @@
 ﻿@page "/progressivebotsystem/presets"
 @layout MainLayout
 
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudMainContent>
     <MudContainer>
-        <MudCard>
+        <MudCard Class="ma-3 pa-4">
             <MudCardContent>
-                <MudText Typo="Typo.h5" Align="Align.Center">Editor coming soon...</MudText>
+                <MudStack Spacing="2" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.h4">Editor is now live! Have fun!</MudText>
+                    <MudText Typo="Typo.body1">If you find problems, report them on the SPT Discord, Fika Discord, or WTT Discord - IN MY THREAD.</MudText>
+                    <MudText Typo="Typo.subtitle2">Don't report them on the mod page or I will ignore you for life.</MudText>
+                    <MudText Typo="Typo.subtitle2">Note: You must save after selecting a preset before you go edit your preset. That's just the way it is.</MudText>
+                </MudStack>
             </MudCardContent>
         </MudCard>
     </MudContainer>
 </MudMainContent>
 
-
 <MudMainContent>
     <MudContainer Class="mb-20">
-        <MudExpansionPanels MultiExpansion="true">
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Preset" Expanded=true>
+        <MudCard Class="ma-3 pa-5" Elevation="6">
+            <MudCardContent>
                 <MudGrid>
-
                     <MudItem xs="1" />
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
@@ -33,45 +38,60 @@
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
-                                   MainLayout.pendingChanges.Contains("_presetEnable") ||
-                                   MainLayout.pendingChanges.Contains("_presetName")))
+                        @if (MainLayout._appUndoButtonToggle && (MainLayout.pendingChanges.Contains("_presetEnable") || MainLayout.pendingChanges.Contains("_presetName")))
                         {
                             <MudButton @onclick="undoPresetDetails" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _presetEnable != false ||
-                        _presetName != "example"))
+                        else if (MainLayout._appDefaultButtonToggle && (_presetEnable != false || _presetName != ""))
                         {
                             <MudButton @onclick="defaultPresetDetails" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
-
                 </MudGrid>
-            </MudExpansionPanel>
-            @if (_presetEnable)
-            {
-                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Preset Options" Expanded=true>
-                    <MudGrid>
+            </MudCardContent>
+        </MudCard>
 
+        @if (_presetEnable)
+        {
+            <MudCard Class="ma-3 pa-5" Elevation="6">
+                <MudCardContent>
+                    <MudGrid>
                         <MudItem xs="1" />
-                        <MudItem xs="4">
+                        <MudItem xs="3">
                             <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
                                 <MudTooltip Text="Specify folder name of your preset here." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                    <MudText>Preset Folder Name</MudText>
+                                    <MudText>Preset Name</MudText>
                                 </MudTooltip>
                             </MudPaper>
                         </MudItem>
-                        <MudItem xs="6">
-                            <MudPaper Class="d-flex align-center mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                                <MudTextField @bind-Value="_presetName" Label="Folder Name" Variant="Variant.Text"></MudTextField>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full" Style="margin-top: -15px;" Elevation="0">
+                                <MudSelect @bind-Value="_presetName"
+                                           Label="Folder Name"
+                                           Placeholder="Select a Preset or make a new one..."
+                                           Variant="Variant.Text"
+                                           Class="mud-width-full">
+
+                                    @if (folderNames != null)
+                                    {
+                                        @foreach (var folder in folderNames)
+                                        {
+                                            <MudSelectItem Value="@folder">@folder</MudSelectItem>
+                                        }
+                                    }
+
+                                </MudSelect>
                             </MudPaper>
                         </MudItem>
-
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudButton StartIcon="@Icons.Material.Rounded.CreateNewFolder" OnClick="ShowCreateFolderDialog">New Preset</MudButton>
+                            </MudPaper>
+                        </MudItem>
                     </MudGrid>
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
+                </MudCardContent>
+            </MudCard>
+        }
     </MudContainer>
 </MudMainContent>
 
@@ -103,7 +123,99 @@
     private void defaultPresetDetails()
     {
         _presetEnable = false;
-        _presetName = "ExamplePreset";
+        _presetName = "";
+    }
+    
+    private List<string?> folderNames = new();
+    
+    protected override void OnInitialized()
+    {
+        LoadFolderNames();
+    }
+
+    private void LoadFolderNames()
+    {
+        try
+        {
+            if (Directory.Exists(ModConfig._modPath))
+            {
+                folderNames = Directory.GetDirectories(Path.Combine(ModConfig._modPath, "Presets"))
+                    .Select(Path.GetFileName)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading folders: " + ex.Message);
+        }
+    }
+    
+    private async Task ShowCreateFolderDialog()
+    {
+        var dialog = DialogService.Show<FolderCreateDialog>("Create Folder");
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var folderName = (string)result.Data;
+            CreateFolder(folderName);
+        }
+    }
+
+    private void CreateFolder(string name)
+    {
+        var path = Path.Combine(ModConfig._modPath, "Presets", name);
+        Directory.CreateDirectory(path);
+
+        CopyPresetBaseFiles(path);
+        
+        LoadFolderNames();
+        StateHasChanged();
+    }
+    
+    private void CopyPresetBaseFiles(string newFolderPath)
+    {
+        var dataPath = Path.Combine(ModConfig._modPath, "Data");
+
+        var foldersToCopy = new[]
+        {
+            "Ammo",
+            "Appearance",
+            "Chances",
+            "Equipment",
+            "Mods"
+        };
+
+        foreach (var folder in foldersToCopy)
+        {
+            var sourceFolder = Path.Combine(dataPath, folder);
+            var destinationFolder = Path.Combine(newFolderPath, folder);
+
+            if (!Directory.Exists(sourceFolder))
+            {
+                Snackbar.Add($"Required folder '{folder}' does not exist in Data.", Severity.Error,
+                    cfg => { cfg.ShowCloseIcon = false; });
+
+                return;
+            }
+
+            Directory.CreateDirectory(destinationFolder);
+
+            var files = Directory.GetFiles(sourceFolder);
+
+            foreach (var file in files)
+            {
+                var fileName = Path.GetFileName(file);
+
+                // Tier_0 db files have a 0, nothing else does. Lol. Modern solutions for modern problems I guess.
+                if (!fileName.Contains("0"))
+                {
+                    string destinationFile = Path.Combine(destinationFolder, fileName);
+                    File.Copy(file, destinationFile, overwrite: true);
+                }
+            }
+        }
     }
 
     [CascadingParameter] public MainLayout? Layout { get; set; }

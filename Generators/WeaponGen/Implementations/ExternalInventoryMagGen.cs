@@ -65,7 +65,7 @@ public class ApbsExternalInventoryMagGen(
         var shouldBotRerollAmmo = rerollConfig.Enable && !toploadConfig.Enable && randomUtil.GetChance100(rerollConfig.Chance);
         var shouldBotTopload = toploadConfig.Enable && !rerollConfig.Enable && randomUtil.GetChance100(toploadConfig.Chance);
         
-        var randomizedMagazineCount = botWeaponGeneratorHelper.GetRandomizedMagazineCount(inventoryMagGen.GetMagCount());
+        var randomizedMagazineCount = inventoryMagGen.GetRandomizedMagazineCount(inventoryMagGen.GetMagCount());
         if (itemHelper.IsOfBaseclass(weapon.Id, BaseClasses.PISTOL)) randomizedMagazineCount = randomUtil.GetInt(1, 2);
         
         for (var i = 0; i < randomizedMagazineCount; i++)

@@ -27,33 +27,20 @@ public class GenerateInventory_Patch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(BotInventoryGenerator __instance, ref BotBaseInventory __result, MongoId botId, MongoId sessionId, BotType botJsonTemplate, BotGenerationDetails botGenerationDetails)
     {
-        var botActivityHelper = ServiceLocator.ServiceProvider.GetService<BotActivityHelper>();
-        var customBotInventoryGenerator = ServiceLocator.ServiceProvider.GetService<CustomBotInventoryGenerator>();
-        var profileActivityService = ServiceLocator.ServiceProvider.GetService<ProfileActivityService>();
-        var botLootGenerator = ServiceLocator.ServiceProvider.GetService<BotLootGenerator>();
-        var botInventoryContainerService = ServiceLocator.ServiceProvider.GetService<BotInventoryContainerService>();
-        var botQuestHelper = ServiceLocator.ServiceProvider.GetService<BotQuestHelper>();
-        var botEquipmentHelper = ServiceLocator.ServiceProvider.GetService<BotEquipmentHelper>();
-        var randomUtil = ServiceLocator.ServiceProvider.GetService<RandomUtil>();
-        var apbsLogger = ServiceLocator.ServiceProvider.GetService<ApbsLogger>();
-        var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
-        var customBotLootGenerator = ServiceLocator.ServiceProvider.GetService<CustomBotLootGenerator>();
+        var botActivityHelper = ServiceLocator.ServiceProvider.GetRequiredService<BotActivityHelper>();
+        var customBotInventoryGenerator = ServiceLocator.ServiceProvider.GetRequiredService<CustomBotInventoryGenerator>();
+        var profileActivityService = ServiceLocator.ServiceProvider.GetRequiredService<ProfileActivityService>();
+        var botLootGenerator = ServiceLocator.ServiceProvider.GetRequiredService<BotLootGenerator>();
+        var botInventoryContainerService = ServiceLocator.ServiceProvider.GetRequiredService<BotInventoryContainerService>();
+        var botQuestHelper = ServiceLocator.ServiceProvider.GetRequiredService<BotQuestHelper>();
+        var botEquipmentHelper = ServiceLocator.ServiceProvider.GetRequiredService<BotEquipmentHelper>();
+        var randomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();
+        var apbsLogger = ServiceLocator.ServiceProvider.GetRequiredService<ApbsLogger>();
+        var customBotLootGenerator = ServiceLocator.ServiceProvider.GetRequiredService<CustomBotLootGenerator>();
         
 
-        if (RaidInformation.FreshProfile ||
-            RaidInformation.CurrentSessionId is null ||
-            botActivityHelper is null ||
-            customBotInventoryGenerator is null ||
-            profileActivityService is null ||
-            botLootGenerator is null ||
-            botInventoryContainerService is null ||
-            botQuestHelper is null ||
-            botEquipmentHelper is null ||
-            randomUtil is null ||
-            !botActivityHelper.IsBotEnabled(botGenerationDetails.Role))
-        {
+        if (RaidInformation.FreshProfile || RaidInformation.CurrentSessionId is null || !botActivityHelper.IsBotEnabled(botGenerationDetails.Role))
             return true;
-        }
         
         var templateInventory = botJsonTemplate.BotInventory;
         var botInventory = __instance.GenerateInventoryBase();
@@ -92,7 +79,7 @@ public class GenerateInventory_Patch : AbstractPatch
         var generation = chances.Generation;
 
         // Finally check if they are questing, and if that quest is Fishing Gear. That quest requires a second weapon.
-        if (shouldQuest && questData.QuestName == "Fishing Gear")
+        if (shouldQuest && questData?.QuestName == "Fishing Gear")
         {
             chances.EquipmentChances["SecondPrimaryWeapon"] = 100;
         }

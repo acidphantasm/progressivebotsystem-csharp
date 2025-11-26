@@ -43,7 +43,7 @@ public class SetBotAppearance_Patch : AbstractPatch
         var botLevel = bot.Info.Level ?? 0;
         var tier = tierHelper.GetTierByLevel(botLevel);
         var weatherSeason = seasonalEventService.GetActiveWeatherSeason();
-        var getSeasonalData = ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance ? true : false;
+        var getSeasonalData = ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance;
         var appearanceData = botEquipmentHelper.GetAppearanceByBotRole(botGenerationDetails.Role, tier, weatherSeason, getSeasonalData);
 
         bot.Customization.Head = weightedRandomHelper.GetWeightedValue(appearanceData.Head);

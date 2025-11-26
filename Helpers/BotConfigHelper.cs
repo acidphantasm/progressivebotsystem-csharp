@@ -41,16 +41,16 @@ public class BotConfigHelper : IOnLoad
         _tierInformation = tierInformation;
     }
     
-    private ApbsLogger _apbsLogger;
-    private DatabaseService _databaseService;
-    private BotConfig _botConfig;
-    private PmcConfig _pmcConfig;
-    private BotActivityHelper _botActivityHelper;
-    private ItemHelper _itemHelper;
-    private BotEquipmentHelper _botEquipmentHelper;
-    private TierInformation _tierInformation;
+    private readonly ApbsLogger _apbsLogger;
+    private readonly DatabaseService _databaseService;
+    private readonly BotConfig _botConfig;
+    private readonly PmcConfig _pmcConfig;
+    private readonly BotActivityHelper _botActivityHelper;
+    private readonly ItemHelper _itemHelper;
+    private readonly BotEquipmentHelper _botEquipmentHelper;
+    private readonly TierInformation _tierInformation;
     
-    private Dictionary<MongoId, double> _pmcItemLimits = new()
+    private readonly Dictionary<MongoId, double> _pmcItemLimits = new()
     {
         ["5448e8d04bdc2ddf718b4569"] = 1,
         ["5448e8d64bdc2dce718b4568"] = 1,

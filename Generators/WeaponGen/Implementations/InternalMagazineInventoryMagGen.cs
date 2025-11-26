@@ -24,7 +24,7 @@ public class ApbsInternalMagazineInventoryMagGen(
 
     public void Process(ApbsInventoryMagGen inventoryMagGen)
     {
-        var bulletCount = botWeaponGeneratorHelper.GetRandomizedBulletCount(
+        var bulletCount = inventoryMagGen.GetRandomizedBulletCount(
             inventoryMagGen.GetMagCount(),
             inventoryMagGen.GetMagazineTemplate()
         );

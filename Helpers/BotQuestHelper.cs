@@ -22,9 +22,9 @@ public class BotQuestHelper : IOnLoad
         _modHelper = modHelper;
     }
     private QuestDataJson? QuestDataJson { get; set; }
-    private ApbsLogger? _apbsLogger;
-    private RandomUtil? _randomUtil;
-    private ModHelper? _modHelper;
+    private readonly ApbsLogger _apbsLogger;
+    private readonly RandomUtil _randomUtil;
+    private readonly ModHelper _modHelper;
     
     public Task OnLoad()
     {
@@ -42,7 +42,7 @@ public class BotQuestHelper : IOnLoad
                _randomUtil.GetChance100(ModConfig.Config.PmcBots.QuestConfig.Chance);
     }
 
-    public QuestData? SelectQuest(int botLevel, string location)
+    public QuestData? SelectQuest(int botLevel, string? location)
     {
         var availableQuests = GetAvailableQuests(botLevel, location);
         return availableQuests.Count == 0 ? null : _randomUtil.DrawRandomFromList(availableQuests).FirstOrDefault();
@@ -51,7 +51,7 @@ public class BotQuestHelper : IOnLoad
     private List<QuestData> GetAvailableQuests(int botLevel, string location)
     {
         var availableQuests = new List<QuestData>();
-        foreach (var quest in QuestDataJson.AvailableQuests)
+        foreach (var quest in QuestDataJson!.AvailableQuests)
         {
             if (!quest.IsQuestEnabled) continue;
             if (quest.MinLevel <= botLevel && quest.MaxLevel >= botLevel)

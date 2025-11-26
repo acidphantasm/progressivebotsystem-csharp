@@ -95,13 +95,10 @@ public record ApbsGenerationWeightingItems
     public ApbsGenerationData VestLoot { get; set; }
 
     [JsonPropertyName("magazines")]
-    public GenerationData Magazines { get; set; }
+    public ApbsGenerationData Magazines { get; set; }
 
     [JsonPropertyName("specialItems")]
     public ApbsGenerationData SpecialItems { get; set; }
-
-    [JsonPropertyName("looseLoot")]
-    public ApbsGenerationData LooseLoot { get; set; }
 }
 public record ApbsGenerationData
 {

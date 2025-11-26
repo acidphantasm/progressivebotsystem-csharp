@@ -577,7 +577,7 @@ public class CustomBotWeaponGenerator(
     public void AddExtraMagazinesToInventory(
         MongoId botId,
         GenerateWeaponResult generatedWeaponResult,
-        GenerationData magWeights,
+        ApbsGenerationData magWeights,
         BotBaseInventory inventory,
         string botRole,
         int botLevel,
@@ -647,7 +647,7 @@ public class CustomBotWeaponGenerator(
         var ubglDbTemplate = itemHelper.GetItem(ubglMod.Template).Value;
 
         // Define min/max of how many grenades bot will have
-        GenerationData ubglMinMax = new()
+        ApbsGenerationData ubglMinMax = new()
         {
             Weights = new Dictionary<double, double> { { 1, 1 }, { 2, 1 } },
             Whitelist = new Dictionary<MongoId, double>(),

@@ -5,6 +5,7 @@ using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
 using _progressiveBotSystem.Utils;
+using _progressiveBotSystem.Web.Pages.PresetBuilder;
 using _progressiveBotSystem.Web.Shared;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -102,7 +103,7 @@ public class ModConfig : IOnLoad
         }
     }
     
-    public static async Task<ConfigOperationResult> SaveConfig()
+    public static async Task<ConfigOperationResult> SaveConfig(bool savePresetToDisk = false)
     {
         if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
@@ -124,9 +125,13 @@ public class ModConfig : IOnLoad
             var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
 
+            if (savePresetToDisk)
+            {
+                await _dataLoader.SavePresetChangesToDisk(_modPath);
+            }
             
             // Special handling for presets
-            if (Config.UsePreset && !OriginalConfig.UsePreset || Config.PresetName != OriginalConfig.PresetName && Config.UsePreset)
+            if (Config.UsePreset && !OriginalConfig.UsePreset || Config.UsePreset && savePresetToDisk)
             {
                 await _dataLoader.AssignJsonDataFromPreset(_modPath);
             }

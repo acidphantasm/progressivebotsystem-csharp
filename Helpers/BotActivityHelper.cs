@@ -13,13 +13,13 @@ namespace _progressiveBotSystem.Helpers;
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader + 20)]
 public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
 {
-    private readonly IEnumerable<string> AlwaysDisabled = typeof(AlwaysDisabledBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _alwaysDisabled = typeof(AlwaysDisabledBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
 
     public Task OnLoad()
     {
@@ -31,7 +31,7 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
     {
         botType = botType.ToLower();
 
-        if (botType == "usec" || botType == "bear" || botType == "pmc") botType = "pmcusec";
+        if (botType is "usec" or "bear" or "pmc") botType = "pmcusec";
 
         return DoesBotExist(botType) && !IsBotDisabled(botType);
     }
@@ -40,21 +40,21 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
     {
         botType = botType.ToLower();
 
-        return Bosses.Contains(botType) || Followers.Contains(botType) || Pmcs.Contains(botType) ||
-               Scavs.Contains(botType) || Specials.Contains(botType) || Events.Contains(botType);
+        return _bosses.Contains(botType) || _followers.Contains(botType) || _pmcs.Contains(botType) ||
+               _scavs.Contains(botType) || _specials.Contains(botType) || _events.Contains(botType);
     }
 
     private bool IsBotDisabled(string botType)
     {
         botType = botType.ToLower();
 
-        if (AlwaysDisabled.Contains(botType)) return true;
-        if (Events.Contains(botType)) return true;
-        if (Bosses.Contains(botType)) return !ModConfig.Config.BossBots.Enable;
-        if (Followers.Contains(botType)) return !ModConfig.Config.FollowerBots.Enable;
-        if (Pmcs.Contains(botType)) return !ModConfig.Config.PmcBots.Enable;
-        if (Scavs.Contains(botType)) return !ModConfig.Config.ScavBots.Enable;
-        if (Specials.Contains(botType)) return !ModConfig.Config.SpecialBots.Enable;
+        if (_alwaysDisabled.Contains(botType)) return true;
+        if (_events.Contains(botType)) return true;
+        if (_bosses.Contains(botType)) return !ModConfig.Config.BossBots.Enable;
+        if (_followers.Contains(botType)) return !ModConfig.Config.FollowerBots.Enable;
+        if (_pmcs.Contains(botType)) return !ModConfig.Config.PmcBots.Enable;
+        if (_scavs.Contains(botType)) return !ModConfig.Config.ScavBots.Enable;
+        if (_specials.Contains(botType)) return !ModConfig.Config.SpecialBots.Enable;
         
         apbsLogger.Warning($"Bot type {botType} is not enabled");
         return false;

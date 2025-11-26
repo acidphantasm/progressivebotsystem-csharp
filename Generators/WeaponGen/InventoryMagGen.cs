@@ -1,10 +1,12 @@
-﻿using _progressiveBotSystem.Models;
+﻿using System.Collections.Frozen;
+using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 
@@ -15,7 +17,7 @@ public class ApbsInventoryMagGen()
 {
     private readonly TemplateItem? _ammoTemplate;
     private readonly TemplateItem? _magazineTemplate;
-    private readonly GenerationData? _magCounts;
+    private readonly ApbsGenerationData? _magCounts;
     private readonly BotBaseInventory? _pmcInventory;
     private readonly MongoId _botId;
     private readonly TemplateItem? _weaponTemplate;
@@ -26,7 +28,7 @@ public class ApbsInventoryMagGen()
     private readonly EnableChance? _rerollDetails;
 
     public ApbsInventoryMagGen(
-        GenerationData magCounts,
+        ApbsGenerationData magCounts,
         TemplateItem magazineTemplate,
         TemplateItem weaponTemplate,
         TemplateItem ammoTemplate,
@@ -53,7 +55,7 @@ public class ApbsInventoryMagGen()
         _rerollDetails = rerollDetails;
     }
 
-    public GenerationData GetMagCount()
+    public ApbsGenerationData GetMagCount()
     {
         return _magCounts!;
     }
@@ -106,6 +108,58 @@ public class ApbsInventoryMagGen()
     public EnableChance GetRerollDetails()
     {
         return _rerollDetails!;
+    }
+    
+    public int GetRandomizedMagazineCount(ApbsGenerationData magCounts)
+    {
+        var weightedRandomHelper = ServiceLocator.ServiceProvider.GetService<WeightedRandomHelper>();
+        return (int)weightedRandomHelper.GetWeightedValue(magCounts.Weights);
+    }
+    
+    private static readonly FrozenSet<string> _magCheck = ["CylinderMagazine", "SpringDrivenCylinder"];
+    
+    public double? GetRandomizedBulletCount(ApbsGenerationData magCounts, TemplateItem magTemplate)
+    {
+        var itemHelper = ServiceLocator.ServiceProvider.GetService<ItemHelper>();
+        var logger = ServiceLocator.ServiceProvider.GetService<ISptLogger<BotWeaponGeneratorHelper>>();
+        var randomizedMagazineCount = Math.Max(GetRandomizedMagazineCount(magCounts), 1); // Never return lower than 1 to prevent a multiplication by 0
+        var parentItem = itemHelper.GetItem(magTemplate.Parent).Value;
+        if (parentItem is null)
+        {
+            logger.Error($"Parent item null when trying to get randomized bullet count for: {magTemplate.Id}");
+            return null;
+        }
+
+        double? chamberBulletCount;
+        if (MagazineIsCylinderRelated(parentItem.Name ?? string.Empty))
+        {
+            var firstSlotAmmoTpl =
+                magTemplate.Properties?.Cartridges?.FirstOrDefault()?.Properties?.Filters?.First().Filter?.FirstOrDefault()
+                ?? new MongoId(null);
+            var ammoMaxStackSize = itemHelper.GetItem(firstSlotAmmoTpl).Value?.Properties?.StackMaxSize ?? 1;
+            chamberBulletCount =
+                ammoMaxStackSize == 1
+                    ? 1 // Rotating grenade launcher
+                    : magTemplate.Properties?.Slots?.Count(); // Shotguns/revolvers. We count the number of camoras as the _max_count of the magazine is 0
+        }
+        else if (parentItem.Id == BaseClasses.LAUNCHER)
+        {
+            // Underbarrel launchers can only have 1 chambered grenade
+            chamberBulletCount = 1;
+        }
+        else
+        {
+            chamberBulletCount = magTemplate.Properties?.Cartridges?.First().MaxCount;
+        }
+
+        // Get the amount of bullets that would fit in the internal magazine
+        // and multiply by how many magazines were supposed to be created
+        return chamberBulletCount * randomizedMagazineCount;
+    }
+    
+    public bool MagazineIsCylinderRelated(string magazineParentName)
+    {
+        return _magCheck.Contains(magazineParentName);
     }
 
     public List<Item> CreateMagazineWithAmmo(MongoId magazineTpl, MongoId ammoTpl,

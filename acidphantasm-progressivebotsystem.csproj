@@ -38,181 +38,53 @@
     <Target Name="GenerateJsonHashes" BeforeTargets="BeforeBuild">
         <Exec Command="dotnet exec &quot;$(MSBuildProjectDirectory)..\..\datavalidation\DataValidation\DataValidation\bin\Debug\net9.0\DataValidation.dll&quot; &quot;$(ProjectDir)Data&quot; &quot;$(ProjectDir)\Constants\JsonFileHashes.cs&quot;" />
     </Target>
-    
+
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <PropertyGroup>
+            <ModOutputDir>$(TarkovDir)SPT\user\mods\$(ProjectName)\</ModOutputDir>
+            <ReleaseOutputDir>$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\</ReleaseOutputDir>
+            <ZipFile>$(ProjectDir)release\$(ProjectName).7z</ZipFile>
+            <SevenZipExe>"C:\Program Files\7-Zip\7z.exe"</SevenZipExe>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <ServerComponents Include="$(ProjectDir)bin\Release\$(ProjectName)\*.*" />
+            <Data Include="$(ProjectDir)Data\**\*.*" />
+            <WebAssets Include="$(ProjectDir)wwwroot\**\*.*" />
+        </ItemGroup>
+
+        <MakeDir Directories="$(ModOutputDir)Presets" Condition="!Exists('$(ModOutputDir)Presets')" />
+        <MakeDir Directories="$(ModOutputDir)logs" Condition="!Exists('$(ModOutputDir)logs')" />
+
+        <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ModOutputDir)%(RecursiveDir)" />
+        <Copy SourceFiles="@(Data)" DestinationFolder="$(ModOutputDir)Data\%(RecursiveDir)" />
+        <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ModOutputDir)wwwroot\%(RecursiveDir)" />
+
+        <MakeDir Directories="$(ProjectDir)release" Condition="!Exists('$(ProjectDir)release')" />
+        <MakeDir Directories="$(ReleaseOutputDir)" Condition="!Exists('$(ReleaseOutputDir)')" />
+        <MakeDir Directories="$(ReleaseOutputDir)Presets" Condition="!Exists('$(ReleaseOutputDir)Presets')" />
+        <MakeDir Directories="$(ReleaseOutputDir)logs" Condition="!Exists('$(ReleaseOutputDir)logs')" />
+
+        <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ReleaseOutputDir)%(RecursiveDir)" />
+        <Copy SourceFiles="@(Data)" DestinationFolder="$(ReleaseOutputDir)Data\%(RecursiveDir)" />
+        <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ReleaseOutputDir)wwwroot\%(RecursiveDir)" />
+
+        <Delete Files="$(ZipFile)" Condition="Exists('$(ZipFile)')" />
+
+        <Exec Command='$(SevenZipExe) a -t7z "$(ZipFile)" "$(ProjectDir)release\$(ProjectName)\*" -mx=5 -m0=lzma2' />
+    </Target>
+
     <ItemGroup>
-        <ServerComponents Include="$(ProjectDir)/bin/Release/$(ProjectName)/*.*" />
-        <Data Include="$(ProjectDir)Data\**\*.*" />
-        <Presets Include="$(ProjectDir)Presets\**\*.*" />
-        <WebAssets Include="$(ProjectDir)wwwroot\**\*.*" />
+        <None Update="Presets\**\.gitkeep">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </None>
+        <None Update="logs\**\.gitkeep">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
-    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(TarkovDir)SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
-    <Copy SourceFiles="@(Data)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\Data\%(RecursiveDir)" />
-    <Copy SourceFiles="@(Presets)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\Presets\%(RecursiveDir)" />
-    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
-    <RemoveDir Directories="$(ProjectDir)release" />
-    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
-    <Copy SourceFiles="@(Data)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\Data\%(RecursiveDir)" />
-    <Copy SourceFiles="@(Presets)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\Presets\%(RecursiveDir)" />
-    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
-    <ZipDirectory SourceDirectory="$(ProjectDir)release\$(ProjectName)\" DestinationFile="$(ProjectDir)release\$(ProjectName).zip" />
-</Target>
 
   <ItemGroup>
-    <None Include="wwwroot\images\background.jpg" />
-    <None Update="LICENSE">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier1_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier0_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier2_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier3_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier4_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier5_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier6_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Ammo\Tier7_ammo.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\blacklists.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\config.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <None Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\LICENSE">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier0_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier1_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier2_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier3_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier4_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier5_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier6_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Mods\Tier7_mods.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Quests\QuestData.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Tiers\TierData.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier0_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier1_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier2_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier3_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier4_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier5_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier6_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Equipment\Tier7_equipment.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier0_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier1_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier2_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier3_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier4_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier5_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier6_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Chances\Tier7_chances.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier0_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier1_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier2_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier3_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier4_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier5_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier6_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="release\SPT\user\mods\acidphantasm-progressivebotsystem\Data\Appearance\Tier7_appearance.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\background.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\files\ReleaseNotes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Presets\ExamplePreset\" />
     <Folder Include="Utils\Logger\" />
-    <Folder Include="Web\Service\" />
   </ItemGroup>
 
 </Project>

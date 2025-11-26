@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.0.7",
+    "ReleaseDate": "November 26, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Preset Editor is now live in the Web Config. Presets are now easy-ish to make. If you want to share them, create an add-on for APBS on the Forge."
+    ],
+    "Changes": [],
+    "BugFixes": [],
+    "KnownIssues": [
+      "Plate Chances via config have been reported to not work. Will be investigated and resolved in future update (eventually)."
+    ]
+  },
+  {
     "Version": "2.0.6",
     "ReleaseDate": "November 17, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Removed incorrect logging on Resource Randomization & Weapon Durability configs"
