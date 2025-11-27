@@ -1,7 +1,7 @@
 ﻿[
   {
     "Version": "2.0.7",
-    "ReleaseDate": "November 26, 2025",
+    "ReleaseDate": "November 27, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "Preset Editor is now live in the Web Config",
@@ -13,14 +13,36 @@
       "Lots and lots of minor code fixes that shouldn't amount to anything but cleanliness",
       "Added Preset saving to web config",
       "Added Preset change tracking",
-      "Added Vanilla Item Caching on first mod load"
+      "Added Vanilla Item Caching on first mod load",
+      "Added M60E6 to known weapons without small magazine (will stop throwing the MAGAZINE warning)"
     ],
     "BugFixes": [
-      "Fixed missing Caliber725"
+      "Resolved Force Stock not working",
+      "Resolved Force Dust Cover not working",
+      "Resolved Force Optical Devices not working",
+      "Resolved Force Muzzle Children not working - lol",
+      "Resolved Override Muzzle Chances not working",
+      "Resolved Allow T-7 Thermal Goggles not working",
+      "Resolved Override Plate Chances not working",
+      "Resolved missing Caliber725",
+      "Resolved missing RShG-2 72.5mm rocket launcher",
+      "Resolved missing FORT Redut-M body armor (SK Woodland)",
+      "Resolved missing BNTI Kirasa-N body armor (Green)",
+      "Resolved missing Hexatac HPC Plate Carrier (MultiCam)",
+      "Resolved missing HighCom Trooper TFO body armor (Coyote)",
+      "Resolved missing Crye Precision AVS plate carrier (MultiCam)",
+      "Resolved missing 5.11 Tactical TacTec plate carrier (Storm)",
+      "Resolved missing Camelbak Tri-Zip assault backpack (MultiCam)",
+      "Resolved missing 5.11 Tactical RUSH 100 backpack (Black)",
+      "Resolved missing LBT-1476A 3Day Pack (MultiCam Alpine)",
+      "Resolved missing Mystery Ranch Terraframe backpack (Olive Drab)",
+      "Resolved missing Mystery Ranch Terraframe backpack (Christmas Edition)",
+      "Resolved missing Akula push dagger",
+      "Resolved missing ANA Tactical Alpha chest rig (MultiCam)",
+      "Resolved missing BlackRock chest rig (Khaki)",
+      "Resolved missing Blicky in Mods Json Tier1-7"
     ],
-    "KnownIssues": [
-      "Plate Chances via config have been reported to not work. Will be investigated and resolved in future update (eventually)"
-    ]
+    "KnownIssues": []
   },
   {
     "Version": "2.0.6",

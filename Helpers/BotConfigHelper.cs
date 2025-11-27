@@ -29,7 +29,8 @@ public class BotConfigHelper : IOnLoad
         BotActivityHelper botActivityHelper,
         ItemHelper itemHelper,
         BotEquipmentHelper botEquipmentHelper,
-        TierInformation tierInformation)
+        TierInformation tierInformation,
+        DataLoader dataLoader)
     {
         _databaseService = databaseService;
         _botConfig = configServer.GetConfig<BotConfig>();
@@ -39,6 +40,7 @@ public class BotConfigHelper : IOnLoad
         _itemHelper = itemHelper;
         _botEquipmentHelper = botEquipmentHelper;
         _tierInformation = tierInformation;
+        _dataLoader = dataLoader;
     }
     
     private readonly ApbsLogger _apbsLogger;
@@ -49,6 +51,7 @@ public class BotConfigHelper : IOnLoad
     private readonly ItemHelper _itemHelper;
     private readonly BotEquipmentHelper _botEquipmentHelper;
     private readonly TierInformation _tierInformation;
+    private readonly DataLoader _dataLoader;
     
     private readonly Dictionary<MongoId, double> _pmcItemLimits = new()
     {
@@ -342,7 +345,7 @@ public class BotConfigHelper : IOnLoad
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Equipment Weights to 1");
         for (var i = 0; i <= 7; i++)
         {
-            var equipmentData = _botEquipmentHelper.GetTierEquipment(i, true);
+            var equipmentData = GetTierEquipmentData(i);
             foreach (var (slotName, data) in equipmentData.Scav.Equipment)
             {
                 if (data.Count == 0) continue;
@@ -1055,8 +1058,8 @@ public class BotConfigHelper : IOnLoad
         for (var i = 1; i <= 7; i++)
         {
             if (ModConfig.Config.GeneralConfig.EnableT7Thermals && i >= ModConfig.Config.GeneralConfig.StartTier) continue;
-            
-            var modsData = _botEquipmentHelper.GetTierMods(i, true);
+
+            var modsData = GetTierModsData(i);
             
             if (!modsData.TryGetValue(ItemTpl.MOUNT_NOROTOS_TITANIUM_ADVANCED_TACTICAL, out var tatmMods)) continue;
             if (!tatmMods.TryGetValue("mod_nvg", out var nvgSlot)) continue;
@@ -1065,13 +1068,14 @@ public class BotConfigHelper : IOnLoad
             if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"[THERMAL] Removed T7’s from Tier{i}");
         }
     }
+
     private void SetPlateChances()
     {
         if (!ModConfig.Config.GeneralConfig.PlateChances.Enable) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Plate Chances");
         for (var i = 1; i <= 7; i++)
         {
-            var chancesData = _botEquipmentHelper.GetTierChances(i, true);
+            var chancesData = GetTierChancesData(i);
             if (chancesData == null)
                 continue;
             
@@ -1079,7 +1083,7 @@ public class BotConfigHelper : IOnLoad
             
             foreach (var botProp in typeof(ChancesTierData).GetProperties())
             {
-                var botType = botProp.Name;
+                var botType = botProp.Name.ToLowerInvariant();
                 var data = botProp.GetValue(chancesData) as BotChancesData;
                 if (data?.Chances == null)
                     continue;
@@ -1093,31 +1097,31 @@ public class BotConfigHelper : IOnLoad
                     var chancesDict = chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
                     if (chancesDict == null)
                         continue;
-
-                    if (botType == "pmcUSEC" || botType == "pmcBEAR")
+                    
+                    if (botType == "pmcusec" || botType == "pmcbear")
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance[indexPosition], "back_plate", "front_plate");
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance[indexPosition], "left_side_plate", "right_side_plate");
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
                     }
                     if (botType == "followerbirdeye" || botType == "followerbigpipe" || botType.Contains("boss"))
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance[indexPosition], "back_plate", "front_plate");
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance[indexPosition], "left_side_plate", "right_side_plate");
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
                     }
                     if (botType == "scav")
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance[indexPosition], "back_plate", "front_plate");
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance[indexPosition], "left_side_plate", "right_side_plate");
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
                     }
                     if (botType == "exusec" || botType == "pmcbot" || botType.Contains("sectant"))
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance[indexPosition], "back_plate", "front_plate");
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance[indexPosition], "left_side_plate", "right_side_plate");
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
                     }
                     if (botType == "default")
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance[indexPosition], "back_plate", "front_plate");
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance[indexPosition], "left_side_plate", "right_side_plate");
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
                     }
                 }
             }
@@ -1127,9 +1131,9 @@ public class BotConfigHelper : IOnLoad
     {
         if (!ModConfig.Config.GeneralConfig.ForceStock) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Stocks on Bot Weapons");
-        for (var i = 0; i <= 7; i++)
+        for (var i = 1; i <= 7; i++)
         {
-            var chancesData = _botEquipmentHelper.GetTierChances(i, true);
+            var chancesData = GetTierChancesData(i);
             if (chancesData == null)
                 continue;
             
@@ -1150,7 +1154,7 @@ public class BotConfigHelper : IOnLoad
                     if (chancesDict == null)
                         continue;
                     
-                    SetModChance(chancesDict, 100, "mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms", "mod_stock_axis");
+                    SetModChance(chancesDict, 100, ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms", "mod_stock_axis"], botType);
                 }
             }
         }
@@ -1159,9 +1163,9 @@ public class BotConfigHelper : IOnLoad
     {
         if (!ModConfig.Config.GeneralConfig.ForceDustCover) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Dust Covers on Bot Weapons");
-        for (var i = 0; i <= 7; i++)
+        for (var i = 1; i <= 7; i++)
         {
-            var chancesData = _botEquipmentHelper.GetTierChances(i, true);
+            var chancesData = GetTierChancesData(i);
             if (chancesData == null)
                 continue;
             
@@ -1182,7 +1186,7 @@ public class BotConfigHelper : IOnLoad
                     if (chancesDict == null)
                         continue;
                     
-                    SetModChance(chancesDict, 100, "mod_reciever");
+                    SetModChance(chancesDict, 100, ["mod_reciever"], botType);
                 }
             }
         }
@@ -1191,9 +1195,9 @@ public class BotConfigHelper : IOnLoad
     {
         if (!ModConfig.Config.GeneralConfig.ForceScopeSlot) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Optics on Bot Weapons");
-        for (var i = 0; i <= 7; i++)
+        for (var i = 1; i <= 7; i++)
         {
-            var chancesData = _botEquipmentHelper.GetTierChances(i, true);
+            var chancesData = GetTierChancesData(i);
             if (chancesData == null)
                 continue;
             
@@ -1214,7 +1218,7 @@ public class BotConfigHelper : IOnLoad
                     if (chancesDict == null)
                         continue;
                     
-                    SetModChance(chancesDict, 100, "mod_scope");
+                    SetModChance(chancesDict, 100, ["mod_scope"], botType);
                 }
             }
         }
@@ -1225,7 +1229,7 @@ public class BotConfigHelper : IOnLoad
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Muzzles on Bot Weapons");
         for (var i = 1; i <= 7; i++)
         {
-            var chancesData = _botEquipmentHelper.GetTierChances(i, true);
+            var chancesData = GetTierChancesData(i);
             if (chancesData == null)
                 continue;
 
@@ -1249,19 +1253,85 @@ public class BotConfigHelper : IOnLoad
                         continue;
 
                     var muzzleChance = ModConfig.Config.GeneralConfig.MuzzleChance[indexPosition];
-                    SetModChance(chancesDict, muzzleChance, "mod_muzzle", "mod_muzzle_000", "mod_muzzle_001");
+                    SetModChance(chancesDict, muzzleChance, ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"], botType);
                 }
             }
         }
     }
     
-    private void SetModChance(Dictionary<string, double> dict, double value, params string[] keys)
+    private void SetModChance(Dictionary<string, double> dict, double value, string[] keys, string botType)
     {
         foreach (var key in keys)
         {
-            if (dict.ContainsKey(key))
-                dict[key] = value;
+            dict[key] = value;
         }
     }
+    #endregion
+    
+    #region Helpers
+    private ChancesTierData GetTierChancesData(int tier)
+    {
+        switch (tier)
+        {
+            case 1: return _dataLoader.Tier1ChancesData;
+            case 2: return _dataLoader.Tier2ChancesData;
+            case 3: return _dataLoader.Tier3ChancesData;
+            case 4: return _dataLoader.Tier4ChancesData;
+            case 5: return _dataLoader.Tier5ChancesData;
+            case 6: return _dataLoader.Tier6ChancesData;
+            case 7: return _dataLoader.Tier7ChancesData;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+        };
+    }
+    
+    private AmmoTierData GetTierAmmoData(int tier)
+    {
+        switch (tier)
+        {
+            case 1: return _dataLoader.Tier1AmmoData;
+            case 2: return _dataLoader.Tier2AmmoData;
+            case 3: return _dataLoader.Tier3AmmoData;
+            case 4: return _dataLoader.Tier4AmmoData;
+            case 5: return _dataLoader.Tier5AmmoData;
+            case 6: return _dataLoader.Tier6AmmoData;
+            case 7: return _dataLoader.Tier7AmmoData;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+        };
+    }
+    
+    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierModsData(int tier)
+    {
+        switch (tier)
+        {
+            case 1: return _dataLoader.Tier1ModsData;
+            case 2: return _dataLoader.Tier2ModsData;
+            case 3: return _dataLoader.Tier3ModsData;
+            case 4: return _dataLoader.Tier4ModsData;
+            case 5: return _dataLoader.Tier5ModsData;
+            case 6: return _dataLoader.Tier6ModsData;
+            case 7: return _dataLoader.Tier7ModsData;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+        };
+    }
+    
+    private EquipmentTierData GetTierEquipmentData(int tier)
+    {
+        switch (tier)
+        {
+            case 1: return _dataLoader.Tier1EquipmentData;
+            case 2: return _dataLoader.Tier2EquipmentData;
+            case 3: return _dataLoader.Tier3EquipmentData;
+            case 4: return _dataLoader.Tier4EquipmentData;
+            case 5: return _dataLoader.Tier5EquipmentData;
+            case 6: return _dataLoader.Tier6EquipmentData;
+            case 7: return _dataLoader.Tier7EquipmentData;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+        };
+    }
+    
     #endregion
 }

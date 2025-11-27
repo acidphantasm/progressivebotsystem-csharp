@@ -1,4 +1,349 @@
 {
+  "66015072e9f84d5680039678": {
+    "mod_magazine": [
+      "66015dc4aaad2f54cb04c56a"
+    ],
+    "patron_in_weapon": [
+      "6601546f86889319850bd566"
+    ]
+  },
+  "66015dc4aaad2f54cb04c56a" : {
+    "cartridges": [
+      "6601546f86889319850bd566"
+    ]
+  },
+  "676bf44c5539167c3603e869": {
+    "patron_in_weapon": [
+      "67446fdd752be02c220f27b3"
+    ]
+  },
+  "67ab49aab9c7a1e18c095686": {
+    "Front_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fa76500d62bcd2e024080",
+      "656fafe3498d1b7e3e071da4",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656fac30c6baea13cd07e10c",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Back_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fad8c498d1b7e3e071da0",
+      "656fa25e94b480b8a500c0e0",
+      "656fa61e94b480b8a500c0e8",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656fb21fa0dce000a2020f7c",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Soft_armor_front": [
+      "6570e83223c1f638ef0b0ede"
+    ],
+    "Soft_armor_back": [
+      "6570e87c23c1f638ef0b0ee2"
+    ],
+    "Groin": [
+      "6570e90b3a5689d85f08db97"
+    ]
+  },
+  "67ab4b2d6f7ae4aa550bbcf6": {
+    "Front_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Back_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa99800d62bcd2e024088",
+      "656fa8d700d62bcd2e024084",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fac30c6baea13cd07e10c",
+      "656fb21fa0dce000a2020f7c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Soft_armor_front": [
+      "6575bc88c6700bd6b40e8a57"
+    ],
+    "Soft_armor_back": [
+      "6575bca0dc9932aed601c5d7"
+    ]
+  },
+  "67ab2f94dafe3b22670c912c": {
+    "Front_plate": [
+      "656fa8d700d62bcd2e024084",
+      "656f9d5900d62bcd2e02407c",
+      "656fa99800d62bcd2e024088",
+      "656fa0fb498d1b7e3e071d9c",
+      "656faf0ca0dce000a2020f77",
+      "656fae5f7c2d57afe200c0d7",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Back_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656faf0ca0dce000a2020f77",
+      "656fae5f7c2d57afe200c0d7",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fa61e94b480b8a500c0e8",
+      "656fad8c498d1b7e3e071da0",
+      "656fac30c6baea13cd07e10c",
+      "656fb21fa0dce000a2020f7c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Soft_armor_front": [
+      "6570e025615f54368b04fcb0"
+    ],
+    "Soft_armor_back": [
+      "6570e0610b57c03ec90b96ef"
+    ]
+  },
+  "67ab2eecfe82855dcc0f2af6": {
+    "Front_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fafe3498d1b7e3e071da4",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fa76500d62bcd2e024080",
+      "656fad8c498d1b7e3e071da0",
+      "656fa25e94b480b8a500c0e0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Back_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa25e94b480b8a500c0e0",
+      "656fa76500d62bcd2e024080",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ]
+  },
+  "67ab2f28dafe3b22670c9116": {
+    "Front_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "64afdcb83efdfea28601d041",
+      "655746010177119f4a097ff7",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "65573fa5655447403702a816",
+      "64afc71497cf3a403c01ff38"
+    ],
+    "Back_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fafe3498d1b7e3e071da4",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fa25e94b480b8a500c0e0",
+      "656fa76500d62bcd2e024080",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "65573fa5655447403702a816",
+      "64afc71497cf3a403c01ff38",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Soft_armor_front": [
+      "65704de13e7bba58ea0285c8"
+    ],
+    "Soft_armor_back": [
+      "65705c3c14f2ed6d7d0b7738"
+    ],
+    "Soft_armor_left": [
+      "65705c777260e1139e091408"
+    ],
+    "soft_armor_right": [
+      "65705cb314f2ed6d7d0b773c"
+    ],
+    "Collar": [
+      "65705cea4916448ae1050897"
+    ]
+  },
+  "67ab2f5adafe3b22670c911f": {
+    "Front_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "65573fa5655447403702a816",
+      "64afc71497cf3a403c01ff38",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Back_plate": [
+      "656f9d5900d62bcd2e02407c",
+      "656fa8d700d62bcd2e024084",
+      "656fa99800d62bcd2e024088",
+      "656fae5f7c2d57afe200c0d7",
+      "656faf0ca0dce000a2020f77",
+      "656fa0fb498d1b7e3e071d9c",
+      "656fafe3498d1b7e3e071da4",
+      "656fa76500d62bcd2e024080",
+      "656fa25e94b480b8a500c0e0",
+      "656fad8c498d1b7e3e071da0",
+      "656fa61e94b480b8a500c0e8",
+      "656fb21fa0dce000a2020f7c",
+      "656fac30c6baea13cd07e10c",
+      "656fb0bd7c2d57afe200c0dc",
+      "656f9fa0498d1b7e3e071d98",
+      "656fa53d94b480b8a500c0e4",
+      "65573fa5655447403702a816",
+      "64afc71497cf3a403c01ff38",
+      "655746010177119f4a097ff7",
+      "64afdcb83efdfea28601d041"
+    ],
+    "Left_side_plate": [
+      "6557458f83942d705f0c4962",
+      "64afdb577bb3bfe8fe03fd1d",
+      "64afd81707e2cf40e903a316"
+    ],
+    "Right_side_plate": [
+      "6557458f83942d705f0c4962",
+      "64afdb577bb3bfe8fe03fd1d",
+      "64afd81707e2cf40e903a316"
+    ],
+    "Soft_armor_front": [
+      "6575dd3e9e27f4a85e081142"
+    ],
+    "Soft_armor_back": [
+      "6575dd519e27f4a85e081146"
+    ],
+    "Soft_armor_left": [
+      "6575dd64945bf78edd04c438"
+    ],
+    "soft_armor_right": [
+      "6575dd6e9d3a0ddf660b9047"
+    ],
+    "Collar": [
+      "6575dd769d3a0ddf660b904b"
+    ],
+    "Groin": [
+      "6575dd800546f8b1de093df6"
+    ],
+    "Groin_back": [
+      "6575dd94945bf78edd04c43c"
+    ]
+  },
   "67d0576f29f580ebc10efd08": {
     "mod_pistol_grip": [
       "5f6341043ada5942720e2dc5",
