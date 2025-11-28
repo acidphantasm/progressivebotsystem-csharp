@@ -125,20 +125,25 @@ public class ModConfig : IOnLoad
             var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
 
-            if (savePresetToDisk)
-            {
-                await _dataLoader.SavePresetChangesToDisk(_modPath);
-            }
             
-            // Special handling for presets
-            if (Config.UsePreset && !OriginalConfig.UsePreset || Config.UsePreset && savePresetToDisk)
+            if (Config.UsePreset && !OriginalConfig.UsePreset)
             {
+                Console.WriteLine("First");
                 await _dataLoader.AssignJsonDataFromPreset(_modPath);
             }
             else if (!Config.UsePreset && OriginalConfig.UsePreset)
             {
+                Console.WriteLine("First elseif");
                 await _dataLoader.AssignJsonData(_modPath);
+                savePresetToDisk = false;
             }
+            
+            if (savePresetToDisk)
+            {
+                Console.WriteLine("Second");
+                await _dataLoader.SavePresetChangesToDisk(_modPath);
+            }
+            
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
 
             // Update 'Original' config stuff since we've saved so the 'Undo' function works

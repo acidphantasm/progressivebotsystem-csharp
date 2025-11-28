@@ -198,8 +198,55 @@ else
     private readonly Dictionary<string, Dictionary<string, Dictionary<double, double>>> _originalGenerationSlotRanges = new();
     private readonly Dictionary<string, Dictionary<string, Dictionary<double, double>>> _generationSlotRanges = new();
     
+    private void HandlePresetChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    
+    private void HandleSaveCompleted()
+    {
+        _originalBotTypes.Clear();
+        foreach (var botType in _botTypes.Keys)
+        {
+            _originalBotTypes[botType] = _botTypes[botType]
+                .Select(i => new PresetItemView
+                {
+                    Id = i.Id,
+                    Category = i.Category,
+                    Weight = i.Weight,
+                    DisplayName = i.DisplayName,
+                    CurrentDropZone = i.CurrentDropZone,
+                    botType = i.botType,
+                    IsGenerationItem = i.IsGenerationItem
+                })
+                .ToList();
+        }
+        
+        _originalGenerationSlotRanges.Clear();
+        foreach (var botTypeKvp in _generationSlotRanges)
+        {
+            var newSlotDict = new Dictionary<string, Dictionary<double, double>>();
+
+            foreach (var slotKvp in botTypeKvp.Value)
+            {
+                var newRangeDict = slotKvp.Value.ToDictionary(k => k.Key, v => v.Value);
+                newSlotDict[slotKvp.Key] = newRangeDict;
+            }
+
+            _originalGenerationSlotRanges[botTypeKvp.Key] = newSlotDict;
+        }
+    }
+
+    public void Dispose()
+    {
+        MainLayout.OnPresetChanged -= HandlePresetChanged;
+        MainLayout.OnPresetSaved -= HandleSaveCompleted;
+    }
+    
     protected override async Task OnInitializedAsync()
     {
+        MainLayout.OnPresetChanged += HandlePresetChanged;
+        MainLayout.OnPresetSaved += HandleSaveCompleted;
         await LoadDataAsync();
     }
 
@@ -382,9 +429,6 @@ else
 
     private void MoveToUsed(string botType, string category, PresetItemView item)
     {
-        var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
-        var weightKey = key + "_generationWeight";
-
         PresetItemView? originalItem = null;
         if (_originalBotTypes.TryGetValue(botType, out var originalList))
             originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem);
@@ -396,23 +440,14 @@ else
             _botTypes[botType].Add(item);
 
         UpdatePendingChanges(botType, category, item);
-        Utils.UpdateView(key);
-        if (originalItem != null && item.Weight == originalItem.Weight && MainLayout.pendingChanges.Contains(weightKey))
-            Utils.UpdateView(weightKey);
     }
 
     private void MoveToAvailable(string botType, string category, PresetItemView item)
     {
-        var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
-        var weightKey = key + "_generationWeight";
-
         _botTypes[botType].RemoveAll(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem);
         item.Weight = 1;
 
         UpdatePendingChanges(botType, category, item);
-        Utils.UpdateView(key);
-        if (MainLayout.pendingChanges.Contains(weightKey))
-            Utils.UpdateView(weightKey);
     }
 
     private void OnChancesWeightChanged(string botType, string category, PresetItemView item, double newValue)
@@ -445,92 +480,86 @@ else
     {
         if (slotIndex.HasValue)
         {
-            var key = $"Tier{Tier}_{botType}_{category}_{slotIndex.Value}";
-            var originalValue = _originalGenerationSlotRanges.TryGetValue(botType, out var origBot) &&
-                                origBot.TryGetValue(category, out var origCat) &&
-                                origCat.TryGetValue(slotIndex.Value, out var val) ? val : 0;
+            var slotKey = $"Tier{Tier}_{botType}_{category}_{slotIndex.Value}";
+
+            double originalValue = 0;
+            if (_originalGenerationSlotRanges.TryGetValue(botType, out var origBot) &&
+                origBot.TryGetValue(category, out var origCat) &&
+                origCat.TryGetValue(slotIndex.Value, out var val))
+            {
+                originalValue = val;
+            }
 
             var currentValue = _generationSlotRanges[botType][category][slotIndex.Value];
 
-            var wasPending = MainLayout.GenerationWeightChanges.ContainsKey(key);
-            var isPending = currentValue != originalValue;
+            var changed = currentValue != originalValue;
 
-            if (isPending)
-                MainLayout.GenerationWeightChanges[key] = currentValue;
+            if (changed)
+                MainLayout.GenerationWeightChanges[slotKey] = currentValue;
             else
-                MainLayout.GenerationWeightChanges.Remove(key);
+                MainLayout.GenerationWeightChanges.Remove(slotKey);
 
-            if (wasPending != isPending)
-                Utils.UpdateView(key + "_generationSlotWeight"); // only update view if pending status changed
+            var wasPending = MainLayout.pendingChanges.Contains(slotKey + "_generationSlotWeight");
+            if (wasPending != changed)
+                Utils.UpdateView(slotKey + "_generationSlotWeight");
 
             return;
         }
 
         if (item == null) return;
 
-        var itemKey = $"Tier{Tier}_{botType}_{category}_{item.Id}";
+        var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
+        var weightKey = item.IsGenerationItem ? key + "_generationWeight" : key + "_chancesWeight";
 
+        if (!_originalBotTypes.TryGetValue(botType, out var originalList))
+            return;
+
+        var originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem == item.IsGenerationItem);
+        var currentItem = _botTypes[botType].FirstOrDefault(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem == item.IsGenerationItem);
+
+        var added = originalItem == null && currentItem != null;
+        var removed = originalItem != null && currentItem == null;
+        var weightChanged = currentItem != null &&
+                            ((originalItem != null && currentItem.Weight != originalItem.Weight) ||
+                             (originalItem == null && currentItem.Weight != 1));
+        
         if (item.IsGenerationItem)
         {
-            if (_originalBotTypes.TryGetValue(botType, out var originalList))
-            {
-                var originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem);
-                var currentItem = _botTypes[botType].FirstOrDefault(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem);
+            if (added)
+                MainLayout.GenerationWhitelistAddedItems.Add(key);
+            else
+                MainLayout.GenerationWhitelistAddedItems.Remove(key);
 
-                var wasPending = MainLayout.GenerationWhitelistWeightChanges.ContainsKey(itemKey);
-                var isPending = (originalItem == null && currentItem != null) || 
-                                (originalItem != null && currentItem == null) || 
-                                (originalItem != null && currentItem != null && currentItem.Weight != originalItem.Weight);
+            if (removed)
+                MainLayout.GenerationWhitelistRemovedItems.Add(key);
+            else
+                MainLayout.GenerationWhitelistRemovedItems.Remove(key);
 
-                if (isPending && currentItem != null)
-                    MainLayout.GenerationWhitelistWeightChanges[itemKey] = currentItem.Weight;
-                else
-                    MainLayout.GenerationWhitelistWeightChanges.Remove(itemKey);
-
-                if (originalItem == null && currentItem != null)
-                {
-                    MainLayout.GenerationWhitelistAddedItems.Add(itemKey);
-                    MainLayout.GenerationWhitelistRemovedItems.Remove(itemKey);
-                }
-                else if (originalItem != null && currentItem == null)
-                {
-                    MainLayout.GenerationWhitelistRemovedItems.Add(itemKey);
-                    MainLayout.GenerationWhitelistAddedItems.Remove(itemKey);
-                }
-                else
-                {
-                    MainLayout.GenerationWhitelistAddedItems.Remove(itemKey);
-                    MainLayout.GenerationWhitelistRemovedItems.Remove(itemKey);
-                }
-
-                if (wasPending != isPending)
-                    Utils.UpdateView(itemKey + "_generationWeight");
-            }
+            if (weightChanged && currentItem != null)
+                MainLayout.GenerationWhitelistWeightChanges[weightKey] = currentItem.Weight;
+            else
+                MainLayout.GenerationWhitelistWeightChanges.Remove(weightKey);
         }
         else
         {
-            if (_originalBotTypes.TryGetValue(botType, out var originalList))
-            {
-                var originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category && !i.IsGenerationItem);
-                var currentItem = _botTypes[botType].FirstOrDefault(i => i.Id == item.Id && i.Category == category && !i.IsGenerationItem);
-
-                var wasPending = MainLayout.ChancesWeightChanges.ContainsKey(itemKey);
-                var isPending = (originalItem == null && currentItem != null) ||
-                                (originalItem != null && currentItem == null) ||
-                                (originalItem != null && currentItem != null && currentItem.Weight != originalItem.Weight);
-
-                if (isPending && currentItem != null)
-                    MainLayout.ChancesWeightChanges[itemKey] = currentItem.Weight;
-                else
-                    MainLayout.ChancesWeightChanges.Remove(itemKey);
-
-                if (wasPending != isPending)
-                    Utils.UpdateView(itemKey + "_chancesWeight");
-            }
+            if (weightChanged && currentItem != null)
+                MainLayout.ChancesWeightChanges[weightKey] = currentItem.Weight;
+            else
+                MainLayout.ChancesWeightChanges.Remove(weightKey);
         }
+
+        var wasPendingItem = MainLayout.pendingChanges.Contains(key);
+        var wasPendingWeight = MainLayout.pendingChanges.Contains(weightKey);
+        
+        var pendingItemNow = added || removed;
+        var pendingWeightNow = weightChanged;
+
+        if (wasPendingItem != pendingItemNow)
+            Utils.UpdateView(key);
+
+        if (wasPendingWeight != pendingWeightNow)
+            Utils.UpdateView(weightKey);
     }
-
-
     
     private List<string> GetAvailableItemsForCategory(string category)
     {

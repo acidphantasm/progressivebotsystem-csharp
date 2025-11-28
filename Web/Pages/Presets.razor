@@ -101,6 +101,10 @@
         get => ModConfig.Config.UsePreset;
         set
         {
+            if (!value)
+            {
+                _presetName = string.Empty;
+            }
             ModConfig.Config.UsePreset = value;
             Utils.UpdateView(value, ModConfig.OriginalConfig.UsePreset);
         }

@@ -19,20 +19,3 @@
         </MudPaper>
     }
 </MudMainContent>
-
-@code {
-    protected override void OnInitialized()
-    {
-        MainLayout.OnPresetChanged += HandlePresetChanged;
-    }
-
-    private void HandlePresetChanged()
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        MainLayout.OnPresetChanged -= HandlePresetChanged;
-    }
-}

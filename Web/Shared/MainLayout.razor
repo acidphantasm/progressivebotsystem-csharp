@@ -195,6 +195,7 @@ else
 @code {
     private static MainLayout? _app;
     public static event Action? OnPresetChanged;
+    public static event Action? OnPresetSaved;
     private IDisposable _locationChangingRegistration;
     
     bool _drawerOpen = false;
@@ -312,7 +313,7 @@ else
     
     private ValueTask OnLocationChanging(LocationChangingContext context)
     {
-        if (HasPendingChanges())
+        if (HasPendingPresetChanges() || HasPendingPresetNameOrFolderChange())
         {
             context.PreventNavigation();
             ShowPendingChangesDialog();
@@ -321,22 +322,28 @@ else
         return ValueTask.CompletedTask;
     }
 
-    private bool HasPendingChanges()
+    private bool HasPendingPresetNameOrFolderChange()
+    {
+        return pendingChanges.Contains("_presetName")
+               || pendingChanges.Contains("_presetEnable");
+    }
+
+    private bool HasPendingPresetChanges()
     {
         return EquipmentWeightChanges.Count > 0
-           || AmmoWeightChanges.Count > 0
-           || ChancesWeightChanges.Count > 0
-           || GenerationWeightChanges.Count > 0
-           || GenerationWhitelistWeightChanges.Count > 0
-           || EquipmentAddedItems.Count > 0
-           || EquipmentRemovedItems.Count > 0
-           || AmmoAddedItems.Count > 0
-           || AmmoRemovedItems.Count > 0
-           || GenerationWhitelistAddedItems.Count > 0
-           || GenerationWhitelistRemovedItems.Count > 0 
-           || AppearanceWeightChanges.Count > 0 
-           || AppearanceAddedItems.Count > 0 
-           || AppearanceRemovedItems.Count > 0;
+               || AmmoWeightChanges.Count > 0
+               || ChancesWeightChanges.Count > 0
+               || GenerationWeightChanges.Count > 0
+               || GenerationWhitelistWeightChanges.Count > 0
+               || EquipmentAddedItems.Count > 0
+               || EquipmentRemovedItems.Count > 0
+               || AmmoAddedItems.Count > 0
+               || AmmoRemovedItems.Count > 0
+               || GenerationWhitelistAddedItems.Count > 0
+               || GenerationWhitelistRemovedItems.Count > 0
+               || AppearanceWeightChanges.Count > 0
+               || AppearanceAddedItems.Count > 0
+               || AppearanceRemovedItems.Count > 0;
     }
 
     private void ClearPendingChanges()
@@ -383,7 +390,15 @@ else
         changeList.AddRange(AppearanceRemovedItems.Select(x => $"Appearance Removed: {x}"));
         changeList.AddRange(AppearanceWeightChanges.Select(x => $"Appearance Weight Changed: {x.Key}"));
 
-        // Show a default message if there are no changes
+        if (pendingChanges.Contains("_presetName"))
+        {
+            changeList.Add($"Preset Name Changed: {ModConfig.Config.PresetName}");
+        }
+        if (pendingChanges.Contains("_presetEnable"))
+        {
+            changeList.Add($"Preset Enablement Changed: {ModConfig.Config.UsePreset}");
+        }
+
         if (!changeList.Any())
             changeList.Add("No pending changes detected.");
 
@@ -395,7 +410,7 @@ else
         };
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
-        var dialog = await DialogService.ShowAsync<RefreshWarningDialog>("Unsaved Changes", parameters, options);
+        var dialog = await DialogService.ShowAsync<RefreshWarningDialog>("Navigation Blocked: Unsaved Changes", parameters, options);
         var result = await dialog.Result;
 
         if (result is not null && !result.Canceled)
@@ -449,12 +464,11 @@ else
             _isSaving = true;
             StateHasChanged();
 
-            var updatePresetOnDisk = false;
+            var updatePresetOnDisk = HasPendingPresetNameOrFolderChange();
 
-            if (HasPendingChanges())
+            if (HasPendingPresetChanges())
             {
                 updatePresetOnDisk = true;
-
                 ApplyPresetChanges();
             }
             var result = await ModConfig.SaveConfig(updatePresetOnDisk);
@@ -464,6 +478,11 @@ else
             {
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config saved successfully.", Severity.Info, config => { config.ShowCloseIcon = false; });
+                    if (HasPendingPresetChanges())
+                    {
+                        OnPresetSaved?.Invoke();
+                        OnPresetChanged?.Invoke();
+                    }
                     ClearPendingChanges();
                     _unsavedChanges = false;
                     _isInRaid = false;
@@ -487,11 +506,6 @@ else
         }
         finally
         {
-
-            if (ModConfig.Config.UsePreset)
-            {
-                OnPresetChanged?.Invoke();
-            }
             _isSaving = false;
             StateHasChanged();
         }
@@ -703,52 +717,66 @@ else
     
     private void ApplyEquipmentChangesToTier(EquipmentTierData tier, string tierIndex)
     {
-        foreach (var key in EquipmentRemovedItems.Concat(EquipmentAddedItems).Concat(EquipmentWeightChanges.Keys))
+        foreach (var prop in typeof(EquipmentTierData).GetProperties())
         {
-            var parts = key.Split('_');
-            if (parts.Length < 4) return;
+            var botName = prop.Name;
+            var botData = (ApbsEquipmentBot)prop.GetValue(tier)!;
 
-            var keyTier = parts[0];
-            var botName = parts[1];
-            
-            var idStr = parts[^1];
-            
-            var categoryStr = string.Join("_", parts[2..^1]);
-
-            if (!keyTier.Equals($"Tier{tierIndex}", StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            var botProp = typeof(EquipmentTierData).GetProperty(botName);
-            if (botProp == null) continue;
-
-            var botData = (ApbsEquipmentBot)botProp.GetValue(tier)!;
-
-            if (!_stringToSlot.TryGetValue(categoryStr, out var slot))
-                continue;
-
-            var equipmentDict = botData.Equipment;
-            var id = new MongoId(idStr);
-
-            if (!equipmentDict.TryGetValue(slot, out var items))
+            void ApplyToEquipment(string key, Action<Dictionary<MongoId, double>, MongoId> action)
             {
-                items = new Dictionary<MongoId, double>();
-                equipmentDict[slot] = items;
+                var parts = key.Split('_');
+                if (parts.Length < 4) return;
+
+                var keyTier = parts[0];
+                var keyBot = parts[1];
+                var idStr = parts[^1];
+                var categoryStr = string.Join("_", parts[2..^1]);
+
+                if (!keyTier.Equals($"Tier{tierIndex}", StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                if (!keyBot.Equals(botName, StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                if (!_stringToSlot.TryGetValue(categoryStr, out var slot))
+                    return;
+
+                var equipmentDict = botData.Equipment;
+                if (!equipmentDict.TryGetValue(slot, out var items))
+                {
+                    items = new Dictionary<MongoId, double>();
+                    equipmentDict[slot] = items;
+                }
+
+                var id = new MongoId(idStr);
+                action(items, id);
             }
-            
-            if (EquipmentRemovedItems.Contains(key))
+
+            foreach (var key in EquipmentRemovedItems)
+                ApplyToEquipment(key, (items, id) => items.Remove(id));
+
+            foreach (var key in EquipmentAddedItems)
             {
-                items.Remove(id);
+                var weightKey = key + "_weight";
+                ApplyToEquipment(key, (items, id) =>
+                {
+                    if (EquipmentWeightChanges.TryGetValue(weightKey, out var weight))
+                    {
+                        items[id] = weight;
+                        EquipmentWeightChanges.Remove(weightKey);
+                    }
+                    else
+                    {
+                        items[id] = 1;
+                    }
+                });
             }
-            
-            if (EquipmentAddedItems.Contains(key))
+
+            foreach (var kvp in EquipmentWeightChanges.ToList())
             {
-                double weight = EquipmentWeightChanges.TryGetValue(key, out var w) ? w : 1;
-                items[id] = weight;
-            }
-            
-            if (EquipmentWeightChanges.TryGetValue(key, out var newWeight))
-            {
-                items[id] = newWeight;
+                if (!kvp.Key.EndsWith("_weight")) continue;
+                var baseKey = kvp.Key.Substring(0, kvp.Key.Length - "_weight".Length);
+                ApplyToEquipment(baseKey, (items, id) => items[id] = kvp.Value);
             }
         }
     }
@@ -757,7 +785,7 @@ else
     {
         foreach (var prop in typeof(AmmoTierData).GetProperties())
         {
-            string botName = prop.Name;
+            var botName = prop.Name;
             var botData = (Dictionary<string, Dictionary<MongoId, double>>)prop.GetValue(tier)!;
 
             void ApplyToAmmo(string key, Action<Dictionary<MongoId, double>, MongoId> action)
@@ -785,23 +813,33 @@ else
                 var mongoId = new MongoId(idStr);
                 action(items, mongoId);
             }
-            
+
             foreach (var key in AmmoRemovedItems)
                 ApplyToAmmo(key, (items, id) => items.Remove(id));
-            
+
             foreach (var key in AmmoAddedItems)
+            {
+                var weightKey = key + "_weight";
                 ApplyToAmmo(key, (items, id) =>
                 {
-                    double weight = AmmoWeightChanges.TryGetValue(key, out var w) ? w : 1;
-                    items[id] = weight;
-                });
-            
-            foreach (var (key, weight) in AmmoWeightChanges)
-                ApplyToAmmo(key, (items, id) =>
-                {
-                    if (items.ContainsKey(id))
+                    if (AmmoWeightChanges.TryGetValue(weightKey, out var weight))
+                    {
                         items[id] = weight;
+                        AmmoWeightChanges.Remove(weightKey);
+                    }
+                    else
+                    {
+                        items[id] = 1;
+                    }
                 });
+            }
+            
+            foreach (var kvp in AmmoWeightChanges.ToList())
+            {
+                if (!kvp.Key.EndsWith("_weight")) continue;
+                var baseKey = kvp.Key.Substring(0, kvp.Key.Length - "_weight".Length);
+                ApplyToAmmo(baseKey, (items, id) => items[id] = kvp.Value);
+            }
         }
     }
 
@@ -809,40 +847,51 @@ else
     {
         foreach (var botProp in typeof(ChancesTierData).GetProperties())
         {
-            string botType = botProp.Name;
+            var botType = botProp.Name;
             var botData = botProp.GetValue(tierData) as BotChancesData;
             if (botData?.Chances == null) continue;
 
             var chances = botData.Chances;
-            
-            foreach (var dictProp in typeof(ApbsChances).GetProperties())
-            {
-                if (dictProp.Name.Equals("Generation", StringComparison.OrdinalIgnoreCase))
-                    continue;
 
+            void ApplyWeightChanges(IDictionary dict, string dictName, IEnumerable<KeyValuePair<string, double>> changes, string suffix = "")
+            {
+                foreach (var kvp in changes)
+                {
+                    var key = kvp.Key;
+                    if (!string.IsNullOrEmpty(suffix) && key.EndsWith(suffix))
+                        key = key.Substring(0, key.Length - suffix.Length);
+
+                    var parts = key.Split('_', 4);
+                    if (parts.Length != 4) continue;
+                    if (parts[0] != $"Tier{tier}" || parts[1] != botType) continue;
+
+                    var category = parts[2];
+                    var id = parts[3];
+
+                    if (!string.Equals(dictName, category, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // eesh, I knew this would come back to bite me
+                    if (dict is Dictionary<MongoId, double>)
+                    {
+                        var mongoId = new MongoId(id);
+                        dict[mongoId] = kvp.Value;
+                    }
+                    else
+                    {
+                        dict[id] = kvp.Value;
+                    }
+                }
+            }
+
+            foreach (var dictProp in typeof(ApbsChances).GetProperties().Where(p => !p.Name.Equals("Generation", StringComparison.OrdinalIgnoreCase)))
+            {
                 var dict = dictProp.GetValue(chances) as IDictionary;
                 if (dict == null) continue;
 
-                string category = dictProp.Name;
-
-                var keys = ChancesWeightChanges
-                    .Where(kvp =>
-                    {
-                        var parts = kvp.Key.Split('_', 4);
-                        return parts.Length == 4
-                               && parts[0] == $"Tier{tier}"
-                               && parts[1] == botType
-                               && parts[2] == category;
-                    });
-
-                foreach (var kvp in keys)
-                {
-                    string id = kvp.Key.Split('_', 4)[3];
-                    if (dict.Contains(id))
-                        dict[id] = kvp.Value;
-                }
+                ApplyWeightChanges(dict, dictProp.Name, ChancesWeightChanges, "_chancesWeight");
             }
-            
+
             var genItems = chances.Generation?.Items;
             if (genItems == null) continue;
 
@@ -851,82 +900,47 @@ else
                 var genData = genProp.GetValue(genItems) as ApbsGenerationData;
                 if (genData == null) continue;
 
-                string genCategory = genProp.Name;
-                
-                var whitelistKeys = GenerationWhitelistWeightChanges
-                    .Where(kvp =>
-                    {
-                        var parts = kvp.Key.Split('_', 4);
-                        return parts.Length == 4
-                               && parts[0] == $"Tier{tier}"
-                               && parts[1] == botType
-                               && parts[2] == genCategory;
-                    });
+                var genCategory = genProp.Name;
 
-                foreach (var kvp in whitelistKeys)
-                {
-                    string id = kvp.Key.Split('_', 4)[3];
-                    try
-                    {
-                        var mongoId = new MongoId(id);
-                        if (genData.Whitelist.ContainsKey(mongoId))
-                            genData.Whitelist[mongoId] = kvp.Value;
-                    }
-                    catch
-                    {
-                    }
-                }
-                
-                if (GenerationWeightChanges != null)
-                {
-                    for (int slotIndex = 0; slotIndex < 8; slotIndex++)
-                    {
-                        var key = $"Tier{tier}_{botType}_{genCategory}_{slotIndex}";
-                        double value;
-
-                        if (GenerationWeightChanges.TryGetValue(key, out var changedValue))
-                        {
-                            // Use the user-modified value
-                            value = changedValue;
-                        }
-                        else if (genData.Weights.TryGetValue(slotIndex, out var existingValue))
-                        {
-                            // Keep the original value
-                            value = existingValue;
-                        }
-                        else
-                        {
-                            // Default if missing
-                            value = 0;
-                        }
-
-                        genData.Weights[slotIndex] = value;
-                    }
-                }
-                
                 foreach (var key in GenerationWhitelistAddedItems.Concat(GenerationWhitelistRemovedItems))
                 {
                     var parts = key.Split('_', 4);
                     if (parts.Length != 4 || parts[0] != $"Tier{tier}" || parts[1] != botType || parts[2] != genCategory)
                         continue;
 
-                    string id = parts[3];
-                    try
+                    var id = parts[3];
+                    var mongoId = new MongoId(id);
+
+                    if (GenerationWhitelistAddedItems.Contains(key))
                     {
-                        var mongoId = new MongoId(id);
-                        if (GenerationWhitelistAddedItems.Contains(key))
+                        if (GenerationWhitelistWeightChanges.TryGetValue(key + "_generationWeight", out var weight))
                         {
-                            if (!genData.Whitelist.ContainsKey(mongoId))
-                                genData.Whitelist[mongoId] = 1;
+                            genData.Whitelist[mongoId] = weight;
+                            GenerationWhitelistWeightChanges.Remove(key + "_generationWeight");
                         }
-                        else if (GenerationWhitelistRemovedItems.Contains(key))
+                        else
                         {
-                            genData.Whitelist.Remove(mongoId);
+                            genData.Whitelist[mongoId] = 1;
                         }
                     }
-                    catch
+                    else if (GenerationWhitelistRemovedItems.Contains(key))
                     {
+                        genData.Whitelist.Remove(mongoId);
                     }
+                }
+
+                ApplyWeightChanges(genData.Whitelist, genCategory, GenerationWhitelistWeightChanges, "_generationWeight");
+
+                for (var slotIndex = 0; slotIndex < 8; slotIndex++)
+                {
+                    var slotKey = $"Tier{tier}_{botType}_{genCategory}_{slotIndex}";
+                    var value = GenerationWeightChanges.TryGetValue(slotKey, out var changedValue)
+                        ? changedValue
+                        : genData.Weights.TryGetValue(slotIndex, out var existingValue)
+                            ? existingValue
+                            : 0;
+
+                    genData.Weights[slotIndex] = value;
                 }
             }
         }
@@ -939,10 +953,10 @@ else
             var parts = key.Split('_');
             if (parts.Length < 4) return;
 
-            string keyTier = parts[0];
-            string botType = parts[1];
-            string category = parts[2];
-            string idStr = parts[3];
+            var keyTier = parts[0];
+            var botType = parts[1];
+            var category = parts[2];
+            var idStr = parts[3];
 
             if (!keyTier.Equals($"Tier{tierIndex}", StringComparison.OrdinalIgnoreCase))
                 return;
@@ -961,11 +975,11 @@ else
                 _ => null
             };
 
-            if (botType.Contains("-")) // season bots
+            if (botType.Contains("-"))
             {
                 var seasonParts = botType.Split('-', 2);
-                string seasonName = seasonParts[0];
-                string seasonBot = seasonParts[1];
+                var seasonName = seasonParts[0];
+                var seasonBot = seasonParts[1];
 
                 SeasonAppearance? season = seasonName.ToLower() switch
                 {
@@ -1024,11 +1038,21 @@ else
         foreach (var key in AppearanceAddedItems)
             ApplyToAppearance(key, (dict, id) =>
             {
-                double weight = AppearanceWeightChanges.TryGetValue(key, out var w) ? w : 1;
+                var weight = AppearanceWeightChanges.TryGetValue(key + "_weight", out var w) ? w : 1;
                 dict[id] = weight;
+                AppearanceWeightChanges.Remove(key + "_weight");
             });
 
         foreach (var kvp in AppearanceWeightChanges)
-            ApplyToAppearance(kvp.Key, (dict, id) => dict[id] = kvp.Value);
+        {
+            if (!kvp.Key.EndsWith("_weight")) continue;
+            var baseKey = kvp.Key.Substring(0, kvp.Key.Length - "_weight".Length);
+
+            ApplyToAppearance(baseKey, (dict, id) =>
+            {
+                if (dict.ContainsKey(id))
+                    dict[id] = kvp.Value;
+            });
+        }
     }
 }

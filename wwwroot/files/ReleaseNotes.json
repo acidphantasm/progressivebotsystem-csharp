@@ -1,13 +1,15 @@
 ﻿[
   {
     "Version": "2.0.8",
-    "ReleaseDate": "November 27, 2025",
+    "ReleaseDate": "November 28, 2025",
     "IsLatest": true,
     "NewFeatures": [],
     "Changes": [
-      "Minor code fixes that shouldn't amount to anything but cleanliness"
+      "Prevented user from changing to a preset, then immediately navigating to edit the preset. Save must happen first"
     ],
     "BugFixes": [
+      "Resolved Presets saving incorrectly in specific scenarios",
+      "Resolved Presets weight changes not applying if adding an item from available -> used -> edit weight",
       "Resolved Scav Equal Equipment Tiering not working"
     ],
     "KnownIssues": []
