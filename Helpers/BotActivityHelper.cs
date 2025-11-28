@@ -29,7 +29,7 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
 
     public bool IsBotEnabled(string botType)
     {
-        botType = botType.ToLower();
+        botType = botType.ToLowerInvariant();
 
         if (botType is "usec" or "bear" or "pmc") botType = "pmcusec";
 
@@ -38,7 +38,7 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
 
     private bool DoesBotExist(string botType)
     {
-        botType = botType.ToLower();
+        botType = botType.ToLowerInvariant();
 
         return _bosses.Contains(botType) || _followers.Contains(botType) || _pmcs.Contains(botType) ||
                _scavs.Contains(botType) || _specials.Contains(botType) || _events.Contains(botType);
@@ -46,7 +46,7 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
 
     private bool IsBotDisabled(string botType)
     {
-        botType = botType.ToLower();
+        botType = botType.ToLowerInvariant();
 
         if (_alwaysDisabled.Contains(botType)) return true;
         if (_events.Contains(botType)) return true;

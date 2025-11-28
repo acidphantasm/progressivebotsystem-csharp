@@ -1,8 +1,21 @@
 ﻿[
   {
-    "Version": "2.0.7",
+    "Version": "2.0.8",
     "ReleaseDate": "November 27, 2025",
     "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Minor code fixes that shouldn't amount to anything but cleanliness"
+    ],
+    "BugFixes": [
+      "Resolved Scav Equal Equipment Tiering not working"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.7",
+    "ReleaseDate": "November 27, 2025",
+    "IsLatest": false,
     "NewFeatures": [
       "Preset Editor is now live in the Web Config",
       "Presets are now easy-ish to make. If you want to share them, create an add-on for APBS on the Forge",
@@ -42,7 +55,9 @@
       "Resolved missing BlackRock chest rig (Khaki)",
       "Resolved missing Blicky in Mods Json Tier1-7"
     ],
-    "KnownIssues": []
+    "KnownIssues": [
+      "Scav Equal Equipment Tiering causes the config to fail to save"
+    ]
   },
   {
     "Version": "2.0.6",

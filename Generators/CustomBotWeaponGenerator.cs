@@ -119,7 +119,7 @@ public class CustomBotWeaponGenerator(
             logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
         }
 
-        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, key);
+        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLowerInvariant(), tierNumber, key);
         return weightedRandomHelper.GetWeightedValue(weaponPool);
     }
     
@@ -140,7 +140,7 @@ public class CustomBotWeaponGenerator(
         {
             logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
         }
-        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, key);
+        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLowerInvariant(), tierNumber, key);
         return weightedRandomHelper.GetWeightedValue(weaponPool);
     }
     private MongoId PickQuestWeightedWeaponTemplateFromPool(string equipmentSlot, BotTypeInventory botTemplateInventory, string botRole, int tierNumber, QuestData questData)
@@ -173,7 +173,7 @@ public class CustomBotWeaponGenerator(
             {
                 logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
             }
-            var questWeaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, questKey);
+            var questWeaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLowerInvariant(), tierNumber, questKey);
             return weightedRandomHelper.GetWeightedValue(questWeaponPool);
         }
         
@@ -195,7 +195,7 @@ public class CustomBotWeaponGenerator(
         {
             logger.Error($"Unable to parse equipment slot: {equipmentSlot}");
         }
-        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLower(), tierNumber, key);
+        var weaponPool = botEquipmentHelper.GetEquipmentByBotRoleAndSlot(botRole.ToLowerInvariant(), tierNumber, key);
         return weightedRandomHelper.GetWeightedValue(weaponPool);
     }
 

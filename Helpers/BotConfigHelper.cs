@@ -28,7 +28,6 @@ public class BotConfigHelper : IOnLoad
         ApbsLogger apbsLogger,
         BotActivityHelper botActivityHelper,
         ItemHelper itemHelper,
-        BotEquipmentHelper botEquipmentHelper,
         TierInformation tierInformation,
         DataLoader dataLoader)
     {
@@ -38,7 +37,6 @@ public class BotConfigHelper : IOnLoad
         _apbsLogger = apbsLogger;
         _botActivityHelper = botActivityHelper;
         _itemHelper = itemHelper;
-        _botEquipmentHelper = botEquipmentHelper;
         _tierInformation = tierInformation;
         _dataLoader = dataLoader;
     }
@@ -49,7 +47,6 @@ public class BotConfigHelper : IOnLoad
     private readonly PmcConfig _pmcConfig;
     private readonly BotActivityHelper _botActivityHelper;
     private readonly ItemHelper _itemHelper;
-    private readonly BotEquipmentHelper _botEquipmentHelper;
     private readonly TierInformation _tierInformation;
     private readonly DataLoader _dataLoader;
     
@@ -297,8 +294,15 @@ public class BotConfigHelper : IOnLoad
             !ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs) return;
 
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Key Loot");
-        _databaseService.GetBots().Types.TryGetValue("assault", out var assaultBot);
-        _databaseService.GetBots().Types.TryGetValue("marksman", out var marksmanBot);
+        if (!_databaseService.GetBots().Types.TryGetValue("assault", out var assaultBot))
+        {
+            _apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. What did you do?");
+        }
+
+        if (!_databaseService.GetBots().Types.TryGetValue("marksman", out var marksmanBot))
+        {
+            _apbsLogger.Warning("[ScavKeyConfig] Marksman bot type not found. What did you do?");
+        }
 
         var itemValueCollection = _databaseService.GetItems().Values;
         var filteredKeyItems = itemValueCollection.Where(item => _itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()));
@@ -308,16 +312,15 @@ public class BotConfigHelper : IOnLoad
         foreach (var item in filteredKeyItems ?? [])
         {
             if (VanillaItemConstants.LabyrinthKeys.Contains(item.Id)) continue;
-            
-            if (assaultBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var assaultItemWeight)) assaultItemWeight = 1;
-            else
+            if (assaultBot is not null && assaultBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var assaultItemWeight)) assaultItemWeight = 1;
+            else if (assaultBot is not null)
             {
                 assaultBot.BotInventory.Items.Backpack.Add(item.Id, 1);
                 assaultBotCount++;
             }
             
-            if (marksmanBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var marksmanItemWeight)) marksmanItemWeight = 1;
-            else
+            if (marksmanBot is not null && marksmanBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var marksmanItemWeight)) marksmanItemWeight = 1;
+            else if (marksmanBot is not null)
             {
                 marksmanBot.BotInventory.Items.Backpack.Add(item.Id, 1);
                 marksmanBotCount++;
@@ -343,7 +346,7 @@ public class BotConfigHelper : IOnLoad
     {
         if (!ModConfig.Config.ScavBots.AdditionalOptions.EnableScavEqualEquipmentTiering) return;
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Equipment Weights to 1");
-        for (var i = 0; i <= 7; i++)
+        for (var i = 1; i <= 7; i++)
         {
             var equipmentData = GetTierEquipmentData(i);
             foreach (var (slotName, data) in equipmentData.Scav.Equipment)
