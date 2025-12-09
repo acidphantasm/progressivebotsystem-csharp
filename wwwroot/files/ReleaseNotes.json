@@ -5,7 +5,7 @@
     "IsLatest": true,
     "NewFeatures": [],
     "Changes": [
-      "Adjusted some locations getting the PMC Profile, should help people who use Item Info and have massively inflated profile sizes due to how that mod works"
+      "Adjusted some methods getting the PMC Profile, should help people who use Item Info and have massively inflated profile sizes due to how that mod works"
     ],
     "BugFixes": [],
     "KnownIssues": []
