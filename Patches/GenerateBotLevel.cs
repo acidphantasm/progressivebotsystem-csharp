@@ -43,7 +43,7 @@ public class GenerateBotLevel : AbstractPatch
             var scavLevel = 1;
             if (RaidInformation.CurrentSessionId is not null)
             {
-                scavLevel = profileHelper.GetPmcProfile(RaidInformation.CurrentSessionId).Info.Level ?? 1;
+                scavLevel = RaidInformation.CurrentRaidLevel ?? 1;
             }
             var scavExp = profileHelper.GetExperience(scavLevel);
             bot.Info.AddToExtensionData("Tier", tierHelper.GetTierByLevel(scavLevel));

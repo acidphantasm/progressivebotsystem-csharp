@@ -1,4 +1,5 @@
 ﻿using System.Collections.Frozen;
+using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
@@ -162,7 +163,6 @@ public class CustomBotInventoryGenerator
         }
 
         // Get profile of player generating bots, we use their level later on
-        var pmcProfile = _profileHelper.GetPmcProfile(sessionId);
         var botEquipmentRole = _botGeneratorHelper.GetBotEquipmentRole(botGenerationDetails.RoleLowercase);
         
         var equipmentPool = _botEquipmentHelper.GetEquipmentByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
@@ -198,7 +198,7 @@ public class CustomBotInventoryGenerator
                     Inventory = botInventory,
                     BotEquipmentConfig = botEquipConfig,
                     RandomisationDetails = randomisationDetails,
-                    GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                    GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
                 }, questData
             );
         }
@@ -228,7 +228,7 @@ public class CustomBotInventoryGenerator
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
                 GenerateModsBlacklist = [ItemTpl.POCKETS_1X4_TUE, ItemTpl.POCKETS_LARGE],
-                GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
             }, questData
         );
 
@@ -250,7 +250,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
             }, questData
         );
 
@@ -272,7 +272,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
             }, questData
         );
 
@@ -294,7 +294,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
             }, questData
         );
 
@@ -324,7 +324,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
             }, questData
         );
 
@@ -352,7 +352,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = pmcProfile?.Info?.Level ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
             }, questData
         );
     }

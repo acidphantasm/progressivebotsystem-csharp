@@ -60,25 +60,38 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>()!.GetFullProfile(sessionId);
-                    var profileActivityRaidData = ServiceLocator.ServiceProvider.GetService<ProfileActivityService>()!.GetProfileActivityRaidData(sessionId);
+                    try
+                    {
+                        var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>()!.GetFullProfile(sessionId);
+                        var profileActivityRaidData = ServiceLocator.ServiceProvider.GetService<ProfileActivityService>()!.GetProfileActivityRaidData(sessionId);
                     
-                    RaidInformation.CurrentSessionId = fullProfile.ProfileInfo.ProfileId;
+                        RaidInformation.CurrentSessionId = fullProfile.ProfileInfo.ProfileId;
                     
-                    var prestigeLevel = fullProfile.CharacterData.PmcData.Info.PrestigeLevel ?? 0;
-                    RaidInformation.HighestPrestigeLevel =
-                        prestigeLevel >= RaidInformation.HighestPrestigeLevel
-                            ? prestigeLevel
-                            : RaidInformation.HighestPrestigeLevel;
+                        var prestigeLevel = fullProfile.CharacterData.PmcData.Info.PrestigeLevel ?? 0;
+                        RaidInformation.HighestPrestigeLevel =
+                            prestigeLevel >= RaidInformation.HighestPrestigeLevel
+                                ? prestigeLevel
+                                : RaidInformation.HighestPrestigeLevel;
                     
-                    RaidInformation.RaidLocation = info.Location;
-                    RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
-                    RaidInformation.IsInRaid = true;
+                        RaidInformation.CurrentRaidLevel = fullProfile.CharacterData.PmcData.Info.Level ?? 1;
                     
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
+                        RaidInformation.RaidLocation = info.Location;
+                        RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
+                        RaidInformation.IsInRaid = true;
+
+                        if (ModConfig.Config.EnableDebugLog)
+                        {
+                            _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
+                            _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
+                            _apbsLogger.Debug($"Current Raid Level: {RaidInformation.CurrentRaidLevel}");
+                            _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
+                            _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _apbsLogger.Error("Match Start Router hook failed.");
+                    }
                     return output;
                 }),
             
@@ -106,11 +119,9 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/game/start");
                     try
                     {
-                        var fullProfile =
-                            ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
+                        var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
                         RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
                         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }
@@ -139,7 +150,7 @@ public class StaticRouterHooks : StaticRouter
                     }
                     catch (Exception ex)
                     {
-                        _apbsLogger.Error("Game Start Router hook failed.");
+                        _apbsLogger.Error("Profile Status hook failed.");
                     }
                     return output;
                 })

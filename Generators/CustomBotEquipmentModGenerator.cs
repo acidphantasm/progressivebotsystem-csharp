@@ -465,15 +465,13 @@ public class CustomBotEquipmentModGenerator(
             return request.Weapon;
         }
 
-        var pmcProfile = profileHelper.GetPmcProfile(sessionId);
-
         // Get pool of mods that fit weapon
         request.ModPool.TryGetValue(request.ParentTemplate.Id, out var compatibleModsPool);
 
         BotConfig.Equipment.TryGetValue(request.BotData.EquipmentRole, out var botEquipConfig);
         var botEquipBlacklist = botEquipmentFilterService.GetBotEquipmentBlacklist(
             request.BotData.EquipmentRole,
-            pmcProfile?.Info?.Level ?? 0
+            RaidInformation.CurrentRaidLevel ?? 1
         );
         var botWeaponSightWhitelist = botEquipmentFilterService.GetBotWeaponSightWhitelist(request.BotData.EquipmentRole);
         var randomisationSettings = botHelper.GetBotRandomizationDetails(request.BotData.Level ?? 0, botEquipConfig);
