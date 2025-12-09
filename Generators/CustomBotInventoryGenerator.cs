@@ -127,7 +127,6 @@ public class CustomBotInventoryGenerator
         ApbsChances wornItemChances,
         BotBaseInventory botInventory,
         BotGenerationDetails botGenerationDetails,
-        GetRaidConfigurationRequestData? raidConfig,
         int tierNumber,
         QuestData? questData)
     {

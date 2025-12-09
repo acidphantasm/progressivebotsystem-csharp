@@ -45,8 +45,6 @@ public class GenerateInventory_Patch : AbstractPatch
         var templateInventory = botJsonTemplate.BotInventory;
         var botInventory = __instance.GenerateInventoryBase();
 
-        var raidConfig = profileActivityService.GetProfileActivityRaidData(sessionId)?.RaidConfiguration;
-
         // Get initial tier
         var tierNumber = (int)botGenerationDetails.GetExtensionData()["Tier"];
         
@@ -85,7 +83,7 @@ public class GenerateInventory_Patch : AbstractPatch
         }
         
         // Have custom generator build equipment and weapons
-        customBotInventoryGenerator.GenerateAndAddEquipmentToBot(botId, sessionId, templateInventory, chances, botInventory, botGenerationDetails, raidConfig, tierNumber, questData);
+        customBotInventoryGenerator.GenerateAndAddEquipmentToBot(botId, sessionId, templateInventory, chances, botInventory, botGenerationDetails, tierNumber, questData);
         customBotInventoryGenerator.GenerateAndAddWeaponsToBot(botId, templateInventory, chances, sessionId, botInventory, botGenerationDetails, generation, tierNumber, questData);
         
         customBotLootGenerator.GenerateLoot(botId, sessionId, botJsonTemplate, botGenerationDetails, botInventory, botGenerationDetails.BotLevel, tierNumber);
