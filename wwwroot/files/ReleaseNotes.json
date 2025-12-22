@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.0.10",
+    "ReleaseDate": "December 22, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Bot Armour Durability is now configurable"
+    ],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved Blicky Mode breaking bot generation for PMCs"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.9",
     "ReleaseDate": "December 9, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Adjusted some methods getting the PMC Profile, should help people who use Item Info and have massively inflated profile sizes due to how that mod works"
@@ -13,7 +26,7 @@
   {
     "Version": "2.0.8",
     "ReleaseDate": "November 28, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Prevented user from changing to a preset, then immediately navigating to edit the preset. Save must happen first"
