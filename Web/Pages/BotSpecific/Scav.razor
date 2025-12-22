@@ -427,6 +427,115 @@
                         <MudItem xs="1" />
                         <MudItem xs="4">
                             <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Allows configurable armour durability." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Armour Durability Changes</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_scavArmourDurabilityEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scavArmourDurabilityEnabled</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle && (
+                                 MainLayout.pendingChanges.Contains("_scavArmourDurabilityEnabled") ||
+                                 MainLayout.pendingChanges.Contains("_scavArmourDurabilityMin") ||
+                                 MainLayout.pendingChanges.Contains("_scavArmourDurabilityMax") ||
+                                 MainLayout.pendingChanges.Contains("_scavArmourDurabilityMinDelta") ||
+                                 MainLayout.pendingChanges.Contains("_scavArmourDurabilityMaxDelta") ||
+                                 MainLayout.pendingChanges.Contains("_scavArmourDurabilityEnhancementChance")))
+                            {
+                                <MudButton @onclick="undoArmourDurability" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && (
+                                    _scavArmourDurabilityEnabled != true ||
+                                    _scavArmourDurabilityMin != 70 ||
+                                    _scavArmourDurabilityMax != 90 ||
+                                    _scavArmourDurabilityMinDelta != 5 ||
+                                    _scavArmourDurabilityMaxDelta != 20))
+                            {
+                                <MudButton @onclick="defaultArmourDurability" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="2" />
+                        <MudItem xs="3">
+                            <MudTooltip Text="Adjust armour durability values." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Armour Durability Values</MudText>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest an armour's 'non-repairable' durability can be." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_scavArmourDurabilityMin" Label="Min" HelperText="Durability" Variant="Variant.Filled" 
+                                    Min="0" 
+                                    Max="_scavArmourDurabilityMax"
+                                    Disabled="!_scavArmourDurabilityEnabled" />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest a armour's 'non-repairable' durability can be." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_scavArmourDurabilityMax" 
+                                    Label="Max" 
+                                    HelperText="Durability" 
+                                    Variant="Variant.Filled" 
+                                    Min="_scavArmourDurabilityMin"
+                                    Max="100"
+                                    Disabled="!_scavArmourDurabilityEnabled" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest possible difference from the rolled 'non-repairable' durabilty to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_scavArmourDurabilityMinDelta" 
+                                    Label="Min" 
+                                    HelperText="Delta" 
+                                    Variant="Variant.Filled"
+                                    Min="0"
+                                    Max="100"
+                                    Validation="@(new Func<int, bool>(ValidateDelta))"
+                                    Disabled="!_scavArmourDurabilityEnabled" />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest possible difference from the rolled 'non-repairable' durabilty to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_scavArmourDurabilityMaxDelta" 
+                                    Label="Max" 
+                                    HelperText="Delta" 
+                                    Variant="Variant.Filled"
+                                    Min="0"
+                                    Max="100"
+                                    Validation="@(new Func<int, bool>(ValidateDelta))"
+                                    Disabled="!_scavArmourDurabilityEnabled" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_scavArmourDurabilityMinLimitPercent" Label="Min" HelperText="Actual" Variant="Variant.Filled"
+                                    Min="0" 
+                                    Max="100"  />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_scavArmourDurabilityMaxLimitPercent" Label="Max" HelperText="Actual" Variant="Variant.Filled"
+                                    Min="0" 
+                                    Max="100" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1" />
+
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                                 <MudTooltip Text="Adds all keys to existing scav loot pool." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                     <MudText>Add All Keys</MudText>
                                 </MudTooltip>
@@ -2607,8 +2716,7 @@ private bool _scavEnabled
 private void undoScavBots() => _scavEnabled = ModConfig.OriginalConfig.ScavBots.Enable;
 private void defaultScavBots() => _scavEnabled = true;
 #endregion
-
-#region LOOT
+    #region LOOT
 private bool _scavLootEnabled
 {
     get => ModConfig.Config.ScavBots.LootConfig.Enable;
@@ -2648,8 +2756,7 @@ private void defaultLoot()
     MainLayout.pendingChanges.Add("_scavLootBlacklist");
 }
 #endregion
-
-#region REROLL
+    #region REROLL
 private bool _scavWeaponAmmunitionRollEnabled
 {
     get => ModConfig.Config.ScavBots.RerollConfig.Enable;
@@ -2686,8 +2793,7 @@ private void defaultRollAmmunitionEnabled()
     _scavWeaponToploadPercent = 30;
 }
 #endregion
-
-#region TOPLOAD
+    #region TOPLOAD
 private bool _scavWeaponToploadEnabled
 {
     get => ModConfig.Config.ScavBots.ToploadConfig.Enable;
@@ -2733,8 +2839,7 @@ private void defaultToploadEnabled()
     _scavWeaponToploadPercent = 30;
 }
 #endregion
-
-#region RESOURCE RANDOMIZATION
+    #region RESOURCE RANDOMIZATION
 private bool _scavResourceRandomizationEnabled
 {
     get => ModConfig.Config.ScavBots.ResourceRandomization.Enable;
@@ -2797,74 +2902,73 @@ private void defaultResourceRandomization()
     _scavMedRateUsagePercent = 10;
 }
 #endregion
-
-#region DURABILITY
-private bool _scavWeaponDurabilityEnabled
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.Enable;
-    set
+    #region DURABILITY
+    private bool _scavWeaponDurabilityEnabled
     {
-        ModConfig.Config.ScavBots.WeaponDurability.Enable = value;
-        Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.Enable);
+        get => ModConfig.Config.ScavBots.WeaponDurability.Enable;
+        set
+        {
+            ModConfig.Config.ScavBots.WeaponDurability.Enable = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.Enable);
+        }
     }
-}
-private int _scavWeaponDurabilityMin
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.Min;
-    set
+    private int _scavWeaponDurabilityMin
     {
-        ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent = value - ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
-        ModConfig.Config.ScavBots.WeaponDurability.Min = value;
-        Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.Min);
+        get => ModConfig.Config.ScavBots.WeaponDurability.Min;
+        set
+        {
+            ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent = value - ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
+            ModConfig.Config.ScavBots.WeaponDurability.Min = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.Min);
+        }
     }
-}
-private int _scavWeaponDurabilityMax
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.Max;
-    set
+    private int _scavWeaponDurabilityMax
     {
-        ModConfig.Config.ScavBots.WeaponDurability.Max = value;
-        Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.Max);
+        get => ModConfig.Config.ScavBots.WeaponDurability.Max;
+        set
+        {
+            ModConfig.Config.ScavBots.WeaponDurability.Max = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.Max);
+        }
     }
-}
-private int _scavWeaponDurabilityMinDelta
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.MinDelta;
-    set
+    private int _scavWeaponDurabilityMinDelta
     {
-        ModConfig.Config.ScavBots.WeaponDurability.MinDelta = value;
-        Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.MinDelta);
+        get => ModConfig.Config.ScavBots.WeaponDurability.MinDelta;
+        set
+        {
+            ModConfig.Config.ScavBots.WeaponDurability.MinDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.MinDelta);
+        }
     }
-}
-private int _scavWeaponDurabilityMaxDelta
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
-    set
+    private int _scavWeaponDurabilityMaxDelta
     {
-        ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent = ModConfig.Config.ScavBots.WeaponDurability.Min - value;
-        ModConfig.Config.ScavBots.WeaponDurability.MaxDelta = value;
-        Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.MaxDelta);
+        get => ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
+        set
+        {
+            ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent = ModConfig.Config.ScavBots.WeaponDurability.Min - value;
+            ModConfig.Config.ScavBots.WeaponDurability.MaxDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.MaxDelta);
+        }
     }
-}
-private int _scavWeaponDurabilityMinLimitPercent
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent;
-    set { }
-}
-private int _scavWeaponDurabilityMaxLimitPercent
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.Max - ModConfig.Config.ScavBots.WeaponDurability.MinDelta;
-    set { }
-}
-private int _scavWeaponDurabilityEnhancementChance
-{
-    get => ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance;
-    set
+    private int _scavWeaponDurabilityMinLimitPercent
     {
-        ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance = value;
-        Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.EnhancementChance);
+        get => ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent;
+        set { }
     }
-}
+    private int _scavWeaponDurabilityMaxLimitPercent
+    {
+        get => ModConfig.Config.ScavBots.WeaponDurability.Max - ModConfig.Config.ScavBots.WeaponDurability.MinDelta;
+        set { }
+    }
+    private int _scavWeaponDurabilityEnhancementChance
+    {
+        get => ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance;
+        set
+        {
+            ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.WeaponDurability.EnhancementChance);
+        }
+    }
     private void undoWeaponDurability()
     {
         _scavWeaponDurabilityEnabled = ModConfig.OriginalConfig.ScavBots.WeaponDurability.Enable;
@@ -2885,7 +2989,81 @@ private int _scavWeaponDurabilityEnhancementChance
         _scavWeaponDurabilityMinLimitPercent = ModConfig.Config.ScavBots.WeaponDurability.Min - ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
         _scavWeaponDurabilityEnhancementChance = 1;
     }
-
+    private bool _scavArmourDurabilityEnabled
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.Enable;
+        set
+        {
+            ModConfig.Config.ScavBots.ArmourDurability.Enable = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.ArmourDurability.Enable);
+        }
+    }
+    private int _scavArmourDurabilityMin
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.Min;
+        set
+        {
+            ModConfig.Config.ScavBots.ArmourDurability.MinLimitPercent = value - ModConfig.Config.ScavBots.ArmourDurability.MaxDelta;
+            ModConfig.Config.ScavBots.ArmourDurability.Min = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.ArmourDurability.Min);
+        }
+    }
+    private int _scavArmourDurabilityMax
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.Max;
+        set
+        {
+            ModConfig.Config.ScavBots.ArmourDurability.Max = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.ArmourDurability.Max);
+        }
+    }
+    private int _scavArmourDurabilityMinDelta
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.MinDelta;
+        set
+        {
+            ModConfig.Config.ScavBots.ArmourDurability.MinDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.ArmourDurability.MinDelta);
+        }
+    }
+    private int _scavArmourDurabilityMaxDelta
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.MaxDelta;
+        set
+        {
+            ModConfig.Config.ScavBots.ArmourDurability.MinLimitPercent = ModConfig.Config.ScavBots.ArmourDurability.Min - value;
+            ModConfig.Config.ScavBots.ArmourDurability.MaxDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.ArmourDurability.MaxDelta);
+        }
+    }
+    private int _scavArmourDurabilityMinLimitPercent
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.MinLimitPercent;
+        set { }
+    }
+    private int _scavArmourDurabilityMaxLimitPercent
+    {
+        get => ModConfig.Config.ScavBots.ArmourDurability.Max - ModConfig.Config.ScavBots.ArmourDurability.MinDelta;
+        set { }
+    }
+    private void undoArmourDurability()
+    {
+        _scavArmourDurabilityEnabled = ModConfig.OriginalConfig.ScavBots.ArmourDurability.Enable;
+        _scavArmourDurabilityMin = ModConfig.OriginalConfig.ScavBots.ArmourDurability.Min;
+        _scavArmourDurabilityMax = ModConfig.OriginalConfig.ScavBots.ArmourDurability.Max;
+        _scavArmourDurabilityMinDelta = ModConfig.OriginalConfig.ScavBots.ArmourDurability.MinDelta;
+        _scavArmourDurabilityMaxDelta = ModConfig.OriginalConfig.ScavBots.ArmourDurability.MaxDelta;
+        _scavArmourDurabilityMinLimitPercent = ModConfig.OriginalConfig.ScavBots.ArmourDurability.MinLimitPercent;
+    }
+    private void defaultArmourDurability()
+    {
+        _scavArmourDurabilityEnabled = true;
+        _scavArmourDurabilityMin = 70;
+        _scavArmourDurabilityMax = 90;
+        _scavArmourDurabilityMinDelta = 5;
+        _scavArmourDurabilityMaxDelta = 20;
+        _scavArmourDurabilityMinLimitPercent = ModConfig.Config.ScavBots.ArmourDurability.Min - ModConfig.Config.ScavBots.ArmourDurability.MaxDelta;
+    }
     #endregion
     #region KEYS
     private bool _scavAddAllKeys

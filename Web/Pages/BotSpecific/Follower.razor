@@ -424,6 +424,115 @@
                             <MudSlider @bind-Value="_followerWeaponDurabilityEnhancementChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" Disabled="!_followerWeaponDurabilityEnabled"/>
                         </MudItem>
 
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Allows configurable armour durability." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Armour Durability Changes</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_followerArmourDurabilityEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_followerArmourDurabilityEnabled</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle && (
+                                 MainLayout.pendingChanges.Contains("_followerArmourDurabilityEnabled") ||
+                                 MainLayout.pendingChanges.Contains("_followerArmourDurabilityMin") ||
+                                 MainLayout.pendingChanges.Contains("_followerArmourDurabilityMax") ||
+                                 MainLayout.pendingChanges.Contains("_followerArmourDurabilityMinDelta") ||
+                                 MainLayout.pendingChanges.Contains("_followerArmourDurabilityMaxDelta") ||
+                                 MainLayout.pendingChanges.Contains("_followerArmourDurabilityEnhancementChance")))
+                            {
+                                <MudButton @onclick="undoArmourDurability" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && (
+                                    _followerArmourDurabilityEnabled != true ||
+                                    _followerArmourDurabilityMin != 90 ||
+                                    _followerArmourDurabilityMax != 100 ||
+                                    _followerArmourDurabilityMinDelta != 0 ||
+                                    _followerArmourDurabilityMaxDelta != 15))
+                            {
+                                <MudButton @onclick="defaultArmourDurability" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="2" />
+                        <MudItem xs="3">
+                            <MudTooltip Text="Adjust armour durability values." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Armour Durability Values</MudText>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest an armour's 'non-repairable' durability can be." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_followerArmourDurabilityMin" Label="Min" HelperText="Durability" Variant="Variant.Filled" 
+                                    Min="0" 
+                                    Max="_followerArmourDurabilityMax"
+                                    Disabled="!_followerArmourDurabilityEnabled" />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest a armour's 'non-repairable' durability can be." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_followerArmourDurabilityMax" 
+                                    Label="Max" 
+                                    HelperText="Durability" 
+                                    Variant="Variant.Filled" 
+                                    Min="_followerArmourDurabilityMin"
+                                    Max="100"
+                                    Disabled="!_followerArmourDurabilityEnabled" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest possible difference from the rolled 'non-repairable' durabilty to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_followerArmourDurabilityMinDelta" 
+                                    Label="Min" 
+                                    HelperText="Delta" 
+                                    Variant="Variant.Filled"
+                                    Min="0"
+                                    Max="100"
+                                    Validation="@(new Func<int, bool>(ValidateDelta))"
+                                    Disabled="!_followerArmourDurabilityEnabled" />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest possible difference from the rolled 'non-repairable' durabilty to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_followerArmourDurabilityMaxDelta" 
+                                    Label="Max" 
+                                    HelperText="Delta" 
+                                    Variant="Variant.Filled"
+                                    Min="0"
+                                    Max="100"
+                                    Validation="@(new Func<int, bool>(ValidateDelta))"
+                                    Disabled="!_followerArmourDurabilityEnabled" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_followerArmourDurabilityMinLimitPercent" Label="Min" HelperText="Actual" Variant="Variant.Filled"
+                                    Min="0" 
+                                    Max="100"  />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_followerArmourDurabilityMaxLimitPercent" Label="Max" HelperText="Actual" Variant="Variant.Filled"
+                                    Min="0" 
+                                    Max="100" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1" />
+
                     </MudGrid>
                 </MudExpansionPanel>
             }
@@ -717,6 +826,81 @@
         _followerWeaponDurabilityMaxDelta = 15;
         _followerWeaponDurabilityMinLimitPercent = ModConfig.Config.FollowerBots.WeaponDurability.Min - ModConfig.Config.FollowerBots.WeaponDurability.MaxDelta;
         _followerWeaponDurabilityEnhancementChance = 0;
+    }
+    private bool _followerArmourDurabilityEnabled
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.Enable;
+        set
+        {
+            ModConfig.Config.FollowerBots.ArmourDurability.Enable = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.FollowerBots.ArmourDurability.Enable);
+        }
+    }
+    private int _followerArmourDurabilityMin
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.Min;
+        set
+        {
+            ModConfig.Config.FollowerBots.ArmourDurability.MinLimitPercent = value - ModConfig.Config.FollowerBots.ArmourDurability.MaxDelta;
+            ModConfig.Config.FollowerBots.ArmourDurability.Min = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.FollowerBots.ArmourDurability.Min);
+        }
+    }
+    private int _followerArmourDurabilityMax
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.Max;
+        set
+        {
+            ModConfig.Config.FollowerBots.ArmourDurability.Max = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.FollowerBots.ArmourDurability.Max);
+        }
+    }
+    private int _followerArmourDurabilityMinDelta
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.MinDelta;
+        set
+        {
+            ModConfig.Config.FollowerBots.ArmourDurability.MinDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.FollowerBots.ArmourDurability.MinDelta);
+        }
+    }
+    private int _followerArmourDurabilityMaxDelta
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.MaxDelta;
+        set
+        {
+            ModConfig.Config.FollowerBots.ArmourDurability.MinLimitPercent = ModConfig.Config.FollowerBots.ArmourDurability.Min - value;
+            ModConfig.Config.FollowerBots.ArmourDurability.MaxDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.FollowerBots.ArmourDurability.MaxDelta);
+        }
+    }
+    private int _followerArmourDurabilityMinLimitPercent
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.MinLimitPercent;
+        set { }
+    }
+    private int _followerArmourDurabilityMaxLimitPercent
+    {
+        get => ModConfig.Config.FollowerBots.ArmourDurability.Max - ModConfig.Config.FollowerBots.ArmourDurability.MinDelta;
+        set { }
+    }
+    private void undoArmourDurability()
+    {
+        _followerArmourDurabilityEnabled = ModConfig.OriginalConfig.FollowerBots.ArmourDurability.Enable;
+        _followerArmourDurabilityMin = ModConfig.OriginalConfig.FollowerBots.ArmourDurability.Min;
+        _followerArmourDurabilityMax = ModConfig.OriginalConfig.FollowerBots.ArmourDurability.Max;
+        _followerArmourDurabilityMinDelta = ModConfig.OriginalConfig.FollowerBots.ArmourDurability.MinDelta;
+        _followerArmourDurabilityMaxDelta = ModConfig.OriginalConfig.FollowerBots.ArmourDurability.MaxDelta;
+        _followerArmourDurabilityMinLimitPercent = ModConfig.OriginalConfig.FollowerBots.ArmourDurability.MinLimitPercent;
+    }
+    private void defaultArmourDurability()
+    {
+        _followerArmourDurabilityEnabled = true;
+        _followerArmourDurabilityMin = 90;
+        _followerArmourDurabilityMax = 100;
+        _followerArmourDurabilityMinDelta = 0;
+        _followerArmourDurabilityMaxDelta = 15;
+        _followerArmourDurabilityMinLimitPercent = ModConfig.Config.FollowerBots.ArmourDurability.Min - ModConfig.Config.FollowerBots.ArmourDurability.MaxDelta;
     }
     #endregion
 

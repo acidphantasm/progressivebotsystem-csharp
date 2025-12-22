@@ -424,6 +424,115 @@
                             <MudSlider @bind-Value="_specialWeaponDurabilityEnhancementChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" Disabled="!_specialWeaponDurabilityEnabled" />
                         </MudItem>
 
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Allows configurable armour durability." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Armour Durability Changes</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_specialArmourDurabilityEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_specialArmourDurabilityEnabled</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle && (
+                                 MainLayout.pendingChanges.Contains("_specialArmourDurabilityEnabled") ||
+                                 MainLayout.pendingChanges.Contains("_specialArmourDurabilityMin") ||
+                                 MainLayout.pendingChanges.Contains("_specialArmourDurabilityMax") ||
+                                 MainLayout.pendingChanges.Contains("_specialArmourDurabilityMinDelta") ||
+                                 MainLayout.pendingChanges.Contains("_specialArmourDurabilityMaxDelta") ||
+                                 MainLayout.pendingChanges.Contains("_specialArmourDurabilityEnhancementChance")))
+                            {
+                                <MudButton @onclick="undoArmourDurability" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && (
+                                    _specialArmourDurabilityEnabled != true ||
+                                    _specialArmourDurabilityMin != 90 ||
+                                    _specialArmourDurabilityMax != 100 ||
+                                    _specialArmourDurabilityMinDelta != 0 ||
+                                    _specialArmourDurabilityMaxDelta != 10))
+                            {
+                                <MudButton @onclick="defaultArmourDurability" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="2" />
+                        <MudItem xs="3">
+                            <MudTooltip Text="Adjust armour durability values." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Armour Durability Values</MudText>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest an armour's 'non-repairable' durability can be." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_specialArmourDurabilityMin" Label="Min" HelperText="Durability" Variant="Variant.Filled" 
+                                    Min="0" 
+                                    Max="_specialArmourDurabilityMax"
+                                    Disabled="!_specialArmourDurabilityEnabled" />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest a armour's 'non-repairable' durability can be." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_specialArmourDurabilityMax" 
+                                    Label="Max" 
+                                    HelperText="Durability" 
+                                    Variant="Variant.Filled" 
+                                    Min="_specialArmourDurabilityMin"
+                                    Max="100"
+                                    Disabled="!_specialArmourDurabilityEnabled" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest possible difference from the rolled 'non-repairable' durabilty to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_specialArmourDurabilityMinDelta" 
+                                    Label="Min" 
+                                    HelperText="Delta" 
+                                    Variant="Variant.Filled"
+                                    Min="0"
+                                    Max="100"
+                                    Validation="@(new Func<int, bool>(ValidateDelta))"
+                                    Disabled="!_specialArmourDurabilityEnabled" />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest possible difference from the rolled 'non-repairable' durabilty to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField 
+                                    Margin="Margin.Dense" 
+                                    HideSpinButtons="true" 
+                                    @bind-Value="_specialArmourDurabilityMaxDelta" 
+                                    Label="Max" 
+                                    HelperText="Delta" 
+                                    Variant="Variant.Filled"
+                                    Min="0"
+                                    Max="100"
+                                    Validation="@(new Func<int, bool>(ValidateDelta))"
+                                    Disabled="!_specialArmourDurabilityEnabled" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+                                <MudTooltip Text="Lowest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_specialArmourDurabilityMinLimitPercent" Label="Min" HelperText="Actual" Variant="Variant.Filled"
+                                    Min="0" 
+                                    Max="100"  />
+                                </MudTooltip>
+                                <MudTooltip Text="Highest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_specialArmourDurabilityMaxLimitPercent" Label="Max" HelperText="Actual" Variant="Variant.Filled"
+                                    Min="0" 
+                                    Max="100" />
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1" />
+
                     </MudGrid>
                 </MudExpansionPanel>
             }
@@ -717,6 +826,81 @@
         _specialWeaponDurabilityMaxDelta = 10;
         _specialWeaponDurabilityMinLimitPercent = ModConfig.Config.SpecialBots.WeaponDurability.Min - ModConfig.Config.SpecialBots.WeaponDurability.MaxDelta;
         _specialWeaponDurabilityEnhancementChance = 0;
+    }
+    private bool _specialArmourDurabilityEnabled
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.Enable;
+        set
+        {
+            ModConfig.Config.SpecialBots.ArmourDurability.Enable = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Enable);
+        }
+    }
+    private int _specialArmourDurabilityMin
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.Min;
+        set
+        {
+            ModConfig.Config.SpecialBots.ArmourDurability.MinLimitPercent = value - ModConfig.Config.SpecialBots.ArmourDurability.MaxDelta;
+            ModConfig.Config.SpecialBots.ArmourDurability.Min = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Min);
+        }
+    }
+    private int _specialArmourDurabilityMax
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.Max;
+        set
+        {
+            ModConfig.Config.SpecialBots.ArmourDurability.Max = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Max);
+        }
+    }
+    private int _specialArmourDurabilityMinDelta
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.MinDelta;
+        set
+        {
+            ModConfig.Config.SpecialBots.ArmourDurability.MinDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.ArmourDurability.MinDelta);
+        }
+    }
+    private int _specialArmourDurabilityMaxDelta
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.MaxDelta;
+        set
+        {
+            ModConfig.Config.SpecialBots.ArmourDurability.MinLimitPercent = ModConfig.Config.SpecialBots.ArmourDurability.Min - value;
+            ModConfig.Config.SpecialBots.ArmourDurability.MaxDelta = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.ArmourDurability.MaxDelta);
+        }
+    }
+    private int _specialArmourDurabilityMinLimitPercent
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.MinLimitPercent;
+        set { }
+    }
+    private int _specialArmourDurabilityMaxLimitPercent
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.Max - ModConfig.Config.SpecialBots.ArmourDurability.MinDelta;
+        set { }
+    }
+    private void undoArmourDurability()
+    {
+        _specialArmourDurabilityEnabled = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Enable;
+        _specialArmourDurabilityMin = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Min;
+        _specialArmourDurabilityMax = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Max;
+        _specialArmourDurabilityMinDelta = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.MinDelta;
+        _specialArmourDurabilityMaxDelta = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.MaxDelta;
+        _specialArmourDurabilityMinLimitPercent = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.MinLimitPercent;
+    }
+    private void defaultArmourDurability()
+    {
+        _specialArmourDurabilityEnabled = true;
+        _specialArmourDurabilityMin = 90;
+        _specialArmourDurabilityMax = 100;
+        _specialArmourDurabilityMinDelta = 0;
+        _specialArmourDurabilityMaxDelta = 10;
+        _specialArmourDurabilityMinLimitPercent = ModConfig.Config.SpecialBots.ArmourDurability.Min - ModConfig.Config.SpecialBots.ArmourDurability.MaxDelta;
     }
     #endregion
 

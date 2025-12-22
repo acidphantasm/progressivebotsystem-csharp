@@ -42,6 +42,8 @@ public class GeneralBotData
     public required ResourceRandomizationConfig ResourceRandomization { get; set; }
     [JsonPropertyName("weaponDurability")]
     public required WeaponDurabilityConfig WeaponDurability { get; set; }
+    [JsonPropertyName("armourDurability")]
+    public required ArmourDurabilityConfig ArmourDurability { get; set; }
     [JsonPropertyName("lootConfig")]
     public required LootConfig LootConfig { get; set; }
     [JsonPropertyName("rerollConfig")]
@@ -57,6 +59,8 @@ public class PmcBotData
     public required ResourceRandomizationConfig ResourceRandomization { get; set; }
     [JsonPropertyName("weaponDurability")]
     public required WeaponDurabilityConfig WeaponDurability { get; set; }
+    [JsonPropertyName("armourDurability")]
+    public required ArmourDurabilityConfig ArmourDurability { get; set; }
     [JsonPropertyName("lootConfig")]
     public required LootConfig LootConfig { get; set; }
     [JsonPropertyName("rerollConfig")]
@@ -80,6 +84,8 @@ public class ScavBotData
     public required ResourceRandomizationConfig ResourceRandomization { get; set; }
     [JsonPropertyName("weaponDurability")]
     public required WeaponDurabilityConfig WeaponDurability { get; set; }
+    [JsonPropertyName("armourDurability")]
+    public required ArmourDurabilityConfig ArmourDurability { get; set; }
     [JsonPropertyName("lootConfig")]
     public required LootConfig LootConfig { get; set; }
     [JsonPropertyName("rerollConfig")]
@@ -171,6 +177,21 @@ public class WeaponDurabilityConfig
     public int MinLimitPercent { get; set; }
     [JsonPropertyName("enhancementChance")]
     public int EnhancementChance { get; set; }
+}
+public class ArmourDurabilityConfig
+{
+    [JsonPropertyName("enable")]
+    public bool Enable { get; set; }
+    [JsonPropertyName("min")]
+    public int Min { get; set; }
+    [JsonPropertyName("max")]
+    public int Max { get; set; }
+    [JsonPropertyName("minDelta")]
+    public int MinDelta { get; set; }
+    [JsonPropertyName("maxDelta")]
+    public int MaxDelta { get; set; }
+    [JsonPropertyName("minLimitPercent")]
+    public int MinLimitPercent { get; set; }
 }
 public class LootConfig
 {

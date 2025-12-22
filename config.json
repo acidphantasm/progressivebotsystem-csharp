@@ -859,6 +859,14 @@
       "minLimitPercent": 90,
       "enhancementChance": 10
     },
+    "armourDurability": {
+      "enable": true,
+      "min": 95,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 5,
+      "minLimitPercent": 90
+    },
     "lootConfig": {
       "enable": false,
       "blacklist": []
@@ -941,6 +949,14 @@
       "minLimitPercent": 50,
       "enhancementChance": 1
     },
+    "armourDurability": {
+      "enable": true,
+      "min": 70,
+      "max": 90,
+      "minDelta": 5,
+      "maxDelta": 20,
+      "minLimitPercent": 50
+    },
     "lootConfig": {
       "enable": true,
       "blacklist": []
@@ -982,6 +998,14 @@
       "minLimitPercent": 85,
       "enhancementChance": 0
     },
+    "armourDurability": {
+      "enable": true,
+      "min": 90,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 5,
+      "minLimitPercent": 85
+    },
     "lootConfig": {
       "enable": true,
       "blacklist": []
@@ -1014,6 +1038,14 @@
       "minLimitPercent": 75,
       "enhancementChance": 0
     },
+    "armourDurability": {
+      "enable": true,
+      "min": 90,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 15,
+      "minLimitPercent": 75
+    },
     "lootConfig": {
       "enable": true,
       "blacklist": []
@@ -1045,6 +1077,14 @@
       "maxDelta": 10,
       "minLimitPercent": 80,
       "enhancementChance": 0
+    },
+    "armourDurability": {
+      "enable": true,
+      "min": 90,
+      "max": 100,
+      "minDelta": 0,
+      "maxDelta": 10,
+      "minLimitPercent": 80
     },
     "lootConfig": {
       "enable": true,

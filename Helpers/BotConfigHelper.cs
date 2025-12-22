@@ -750,6 +750,7 @@ public class BotConfigHelper : IOnLoad
         RemoveRandomization();
         SetBotLevels();
         SetWeaponDurability();
+        SetArmourDurability();
         AdjustNVGs();
         SetItemResourceRandomization();
         SetWeaponModLimits();
@@ -796,6 +797,7 @@ public class BotConfigHelper : IOnLoad
             allBotTypes[bot]!.BotExperience.Level.Max = 79;
         }
     }
+    
     private void SetWeaponDurability()
     {
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Weapon Durability");
@@ -844,8 +846,58 @@ public class BotConfigHelper : IOnLoad
         botDurability.Pmc.Weapon.MaxDelta = ModConfig.Config.PmcBots.WeaponDurability.MaxDelta;
         botDurability.Pmc.Weapon.MinDelta = ModConfig.Config.PmcBots.WeaponDurability.MinDelta;
         botDurability.Pmc.Weapon.MinLimitPercent = ModConfig.Config.PmcBots.WeaponDurability.MinLimitPercent;
-
     }
+    
+    private void SetArmourDurability()
+    {
+        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Armour Durability");
+        var botDurability = _botConfig.Durability;
+        foreach (var (botType, data) in botDurability.BotDurabilities)
+        {
+            if (!_botActivityHelper.IsBotEnabled(botType)) continue;
+            if (typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.ScavBots.ArmourDurability.Enable)
+            {
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.ScavBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.ScavBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.ScavBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.ScavBots.ArmourDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig.Config.ScavBots.ArmourDurability.MinLimitPercent;
+            }
+            else if (typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.BossBots.ArmourDurability.Enable)
+            {
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.BossBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.BossBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.BossBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.BossBots.ArmourDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig.Config.BossBots.ArmourDurability.MinLimitPercent;
+            }
+            else if (typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.FollowerBots.ArmourDurability.Enable)
+            {
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.FollowerBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.FollowerBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.FollowerBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.FollowerBots.ArmourDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig.Config.FollowerBots.ArmourDurability.MinLimitPercent;
+            }
+            else if (typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>().Contains(botType) && ModConfig.Config.SpecialBots.ArmourDurability.Enable)
+            {
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.SpecialBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.SpecialBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.SpecialBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.SpecialBots.ArmourDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig.Config.SpecialBots.ArmourDurability.MinLimitPercent;
+            }
+        }
+
+        if (!ModConfig.Config.PmcBots.WeaponDurability.Enable) return;
+        
+        botDurability.Pmc.Armor.HighestMaxPercent = ModConfig.Config.PmcBots.ArmourDurability.Max;
+        botDurability.Pmc.Armor.LowestMaxPercent = ModConfig.Config.PmcBots.ArmourDurability.Min;
+        botDurability.Pmc.Armor.MaxDelta = ModConfig.Config.PmcBots.ArmourDurability.MaxDelta;
+        botDurability.Pmc.Armor.MinDelta = ModConfig.Config.PmcBots.ArmourDurability.MinDelta;
+        botDurability.Pmc.Armor.MinLimitPercent = ModConfig.Config.PmcBots.ArmourDurability.MinLimitPercent;
+    }
+    
     private void AdjustNVGs()
     {
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Laser, Flashlight, and Nvg Activity Chances");
@@ -970,6 +1022,7 @@ public class BotConfigHelper : IOnLoad
     private void AmmoStackCompatibility()
     {
         if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Secure Container Ammo Stack Compatibility");
+        
         _botConfig.SecureContainerAmmoStackCount =
             ModConfig.Config.CompatibilityConfig.GeneralSecureContainerAmmoStacks;
     }
