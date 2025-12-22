@@ -224,7 +224,6 @@ public class CustomBotWeaponGenerator(
         QuestData? questData
     )
     {
-        
         var modPool = botEquipmentHelper.GetModsByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
         var weaponItemTemplate = itemHelper.GetItem(weaponTpl).Value;
         var weaponChances = modChances.WeaponModsChances;
