@@ -47,7 +47,7 @@ public class BotEquipmentHelper : IOnLoad {
         return tierNumber;
     }
     
-    public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
+    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
         switch (tierNumber)
@@ -74,7 +74,7 @@ public class BotEquipmentHelper : IOnLoad {
         }
     }
 
-    public ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
+    private ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
         switch (tierNumber)
@@ -128,7 +128,7 @@ public class BotEquipmentHelper : IOnLoad {
         }
     }
 
-    public EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
+    private EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
         switch (tierNumber)
@@ -391,7 +391,7 @@ public class BotEquipmentHelper : IOnLoad {
                 tierNumber = NewTierCalc(tierNumber, minTier, maxTier);
             }
         }
-
+        
         var tieredAmmoData = GetTierAmmo(tierNumber);
 
         return botRole switch
