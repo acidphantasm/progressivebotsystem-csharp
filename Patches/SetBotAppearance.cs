@@ -41,7 +41,7 @@ public class SetBotAppearance_Patch : AbstractPatch
         if (!botGenerationDetails.IsPmc) return true;
 
         var botLevel = bot.Info.Level ?? 0;
-        var tier = tierHelper.GetTierByLevel(botLevel);
+        var tier = ModConfig.Config.GeneralConfig.BlickyMode ? 0 : tierHelper.GetTierByLevel(botLevel);
         var weatherSeason = seasonalEventService.GetActiveWeatherSeason();
         var getSeasonalData = ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance;
         var appearanceData = botEquipmentHelper.GetAppearanceByBotRole(botGenerationDetails.Role, tier, weatherSeason, getSeasonalData);

@@ -62,7 +62,7 @@ public class GenerateInventory_Patch : AbstractPatch
         }
 
         // If bot shouldn't be questing, check if it should be living in poverty
-        if (botGenerationDetails.IsPmc && !shouldQuest && ModConfig.Config.PmcBots.PovertyConfig.Enable &&
+        if (botGenerationDetails.IsPmc && !shouldQuest && ModConfig.Config.PmcBots.PovertyConfig.Enable && !ModConfig.Config.GeneralConfig.BlickyMode &&
             tierNumber > 1 && randomUtil.GetChance100(ModConfig.Config.PmcBots.PovertyConfig.Chance))
         {
             var minTier = Math.Max(1, tierNumber - 3);
@@ -70,6 +70,7 @@ public class GenerateInventory_Patch : AbstractPatch
             var newTierNumber = randomUtil.GetInt(minTier, maxTier);
             apbsLogger.Debug($"[POVERTY] Level{botGenerationDetails.BotLevel} PMC was flagged to be in poverty. Old Tier: {tierNumber}, New Tier: {newTierNumber}");
             tierNumber = newTierNumber;
+            botGenerationDetails.ExtensionData["Tier"] = tierNumber;
         }
         
         // Pull chances and generation by the tier number - this follows poverty to ensure you get the right data
@@ -92,7 +93,7 @@ public class GenerateInventory_Patch : AbstractPatch
         {
             botInventoryContainerService.ClearCache(botId);
         }
-
+        
         __result = botInventory;
         return false;
     }

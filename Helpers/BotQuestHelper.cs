@@ -38,6 +38,7 @@ public class BotQuestHelper : IOnLoad
     public bool ShouldBotHaveQuest(bool isPmc)
     {
         return isPmc && 
+               !ModConfig.Config.GeneralConfig.BlickyMode &&
                ModConfig.Config.PmcBots.QuestConfig.Enable &&
                _randomUtil.GetChance100(ModConfig.Config.PmcBots.QuestConfig.Chance);
     }
