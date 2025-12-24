@@ -2045,7 +2045,11 @@ public class CustomBotEquipmentModGenerator(
                     scopeSlot?.All(slot =>
                         slot.Properties.Filters.FirstOrDefault()
                             .Filter.All(tpl =>
-                                itemHelper.IsOfBaseclasses(tpl, whitelistedSightTypes) || itemHelper.IsOfBaseclass(tpl, BaseClasses.MOUNT)
+                                itemHelper.IsItemInDb(tpl)
+                                && (
+                                    itemHelper.IsOfBaseclasses(tpl, whitelistedSightTypes)
+                                    || itemHelper.IsOfBaseclass(tpl, BaseClasses.MOUNT)
+                                )
                             )
                     ) ?? false
                 )

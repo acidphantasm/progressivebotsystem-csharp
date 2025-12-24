@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.0.11",
+    "ReleaseDate": "December 24, 2025",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Updated FilterSightsByWeaponType code for 4.0.9 changes",
+      "Updated Armour Durability code for 4.0.9 changes",
+      "Updated Nuget packages to 4.0.9"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.10",
     "ReleaseDate": "December 22, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Bot Armour Durability is now configurable"
     ],

@@ -67,7 +67,7 @@ public class GetRandomizedMaxArmorDurability_Patch : AbstractPatch
         var randomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();
         var logger = ServiceLocator.ServiceProvider.GetRequiredService<ISptLogger<DurabilityLimitsHelper>>();
 
-        (double min, double max)? range = null;
+        (int? min, int? max)? range = null;
 
         if (botConfig.Durability.BotDurabilities.TryGetValue(botRole, out var durability))
         {
@@ -95,7 +95,8 @@ public class GetRandomizedMaxArmorDurability_Patch : AbstractPatch
             range = (90, 100);
         }
         
-        var multiplier = randomUtil.GetDouble(range.Value.min, range.Value.max);
-        return itemMaxDurability * (multiplier / 100);
+        var (min, max) = range.Value;
+        var multiplier = randomUtil.GetDouble(min ?? 90, max ?? 100);
+        return itemMaxDurability * (multiplier / 100.0);
     }
 }
