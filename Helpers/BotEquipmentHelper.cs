@@ -33,7 +33,7 @@ public class BotEquipmentHelper : IOnLoad {
 
     public Task OnLoad()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotConfigHelper.OnLoad()");
+        _apbsLogger.Debug("BotConfigHelper.OnLoad()");
         return Task.CompletedTask;
     }
     

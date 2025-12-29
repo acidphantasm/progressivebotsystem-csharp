@@ -47,7 +47,7 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/game/bot/generate");
+                    _apbsLogger.Debug("/client/game/bot/generate");
                     return output;
                 }),
             
@@ -79,14 +79,11 @@ public class StaticRouterHooks : StaticRouter
                         RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
                         RaidInformation.IsInRaid = true;
 
-                        if (ModConfig.Config.EnableDebugLog)
-                        {
-                            _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
-                            _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
-                            _apbsLogger.Debug($"Current Raid Level: {RaidInformation.CurrentRaidLevel}");
-                            _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
-                            _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
-                        }
+                        _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
+                        _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
+                        _apbsLogger.Debug($"Current Raid Level: {RaidInformation.CurrentRaidLevel}");
+                        _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
+                        _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     }
                     catch (Exception ex)
                     {
@@ -106,7 +103,7 @@ public class StaticRouterHooks : StaticRouter
                 {
                     RaidInformation.IsInRaid = false;
                     
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
+                    _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     return output;
                 }),
             
@@ -123,7 +120,7 @@ public class StaticRouterHooks : StaticRouter
                     {
                         var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
                         RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
-                        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
+                        _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }
                     catch (Exception ex)
                     {
@@ -141,12 +138,12 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("/client/profile/status");
+                    _apbsLogger.Debug("/client/profile/status");
                     try
                     {
                         var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
                         RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
-                        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
+                        _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }
                     catch (Exception ex)
                     {

@@ -19,10 +19,7 @@ public class PatchManager : IOnLoad
     
     public Task OnLoad()
     {
-        if (ModConfig.Config.EnableDebugLog)
-        {
-            _apbsLogger.Debug("PatchManager.OnLoad()");
-        }
+        _apbsLogger.Debug("PatchManager.OnLoad()");
         
         new GenerateInventory_Patch().Enable();
         new GenerateBotLevel().Enable();

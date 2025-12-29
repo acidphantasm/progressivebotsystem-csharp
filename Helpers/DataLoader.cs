@@ -93,7 +93,7 @@ public class DataLoader(
         try
         {
             InternalFileValidation(pathToMod);
-            if (ModConfig.Config.EnableDebugLog) apbsLogger.Debug("Database Loaded and hash-verified");
+            apbsLogger.Debug("Database Loaded and hash-verified");
         }
         catch (Exception ex)
         {

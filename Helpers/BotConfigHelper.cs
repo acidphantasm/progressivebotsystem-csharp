@@ -80,7 +80,7 @@ public class BotConfigHelper : IOnLoad
     
     public Task OnLoad()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotConfigHelper.OnLoad()");
+        _apbsLogger.Debug("BotConfigHelper.OnLoad()");
         PmcConfigs();
         ScavConfigs();
         BossConfigs();
@@ -95,7 +95,7 @@ public class BotConfigHelper : IOnLoad
 
     public Task ReapplyConfig()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotConfigHelper.ReapplyConfig()");
+        _apbsLogger.Debug("BotConfigHelper.ReapplyConfig()");
         PmcConfigs();
         ScavConfigs();
         BossConfigs();
@@ -111,7 +111,7 @@ public class BotConfigHelper : IOnLoad
     private void PmcConfigs()
     {
         if (!ModConfig.Config.PmcBots.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring PMC Bots");
+        _apbsLogger.Debug("--Configuring PMC Bots");
         PmcItemLimits();
         PmcLoot();
         PmcScopeWhitelist();
@@ -122,7 +122,7 @@ public class BotConfigHelper : IOnLoad
     #region PmcConfigs
     private void PmcItemLimits()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Item Limits");
+        _apbsLogger.Debug("Setting Pmc Item Limits");
         _botConfig.ItemSpawnLimits["pmc"] = _pmcItemLimits;
     }
     private void PmcLoot()
@@ -132,7 +132,7 @@ public class BotConfigHelper : IOnLoad
 
         if (ModConfig.Config.PmcBots.LootConfig.Enable)
         {
-            if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Loot");
+            _apbsLogger.Debug("Setting Pmc Loot");
             foreach (var item in ModConfig.Config.PmcBots.LootConfig.Blacklist ?? [])
             {
                 _pmcConfig.BackpackLoot.Blacklist.Add(item);
@@ -142,7 +142,7 @@ public class BotConfigHelper : IOnLoad
         }
         else
         {
-            if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Pmc Loot");
+            _apbsLogger.Debug("Disabling Pmc Loot");
             _botConfig.DisableLootOnBotTypes.Add("pmcusec");
             _botConfig.DisableLootOnBotTypes.Add("pmcbear");
         }
@@ -157,7 +157,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void PmcScopeWhitelist()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Scope Whitelist");
+        _apbsLogger.Debug("Setting Pmc Scope Whitelist");
         if (!_botConfig.Equipment.TryGetValue("pmc", out var pmcEquipment)) return;
         
         pmcEquipment.WeaponSightWhitelist = new Dictionary<MongoId, HashSet<MongoId>>();
@@ -184,7 +184,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void PmcRequiredSlots()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Required Slots");
+        _apbsLogger.Debug("Setting Pmc Required Slots");
         if (!_botConfig.Equipment.TryGetValue("pmc", out var pmcEquipment)) return;
         pmcEquipment.WeaponSlotIdsToMakeRequired = new HashSet<string>();
         pmcEquipment.WeaponSlotIdsToMakeRequired.Add("mod_stock");
@@ -193,7 +193,7 @@ public class BotConfigHelper : IOnLoad
     private void PmcGameVersionWeights()
     {
         if (!ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Game Version Weights");
+        _apbsLogger.Debug("Setting Pmc Game Version Weights");
         _pmcConfig.GameVersionWeight["standard"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Standard;
         _pmcConfig.GameVersionWeight["left_behind"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.LeftBehind;
         _pmcConfig.GameVersionWeight["prepare_for_escape"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.PrepareForEscape;
@@ -202,7 +202,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void PmcPlateClasses()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Pmc Plate Classes");
+        _apbsLogger.Debug("Setting Pmc Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, equipmentFilters) in botConfigEquipment)
         {
@@ -279,7 +279,7 @@ public class BotConfigHelper : IOnLoad
     private void ScavConfigs()
     {
         if (!ModConfig.Config.ScavBots.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Scav Bots");
+        _apbsLogger.Debug("--Configuring Scav Bots");
         ScavPushKeyConfig();
         ScavLoot();
         ScavIdenticalWeightConfig();
@@ -293,7 +293,7 @@ public class BotConfigHelper : IOnLoad
             !ModConfig.Config.ScavBots.KeyConfig.AddOnlyKeyCardsToScavs &&
             !ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs) return;
 
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Key Loot");
+        _apbsLogger.Debug("Setting Scav Key Loot");
         if (!_databaseService.GetBots().Types.TryGetValue("assault", out var assaultBot))
         {
             _apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. What did you do?");
@@ -335,7 +335,7 @@ public class BotConfigHelper : IOnLoad
     private void ScavLoot()
     {
         if (ModConfig.Config.ScavBots.LootConfig.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Scav Loot");
+        _apbsLogger.Debug("Disabling Scav Loot");
         var scavBotTypes = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var bot in scavBotTypes)
         {
@@ -345,7 +345,7 @@ public class BotConfigHelper : IOnLoad
     private void ScavIdenticalWeightConfig()
     {
         if (!ModConfig.Config.ScavBots.AdditionalOptions.EnableScavEqualEquipmentTiering) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Equipment Weights to 1");
+        _apbsLogger.Debug("Setting Scav Equipment Weights to 1");
         for (var i = 1; i <= 7; i++)
         {
             var equipmentData = GetTierEquipmentData(i);
@@ -363,7 +363,7 @@ public class BotConfigHelper : IOnLoad
     {
         if (!ModConfig.Config.CustomScavLevelDeltas.Enable) return;
         
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Level Deltas");
+        _apbsLogger.Debug("Setting Scav Level Deltas");
         _tierInformation.Tiers[0].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Min;
         _tierInformation.Tiers[0].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Max;
         
@@ -388,7 +388,7 @@ public class BotConfigHelper : IOnLoad
     private void ScavPlateClasses()
     {
         var botConfigEquipment = _botConfig.Equipment;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Scav Plate Classes");
+        _apbsLogger.Debug("Setting Scav Plate Classes");
         foreach (var (botType, equipmentFilters) in botConfigEquipment)
         {
             if (!_botActivityHelper.IsBotEnabled(botType)) continue;
@@ -464,7 +464,7 @@ public class BotConfigHelper : IOnLoad
     private void BossConfigs()
     {
         if (!ModConfig.Config.BossBots.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Boss Bots");
+        _apbsLogger.Debug("--Configuring Boss Bots");
         BossLoot();
         BossPlateClasses();
     }
@@ -472,7 +472,7 @@ public class BotConfigHelper : IOnLoad
     private void BossLoot()
     {
         if (ModConfig.Config.BossBots.LootConfig.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Boss Loot");
+        _apbsLogger.Debug("Disabling Boss Loot");
         var bossBotTypes = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var botType in bossBotTypes)
         {
@@ -481,7 +481,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void BossPlateClasses()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Boss Plate Classes");
+        _apbsLogger.Debug("Setting Boss Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, equipmentFilters) in botConfigEquipment)
         {
@@ -558,7 +558,7 @@ public class BotConfigHelper : IOnLoad
     private void FollowerConfigs()
     {
         if (!ModConfig.Config.FollowerBots.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Follower Bots");
+        _apbsLogger.Debug("--Configuring Follower Bots");
         FollowerLoot();
         FollowerPlateClasses();
     }
@@ -566,7 +566,7 @@ public class BotConfigHelper : IOnLoad
     private void FollowerLoot()
     {
         if (ModConfig.Config.FollowerBots.LootConfig.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Follower Loot");
+        _apbsLogger.Debug("Disabling Follower Loot");
         var followerBotTypes = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var botType in followerBotTypes)
         {
@@ -575,7 +575,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void FollowerPlateClasses()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Follower Plate Classes");
+        _apbsLogger.Debug("Setting Follower Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, equipmentFilters) in botConfigEquipment)
         {
@@ -652,7 +652,7 @@ public class BotConfigHelper : IOnLoad
     private void SpecialConfigs()
     {
         if (!ModConfig.Config.SpecialBots.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Special Bots");
+        _apbsLogger.Debug("--Configuring Special Bots");
         SpecialLoot();
         SpecialPlateClasses();
     }
@@ -660,7 +660,7 @@ public class BotConfigHelper : IOnLoad
     private void SpecialLoot()
     {
         if (ModConfig.Config.SpecialBots.LootConfig.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Disabling Special Bot Loot");
+        _apbsLogger.Debug("Disabling Special Bot Loot");
         var specialBotTypes = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
         foreach (var botType in specialBotTypes)
         {
@@ -669,7 +669,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void SpecialPlateClasses()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Special Bot Plate Classes");
+        _apbsLogger.Debug("Setting Special Bot Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, equipmentFilters) in botConfigEquipment)
         {
@@ -745,7 +745,7 @@ public class BotConfigHelper : IOnLoad
     #endregion
     private void AllBotConfigs()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Remainder of Bot Configs");
+        _apbsLogger.Debug("--Configuring Remainder of Bot Configs");
         SetLevelDeltas();
         RemoveRandomization();
         SetBotLevels();
@@ -760,7 +760,7 @@ public class BotConfigHelper : IOnLoad
     private void SetLevelDeltas()
     {
         if (!ModConfig.Config.CustomLevelDeltas.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Custom Level Deltas");
+        _apbsLogger.Debug("Setting Custom Level Deltas");
         _tierInformation.Tiers[0].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier1.Min;
         _tierInformation.Tiers[0].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier1.Max;
         _tierInformation.Tiers[1].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier2.Min;
@@ -778,7 +778,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void RemoveRandomization()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Removing Bot Randomisation");
+        _apbsLogger.Debug("Removing Bot Randomisation");
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
@@ -789,7 +789,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void SetBotLevels()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Levels");
+        _apbsLogger.Debug("Setting Bot Levels");
         var allBotTypes = _databaseService.GetBots().Types;
         foreach (var (bot, botData) in allBotTypes)
         {
@@ -800,7 +800,7 @@ public class BotConfigHelper : IOnLoad
     
     private void SetWeaponDurability()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Weapon Durability");
+        _apbsLogger.Debug("Setting Bot Weapon Durability");
         var botDurability = _botConfig.Durability;
         foreach (var (botType, data) in botDurability.BotDurabilities)
         {
@@ -850,7 +850,7 @@ public class BotConfigHelper : IOnLoad
     
     private void SetArmourDurability()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Armour Durability");
+        _apbsLogger.Debug("Setting Bot Armour Durability");
         var botDurability = _botConfig.Durability;
         foreach (var (botType, data) in botDurability.BotDurabilities)
         {
@@ -900,7 +900,7 @@ public class BotConfigHelper : IOnLoad
     
     private void AdjustNVGs()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Laser, Flashlight, and Nvg Activity Chances");
+        _apbsLogger.Debug("Setting Bot Laser, Flashlight, and Nvg Activity Chances");
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
@@ -916,7 +916,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void SetItemResourceRandomization()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Food and Medical Item Randomisation");
+        _apbsLogger.Debug("Setting Bot Food and Medical Item Randomisation");
         // Loop the bot types instead of the botconfig, even though the actual values exist in the bot config - I need proper bot names
         var botTable = _databaseService.GetBots().Types;
         foreach (var (botType, data) in botTable)
@@ -1000,7 +1000,7 @@ public class BotConfigHelper : IOnLoad
     private void SetWeaponModLimits()
     {
         if (!ModConfig.Config.GeneralConfig.ForceWeaponModLimits) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Weapon Mod Limits");
+        _apbsLogger.Debug("Setting Bot Weapon Mod Limits");
 
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, data) in botConfigEquipment)
@@ -1021,7 +1021,7 @@ public class BotConfigHelper : IOnLoad
     }
     private void AmmoStackCompatibility()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Secure Container Ammo Stack Compatibility");
+        _apbsLogger.Debug("Setting Bot Secure Container Ammo Stack Compatibility");
         
         _botConfig.SecureContainerAmmoStackCount =
             ModConfig.Config.CompatibilityConfig.GeneralSecureContainerAmmoStacks;
@@ -1029,7 +1029,7 @@ public class BotConfigHelper : IOnLoad
     #endregion
     private void AllBotsConfigsBypassEnableCheck()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Remainder of Bot Configs that bypass enablement checks");
+        _apbsLogger.Debug("--Configuring Remainder of Bot Configs that bypass enablement checks");
         NormalizeHealth();
         NormalizeSkills();
     }
@@ -1038,7 +1038,7 @@ public class BotConfigHelper : IOnLoad
     {
         if (!ModConfig.Config.NormalizedHealthPool.Enable) return;
 
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Normalising Bot Health");
+        _apbsLogger.Debug("Normalising Bot Health");
         var botTable = _databaseService.GetBots().Types;
         foreach (var (botType, data) in botTable)
         {
@@ -1071,7 +1071,7 @@ public class BotConfigHelper : IOnLoad
     private void NormalizeSkills()
     {
         if (!ModConfig.Config.NormalizedHealthPool.NormalizeSkills) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Skills");
+        _apbsLogger.Debug("Setting Bot Skills");
         var botTable = _databaseService.GetBots().Types;
         foreach (var (botType, data) in botTable)
         {
@@ -1098,7 +1098,7 @@ public class BotConfigHelper : IOnLoad
     #endregion
     private void SpecialHandlingConfigs()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("--Configuring Settings that require special handling");
+        _apbsLogger.Debug("--Configuring Settings that require special handling");
         RemoveTatm();
         SetPlateChances();
         ForceStock();
@@ -1110,7 +1110,7 @@ public class BotConfigHelper : IOnLoad
     #region AllBotsConfigsBypassingEnableCheck
     private void RemoveTatm()
     {
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Removing T7 Thermals from Database");
+        _apbsLogger.Debug("Removing T7 Thermals from Database");
         for (var i = 1; i <= 7; i++)
         {
             if (ModConfig.Config.GeneralConfig.EnableT7Thermals && i >= ModConfig.Config.GeneralConfig.StartTier) continue;
@@ -1121,14 +1121,14 @@ public class BotConfigHelper : IOnLoad
             if (!tatmMods.TryGetValue("mod_nvg", out var nvgSlot)) continue;
             if (!nvgSlot.Remove(ItemTpl.MOUNT_PVS7_WILCOX_ADAPTER)) continue;
             
-            if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug($"[THERMAL] Removed T7’s from Tier{i}");
+            _apbsLogger.Debug($"[THERMAL] Removed T7’s from Tier{i}");
         }
     }
 
     private void SetPlateChances()
     {
         if (!ModConfig.Config.GeneralConfig.PlateChances.Enable) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Setting Bot Plate Chances");
+        _apbsLogger.Debug("Setting Bot Plate Chances");
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
@@ -1186,7 +1186,7 @@ public class BotConfigHelper : IOnLoad
     private void ForceStock()
     {
         if (!ModConfig.Config.GeneralConfig.ForceStock) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Stocks on Bot Weapons");
+        _apbsLogger.Debug("Forcing Stocks on Bot Weapons");
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
@@ -1218,7 +1218,7 @@ public class BotConfigHelper : IOnLoad
     private void ForceDustCover()
     {
         if (!ModConfig.Config.GeneralConfig.ForceDustCover) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Dust Covers on Bot Weapons");
+        _apbsLogger.Debug("Forcing Dust Covers on Bot Weapons");
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
@@ -1250,7 +1250,7 @@ public class BotConfigHelper : IOnLoad
     private void ForceScopes()
     {
         if (!ModConfig.Config.GeneralConfig.ForceScopeSlot) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Optics on Bot Weapons");
+        _apbsLogger.Debug("Forcing Optics on Bot Weapons");
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
@@ -1282,7 +1282,7 @@ public class BotConfigHelper : IOnLoad
     private void MuzzleChances()
     {
         if (!ModConfig.Config.GeneralConfig.ForceMuzzle) return;
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("Forcing Muzzles on Bot Weapons");
+        _apbsLogger.Debug("Forcing Muzzles on Bot Weapons");
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);

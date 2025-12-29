@@ -30,7 +30,7 @@ public class BotQuestHelper : IOnLoad
     {
         var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         
-        if (ModConfig.Config.EnableDebugLog) _apbsLogger.Debug("BotQuestHelper.OnLoad()");
+        _apbsLogger.Debug("BotQuestHelper.OnLoad()");
         QuestDataJson = _modHelper.GetJsonDataFromFile<QuestDataJson>(pathToMod, "Data/Quests/QuestData.json");
         
         return Task.CompletedTask;

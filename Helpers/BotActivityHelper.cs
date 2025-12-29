@@ -23,7 +23,7 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
 
     public Task OnLoad()
     {
-        if (ModConfig.Config.EnableDebugLog) apbsLogger.Debug("BotActivityHelper.OnLoad()");
+        apbsLogger.Debug("BotActivityHelper.OnLoad()");
         return Task.CompletedTask;
     }
 
