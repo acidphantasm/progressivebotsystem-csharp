@@ -11,6 +11,9 @@ public class Logging
 public class LoggingFolders
 {
     public const string Debug = "debug";
+    public const string Error = "errors";
+    public const string Warning = "warnings";
+    public const string Success = "success";
     public const string Scav = "scav_generation";
     public const string Pmc = "pmc_generation";
     public const string Special = "special_generation";

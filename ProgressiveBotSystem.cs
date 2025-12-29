@@ -17,7 +17,7 @@ public record ModMetadata : AbstractModMetadata, IModWebMetadata
     public override string Name { get; init; } = "Acid's Progressive Bot System";
     public override string Author { get; init; } = "acidphantasm";
     public override List<string>? Contributors { get; init; }
-    public override SemanticVersioning.Version Version { get; init; } = new("2.0.11");
+    public override SemanticVersioning.Version Version { get; init; } = new("2.1.0");
     public override SemanticVersioning.Range SptVersion { get; init; } = new("~4.0.9");
     public override List<string>? Incompatibilities { get; init; } = ["li.barlog.andern"];
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
@@ -41,12 +41,15 @@ public class ProgressiveBotSystem(
 
     private void CreateLogFiles()
     {
-        CreateLogFile(LoggingFolders.Debug, $"Log File Created - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
-        CreateLogFile(LoggingFolders.Boss, $"Log File Created - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
-        CreateLogFile(LoggingFolders.Event, $"Log File Created - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
-        CreateLogFile(LoggingFolders.Pmc, $"Log File Created - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
-        CreateLogFile(LoggingFolders.Scav, $"Log File Created - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
-        CreateLogFile(LoggingFolders.Special, $"Log File Created - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Debug, $"Debug Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Warning, $"Warning Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Error, $"Error Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Success, $"Success Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Boss, $"Boss Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Event, $"Event Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Pmc, $"Pmc Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Scav, $"Scav Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
+        CreateLogFile(LoggingFolders.Special, $"Special Log Start - Acid's Progressive Bot System - Version: {new ModMetadata().Version}\n");
     }
     
     private void CreateLogFile(string logType, string logData)
