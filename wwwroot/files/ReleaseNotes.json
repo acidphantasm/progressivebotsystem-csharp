@@ -1,8 +1,22 @@
 ﻿[
   {
+    "Version": "2.1.0",
+    "ReleaseDate": "December 29, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Custom Item Import Functionality has returned",
+      "Mod Compatibility Configuration has returned"
+    ],
+    "Changes": [],
+    "BugFixes": [
+      "Fixed Logging not properly putting log levels in correct files. Woops."
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.11",
     "ReleaseDate": "December 24, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [

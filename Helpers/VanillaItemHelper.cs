@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using _progressiveBotSystem.Globals;
+using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -17,69 +17,71 @@ public class VanillaItemHelper(
     ModHelper modHelper,
     DatabaseService databaseService,
     ItemHelper itemHelper,
-    TierInformation tierInformation,
     JsonUtil jsonUtil,
     ApbsLogger apbsLogger): IOnLoad
 {
-    private Dictionary<MongoId, string> _primaryWeaponMap = new();
-    private Dictionary<MongoId, string> _holsterMap = new();
-    private Dictionary<MongoId, string> _scabbardMap = new();
-    private Dictionary<MongoId, string> _pocketMap = new();
-    private Dictionary<MongoId, string> _secureContainerMap = new();
-    private Dictionary<MongoId, string> _armbandMap = new();
-    private Dictionary<MongoId, string> _armorvestMap = new();
-    private Dictionary<MongoId, string> _backpackMap = new();
-    private Dictionary<MongoId, string> _earpieceMap = new();
-    private Dictionary<MongoId, string> _eyewearMap = new();
-    private Dictionary<MongoId, string> _facecoverMap = new();
-    private Dictionary<MongoId, string> _headwearMap = new();
-    private Dictionary<MongoId, string> _tacticalVestMap = new();
-    private Dictionary<MongoId, string> _armouredRigMap = new();
+    private readonly Dictionary<MongoId, string> _primaryWeaponMap = new();
+    private readonly Dictionary<MongoId, string> _holsterMap = new();
+    private readonly Dictionary<MongoId, string> _scabbardMap = new();
+    private readonly Dictionary<MongoId, string> _pocketMap = new();
+    private readonly Dictionary<MongoId, string> _secureContainerMap = new();
+    private readonly Dictionary<MongoId, string> _armbandMap = new();
+    private readonly Dictionary<MongoId, string> _armorvestMap = new();
+    private readonly Dictionary<MongoId, string> _backpackMap = new();
+    private readonly Dictionary<MongoId, string> _earpieceMap = new();
+    private readonly Dictionary<MongoId, string> _eyewearMap = new();
+    private readonly Dictionary<MongoId, string> _facecoverMap = new();
+    private readonly Dictionary<MongoId, string> _headwearMap = new();
+    private readonly Dictionary<MongoId, string> _tacticalVestMap = new();
+    private readonly Dictionary<MongoId, string> _armouredRigMap = new();
     
-    private Dictionary<MongoId, string> _caliber1143X23AcpMap = new();
-    private Dictionary<MongoId, string> _caliber127X55Map = new();
-    private Dictionary<MongoId, string> _caliber12GMap = new();
-    private Dictionary<MongoId, string> _caliber20GMap = new();
-    private Dictionary<MongoId, string> _caliber23X75Map = new();
-    private Dictionary<MongoId, string> _caliber366TkmMap = new();
-    private Dictionary<MongoId, string> _caliber40MmRuMap = new();
-    private Dictionary<MongoId, string> _caliber40X46Map = new();
-    private Dictionary<MongoId, string> _caliber46X30Map = new();
-    private Dictionary<MongoId, string> _caliber545X39Map = new();
-    private Dictionary<MongoId, string> _caliber556X45NatoMap = new();
-    private Dictionary<MongoId, string> _caliber57X28Map = new();
-    private Dictionary<MongoId, string> _caliber68X51Map = new();
-    private Dictionary<MongoId, string> _caliber762X25TtMap = new();
-    private Dictionary<MongoId, string> _caliber762X35Map = new();
-    private Dictionary<MongoId, string> _caliber762X39Map = new();
-    private Dictionary<MongoId, string> _caliber762X51Map = new();
-    private Dictionary<MongoId, string> _caliber762X54RMap = new();
-    private Dictionary<MongoId, string> _caliber86X70Map = new();
-    private Dictionary<MongoId, string> _caliber9X18PmMap = new();
-    private Dictionary<MongoId, string> _caliber9X19ParaMap = new();
-    private Dictionary<MongoId, string> _caliber9X21Map = new();
-    private Dictionary<MongoId, string> _caliber9X33RMap = new();
-    private Dictionary<MongoId, string> _caliber9X39Map = new();
-    private Dictionary<MongoId, string> _caliber127X33Map = new();
-    private Dictionary<MongoId, string> _caliber127X99Map = new();
-    private Dictionary<MongoId, string> _caliber725Map = new();
+    private readonly Dictionary<MongoId, string> _caliber1143X23AcpMap = new();
+    private readonly Dictionary<MongoId, string> _caliber127X55Map = new();
+    private readonly Dictionary<MongoId, string> _caliber12GMap = new();
+    private readonly Dictionary<MongoId, string> _caliber20GMap = new();
+    private readonly Dictionary<MongoId, string> _caliber23X75Map = new();
+    private readonly Dictionary<MongoId, string> _caliber366TkmMap = new();
+    private readonly Dictionary<MongoId, string> _caliber40MmRuMap = new();
+    private readonly Dictionary<MongoId, string> _caliber40X46Map = new();
+    private readonly Dictionary<MongoId, string> _caliber46X30Map = new();
+    private readonly Dictionary<MongoId, string> _caliber545X39Map = new();
+    private readonly Dictionary<MongoId, string> _caliber556X45NatoMap = new();
+    private readonly Dictionary<MongoId, string> _caliber57X28Map = new();
+    private readonly Dictionary<MongoId, string> _caliber68X51Map = new();
+    private readonly Dictionary<MongoId, string> _caliber762X25TtMap = new();
+    private readonly Dictionary<MongoId, string> _caliber762X35Map = new();
+    private readonly Dictionary<MongoId, string> _caliber762X39Map = new();
+    private readonly Dictionary<MongoId, string> _caliber762X51Map = new();
+    private readonly Dictionary<MongoId, string> _caliber762X54RMap = new();
+    private readonly Dictionary<MongoId, string> _caliber86X70Map = new();
+    private readonly Dictionary<MongoId, string> _caliber9X18PmMap = new();
+    private readonly Dictionary<MongoId, string> _caliber9X19ParaMap = new();
+    private readonly Dictionary<MongoId, string> _caliber9X21Map = new();
+    private readonly Dictionary<MongoId, string> _caliber9X33RMap = new();
+    private readonly Dictionary<MongoId, string> _caliber9X39Map = new();
+    private readonly Dictionary<MongoId, string> _caliber127X33Map = new();
+    private readonly Dictionary<MongoId, string> _caliber127X99Map = new();
+    private readonly Dictionary<MongoId, string> _caliber725Map = new();
     
-    private Dictionary<MongoId, string> _grenadesMap = new();
-    private Dictionary<MongoId, string> _healingMap = new();
-    private Dictionary<MongoId, string> _drugsMap = new();
-    private Dictionary<MongoId, string> _foodMap = new();
-    private Dictionary<MongoId, string> _drinkMap = new();
-    private Dictionary<MongoId, string> _stimMap = new();
-    private Dictionary<MongoId, string> _currencyMap = new();
+    private readonly Dictionary<MongoId, string> _grenadesMap = new();
+    private readonly Dictionary<MongoId, string> _healingMap = new();
+    private readonly Dictionary<MongoId, string> _drugsMap = new();
+    private readonly Dictionary<MongoId, string> _foodMap = new();
+    private readonly Dictionary<MongoId, string> _drinkMap = new();
+    private readonly Dictionary<MongoId, string> _stimMap = new();
+    private readonly Dictionary<MongoId, string> _currencyMap = new();
     
-    private Dictionary<MongoId, string> _usecBodyMap = new();
-    private Dictionary<MongoId, string> _usecFeetMap = new();
-    private Dictionary<MongoId, string> _usecHandsMap = new();
-    private Dictionary<MongoId, string> _usecHeadMap = new();
-    private Dictionary<MongoId, string> _bearBodyMap = new();
-    private Dictionary<MongoId, string> _bearFeetMap = new();
-    private Dictionary<MongoId, string> _bearHandsMap = new();
-    private Dictionary<MongoId, string> _bearHeadMap = new();
+    private readonly Dictionary<MongoId, string> _armourPlates = new();
+    private readonly Dictionary<MongoId, string> _mods = new();
+    
+    private readonly Dictionary<MongoId, string> _usecBodyMap = new();
+    private readonly Dictionary<MongoId, string> _usecFeetMap = new();
+    private readonly Dictionary<MongoId, string> _usecHandsMap = new();
+    private readonly Dictionary<MongoId, string> _usecHeadMap = new();
+    private readonly Dictionary<MongoId, string> _bearBodyMap = new();
+    private readonly Dictionary<MongoId, string> _bearFeetMap = new();
+    private readonly Dictionary<MongoId, string> _bearHandsMap = new();
+    private readonly Dictionary<MongoId, string> _bearHeadMap = new();
     
     private Dictionary<string, Dictionary<MongoId, string>> CategoryMaps =>
         new()
@@ -135,6 +137,9 @@ public class VanillaItemHelper(
             { "Stims", _stimMap },
             { "Currency", _currencyMap },
             
+            { "ArmourPlates", _armourPlates },
+            { "Mods", _mods },
+            
             { "UsecBody", _usecBodyMap },
             { "UsecFeet", _usecFeetMap },
             { "UsecHands", _usecHandsMap },
@@ -146,29 +151,31 @@ public class VanillaItemHelper(
         };
 
 
-    private List<MongoId> _primaryBaseClasses = new()
-        {
-            BaseClasses.ASSAULT_CARBINE,
-            BaseClasses.ASSAULT_RIFLE,
-            BaseClasses.SNIPER_RIFLE,
-            BaseClasses.MARKSMAN_RIFLE,
-            BaseClasses.GRENADE_LAUNCHER,
-            BaseClasses.MACHINE_GUN,
-            BaseClasses.ROCKET_LAUNCHER,
-            BaseClasses.SHOTGUN,
-            BaseClasses.SMG
-        };
+    private readonly List<MongoId> _primaryBaseClasses =
+    [
+        BaseClasses.ASSAULT_CARBINE,
+        BaseClasses.ASSAULT_RIFLE,
+        BaseClasses.SNIPER_RIFLE,
+        BaseClasses.MARKSMAN_RIFLE,
+        BaseClasses.GRENADE_LAUNCHER,
+        BaseClasses.MACHINE_GUN,
+        BaseClasses.ROCKET_LAUNCHER,
+        BaseClasses.SHOTGUN,
+        BaseClasses.SMG
+    ];
     
-    private List<MongoId> _holsterBaseClasses = new()
-    {
+    private readonly List<MongoId> _holsterBaseClasses =
+    [
         BaseClasses.PISTOL,
         BaseClasses.REVOLVER
-    };
+    ];
     
     public async Task OnLoad()
     {
         var pathToMod = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
-        if (Directory.Exists(Path.Combine(pathToMod, "GeneratedVanillaMappings-DO_NOT_TOUCH"))) return;
+        
+        var mappingDir = Path.Combine(pathToMod, "GeneratedVanillaMappings-DO_NOT_TOUCH");
+        if (!NeedsRegeneration(mappingDir)) return;
 
         apbsLogger.Warning("Caching Vanilla Items... Please wait...");
         
@@ -178,31 +185,45 @@ public class VanillaItemHelper(
         // Then run appearance to populate maps
         await LoadVanillaAppearanceMapping();
         
-        // Then write all maps to disk
-        await WriteAllCategoryMapsAsync(Path.Combine(pathToMod, "GeneratedVanillaMappings-DO_NOT_TOUCH"));
+        // Then write all maps to disk & new manifest
+        await WriteAllCategoryMapsAsync(mappingDir);
+        await WriteManifestAsync(mappingDir);
+    }
+    
+    private const int CurrentManifestVersion = 1;
+    private bool NeedsRegeneration(string mappingDir)
+    {
+        var manifestPath = Path.Combine(mappingDir, "manifest.json");
+
+        if (!Directory.Exists(mappingDir)) return true;
+        if (!File.Exists(manifestPath)) return true;
+
+        var manifest = jsonUtil.DeserializeFromFile<VanillaMappingManifest>(manifestPath) ?? new VanillaMappingManifest() { ManifestVersion = 0 };
+
+        return manifest.ManifestVersion != CurrentManifestVersion;
     }
 
-    private async Task LoadVanillaItemsMapping()
+    private Task LoadVanillaItemsMapping()
     {
         var allItems = databaseService.GetItems();
 
         var mapRules = new Dictionary<Func<MongoId, TemplateItem, bool>, Dictionary<MongoId, string>>
         {
             // Fuck BSG for putting the MTS255 in the revolver base class, and the MP43 in the shotgun baseclass. That makes this look stupid. Along with all the other shit that's special.
-            { (id, item) => (itemHelper.IsOfBaseclasses(id, _primaryBaseClasses) && id != ItemTpl.GRENADELAUNCHER_FN40GL_02 && id != ItemTpl.GRENADELAUNCHER_FN40GL_03 && id != ItemTpl.SHOTGUN_MP43_12GA_SAWEDOFF_DOUBLEBARREL && !itemHelper.GetItemName(id).Contains("RSP-30") && !itemHelper.GetItemName(id).Contains("ROP-30") && !itemHelper.GetItemName(id).Contains("ZiD SP") && !itemHelper.GetItemName(id).Contains("NSV Utyos") && !itemHelper.GetItemName(id).Contains("Master Hand")) || id == ItemTpl.REVOLVER_MTS25512_12GA_SHOTGUN, _primaryWeaponMap },
-            { (id, item) => itemHelper.IsOfBaseclasses(id, _holsterBaseClasses) && id != ItemTpl.REVOLVER_MTS25512_12GA_SHOTGUN || id == ItemTpl.SHOTGUN_MP43_12GA_SAWEDOFF_DOUBLEBARREL, _holsterMap },
+            { (id, _) => (itemHelper.IsOfBaseclasses(id, _primaryBaseClasses) && id != ItemTpl.GRENADELAUNCHER_FN40GL_02 && id != ItemTpl.GRENADELAUNCHER_FN40GL_03 && id != ItemTpl.SHOTGUN_MP43_12GA_SAWEDOFF_DOUBLEBARREL && !itemHelper.GetItemName(id).Contains("RSP-30") && !itemHelper.GetItemName(id).Contains("ROP-30") && !itemHelper.GetItemName(id).Contains("ZiD SP") && !itemHelper.GetItemName(id).Contains("NSV Utyos") && !itemHelper.GetItemName(id).Contains("Master Hand")) || id == ItemTpl.REVOLVER_MTS25512_12GA_SHOTGUN, _primaryWeaponMap },
+            { (id, _) => itemHelper.IsOfBaseclasses(id, _holsterBaseClasses) && id != ItemTpl.REVOLVER_MTS25512_12GA_SHOTGUN || id == ItemTpl.SHOTGUN_MP43_12GA_SAWEDOFF_DOUBLEBARREL, _holsterMap },
             { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.VEST) && (item.Properties?.Slots == null || !item.Properties.Slots.Any()), _tacticalVestMap },
             { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.VEST) && item.Properties?.Slots != null && item.Properties.Slots.Any(), _armouredRigMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.KNIFE) && id != ItemTpl.KNIFE_SUPERFORS_DB_2020_DEAD_BLOW_HAMMER && id != ItemTpl.KNIFE_INFECTIOUS_STRIKE && id != ItemTpl.KNIFE_CHAINED_LABRYS, _scabbardMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.POCKETS), _pocketMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.MOB_CONTAINER), _secureContainerMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.ARM_BAND), _armbandMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.ARMOR), _armorvestMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.BACKPACK), _backpackMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.HEADPHONES), _earpieceMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.VISORS), _eyewearMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.FACE_COVER), _facecoverMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.HEADWEAR), _headwearMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.KNIFE) && id != ItemTpl.KNIFE_SUPERFORS_DB_2020_DEAD_BLOW_HAMMER && id != ItemTpl.KNIFE_INFECTIOUS_STRIKE && id != ItemTpl.KNIFE_CHAINED_LABRYS, _scabbardMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.POCKETS), _pocketMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.MOB_CONTAINER), _secureContainerMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.ARM_BAND), _armbandMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.ARMOR), _armorvestMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.BACKPACK), _backpackMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.HEADPHONES), _earpieceMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.VISORS), _eyewearMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.FACE_COVER), _facecoverMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.HEADWEAR), _headwearMap },
             
             // Ammos
             { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber1143x23ACP", _caliber1143X23AcpMap },
@@ -234,51 +255,48 @@ public class VanillaItemHelper(
             { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber725", _caliber725Map },
             
             // Generation stuff
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.THROW_WEAP) && id != ItemTpl.GRENADE_F1_HAND_GRENADE_REDUCED_DELAY, _grenadesMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.THROW_WEAP) && id != ItemTpl.GRENADE_F1_HAND_GRENADE_REDUCED_DELAY, _grenadesMap },
             { (id, item) => item.Properties?.MedUseTime is not null && item.Parent != BaseClasses.STIMULATOR && item.Parent != BaseClasses.DRUGS && id != BaseClasses.MEDS && id != BaseClasses.STIMULATOR && id != ItemTpl.MEDKIT_SANITARS_FIRST_AID_KIT && id != ItemTpl.MEDICAL_SANITAR_KIT, _healingMap },
             { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.DRUGS) && item.Properties?.MedUseTime is not null, _drugsMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.FOOD), _foodMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.DRINK) && id != ItemTpl.DRINK_BOTTLE_OF_TARKOVSKAYA_VODKA_BAD, _drinkMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.FOOD), _foodMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.DRINK) && id != ItemTpl.DRINK_BOTTLE_OF_TARKOVSKAYA_VODKA_BAD, _drinkMap },
             { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.STIMULATOR) && item.Properties?.MedUseTime is not null, _stimMap },
-            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.MONEY), _currencyMap },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.MONEY), _currencyMap },
+            
+            // Attachments
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.ARMOR_PLATE), _armourPlates },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.MOD), _mods },
         };
 
-        foreach (var kvp in allItems)
+        foreach (var (id, item) in allItems)
         {
-            var id = kvp.Key;
-            var item = kvp.Value;
-            
-            foreach (var rule in mapRules)
+            foreach (var rule in mapRules.Where(rule => rule.Key(id, item)))
             {
-                if (rule.Key(id, item))
-                {
-                    rule.Value[id] = itemHelper.GetItemName(id);
-                }
+                rule.Value[id] = itemHelper.GetItemName(id);
             }
         }
+
+        return Task.CompletedTask;
     }
     
-    private async Task LoadVanillaAppearanceMapping()
+    private Task LoadVanillaAppearanceMapping()
     {
         var allItems = databaseService.GetCustomization();
 
         var mapRules = new Dictionary<Func<MongoId, CustomizationItem, bool>, Dictionary<MongoId, string>>
         {
-            { (id, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Body", _usecBodyMap },
-            { (id, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Feet", _usecFeetMap },
-            { (id, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Hands", _usecHandsMap },
-            { (id, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Head", _usecHeadMap },
-            { (id, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Body", _bearBodyMap },
-            { (id, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Feet", _bearFeetMap },
-            { (id, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Hands", _bearHandsMap },
-            { (id, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Head", _bearHeadMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Body", _usecBodyMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Feet", _usecFeetMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Hands", _usecHandsMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Head", _usecHeadMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Body", _bearBodyMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Feet", _bearFeetMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Hands", _bearHandsMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Head", _bearHeadMap },
         };
 
-        foreach (var kvp in allItems)
+        foreach (var (id, item) in allItems)
         {
-            var id = kvp.Key;
-            var item = kvp.Value;
-
             if (item.Properties.BodyPart is null) continue;
             if (item.Properties.BearTemplateId is not null) continue;
             if (item.Properties.UsecTemplateId is not null) continue;
@@ -292,14 +310,13 @@ public class VanillaItemHelper(
 
             if (!allowedParents.Contains(item.Parent)) continue;
             
-            foreach (var rule in mapRules)
+            foreach (var rule in mapRules.Where(rule => rule.Key(id, item)))
             {
-                if (rule.Key(id, item))
-                {
-                    rule.Value[id] = string.IsNullOrEmpty(itemHelper.GetItemName(id)) ? item.Name : itemHelper.GetItemName(id);
-                }
+                rule.Value[id] = string.IsNullOrEmpty(itemHelper.GetItemName(id)) ? item.Name : itemHelper.GetItemName(id);
             }
         }
+
+        return Task.CompletedTask;
     }
     
     private async Task WriteAllCategoryMapsAsync(string outputDirectory)
@@ -313,8 +330,25 @@ public class VanillaItemHelper(
         {
             var path = Path.Combine(outputDirectory, $"{fileName}.json");
 
-            var json = jsonUtil.Serialize<Dictionary<MongoId, string>>(map);
+            var json = jsonUtil.Serialize(map);
             await File.WriteAllTextAsync(path, json);
         }
+    }
+    
+    private async Task WriteManifestAsync(string outputDirectory)
+    {
+        if (!Directory.Exists(outputDirectory))
+        {
+            Directory.CreateDirectory(outputDirectory);
+        }
+        
+        var manifest = new VanillaMappingManifest
+        {
+            ManifestVersion = CurrentManifestVersion,
+        };
+
+        var path = Path.Combine(outputDirectory, "manifest.json");
+
+        await File.WriteAllTextAsync(path, jsonUtil.Serialize(manifest));
     }
 }
