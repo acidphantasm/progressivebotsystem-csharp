@@ -13,6 +13,7 @@
     "enableSafeGuard": true,
     "enableMPRSafeGuard": true,
     "PackNStrap_UnlootablePMCArmbandBelts": true,
+    "WttBackPort_AllowDogtags": true,
     "Realism_AddGasMasksToBots": false,
     "General_SecureContainerAmmoStacks": 20
   },

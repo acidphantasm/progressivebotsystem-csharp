@@ -4,6 +4,7 @@
     "ReleaseDate": "December 29, 2025",
     "IsLatest": true,
     "NewFeatures": [
+      "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
       "Custom Item Import Functionality has returned",
       "Mod Compatibility Configuration has returned"
     ],

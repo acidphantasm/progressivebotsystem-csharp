@@ -1,5 +1,6 @@
 using System.Reflection;
 using _progressiveBotSystem.Constants;
+using _progressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
@@ -28,14 +29,13 @@ public record ModMetadata : AbstractModMetadata, IModWebMetadata
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public class ProgressiveBotSystem(
-    ISptLogger<ProgressiveBotSystem> logger,
-    DatabaseService databaseService,
-    ModHelper modHelper)
+    IReadOnlyList<SptMod> installedMods)
     : IOnLoad
 {
     public Task OnLoad()
     {
         CreateLogFiles();
+        CheckForMods();
         return Task.CompletedTask;
     }
 
@@ -68,5 +68,10 @@ public class ProgressiveBotSystem(
         }
         
         File.WriteAllText(filePath, logData);
+    }
+
+    private void CheckForMods()
+    {
+        ModConfig.WttBackport = installedMods.Any(x => x.ModMetadata.ModGuid == "com.wtt.contentbackport");
     }
 }

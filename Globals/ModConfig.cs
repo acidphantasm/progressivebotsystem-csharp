@@ -49,6 +49,7 @@ public class ModConfig : IOnLoad
     private static int _isActivelyProcessingFlag = 0;
     public static string _modPath = string.Empty;
 
+    public static bool WttBackport;
 
     public async Task OnLoad()
     {

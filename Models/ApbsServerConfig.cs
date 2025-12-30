@@ -544,6 +544,8 @@ public class ModCompatibilityConfig
     public bool EnableMprSafeGuard { get; set; }
     [JsonPropertyName("PackNStrap_UnlootablePMCArmbandBelts")]
     public bool PackNStrapUnlootablePmcArmbandBelts { get; set; }
+    [JsonPropertyName("WttBackPort_AllowDogtags")]
+    public bool WttBackPortAllowDogtags { get; set; }
     [JsonPropertyName("Realism_AddGasMasksToBots")]
     public bool RealismAddGasMasksToBots { get; set; }
     [JsonPropertyName("General_SecureContainerAmmoStacks")]
