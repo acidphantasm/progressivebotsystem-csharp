@@ -331,6 +331,7 @@ public class CustomItemImportHelper(
     public bool EquipmentNeedsImporting(MongoId itemId)
     {
         if (_bannedItems.Contains(itemId)) return false;
+        if (_vanillaEquipmentLookup.Contains(itemId)) return false;
 
         var isWeapon = ModConfig.Config.CompatibilityConfig.EnableModdedWeapons &&
                         itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
@@ -339,7 +340,6 @@ public class CustomItemImportHelper(
                            itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
 
         if (!isWeapon && !isEquipment) return false;
-        if (_vanillaEquipmentLookup.Contains(itemId)) return false;
 
         return true;
     }
