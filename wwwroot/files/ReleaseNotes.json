@@ -9,7 +9,7 @@
     ],
     "Changes": [],
     "BugFixes": [
-      "Fixed Logging not properly putting log levels in correct files. Woops."
+      "Resolved  Logging not properly putting log levels in correct files. Woops."
     ],
     "KnownIssues": []
   },
