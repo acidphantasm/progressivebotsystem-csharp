@@ -48,22 +48,22 @@ public class AddDogTagToBot_Patch : AbstractPatch
     {
         { "usec", new Dictionary<MongoId, double>
             {
-                { ItemTpl.BARTER_DOGTAG_USEC, 10 },
-                { new MongoId("68f15dbab2b53abd200b9378"), 10 }, // Square
-                { new MongoId("68f15e53103c5d9d4f022c78"), 10 }, // Melted
-                { new MongoId("5b9b9020e7ef6f5716480215"), 10 }, // Twitch
-                { new MongoId("68fb4143a854bc7ae80fad3e"), 10 }, // Preorder 1
-                { new MongoId("68fb4157b280c103230e3b3c"), 10 }, // Preorder 2
+                { ItemTpl.BARTER_DOGTAG_USEC, 45 },
+                { new MongoId("68f15dbab2b53abd200b9378"), 1 }, // Square
+                { new MongoId("68f15e53103c5d9d4f022c78"), 1 }, // Melted
+                { new MongoId("5b9b9020e7ef6f5716480215"), 1 }, // Twitch
+                { new MongoId("68fb4143a854bc7ae80fad3e"), 1 }, // Preorder 1
+                { new MongoId("68fb4157b280c103230e3b3c"), 1 }, // Preorder 2
             }
         },
         { "bear", new Dictionary<MongoId, double>
             {
-                { ItemTpl.BARTER_DOGTAG_BEAR, 10 },
-                { new MongoId("68f15cf222c8979ee308f495"), 10 }, // Square
-                { new MongoId("68f15e26f1aa7e100a0ca208"), 10 }, // Melted
-                { new MongoId("68f153aa7da590b6df0515da"), 10 }, // Twitch
-                { new MongoId("68fb41120760c7891606613c"), 10 }, // Preorder 1
-                { new MongoId("68fb412b0760c7891606613e"), 10 }, // Preorder 2
+                { ItemTpl.BARTER_DOGTAG_BEAR, 45 },
+                { new MongoId("68f15cf222c8979ee308f495"), 1 }, // Square
+                { new MongoId("68f15e26f1aa7e100a0ca208"), 1 }, // Melted
+                { new MongoId("68f153aa7da590b6df0515da"), 1 }, // Twitch
+                { new MongoId("68fb41120760c7891606613c"), 1 }, // Preorder 1
+                { new MongoId("68fb412b0760c7891606613e"), 1 }, // Preorder 2
             }
         }
     };
