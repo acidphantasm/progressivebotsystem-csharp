@@ -23,6 +23,9 @@ public class CustomItemImportService(
     private Dictionary<ApbsEquipmentSlots, List<MongoId>> _moddedEquipmentSlotDictionary = new();
     private Dictionary<string, Dictionary<string, List<MongoId>>> _moddedClothingBotSlotDictionary = new();
     
+    private readonly Lock _equipmentLock = new();
+    private readonly Lock _modsLock = new();
+    
     public async Task OnLoad()
     {
         if (!ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
@@ -49,15 +52,16 @@ public class CustomItemImportService(
     private void ImportEquipmentBySlot()
     {
         var allItems = databaseService.GetItems();
-        foreach (var kvp in allItems)
-        {
-            var itemDetails = kvp.Value;
-
-            if (customItemImportHelper.EquipmentNeedsImporting(itemDetails.Id))
+        Parallel.ForEach(
+            allItems.Values,
+            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 },
+            templateItem =>
             {
-                SortAndStartEquipmentImport(itemDetails);
-            }
-        }
+                if (customItemImportHelper.EquipmentNeedsImporting(templateItem.Id))
+                {
+                    SortAndStartEquipmentImport(templateItem);
+                }
+            });
     }
     
     /// <summary>
@@ -157,7 +161,7 @@ public class CustomItemImportService(
             return;
         }
         
-        // Launch Equipment Importing
+        // Log if something managed to make it this far and not get sorted for import.
         apbsLogger.Error($"[IMPORT][EQUIP][FAIL] No Classification Handling. Report This. ItemId: {itemId} | Name: {itemHelper.GetItemName(itemId)}");
     }
 
@@ -168,27 +172,32 @@ public class CustomItemImportService(
     private void AddWeaponToBotData(ApbsEquipmentSlots slot, TemplateItem templateItem)
     {
         var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
+        var weaponSlotsLength = templateItem.Properties?.Slots?.Count() ?? 0;
         
         for (var tier = startTier; tier <= 7; tier++)
         {
             var equipmentData = customItemImportTierHelper.GetEquipmentTierData(tier);
             
-            equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-            equipmentData.PmcBear.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-            equipmentData.Scav.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "scav");
-            equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "default");
+            lock (_equipmentLock)
+            {
+                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+                equipmentData.Scav.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "scav");
+                equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "default");
+            }
         }
         
-        apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id}");
+        if (weaponSlotsLength == 0)
+        {
+            apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id}");
+            return;
+        }
+        
+        var context = new ImportContext();
+        StartEquipmentFilterItemImport(templateItem, context);
+        
+        apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id} | Recursive calls: {context.RecursiveCalls} | Max depth: {context.MaxDepth}");
     }
-
-    /// <summary>
-    ///     These declarations are here, because they're only used below this line
-    /// </summary>
-    private readonly HashSet<MongoId> _processedItems = new();
-    private int _currentRecursionDepth;
-    private int _maxRecursionDepth;
-    private int _totalRecursiveCalls;
     
     /// <summary>
     ///     Add Equipment to the actual bot data, will use helper methods to get the proper weight for the slot
@@ -209,10 +218,13 @@ public class CustomItemImportService(
                 continue;
             }
             
-            equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
-            equipmentData.PmcBear.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
-            equipmentData.Scav.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem, true);
-            equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
+            lock (_equipmentLock)
+            {
+                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.Scav.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem, true);
+                equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
+            }
         }
         
         if (equipmentSlotsLength == 0)
@@ -221,14 +233,9 @@ public class CustomItemImportService(
             return;
         }
         
-        _processedItems.Clear();
-        _currentRecursionDepth = 0;
-        _maxRecursionDepth = 0;
-        _totalRecursiveCalls = 0;
-            
-        StartEquipmentFilterItemImport(templateItem);
-        apbsLogger.Debug(
-            $"[{slot.ToString()}] Completed mod import: {templateItem.Id} | Items processed: {_processedItems.Count} | Recursive calls: {_totalRecursiveCalls} | Max depth: {_maxRecursionDepth}");
+        var context = new ImportContext { RootItemId = templateItem.Id };
+        StartEquipmentFilterItemImport(templateItem, context);
+        apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id} | Recursive calls: {context.RecursiveCalls} | Max depth: {context.MaxDepth}");
     }
 
     /// <summary>
@@ -236,31 +243,27 @@ public class CustomItemImportService(
     ///     This is a recursive lookup, it starts here and then actually calls adding the item to the data
     ///     If the item has children, it will then process those and also call adding the item to the data and itself recursively
     /// </summary>
-    private void StartEquipmentFilterItemImport(TemplateItem parentItem)
+    private void StartEquipmentFilterItemImport(TemplateItem parentItem, ImportContext context)
     {
         var parentItemSlots = parentItem.Properties?.Slots?.ToList();
         if (parentItemSlots is null || parentItemSlots.Count == 0) return;
 
-        _totalRecursiveCalls++;
-        _currentRecursionDepth++;
-        _maxRecursionDepth = Math.Max(_maxRecursionDepth, _currentRecursionDepth);
+        context.RecursiveCalls++;
+        context.CurrentDepth++;
+        context.MaxDepth = Math.Max(context.MaxDepth, context.CurrentDepth);
 
         try
         {
-            _maxRecursionDepth = Math.Max(_maxRecursionDepth, _currentRecursionDepth);
-
-            if (!_processedItems.Add(parentItem.Id))
-            {
-                apbsLogger.Debug($"[IMPORT] Skipping already processed item: {parentItem.Id} (depth {_currentRecursionDepth})");
-                return;
-            }
-            
             foreach (var slot in parentItemSlots)
             {
                 var slotName = slot.Name;
-                if (slotName is null)
+                if (slotName is null) continue;
+
+                context.ParentStack.Push((parentItem.Id, slotName));
+
+                if (!context.Ancestors.Add(parentItem.Id))
                 {
-                    apbsLogger.Error($"[IMPORT] Slot name is null: {parentItem.Id}");
+                    context.ParentStack.Pop();
                     continue;
                 }
 
@@ -269,29 +272,43 @@ public class CustomItemImportService(
                     .Filter;
 
                 if (filters is null)
+                {
+                    context.Ancestors.Remove(parentItem.Id);
+                    context.ParentStack.Pop();
                     continue;
+                }
 
                 foreach (var childItemId in filters)
                 {
-                    var childItem = itemHelper.GetItem(childItemId).Value;
-                    if (childItem is null)
-                        continue;
-
-                    if (_processedItems.Add(childItem.Id))
+                    if (context.Ancestors.Contains(childItemId))
                     {
-                        apbsLogger.Debug($"[IMPORT] Processing child item: {childItem.Id} (depth {_currentRecursionDepth})");
+                        var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
+                        apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Parent stack: {stackStr} -> {childItemId} (slot '{slotName}')");
+                        continue;
                     }
-                    AddModsToBotData(parentItem, childItem, slotName);
-                    StartEquipmentFilterItemImport(childItem);
+
+                    var childItem = itemHelper.GetItem(childItemId);
+                    if (childItem.Value is null) continue;
+
+                    AddModsToBotData(parentItem, childItem.Value, slotName);
+                    StartEquipmentFilterItemImport(childItem.Value, context);
                 }
+
+                context.Ancestors.Remove(parentItem.Id);
+                context.ParentStack.Pop();
             }
         }
         finally
         {
-            _currentRecursionDepth--;
+            context.CurrentDepth--;
         }
     }
 
+    /// <summary>
+    ///     Adds a child item to the bot data for a specific parent item and slot across all tiers
+    ///     Checks if the item should be imported first
+    ///     Should safely add the item to the bot data, because if it fails at any point it adds the relevant data
+    /// </summary>
     private void AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
         if (!customItemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd)) return;
@@ -299,27 +316,43 @@ public class CustomItemImportService(
         for (var tier = 1; tier <= 7; tier++)
         {
             var modsData = customItemImportTierHelper.GetModsTierData(tier);
-            
-            if (!modsData.TryGetValue(parentItem.Id, out var knownItemData))
+
+            lock (_modsLock)
             {
-                knownItemData = new Dictionary<string, HashSet<MongoId>>();
-                modsData[parentItem.Id] = knownItemData;
+                if (!modsData.TryGetValue(parentItem.Id, out var knownItemData))
+                {
+                    knownItemData = new Dictionary<string, HashSet<MongoId>>();
+                    modsData[parentItem.Id] = knownItemData;
 
-                apbsLogger.Debug($"[IMPORT][T{tier}] New parent entry: {parentItem.Id}");
-            }
+                    apbsLogger.Debug($"[IMPORT][T{tier}] New parent entry: {parentItem.Id}");
+                }
 
-            if (!knownItemData.TryGetValue(slot, out var knownAttachmentIds))
-            {
-                knownAttachmentIds = new HashSet<MongoId>();
-                knownItemData[slot] = knownAttachmentIds;
+                if (!knownItemData.TryGetValue(slot, out var knownAttachmentIds))
+                {
+                    knownAttachmentIds = new HashSet<MongoId>();
+                    knownItemData[slot] = knownAttachmentIds;
 
-                apbsLogger.Debug($"[IMPORT][T{tier}] New slot '{slot}' for parent {parentItem.Id}");
-            }
+                    apbsLogger.Debug($"[IMPORT][T{tier}] New slot '{slot}' for parent {parentItem.Id}");
+                }
 
-            if (knownAttachmentIds.Add(itemToAdd.Id))
-            {
-                apbsLogger.Debug($"[IMPORT][T{tier}] Added mod {itemToAdd.Id} to {parentItem.Id} in {slot}");
+                if (knownAttachmentIds.Add(itemToAdd.Id))
+                {
+                    apbsLogger.Debug($"[IMPORT][T{tier}] Added mod {itemToAdd.Id} to {parentItem.Id} in {slot}");
+                }
             }
         }
+    }
+    
+    /// <summary>
+    ///     Holds context information for a single recursive import of mods for a root item
+    /// </summary>
+    private sealed class ImportContext
+    {
+        public Stack<(MongoId ItemId, string SlotName)> ParentStack = new();
+        public HashSet<MongoId> Ancestors = new();
+        public MongoId RootItemId { get; set; }
+        public int CurrentDepth;
+        public int MaxDepth;
+        public int RecursiveCalls;
     }
 }
