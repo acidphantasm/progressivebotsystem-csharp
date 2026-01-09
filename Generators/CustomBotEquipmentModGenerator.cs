@@ -25,7 +25,7 @@ using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace SPTarkov.Server.Core.Generators;
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 90010)]
+[Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
 public class CustomBotEquipmentModGenerator(
     ISptLogger<CustomBotEquipmentModGenerator> logger,
     RandomUtil randomUtil,

@@ -22,9 +22,13 @@ public class CustomItemImportService(
 {
     private Dictionary<ApbsEquipmentSlots, List<MongoId>> _moddedEquipmentSlotDictionary = new();
     private Dictionary<string, Dictionary<string, List<MongoId>>> _moddedClothingBotSlotDictionary = new();
+    private Dictionary<string, List<MongoId>> _moddedAmmoDictionary = new();
+
+    private HashSet<MongoId> _mountedHeadphones = new();
     
     private readonly Lock _equipmentLock = new();
     private readonly Lock _modsLock = new();
+    private readonly Lock _ammoLock = new();
     
     public async Task OnLoad()
     {
@@ -74,7 +78,7 @@ public class CustomItemImportService(
         var itemId = templateItem.Id;
         if (customItemImportHelper.IsHolster(itemId))
         {
-            apbsLogger.Debug($"[IMPORT][HOLSTER] Item: {itemId} needs importing: {itemHelper.GetItemName(itemId)}");
+            //AddWeaponToBotData(ApbsEquipmentSlots.Holster, templateItem);
             return;
         }
         
@@ -82,12 +86,12 @@ public class CustomItemImportService(
         {
             if (customItemImportHelper.IsLongRangePrimaryWeapon(itemId))
             {
-                // Launch Long Range Import
-                apbsLogger.Debug($"[IMPORT][PRIMARYLR] Item: {itemId} needs importing: {itemHelper.GetItemName(itemId)}");
+                //AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange, templateItem);
+                //AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange, templateItem);
                 return;
             }
-            // Launch Short Range Import
-            apbsLogger.Debug($"[IMPORT][PRIMARYSR] Item: {itemId} needs importing: {itemHelper.GetItemName(itemId)}");
+            //AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange, templateItem);
+            //AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange, templateItem);
             return;
         }
         
@@ -151,6 +155,9 @@ public class CustomItemImportService(
         
         if (customItemImportHelper.IsHeadphones(itemId))
         {
+            if (_mountedHeadphones.Contains(itemId)) return;
+            if (customItemImportHelper.AreHeadphonesMountable(templateItem)) return;
+            
             AddEquipmentToBotData(ApbsEquipmentSlots.Earpiece, templateItem);
             return;
         }
@@ -173,6 +180,7 @@ public class CustomItemImportService(
     {
         var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
         var weaponSlotsLength = templateItem.Properties?.Slots?.Count() ?? 0;
+        var ammoCaliber = templateItem.Properties?.AmmoCaliber ?? string.Empty;
         
         for (var tier = startTier; tier <= 7; tier++)
         {
@@ -186,6 +194,35 @@ public class CustomItemImportService(
                 equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "default");
             }
         }
+
+        if (!string.IsNullOrEmpty(ammoCaliber) && customItemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber))
+        {
+            var chambers = templateItem.Properties?.Chambers ?? [];
+            var filter = chambers
+                .SelectMany(c => c?.Properties?.Filters ?? Enumerable.Empty<SlotFilter>())
+                .Select(f => f.Filter)
+                .FirstOrDefault(filter => filter != null);
+
+            foreach (var ammoId in filter ?? [])
+            {
+                if (!customItemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
+                
+                apbsLogger.Warning($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
+                AddAmmoToBotData(ammoId, ammoCaliber);
+            }
+
+            if (filter == null || filter.Count == 0)
+            {
+                var cartridgesFromMagazine = customItemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
+                foreach (var ammoId in cartridgesFromMagazine)
+                {
+                    if (!customItemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
+                    
+                    apbsLogger.Warning($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
+                    AddAmmoToBotData(ammoId, ammoCaliber);
+                }
+            }
+        }
         
         if (weaponSlotsLength == 0)
         {
@@ -197,6 +234,34 @@ public class CustomItemImportService(
         StartEquipmentFilterItemImport(templateItem, context);
         
         apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id} | Recursive calls: {context.RecursiveCalls} | Max depth: {context.MaxDepth}");
+    }
+
+    private void AddAmmoToBotData(MongoId itemId, string caliber)
+    {
+        var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
+        
+        for (var tier = startTier; tier <= 7; tier++)
+        {
+            var ammoData = customItemImportTierHelper.GetAmmoTierData(tier);
+
+            lock (_ammoLock)
+            {
+                AddAmmo(ammoData.ScavAmmo, caliber, itemId);
+                AddAmmo(ammoData.PmcAmmo, caliber, itemId);
+                AddAmmo(ammoData.BossAmmo, caliber, itemId);
+            }
+        }
+    }
+
+    private static void AddAmmo(Dictionary<string, Dictionary<MongoId, double>> dictionary, string caliber, MongoId itemId)
+    {
+        if (!dictionary.TryGetValue(caliber, out var ammoDict))
+        {
+            ammoDict = new Dictionary<MongoId, double>();
+            dictionary[caliber] = ammoDict;
+        }
+
+        ammoDict[itemId] = 1;
     }
     
     /// <summary>
@@ -312,6 +377,20 @@ public class CustomItemImportService(
     private void AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
         if (!customItemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd)) return;
+        
+        // Some mods decide that vanilla headsets that AREN'T mountable, are mountable. This is dumb. Skip them.
+        if (itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
+        {
+            if (customItemImportHelper.AreHeadphonesMountable(itemToAdd))
+            {
+                _mountedHeadphones.Add(itemToAdd.Id);
+            }
+            else
+            {
+                apbsLogger.Debug($"Item: {itemToAdd.Id} is not mountable headphones but some mod says it is");
+                return;
+            }
+        }
         
         for (var tier = 1; tier <= 7; tier++)
         {

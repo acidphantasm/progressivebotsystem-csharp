@@ -1067,6 +1067,7 @@ public class BotConfigHelper(
                 ScopeLimit = 2,
                 LightLaserLimit = 1
             };
+            
             botConfigEquipment[botType]!.WeaponModLimits!.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
             botConfigEquipment[botType]!.WeaponModLimits!.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
         }

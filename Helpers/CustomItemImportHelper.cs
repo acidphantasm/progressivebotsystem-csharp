@@ -346,6 +346,22 @@ public class CustomItemImportHelper(
 
     /// <summary>
     ///     Check if the item is banned from import
+    ///     Check if the import is even enabled, and if it's importable
+    ///     If neither the weapon nor equipment check pass, go ahead and return false so we skip this item for import
+    ///     If either of them pass, go ahead and check if the vanilla dictionary contains that item, if it does then skip it
+    ///     If all checks are completed, go ahead and mark the item for import
+    /// </summary>
+    public bool AttachmentNeedsImporting(MongoId itemId)
+    {
+        if (_bannedItems.Contains(itemId)) return false;
+        if (_vanillaAttachmentLookup.Contains(itemId)) return false;
+        if (!itemHelper.IsOfBaseclass(itemId, BaseClasses.MOD)) return false;
+
+        return true;
+    }
+
+    /// <summary>
+    ///     Check if the item is banned from import
     ///     Check if the item is ammo
     ///     The Caliber9x18PM caliber is also used for grenade shrapnel, so lets check those and skip if they are shrapnel
     ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn these
@@ -366,6 +382,46 @@ public class CustomItemImportHelper(
         if (_vanillaAmmoLookup.Contains(itemId)) return false;
 
         return true;
+    }
+
+    /// <summary>
+    ///     Check if the item is banned from import
+    ///     Check if the item is ammo
+    ///     The Caliber9x18PM caliber is also used for grenade shrapnel, so lets check those and skip if they are shrapnel
+    ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn these
+    ///     If all of these pass, go ahead and check if the vanilla dictionary contains the item, if it does then skip it
+    ///     If all checks are completed, go ahead and mark the item for import
+    /// </summary>
+    public bool AmmoCaliberNeedsAdded(string caliber)
+    {
+        return !_vanillaAmmoDictionary.ContainsKey(caliber);
+    }
+    
+    /// <summary>
+    ///     Get the cartridge ids from a weapon's magazine template that work with the weapon
+    /// </summary>
+    /// <param name="weaponTemplate">Weapon db template to get magazine cartridges for</param>
+    /// <returns>Hashset of cartridge tpls</returns>
+    /// <exception cref="ArgumentNullException">Thrown when weaponTemplate is null.</exception>
+    public HashSet<MongoId> GetCompatibleCartridgesFromMagazineTemplate(TemplateItem weaponTemplate)
+    {
+        var magazineSlot = weaponTemplate.Properties?.Slots?.FirstOrDefault(slot => slot.Name == "mod_magazine");
+        if (magazineSlot is null)
+        {
+            return [];
+        }
+
+        var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId(null));
+        if (!magazineTemplate.Key)
+        {
+            return [];
+        }
+
+        var cartridges =
+            magazineTemplate.Value.Properties.Slots.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter
+            ?? magazineTemplate.Value.Properties.Cartridges.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter;
+
+        return cartridges ?? [];
     }
 
     /// <summary>
@@ -647,14 +703,19 @@ public class CustomItemImportHelper(
         };
     }
 
+    public bool AreHeadphonesMountable(TemplateItem headphoneTemplateItem)
+    {
+        return headphoneTemplateItem.Properties?.BlocksEarpiece != null && (bool)headphoneTemplateItem.Properties?.BlocksEarpiece.Value;
+    }
+
     public bool AttachmentNeedsImporting(TemplateItem parentItem, TemplateItem itemToAdd)
     {
+        
         if (ModConfig.Config.CompatibilityConfig.EnableSafeGuard)
         {
             if (_vanillaAttachmentLookup.Contains(parentItem.Id) &&
                 _vanillaAttachmentLookup.Contains(itemToAdd.Id))
             {
-                apbsLogger.Error($"[IMPORT][MODS] Skipping. Both attachments are vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
                 return false;
             }
         }
@@ -664,7 +725,6 @@ public class CustomItemImportHelper(
             if (!_vanillaAttachmentLookup.Contains(itemToAdd.Id) &&
                 _vanillaEquipmentLookup.Contains(parentItem.Id))
             {
-                apbsLogger.Error($"[IMPORT][MODS] Skipping. Attachment is modded and parent item is vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
                 return false;
             }
         }
@@ -679,7 +739,7 @@ public class CustomItemImportHelper(
             if (_vanillaAttachmentLookup.Contains(parentItem.Id) &&
                 _vanillaAttachmentLookup.Contains(itemToAdd.Id))
             {
-                apbsLogger.Error($"[IMPORT][MODS] Skipping. Both attachments are vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
+                apbsLogger.Debug($"[IMPORT][MODS] Skipping. Both attachments are vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
                 return false;
             }
         }
@@ -689,7 +749,7 @@ public class CustomItemImportHelper(
             if (!_vanillaAttachmentLookup.Contains(itemToAdd.Id) &&
                 _vanillaEquipmentLookup.Contains(parentItem.Id))
             {
-                apbsLogger.Error($"[IMPORT][MODS] Skipping. Attachment is modded and parent item is vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
+                apbsLogger.Debug($"[IMPORT][MODS] Skipping. Attachment is modded and parent item is vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
                 return false;
             }
         }

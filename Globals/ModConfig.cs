@@ -50,6 +50,7 @@ public class ModConfig : IOnLoad
     public static string _modPath = string.Empty;
 
     public static bool WttBackport;
+    public static bool PrestigeBackport;
 
     public async Task OnLoad()
     {

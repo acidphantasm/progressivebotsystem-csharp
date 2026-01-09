@@ -22,7 +22,7 @@ using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace _progressiveBotSystem.Generators;
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 90010)]
+[Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
 public class CustomBotInventoryGenerator
 {
     public CustomBotInventoryGenerator(

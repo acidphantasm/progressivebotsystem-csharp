@@ -126,7 +126,7 @@ public class GenerateBotLevel : AbstractPatch
         var isPlayerPrestiged = RaidInformation.HighestPrestigeLevel != 0 ? true : false;
         var playerPrestigeLevel = RaidInformation.HighestPrestigeLevel;
         var minPlayerLevelForBotsToPrestige = 61;
-        var maxPrestige = 4;
+        var maxPrestige = ModConfig.PrestigeBackport ? 6 : 4;
 
         var botCanPrestige = playerLevel >= minPlayerLevelForBotsToPrestige ||
                              playerLevel >= (level - 15) && isPlayerPrestiged || isPlayerPrestiged;

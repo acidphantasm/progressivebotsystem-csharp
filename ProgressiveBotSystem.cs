@@ -73,5 +73,6 @@ public class ProgressiveBotSystem(
     private void CheckForMods()
     {
         ModConfig.WttBackport = installedMods.Any(x => x.ModMetadata.ModGuid == "com.wtt.contentbackport");
+        ModConfig.PrestigeBackport = installedMods.Any(x => x.ModMetadata.ModGuid == "wtf.archangel.contentbackportprestiges");
     }
 }

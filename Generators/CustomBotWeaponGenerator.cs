@@ -5,8 +5,8 @@ using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;
-using SPTarkov.Server.Core.Generators.WeaponGen;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -23,7 +23,7 @@ using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace SPTarkov.Server.Core.Generators;
 
-[Injectable(InjectionType.Singleton)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostSptModLoader)]
 public class CustomBotWeaponGenerator(
     ISptLogger<CustomBotWeaponGenerator> logger,
     DatabaseService databaseService,
