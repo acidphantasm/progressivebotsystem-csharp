@@ -378,7 +378,6 @@ public class CustomItemImportService(
     {
         if (!customItemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd)) return;
         
-        // Some mods decide that vanilla headsets that AREN'T mountable, are mountable. This is dumb. Skip them.
         if (itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
         {
             if (customItemImportHelper.AreHeadphonesMountable(itemToAdd))

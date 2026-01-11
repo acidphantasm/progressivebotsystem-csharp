@@ -1098,7 +1098,18 @@ public class BotConfigHelper(
         var botTable = databaseService.GetBots().Types;
         foreach (var (botType, data) in botTable)
         {
-            if (ModConfig.Config.NormalizedHealthPool.ExcludedBots.Contains(botType)) continue;
+            var excluded = ModConfig.Config.NormalizedHealthPool.ExcludedBots;
+
+            var isBear = botType == "bear";
+            var isUsec = botType == "usec";
+
+            var shouldSkip =
+                excluded.Contains(botType) ||
+                (isBear && excluded.Contains("pmcbear")) ||
+                (isUsec && excluded.Contains("pmcusec"));
+
+            if (shouldSkip) continue;
+            
             if (data is null)
             {
                 apbsLogger.Error($"[HEALTH NORMALIZATION] Bot type is unknown: {botType}");
@@ -1109,8 +1120,8 @@ public class BotConfigHelper(
             {
                 bodyPart.Head.Min = ModConfig.Config.NormalizedHealthPool.HealthHead > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 35;
                 bodyPart.Head.Max = ModConfig.Config.NormalizedHealthPool.HealthHead > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 35;
-                bodyPart.Chest.Min = ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 85;
-                bodyPart.Chest.Max = ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 85;
+                bodyPart.Chest.Min = ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthChest : 85;
+                bodyPart.Chest.Max = ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthChest : 85;
                 bodyPart.Stomach.Min = ModConfig.Config.NormalizedHealthPool.HealthStomach > 0 ? ModConfig.Config.NormalizedHealthPool.HealthStomach : 70;
                 bodyPart.Stomach.Max = ModConfig.Config.NormalizedHealthPool.HealthStomach > 0 ? ModConfig.Config.NormalizedHealthPool.HealthStomach : 70;
                 bodyPart.LeftArm.Min = ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm : 60;
