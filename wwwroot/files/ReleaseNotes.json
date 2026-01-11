@@ -1,7 +1,7 @@
 ﻿[
   {
     "Version": "2.1.0",
-    "ReleaseDate": "January 9, 2025",
+    "ReleaseDate": "January 11, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
@@ -15,7 +15,9 @@
       "Resolved Boss Loot Blacklist not working",
       "Resolved Follower Loot Blacklist not working",
       "Resolved Special Loot Blacklist not working",
-      "Resolved Logging not properly putting log levels in correct files. Woops."
+      "Resolved Logging not properly putting log levels in correct files. Woops.",
+      "Resolved normalize health not skipping usec/bear properly",
+      "Resolved normalize health applying head value to chest"
     ],
     "KnownIssues": []
   },
