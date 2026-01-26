@@ -13,10 +13,10 @@ using SPTarkov.Server.Core.Services;
 namespace _progressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostSptModLoader + 69)]
-public class CustomItemImportService(
+public class ItemImportService(
     ApbsLogger apbsLogger,
-    CustomItemImportHelper customItemImportHelper,
-    CustomItemImportTierHelper customItemImportTierHelper,
+    ItemImportHelper itemImportHelper,
+    ItemImportTierHelper itemImportTierHelper,
     DatabaseService databaseService,
     ItemHelper itemHelper): IOnLoad
 {
@@ -24,7 +24,7 @@ public class CustomItemImportService(
     private Dictionary<string, Dictionary<string, List<MongoId>>> _moddedClothingBotSlotDictionary = new();
     private Dictionary<string, List<MongoId>> _moddedAmmoDictionary = new();
 
-    private HashSet<MongoId> _mountedHeadphones = new();
+    private readonly HashSet<MongoId> _mountedHeadphones = new();
     
     private readonly Lock _equipmentLock = new();
     private readonly Lock _modsLock = new();
@@ -40,8 +40,8 @@ public class CustomItemImportService(
         
         var stopwatch = Stopwatch.StartNew();
         
-        customItemImportHelper.ValidateConfig();
-        await customItemImportHelper.BuildVanillaDictionaries();
+        itemImportHelper.ValidateConfig();
+        await itemImportHelper.BuildVanillaDictionaries();
         
         ImportEquipmentBySlot();
         
@@ -61,7 +61,7 @@ public class CustomItemImportService(
             new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 },
             templateItem =>
             {
-                if (customItemImportHelper.EquipmentNeedsImporting(templateItem.Id))
+                if (itemImportHelper.EquipmentNeedsImporting(templateItem.Id))
                 {
                     SortAndStartEquipmentImport(templateItem);
                 }
@@ -76,15 +76,15 @@ public class CustomItemImportService(
     private void SortAndStartEquipmentImport(TemplateItem templateItem)
     {
         var itemId = templateItem.Id;
-        if (customItemImportHelper.IsHolster(itemId))
+        if (itemImportHelper.IsHolster(itemId))
         {
             //AddWeaponToBotData(ApbsEquipmentSlots.Holster, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsPrimaryWeapon(itemId))
+        if (itemImportHelper.IsPrimaryWeapon(itemId))
         {
-            if (customItemImportHelper.IsLongRangePrimaryWeapon(itemId))
+            if (itemImportHelper.IsLongRangePrimaryWeapon(itemId))
             {
                 //AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange, templateItem);
                 //AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange, templateItem);
@@ -95,21 +95,21 @@ public class CustomItemImportService(
             return;
         }
         
-        if (customItemImportHelper.IsScabbard(itemId))
+        if (itemImportHelper.IsScabbard(itemId))
         {
             AddWeaponToBotData(ApbsEquipmentSlots.Scabbard, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsHeadwear(itemId))
+        if (itemImportHelper.IsHeadwear(itemId))
         {
             AddEquipmentToBotData(ApbsEquipmentSlots.Headwear, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsRigSlot(itemId))
+        if (itemImportHelper.IsRigSlot(itemId))
         {
-            if (customItemImportHelper.IsArmouredRig(templateItem))
+            if (itemImportHelper.IsArmouredRig(templateItem))
             {
                 AddEquipmentToBotData(ApbsEquipmentSlots.ArmouredRig, templateItem);
                 return;
@@ -119,50 +119,50 @@ public class CustomItemImportService(
             return;
         }
         
-        if (customItemImportHelper.IsArmourVest(itemId))
+        if (itemImportHelper.IsArmourVest(itemId))
         {
             AddEquipmentToBotData(ApbsEquipmentSlots.ArmorVest, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsBackpack(itemId))
+        if (itemImportHelper.IsBackpack(itemId))
         {
             AddEquipmentToBotData(ApbsEquipmentSlots.Backpack, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsFacecover(itemId))
+        if (itemImportHelper.IsFacecover(itemId))
         {
             AddEquipmentToBotData(ApbsEquipmentSlots.FaceCover, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsPackNStrapBelt(itemId))
+        if (itemImportHelper.IsPackNStrapBelt(itemId))
         {
             if (ModConfig.Config.CompatibilityConfig.PackNStrapUnlootablePmcArmbandBelts)
             {
-                customItemImportHelper.MarkPackNStrapUnlootable(templateItem);
+                itemImportHelper.MarkPackNStrapUnlootable(templateItem);
             }
             AddEquipmentToBotData(ApbsEquipmentSlots.ArmBand, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsArmband(itemId))
+        if (itemImportHelper.IsArmband(itemId))
         {
             AddEquipmentToBotData(ApbsEquipmentSlots.ArmBand, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsHeadphones(itemId))
+        if (itemImportHelper.IsHeadphones(itemId))
         {
             if (_mountedHeadphones.Contains(itemId)) return;
-            if (customItemImportHelper.AreHeadphonesMountable(templateItem)) return;
+            if (itemImportHelper.AreHeadphonesMountable(templateItem)) return;
             
             AddEquipmentToBotData(ApbsEquipmentSlots.Earpiece, templateItem);
             return;
         }
         
-        if (customItemImportHelper.IsEyeglasses(itemId))
+        if (itemImportHelper.IsEyeglasses(itemId))
         {
             AddEquipmentToBotData(ApbsEquipmentSlots.Eyewear, templateItem);
             return;
@@ -184,18 +184,18 @@ public class CustomItemImportService(
         
         for (var tier = startTier; tier <= 7; tier++)
         {
-            var equipmentData = customItemImportTierHelper.GetEquipmentTierData(tier);
+            var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
             
             lock (_equipmentLock)
             {
-                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-                equipmentData.Scav.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "scav");
-                equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetWeaponSlotWeight(slot, "default");
+                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+                equipmentData.Scav.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "scav");
+                equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "default");
             }
         }
 
-        if (!string.IsNullOrEmpty(ammoCaliber) && customItemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber))
+        if (!string.IsNullOrEmpty(ammoCaliber) && itemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber))
         {
             var chambers = templateItem.Properties?.Chambers ?? [];
             var filter = chambers
@@ -205,7 +205,7 @@ public class CustomItemImportService(
 
             foreach (var ammoId in filter ?? [])
             {
-                if (!customItemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
+                if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
                 
                 apbsLogger.Warning($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
                 AddAmmoToBotData(ammoId, ammoCaliber);
@@ -213,10 +213,10 @@ public class CustomItemImportService(
 
             if (filter == null || filter.Count == 0)
             {
-                var cartridgesFromMagazine = customItemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
+                var cartridgesFromMagazine = itemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
                 foreach (var ammoId in cartridgesFromMagazine)
                 {
-                    if (!customItemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
+                    if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
                     
                     apbsLogger.Warning($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
                     AddAmmoToBotData(ammoId, ammoCaliber);
@@ -242,7 +242,7 @@ public class CustomItemImportService(
         
         for (var tier = startTier; tier <= 7; tier++)
         {
-            var ammoData = customItemImportTierHelper.GetAmmoTierData(tier);
+            var ammoData = itemImportTierHelper.GetAmmoTierData(tier);
 
             lock (_ammoLock)
             {
@@ -275,9 +275,9 @@ public class CustomItemImportService(
         
         for (var tier = startTier; tier <= 7; tier++)
         {
-            var equipmentData = customItemImportTierHelper.GetEquipmentTierData(tier);
+            var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
 
-            if (customItemImportHelper.IfArmouredHelmetAndShouldSkip(templateItem, tier))
+            if (itemImportHelper.IfArmouredHelmetAndShouldSkip(templateItem, tier))
             {
                 apbsLogger.Debug($"[{slot.ToString()}][T${tier}] Skipping item in tier: {templateItem.Id} due to armour class 4 or higher");
                 continue;
@@ -285,10 +285,10 @@ public class CustomItemImportService(
             
             lock (_equipmentLock)
             {
-                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
-                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
-                equipmentData.Scav.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem, true);
-                equipmentData.Default.Equipment[slot][templateItem.Id] = customItemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.Scav.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem, true);
+                equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
             }
         }
         
@@ -376,11 +376,11 @@ public class CustomItemImportService(
     /// </summary>
     private void AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
-        if (!customItemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd)) return;
+        if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd)) return;
         
         if (itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
         {
-            if (customItemImportHelper.AreHeadphonesMountable(itemToAdd))
+            if (itemImportHelper.AreHeadphonesMountable(itemToAdd))
             {
                 _mountedHeadphones.Add(itemToAdd.Id);
             }
@@ -393,7 +393,7 @@ public class CustomItemImportService(
         
         for (var tier = 1; tier <= 7; tier++)
         {
-            var modsData = customItemImportTierHelper.GetModsTierData(tier);
+            var modsData = itemImportTierHelper.GetModsTierData(tier);
 
             lock (_modsLock)
             {

@@ -13,7 +13,7 @@ using Path = System.IO.Path;
 namespace _progressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class CustomItemImportHelper(
+public class ItemImportHelper(
     ApbsLogger apbsLogger,
     JsonUtil jsonUtil,
     ItemHelper itemHelper)

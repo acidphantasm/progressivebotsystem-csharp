@@ -5,7 +5,7 @@ using SPTarkov.Server.Core.Models.Common;
 namespace _progressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class CustomItemImportTierHelper(
+public class ItemImportTierHelper(
     DataLoader dataLoader)
 {
     /// <summary>
@@ -64,6 +64,27 @@ public class CustomItemImportTierHelper(
         5 => dataLoader.Tier5AmmoData,
         6 => dataLoader.Tier6AmmoData,
         7 => dataLoader.Tier7AmmoData,
+        _ => throw new ArgumentOutOfRangeException(
+            nameof(tier),
+            tier,
+            "ModConfig - Initial Tier Appearance must be between 1 and 7."
+        )
+    };
+    
+    /// <summary>
+    ///     Used to get and return the correct Appearance Data that was deserialized from either the preset or the default data
+    ///     This data gets malformed by the callers, so we'll be getting this every time there is a relevant config or preset change
+    ///     Probably not the best way to do this, I'd rather not malform the data but the import process is sub 100 ms right now so who cares
+    /// </summary>
+    public AppearanceTierData GetAppearanceTierData(int tier) => tier switch
+    {
+        1 => dataLoader.Tier1AppearanceData,
+        2 => dataLoader.Tier2AppearanceData,
+        3 => dataLoader.Tier3AppearanceData,
+        4 => dataLoader.Tier4AppearanceData,
+        5 => dataLoader.Tier5AppearanceData,
+        6 => dataLoader.Tier6AppearanceData,
+        7 => dataLoader.Tier7AppearanceData,
         _ => throw new ArgumentOutOfRangeException(
             nameof(tier),
             tier,
