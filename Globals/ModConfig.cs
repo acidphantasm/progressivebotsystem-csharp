@@ -4,6 +4,7 @@ using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
+using _progressiveBotSystem.Services;
 using _progressiveBotSystem.Utils;
 using _progressiveBotSystem.Web.Pages.PresetBuilder;
 using _progressiveBotSystem.Web.Shared;
@@ -25,7 +26,8 @@ public class ModConfig : IOnLoad
         JsonUtil jsonUtil,
         FileUtil fileUtil,
         BotConfigHelper botConfigHelper,
-        DataLoader dataLoader)
+        DataLoader dataLoader,
+        BotBlacklistService  botBlacklistService)
     {
         _apbsLogger = apbsLogger;
         _modHelper = modHelper;
@@ -33,6 +35,7 @@ public class ModConfig : IOnLoad
         _fileUtil = fileUtil;
         _botConfigHelper = botConfigHelper;
         _dataLoader = dataLoader;
+        _botBlacklistService = botBlacklistService;
         _modPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
     }
     private static ApbsLogger _apbsLogger;
@@ -41,6 +44,7 @@ public class ModConfig : IOnLoad
     private static FileUtil _fileUtil;
     private static BotConfigHelper _botConfigHelper;
     private static DataLoader _dataLoader;
+    private static BotBlacklistService _botBlacklistService;
     public static ApbsServerConfig Config {get; private set;} = null!;
     public static ApbsServerConfig OriginalConfig {get; private set;} = null!;
     public static ApbsBlacklistConfig Blacklist { get; private set; } = null!;
@@ -90,6 +94,7 @@ public class ModConfig : IOnLoad
             OriginalBlacklist = DeepClone(Blacklist);
 
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
+            await Task.Run(() => _botBlacklistService.RunBlacklisting());
 
             _apbsLogger.Success("ModConfig reloaded successfully.");
             return ConfigOperationResult.Success;
@@ -126,7 +131,6 @@ public class ModConfig : IOnLoad
             var writeConfigTask = _fileUtil.WriteFileAsync(configPath, serializedConfigTask.Result!);
             var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
-
             
             if (Config.UsePreset && !OriginalConfig.UsePreset)
             {
@@ -144,6 +148,7 @@ public class ModConfig : IOnLoad
             }
             
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
+            await Task.Run(() => _botBlacklistService.RunBlacklisting());
 
             // Update 'Original' config stuff since we've saved so the 'Undo' function works
             OriginalConfig = DeepClone(Config);
