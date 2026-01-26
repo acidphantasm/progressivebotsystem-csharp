@@ -17,7 +17,6 @@ public class BotBlacklistService(
 {
     public Task OnLoad()
     {
-        apbsLogger.Debug("Running Blacklist");
         RunBlacklisting();
         return Task.CompletedTask;
     }
@@ -80,12 +79,12 @@ public class BotBlacklistService(
 
                     if (removedFrom.Count > 0)
                     {
-                        apbsLogger.Warning($"[WEAPON BLACKLIST] Removed {item} from Tier {tier} slot(s): {string.Join(", ", removedFrom)} on bot: {botType}");
+                        apbsLogger.Debug($"[WEAPON BLACKLIST] Removed {item} from Tier {tier} slot(s): {string.Join(", ", removedFrom)} on bot: {botType}");
                     }
 
                     if (blockedFrom.Count > 0)
                     {
-                        apbsLogger.Warning($"[WEAPON BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only weapon left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
+                        apbsLogger.Debug($"[WEAPON BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only weapon left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
                     }
                 }
             }
@@ -143,13 +142,12 @@ public class BotBlacklistService(
 
                     if (removedFrom.Count > 0)
                     {
-                        apbsLogger.Warning(
-                            $"[EQUIPMENT BLACKLIST] Removed {item} from Tier {tier} slot(s): {string.Join(", ", removedFrom)} on bot: {botType}");
+                        apbsLogger.Debug($"[EQUIPMENT BLACKLIST] Removed {item} from Tier {tier} slot(s): {string.Join(", ", removedFrom)} on bot: {botType}");
                     }
 
                     if (blockedFrom.Count > 0)
                     {
-                        apbsLogger.Warning($"[EQUIPMENT BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only item left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
+                        apbsLogger.Debug($"[EQUIPMENT BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only item left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
                     }
                 }
             }
@@ -194,12 +192,12 @@ public class BotBlacklistService(
         
         if (itemRemoved)
         {
-            apbsLogger.Warning($"[AMMO BLACKLIST] Removed {ammoToRemove} from Tier: {tierToRemove}");
+            apbsLogger.Debug($"[AMMO BLACKLIST] Removed {ammoToRemove} from Tier: {tierToRemove}");
         }
         
         if (blockedRemovals.Count > 0)
         {
-            apbsLogger.Warning($"[AMMO BLACKLIST] Could NOT remove {ammoToRemove} from Tier: {tierToRemove} because it was the only ammo left in caliber(s): {string.Join(", ", blockedRemovals)} for {botType}");
+            apbsLogger.Debug($"[AMMO BLACKLIST] Could NOT remove {ammoToRemove} from Tier: {tierToRemove} because it was the only ammo left in caliber(s): {string.Join(", ", blockedRemovals)} for {botType}");
         }
     }
     
@@ -244,12 +242,12 @@ public class BotBlacklistService(
 
         if (removedFrom.Count > 0)
         {
-            apbsLogger.Warning($"[ATTACHMENT BLACKLIST] Removed {itemToRemove} in tier {tier} from {removedFrom.Count} items: {string.Join(", ", removedFrom)}");
+            apbsLogger.Debug($"[ATTACHMENT BLACKLIST] Removed {itemToRemove} in tier {tier} from {removedFrom.Count} items: {string.Join(", ", removedFrom)}");
         }
         
         if (blockedRemovals.Count > 0)
         {
-            apbsLogger.Warning($"[ATTACHMENT BLACKLIST] Could NOT remove {itemToRemove} from Tier {tier} because it was the only mod left in slot(s): {string.Join(", ", blockedRemovals)}");
+            apbsLogger.Debug($"[ATTACHMENT BLACKLIST] Could NOT remove {itemToRemove} from Tier {tier} because it was the only mod left in slot(s): {string.Join(", ", blockedRemovals)}");
         }
     }
     
@@ -292,14 +290,12 @@ public class BotBlacklistService(
 
         if (removedFrom.Count > 0)
         {
-            apbsLogger.Warning(
-                $"[CLOTHING BLACKLIST] Removed {item} from Tier {tier}: {string.Join(", ", removedFrom)}");
+            apbsLogger.Debug($"[CLOTHING BLACKLIST] Removed {item} from Tier {tier}: {string.Join(", ", removedFrom)}");
         }
 
         if (blockedRemovals.Count > 0)
         {
-            apbsLogger.Warning(
-                $"[CLOTHING BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only option in: {string.Join(", ", blockedRemovals)}");
+            apbsLogger.Debug($"[CLOTHING BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only option in: {string.Join(", ", blockedRemovals)}");
         }
     }
     
