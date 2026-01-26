@@ -19,6 +19,8 @@
       "Resolved Follower Loot Blacklist not working",
       "Resolved Special Loot Blacklist not working",
       "Resolved Logging not properly putting log levels in correct files. Woops.",
+      "Resolved Mountable Headphones going into Headphone slots on bots",
+      "Resolved Non-mountable Headphones going into a helmets mod slot on bots",
       "Resolved normalize health not skipping usec/bear properly",
       "Resolved normalize health applying head value to chest",
       "Resolved webconfig Pmc Ammo Tier Sliding Undo button not undoing properly"
