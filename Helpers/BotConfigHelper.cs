@@ -1027,7 +1027,7 @@ public class BotConfigHelper(
 
             if (!setValues) continue;
 
-            if (!_botConfig.LootItemResourceRandomization.TryGetValue(botType, out var randomizdResourceDetails))
+            if (!_botConfig.LootItemResourceRandomization.TryGetValue(botType, out var randomisedResourceDetails))
             {
                 _botConfig.LootItemResourceRandomization[botType] = new RandomisedResourceDetails()
                 {
@@ -1045,10 +1045,10 @@ public class BotConfigHelper(
             }
             else
             {
-                randomizdResourceDetails.Food.ChanceMaxResourcePercent = foodMaxChance;
-                randomizdResourceDetails.Food.ResourcePercent = foodResourcePercent;
-                randomizdResourceDetails.Meds.ChanceMaxResourcePercent = medMaxChange;
-                randomizdResourceDetails.Meds.ResourcePercent = medResourcePercent;
+                randomisedResourceDetails.Food.ChanceMaxResourcePercent = foodMaxChance;
+                randomisedResourceDetails.Food.ResourcePercent = foodResourcePercent;
+                randomisedResourceDetails.Meds.ChanceMaxResourcePercent = medMaxChange;
+                randomisedResourceDetails.Meds.ResourcePercent = medResourcePercent;
             }
         }
     }
