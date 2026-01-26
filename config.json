@@ -898,12 +898,13 @@
         "slideAmount": 1,
         "slideChance": 33
       },
+      "gameVersionDogtagChance" : 50,
       "gameVersionWeighting": {
         "enable": false,
         "standard": 20,
         "leftBehind": 10,
         "prepareForEscape": 10,
-        "edgeOfDarkness": 40,
+        "edgeOfDarkness": 30,
         "unheardEdition": 20
       }
     },

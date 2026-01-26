@@ -130,19 +130,16 @@ public class ModConfig : IOnLoad
             
             if (Config.UsePreset && !OriginalConfig.UsePreset)
             {
-                Console.WriteLine("First");
                 await _dataLoader.AssignJsonDataFromPreset(_modPath);
             }
             else if (!Config.UsePreset && OriginalConfig.UsePreset)
             {
-                Console.WriteLine("First elseif");
                 await _dataLoader.AssignJsonData(_modPath);
                 savePresetToDisk = false;
             }
             
             if (savePresetToDisk)
             {
-                Console.WriteLine("Second");
                 await _dataLoader.SavePresetChangesToDisk(_modPath);
             }
             

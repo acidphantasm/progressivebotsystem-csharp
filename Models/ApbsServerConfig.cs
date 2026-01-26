@@ -121,6 +121,8 @@ public class PmcSpecificConfig
     public bool SeasonalPmcAppearance { get; set; }
     [JsonPropertyName("ammoTierSliding")]
     public required AmmoTierSlideConfig AmmoTierSliding { get; set; }
+    [JsonPropertyName("gameVersionDogtagChance")]
+    public int GameVersionDogtagChance { get; set; }
     [JsonPropertyName("gameVersionWeighting")]
     public required GameVersionWeightConfig GameVersionWeighting { get; set; }
 

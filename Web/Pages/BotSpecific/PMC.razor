@@ -763,6 +763,31 @@
                         <MudItem xs="6">
                             <MudSlider @bind-Value="_pmcAmmoTierSlideChance" ValueLabel="true" Min="1" Max="100" Color="Color.Info" Size="Size.Medium" Disabled="!_pmcAmmoTierSlideEnabled" />
                         </MudItem>
+                        
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="If the bot is Unheard or EOD, how often they should have that dogtag." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>TUE/EOD Specific Dogtag Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_pmcVersionDogtagChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_pmcVersionDogtagChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" />
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_pmcVersionDogtagChance"))
+                            {
+                                <MudButton @onclick="undoPMCVersionDogtagChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && _pmcVersionDogtagChance != 50)
+                            {
+                                <MudButton @onclick="defaultPMCVersionDogtagChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
 
                         <MudItem xs="1" />
                         <MudItem xs="4">
@@ -3472,7 +3497,7 @@
     }
     private void undoPMCAmmoTierSliding()
     {
-        _pmcAmmoTierSlideEnabled = ModConfig.OriginalConfig.PmcBots.WeaponDurability.Enable;
+        _pmcAmmoTierSlideEnabled = ModConfig.OriginalConfig.PmcBots.AdditionalOptions.AmmoTierSliding.Enable;
         _pmcAmmoTierSlideAmount = ModConfig.OriginalConfig.PmcBots.AdditionalOptions.AmmoTierSliding.SlideAmount;
         _pmcAmmoTierSlideChance = ModConfig.OriginalConfig.PmcBots.AdditionalOptions.AmmoTierSliding.SlideChance;
     }
@@ -3583,6 +3608,24 @@
     private void defaultPrestigeAnyLevel() => _pmcPrestigeAnyLevel = true;
     #endregion
     #region GAME VERSION WEIGHTING
+
+    private int _pmcVersionDogtagChance
+    {
+        get => ModConfig.Config.PmcBots.AdditionalOptions.GameVersionDogtagChance;
+        set
+        {
+            ModConfig.Config.PmcBots.AdditionalOptions.GameVersionDogtagChance = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcBots.AdditionalOptions.GameVersionDogtagChance);
+        }
+    }
+    private void undoPMCVersionDogtagChance()
+    {
+        _pmcVersionDogtagChance = ModConfig.OriginalConfig.PmcBots.AdditionalOptions.GameVersionDogtagChance;
+    }
+    private void defaultPMCVersionDogtagChance()
+    {
+        _pmcVersionDogtagChance = 50;
+    }
     private bool _pmcVersionWeightingEnabled
     {
         get => ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Enable;

@@ -4,12 +4,15 @@
     "ReleaseDate": "January 11, 2025",
     "IsLatest": true,
     "NewFeatures": [
+      "Custom Item Import Functionality has returned",
+      "Mod Compatibility Configuration has returned",
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
       "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
-      "Custom Item Import Functionality has returned",
-      "Mod Compatibility Configuration has returned"
+      "Webconfig toggle to set chance of TUE/EOD bots having version specific dogtags"
     ],
-    "Changes": [],
+    "Changes": [
+      "Removed leftover console logging when changing presets"
+    ],
     "BugFixes": [
       "Resolved Scav Loot Blacklist not working",
       "Resolved Boss Loot Blacklist not working",
@@ -17,7 +20,8 @@
       "Resolved Special Loot Blacklist not working",
       "Resolved Logging not properly putting log levels in correct files. Woops.",
       "Resolved normalize health not skipping usec/bear properly",
-      "Resolved normalize health applying head value to chest"
+      "Resolved normalize health applying head value to chest",
+      "Resolved webconfig Pmc Ammo Tier Sliding Undo button not undoing properly"
     ],
     "KnownIssues": []
   },
