@@ -19,4 +19,5 @@ public class LoggingFolders
     public const string Special = "special_generation";
     public const string Boss = "boss_generation";
     public const string Event = "event_generation";
+    public const string UnhandledBots = "unhandled_generation";
 }

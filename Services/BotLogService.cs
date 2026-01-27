@@ -18,6 +18,7 @@ public class BotLogService(
     private static readonly HashSet<string> FollowerRoles = typeof(FollowerBots).GetFields().Select(x => (string)x.GetValue(null)!).ToHashSet(StringComparer.Ordinal);
     private static readonly HashSet<string> SpecialRoles = typeof(SpecialBots).GetFields().Select(x => (string)x.GetValue(null)!).ToHashSet(StringComparer.Ordinal);
     private static readonly HashSet<string> PmcRoles = typeof(PmcBots).GetFields().Select(x => (string)x.GetValue(null)!).ToHashSet(StringComparer.Ordinal);
+    private static readonly HashSet<string> EventRoles = typeof(EventBots).GetFields().Select(x => (string)x.GetValue(null)!).ToHashSet(StringComparer.Ordinal);
     
     public void StartBotLogging(IEnumerable<BotBase?> botData)
     {
@@ -29,7 +30,7 @@ public class BotLogService(
                 var logMessages = botLogHelper.GetLogMessage(botLogData);
                 var enabledStringText = botActivityHelper.IsBotEnabled(botLogData.Role) ? "APBS Bot" : "Vanilla Bot";
             
-                var logType = LoggingFolders.Event;
+                var logType = LoggingFolders.UnhandledBots;
                 if (ScavRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Scav;
@@ -45,6 +46,10 @@ public class BotLogService(
                 if (PmcRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Pmc;
+                }
+                if (EventRoles.Contains(botLogData.Role.ToLowerInvariant()))
+                {
+                    logType = LoggingFolders.Event;
                 }
             
                 apbsLogger.Bot(
