@@ -16,13 +16,14 @@ public class BotLogHelper(
 {
     private List<MongoId> _grenadeList =
     [
+        "5448be9a4bdc2dfd2f8b456a",
         "5710c24ad2720bc3458b45a3",
         "58d3db5386f77426186285a0",
-        "618a431df1eb8e24b8741deb",
-        "5448be9a4bdc2dfd2f8b456a",
         "5e32f56fcb6d5863cc5e5ee4",
         "5e340dcdcb6d5863cc5e5efb",
-        "617fd91e5539a84ec44ce155"
+        "617fd91e5539a84ec44ce155",
+        "618a431df1eb8e24b8741deb",
+        "66dae7cbeb28f0f96809f325"
     ];
     
     public BotLogData GetBotDetails(BotBase? botBase)

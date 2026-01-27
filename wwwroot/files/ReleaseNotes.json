@@ -14,7 +14,9 @@
     ],
     "Changes": [
       "Removed leftover console logging when changing presets",
-      "Added (Poverty) label to Bot Equipment Logging Tier if PMC rolled to be in poverty"
+      "Added (Poverty) label to Bot Equipment Logging Tier if PMC rolled to be in poverty",
+      "Added V40 Mini-Grenade to Grenade List for Grenade counter in Bot Equipment Logging",
+      "Added `unhandled` bot equipment logging (for bots not handled by APBS)"
     ],
     "BugFixes": [
       "Resolved bot logging not logging the correct tier if the bot was marked for poverty",
