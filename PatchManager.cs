@@ -23,6 +23,7 @@ public class PatchManager : IOnLoad
         
         new GenerateInventory_Patch().Enable();
         new GenerateBotLevel().Enable();
+        new GenerateBot_Patch().Enable();
         new SetBotAppearance_Patch().Enable();
         new AddDogTagToBot_Patch().Enable();
         new SetRandomisedGameVersionAndCategory_Patch().Enable();
