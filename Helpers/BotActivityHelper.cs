@@ -57,6 +57,6 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
         if (_specials.Contains(botType)) return !ModConfig.Config.SpecialBots.Enable;
         
         apbsLogger.Warning($"Bot type {botType} is not enabled");
-        return false;
+        return true;
     }
 }
