@@ -31,6 +31,10 @@ public class AddDogTagToBot_Patch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(BotBase bot)
     {
+        if (bot.Info.ExtensionData is not null &&
+            bot.Info.ExtensionData.TryGetValue("PrestigeLevel", out var storedPrestigeObj) &&
+            storedPrestigeObj is int storedPrestige)
+                bot.Info.PrestigeLevel = storedPrestige;
         Item inventoryItem = new()
         {
             Id = new MongoId(),
