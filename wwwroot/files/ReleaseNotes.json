@@ -1,11 +1,11 @@
 ﻿[
   {
     "Version": "2.1.0",
-    "ReleaseDate": "January 25, 2025",
+    "ReleaseDate": "January 26, 2025",
     "IsLatest": true,
     "NewFeatures": [
-      "Implemented Blacklisting feature (was forgotten in 4.0 conversion)",
-      "Implemented Bot Equipment logs (was forgotten in 4.0 conversion)",
+      "Blacklisting functionality has returned",
+      "Bot Equipment logging functionality has returned",
       "Custom Item Import Functionality has returned",
       "Mod Compatibility Configuration has returned",
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
@@ -13,9 +13,11 @@
       "Webconfig toggle to set chance of TUE/EOD bots having version specific dogtags"
     ],
     "Changes": [
-      "Removed leftover console logging when changing presets"
+      "Removed leftover console logging when changing presets",
+      "Added (Poverty) label to Bot Equipment Logging Tier if PMC rolled to be in poverty"
     ],
     "BugFixes": [
+      "Resolved bot logging not logging the correct tier if the bot was marked for poverty",
       "Resolved Zryachiy not being handled by APBS",
       "Resolved Scav Loot Blacklist not working",
       "Resolved Boss Loot Blacklist not working",
