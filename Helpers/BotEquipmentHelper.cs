@@ -250,6 +250,8 @@ public class BotEquipmentHelper : IOnLoad {
                 return tieredEquipmentData.BossTagilla.Equipment;
             case "bosspartisan":
                 return tieredEquipmentData.BossPartisan.Equipment;
+            case "bosszryachiy":
+                return tieredEquipmentData.BossZryachiy.Equipment;
             case "bossknight":
                 return tieredEquipmentData.BossKnight.Equipment;
             case "followerbigpipe":
@@ -304,6 +306,8 @@ public class BotEquipmentHelper : IOnLoad {
                 return tieredEquipmentData.BossTagilla.Equipment[slot];
             case "bosspartisan":
                 return tieredEquipmentData.BossPartisan.Equipment[slot];
+            case "bosszryachiy":
+                return tieredEquipmentData.BossZryachiy.Equipment[slot];
             case "bossknight":
                 return tieredEquipmentData.BossKnight.Equipment[slot];
             case "followerbigpipe":
@@ -358,6 +362,8 @@ public class BotEquipmentHelper : IOnLoad {
                 return tieredChancesData.BossTagilla.Chances;
             case "bosspartisan":
                 return tieredChancesData.BossPartisan.Chances;
+            case "bosszryachiy":
+                return tieredChancesData.BossZryachiy.Chances;
             case "bossknight":
                 return tieredChancesData.BossKnight.Chances;
             case "followerbigpipe":
