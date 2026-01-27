@@ -85,6 +85,20 @@ public class ApbsLogger
         });
     }
 
+    public void Bot(string logFolder, string message1, string message2 = "", string message3 = "", string message4 = "",
+        string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+    {
+        var logFilePath = Path.Combine(_pathToModFolder, "logs", logFolder + ".txt");
+
+        EnqueueLog(new LogMessage
+        {
+            Timestamp = DateTime.Now,
+            Level = "BOT",
+            FilePath = logFilePath,
+            Message = CreateMessage(string.Empty, message1, message2, message3, message4, message5, message6, message7, message8)
+        });
+    }
+
     
     private void EnqueueLog(LogMessage message)
     {

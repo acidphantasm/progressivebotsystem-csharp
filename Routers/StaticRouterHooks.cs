@@ -1,6 +1,7 @@
 ﻿using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
+using _progressiveBotSystem.Services;
 using _progressiveBotSystem.Utils;
 using _progressiveBotSystem.Web.Shared;
 using SPTarkov.DI.Annotations;
@@ -10,6 +11,8 @@ using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Eft.HttpResponse;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Logging;
 using SPTarkov.Server.Core.Models.Utils;
@@ -21,18 +24,23 @@ namespace _progressiveBotSystem.Routers;
 [Injectable]
 public class StaticRouterHooks : StaticRouter
 {
-    private static ApbsLogger? _apbsLogger;
-
     public StaticRouterHooks(
         JsonUtil jsonUtil,
         HttpResponseUtil httpResponseUtil,
-        ApbsLogger apbsLogger) : base(
+        ApbsLogger apbsLogger,
+        BotLogService botLogService) : base(
         jsonUtil,
         GetCustomRoutes()
     )
     {
+        _jsonUtil = jsonUtil;
         _apbsLogger = apbsLogger;
+        _botLogService = botLogService;
     }
+    
+    private static ApbsLogger? _apbsLogger;
+    private static JsonUtil? _jsonUtil;
+    private static BotLogService? _botLogService;
 
     private static List<RouteAction> GetCustomRoutes()
     {
@@ -47,7 +55,20 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    _apbsLogger.Debug("/client/game/bot/generate");
+                    try
+                    {
+                        var outputData = _jsonUtil.Deserialize<GetBodyResponseData<IEnumerable<BotBase?>>>(output);
+
+                        if (outputData?.Data != null)
+                        {
+                            // Fire and forget
+                            _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _apbsLogger.Error($"Failed to deserialize bots: {ex}");
+                    }
                     return output;
                 }),
             
