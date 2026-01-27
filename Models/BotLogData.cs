@@ -3,6 +3,7 @@
 public class BotLogData
 {
     public int Tier { get; set; } = 0;
+    public bool PovertyBot { get; set; } = false;
     public string Role { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public int Level { get; set; } = 0;
