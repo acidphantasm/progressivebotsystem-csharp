@@ -17,6 +17,7 @@
       "Added (Poverty) label to Bot Equipment Logging Tier if PMC rolled to be in poverty",
       "Added V40 Mini-Grenade to Grenade List for Grenade counter in Bot Equipment Logging",
       "Added `unhandled` bot equipment logging (for bots not handled by APBS)",
+      "Added Release Note formatter so I dont have to keep reformatting everything for Github releases. Lol.",
       "Adjusted logic when creating a new preset - it will autoselect your newly made preset",
       "Adjusted APBS database handling for sanitization purposes.",
       "Adjusted webconfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"

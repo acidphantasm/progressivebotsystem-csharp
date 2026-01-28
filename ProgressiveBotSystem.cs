@@ -1,12 +1,12 @@
 using System.Reflection;
 using _progressiveBotSystem.Constants;
+using _progressiveBotSystem.Generators;
 using _progressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Spt.Mod;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Web;
 using Path = System.IO.Path;
 
@@ -29,13 +29,19 @@ public record ModMetadata : AbstractModMetadata, IModWebMetadata
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public class ProgressiveBotSystem(
-    IReadOnlyList<SptMod> installedMods)
+    IReadOnlyList<SptMod> installedMods,
+    ModHelper modHelper,
+    JsonUtil jsonUtil)
     : IOnLoad
 {
     public Task OnLoad()
     {
         CreateLogFiles();
         CheckForMods();
+        
+        var releaseNoteGenerator = new ReleaseNoteGenerator(modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly()), new ModMetadata().SptVersion, jsonUtil);
+        _ = releaseNoteGenerator.GenerateIfFirstBuildAsync();
+        
         return Task.CompletedTask;
     }
 
