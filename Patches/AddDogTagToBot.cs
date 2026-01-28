@@ -28,7 +28,7 @@ public class AddDogTagToBot_Patch : AbstractPatch
         // Recover and reset the PrestigeLevel from the GenerateBotLevel patch
         if (bot.Info.TryGetExtensionData(out var extensionData))
         {
-            if (extensionData.TryGetValue("PrestigeLevel", out var tierElement) && tierElement is JsonElement { ValueKind: JsonValueKind.Number } jsonElement)
+            if (extensionData.TryGetValue("PrestigeLevel", out var prestigeLevelExt) && prestigeLevelExt is JsonElement { ValueKind: JsonValueKind.Number } jsonElement)
             {
                 bot.Info.PrestigeLevel = jsonElement.GetInt32();
             }
