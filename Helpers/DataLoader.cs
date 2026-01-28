@@ -20,46 +20,8 @@ public class DataLoader(
     JsonUtil jsonUtil,
     ApbsLogger apbsLogger): IOnLoad
 {
-    public required AmmoTierData Tier0AmmoData { get; set; }
-    public required AmmoTierData Tier1AmmoData { get; set; }
-    public required AmmoTierData Tier2AmmoData { get; set; }
-    public required AmmoTierData Tier3AmmoData { get; set; }
-    public required AmmoTierData Tier4AmmoData { get; set; }
-    public required AmmoTierData Tier5AmmoData { get; set; }
-    public required AmmoTierData Tier6AmmoData { get; set; }
-    public required AmmoTierData Tier7AmmoData { get; set; }
-    public required AppearanceTierData Tier0AppearanceData { get; set; }
-    public required AppearanceTierData Tier1AppearanceData { get; set; }
-    public required AppearanceTierData Tier2AppearanceData { get; set; }
-    public required AppearanceTierData Tier3AppearanceData { get; set; }
-    public required AppearanceTierData Tier4AppearanceData { get; set; }
-    public required AppearanceTierData Tier5AppearanceData { get; set; }
-    public required AppearanceTierData Tier6AppearanceData { get; set; }
-    public required AppearanceTierData Tier7AppearanceData { get; set; }
-    public required ChancesTierData Tier0ChancesData { get; set; }
-    public required ChancesTierData Tier1ChancesData { get; set; }
-    public required ChancesTierData Tier2ChancesData { get; set; }
-    public required ChancesTierData Tier3ChancesData { get; set; }
-    public required ChancesTierData Tier4ChancesData { get; set; }
-    public required ChancesTierData Tier5ChancesData { get; set; }
-    public required ChancesTierData Tier6ChancesData { get; set; }
-    public required ChancesTierData Tier7ChancesData { get; set; }
-    public required EquipmentTierData Tier0EquipmentData { get; set; }
-    public required EquipmentTierData Tier1EquipmentData { get; set; }
-    public required EquipmentTierData Tier2EquipmentData { get; set; }
-    public required EquipmentTierData Tier3EquipmentData { get; set; }
-    public required EquipmentTierData Tier4EquipmentData { get; set; }
-    public required EquipmentTierData Tier5EquipmentData { get; set; }
-    public required EquipmentTierData Tier6EquipmentData { get; set; }
-    public required EquipmentTierData Tier7EquipmentData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier0ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier1ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier2ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier3ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier4ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier5ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier6ModsData { get; set; }
-    public required Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> Tier7ModsData { get; set; }
+    public required AllTierData AllTierDataClean { get; set; }
+    public required AllTierData AllTierDataDirty { get; set; }
     
     private readonly Dictionary<string, string[]> _expectedPresetStructure =
         new()
@@ -86,10 +48,13 @@ public class DataLoader(
         var pathToMod = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
 
         if (ModConfig.Config.UsePreset) await AssignJsonDataFromPreset(pathToMod);
-        else await AssignJsonData(pathToMod);
+        else
+        {
+            await AssignJsonData(pathToMod);
+        }
         
         await AssignTierData(pathToMod);
-
+        
         try
         {
             InternalFileValidation(pathToMod);
@@ -99,6 +64,8 @@ public class DataLoader(
         {
             apbsLogger.Error("Data has been tampered with. If you have any issues you did this to yourself. No support.");
         }
+        
+        AllTierDataDirty = ModConfig.DeepClone(AllTierDataClean);
     }
 
     private void InternalFileValidation(string pathToMod)
@@ -138,52 +105,52 @@ public class DataLoader(
 
     public async Task AssignJsonData(string pathToMod)
     {
-        Tier0AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier0_ammo.json")) ?? throw new ArgumentNullException();
-        Tier1AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier1_ammo.json")) ?? throw new ArgumentNullException();
-        Tier2AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier2_ammo.json")) ?? throw new ArgumentNullException();
-        Tier3AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier3_ammo.json")) ?? throw new ArgumentNullException();
-        Tier4AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier4_ammo.json")) ?? throw new ArgumentNullException();
-        Tier5AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier5_ammo.json")) ?? throw new ArgumentNullException();
-        Tier6AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier6_ammo.json")) ?? throw new ArgumentNullException();
-        Tier7AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier7_ammo.json")) ?? throw new ArgumentNullException();
+        var tiers = new Dictionary<int, TierInnerData>();
+        var dataRoot = Path.Combine(pathToMod, "Data");
 
-        Tier0AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier0_appearance.json")) ?? throw new ArgumentNullException();
-        Tier1AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier1_appearance.json")) ?? throw new ArgumentNullException();
-        Tier2AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier2_appearance.json")) ?? throw new ArgumentNullException();
-        Tier3AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier3_appearance.json")) ?? throw new ArgumentNullException();
-        Tier4AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier4_appearance.json")) ?? throw new ArgumentNullException();
-        Tier5AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier5_appearance.json")) ?? throw new ArgumentNullException();
-        Tier6AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier6_appearance.json")) ?? throw new ArgumentNullException();
-        Tier7AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier7_appearance.json")) ?? throw new ArgumentNullException();
+        var tierNumbers = JsonFileHashes.Hashes.Keys
+            .Where(k => k.StartsWith("Ammo/Tier", StringComparison.OrdinalIgnoreCase))
+            .Select(ExtractTierFromManifestPath)
+            .Distinct()
+            .OrderBy(t => t);
 
-        Tier0ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier0_chances.json")) ?? throw new ArgumentNullException();
-        Tier1ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier1_chances.json")) ?? throw new ArgumentNullException();
-        Tier2ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier2_chances.json")) ?? throw new ArgumentNullException();
-        Tier3ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier3_chances.json")) ?? throw new ArgumentNullException();
-        Tier4ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier4_chances.json")) ?? throw new ArgumentNullException();
-        Tier5ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier5_chances.json")) ?? throw new ArgumentNullException();
-        Tier6ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier6_chances.json")) ?? throw new ArgumentNullException();
-        Tier7ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier7_chances.json")) ?? throw new ArgumentNullException();
+        foreach (var tier in tierNumbers)
+        {
+            tiers[tier] = new TierInnerData
+            {
+                AmmoData = await DeserializeRequired<AmmoTierData>(
+                    Path.Combine(dataRoot, "Ammo", $"Tier{tier}_ammo.json")),
 
-        Tier0EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier0_equipment.json")) ?? throw new ArgumentNullException();
-        Tier1EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier1_equipment.json")) ?? throw new ArgumentNullException();
-        Tier2EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier2_equipment.json")) ?? throw new ArgumentNullException();
-        Tier3EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier3_equipment.json")) ?? throw new ArgumentNullException();
-        Tier4EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier4_equipment.json")) ?? throw new ArgumentNullException();
-        Tier5EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier5_equipment.json")) ?? throw new ArgumentNullException();
-        Tier6EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier6_equipment.json")) ?? throw new ArgumentNullException();
-        Tier7EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier7_equipment.json")) ?? throw new ArgumentNullException();
+                AppearanceData = await DeserializeRequired<AppearanceTierData>(
+                    Path.Combine(dataRoot, "Appearance", $"Tier{tier}_appearance.json")),
 
-        Tier0ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier0_mods.json")) ?? throw new ArgumentNullException();
-        Tier1ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier1_mods.json")) ?? throw new ArgumentNullException();
-        Tier2ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier2_mods.json")) ?? throw new ArgumentNullException();
-        Tier3ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier3_mods.json")) ?? throw new ArgumentNullException();
-        Tier4ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier4_mods.json")) ?? throw new ArgumentNullException();
-        Tier5ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier5_mods.json")) ?? throw new ArgumentNullException();
-        Tier6ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier6_mods.json")) ?? throw new ArgumentNullException();
-        Tier7ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier7_mods.json")) ?? throw new ArgumentNullException();
-        
-        apbsLogger.Success("Database Loaded");
+                ChancesData = await DeserializeRequired<ChancesTierData>(
+                    Path.Combine(dataRoot, "Chances", $"Tier{tier}_chances.json")),
+
+                EquipmentData = await DeserializeRequired<EquipmentTierData>(
+                    Path.Combine(dataRoot, "Equipment", $"Tier{tier}_equipment.json")),
+
+                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(
+                    Path.Combine(dataRoot, "Mods", $"Tier{tier}_mods.json"))
+            };
+        }
+
+        AllTierDataClean = new AllTierData { Tiers = tiers };
+
+        apbsLogger.Success($"Database Loaded ({tiers.Count} tiers)");
+    }
+    
+    private static int ExtractTierFromManifestPath(string path)
+    {
+        var file = Path.GetFileNameWithoutExtension(path);
+        var tierPart = file.Split('_')[0];
+        return int.Parse(tierPart.Replace("Tier", ""));
+    }
+    
+    private async Task<T> DeserializeRequired<T>(string path)
+    {
+        return await jsonUtil.DeserializeFromFileAsync<T>(path)
+               ?? throw new InvalidDataException($"Failed to deserialize: {path}");
     }
     
     public async Task AssignJsonDataFromPreset(string pathToMod)
@@ -198,52 +165,43 @@ public class DataLoader(
             return;
         }
         
-        Tier0AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(pathToMod, "Data", "Ammo", "Tier0_ammo.json")) ?? throw new ArgumentNullException();
-        Tier1AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier1_ammo.json")) ?? throw new ArgumentNullException();
-        Tier2AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier2_ammo.json")) ?? throw new ArgumentNullException();
-        Tier3AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier3_ammo.json")) ?? throw new ArgumentNullException();
-        Tier4AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier4_ammo.json")) ?? throw new ArgumentNullException();
-        Tier5AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier5_ammo.json")) ?? throw new ArgumentNullException();
-        Tier6AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier6_ammo.json")) ?? throw new ArgumentNullException();
-        Tier7AmmoData = await jsonUtil.DeserializeFromFileAsync<AmmoTierData>(Path.Combine(fullPathToPreset, "Ammo", "Tier7_ammo.json")) ?? throw new ArgumentNullException();
-        
-        Tier0AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(pathToMod, "Data", "Appearance", "Tier0_appearance.json")) ?? throw new ArgumentNullException();
-        Tier1AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier1_appearance.json")) ?? throw new ArgumentNullException();
-        Tier2AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier2_appearance.json")) ?? throw new ArgumentNullException();
-        Tier3AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier3_appearance.json")) ?? throw new ArgumentNullException();
-        Tier4AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier4_appearance.json")) ?? throw new ArgumentNullException();
-        Tier5AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier5_appearance.json")) ?? throw new ArgumentNullException();
-        Tier6AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier6_appearance.json")) ?? throw new ArgumentNullException();
-        Tier7AppearanceData = await jsonUtil.DeserializeFromFileAsync<AppearanceTierData>(Path.Combine(fullPathToPreset, "Appearance", "Tier7_appearance.json")) ?? throw new ArgumentNullException();
+        var tiers = new Dictionary<int, TierInnerData>();
 
-        Tier0ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(pathToMod, "Data", "Chances", "Tier0_chances.json")) ?? throw new ArgumentNullException();
-        Tier1ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier1_chances.json")) ?? throw new ArgumentNullException();
-        Tier2ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier2_chances.json")) ?? throw new ArgumentNullException();
-        Tier3ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier3_chances.json")) ?? throw new ArgumentNullException();
-        Tier4ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier4_chances.json")) ?? throw new ArgumentNullException();
-        Tier5ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier5_chances.json")) ?? throw new ArgumentNullException();
-        Tier6ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier6_chances.json")) ?? throw new ArgumentNullException();
-        Tier7ChancesData = await jsonUtil.DeserializeFromFileAsync<ChancesTierData>(Path.Combine(fullPathToPreset, "Chances", "Tier7_chances.json")) ?? throw new ArgumentNullException();
+        var baseDataRoot = Path.Combine(pathToMod, "Data");
+        var presetRoot   = fullPathToPreset;
 
-        Tier0EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(pathToMod, "Data", "Equipment", "Tier0_equipment.json")) ?? throw new ArgumentNullException();
-        Tier1EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier1_equipment.json")) ?? throw new ArgumentNullException();
-        Tier2EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier2_equipment.json")) ?? throw new ArgumentNullException();
-        Tier3EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier3_equipment.json")) ?? throw new ArgumentNullException();
-        Tier4EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier4_equipment.json")) ?? throw new ArgumentNullException();
-        Tier5EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier5_equipment.json")) ?? throw new ArgumentNullException();
-        Tier6EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier6_equipment.json")) ?? throw new ArgumentNullException();
-        Tier7EquipmentData = await jsonUtil.DeserializeFromFileAsync<EquipmentTierData>(Path.Combine(fullPathToPreset, "Equipment", "Tier7_equipment.json")) ?? throw new ArgumentNullException();
-        
-        Tier0ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(pathToMod, "Data", "Mods", "Tier0_mods.json")) ?? throw new ArgumentNullException();
-        Tier1ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier1_mods.json")) ?? throw new ArgumentNullException();
-        Tier2ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier2_mods.json")) ?? throw new ArgumentNullException();
-        Tier3ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier3_mods.json")) ?? throw new ArgumentNullException();
-        Tier4ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier4_mods.json")) ?? throw new ArgumentNullException();
-        Tier5ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier5_mods.json")) ?? throw new ArgumentNullException();
-        Tier6ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier6_mods.json")) ?? throw new ArgumentNullException();
-        Tier7ModsData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(fullPathToPreset, "Mods", "Tier7_mods.json")) ?? throw new ArgumentNullException();
-        
-        apbsLogger.Success($"Preset Loaded: {ModConfig.Config.PresetName}");
+        var tierNumbers = JsonFileHashes.Hashes.Keys
+            .Where(k => k.StartsWith("Ammo/Tier", StringComparison.OrdinalIgnoreCase))
+            .Select(ExtractTierFromManifestPath)
+            .Distinct()
+            .OrderBy(t => t);
+
+        foreach (var tier in tierNumbers)
+        {
+            var root = tier == 0 ? baseDataRoot : presetRoot;
+
+            tiers[tier] = new TierInnerData
+            {
+                AmmoData = await DeserializeRequired<AmmoTierData>(
+                    Path.Combine(root, "Ammo", $"Tier{tier}_ammo.json")),
+
+                AppearanceData = await DeserializeRequired<AppearanceTierData>(
+                    Path.Combine(root, "Appearance", $"Tier{tier}_appearance.json")),
+
+                ChancesData = await DeserializeRequired<ChancesTierData>(
+                    Path.Combine(root, "Chances", $"Tier{tier}_chances.json")),
+
+                EquipmentData = await DeserializeRequired<EquipmentTierData>(
+                    Path.Combine(root, "Equipment", $"Tier{tier}_equipment.json")),
+
+                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(
+                    Path.Combine(root, "Mods", $"Tier{tier}_mods.json"))
+            };
+        }
+
+        AllTierDataClean = new AllTierData { Tiers = tiers };
+
+        apbsLogger.Success($"Preset Loaded: {ModConfig.Config.PresetName} ({tiers.Count} tiers)");
     }
 
     private async Task AssignTierData(string pathToMod)
@@ -330,51 +288,20 @@ public class DataLoader(
             await File.WriteAllTextAsync(filePath, json);
         }
 
-        // Equipment
-        await SerializeAndWrite("Equipment", "Tier1_equipment.json", Tier1EquipmentData);
-        await SerializeAndWrite("Equipment", "Tier2_equipment.json", Tier2EquipmentData);
-        await SerializeAndWrite("Equipment", "Tier3_equipment.json", Tier3EquipmentData);
-        await SerializeAndWrite("Equipment", "Tier4_equipment.json", Tier4EquipmentData);
-        await SerializeAndWrite("Equipment", "Tier5_equipment.json", Tier5EquipmentData);
-        await SerializeAndWrite("Equipment", "Tier6_equipment.json", Tier6EquipmentData);
-        await SerializeAndWrite("Equipment", "Tier7_equipment.json", Tier7EquipmentData);
+        foreach (var kvp in AllTierDataClean.Tiers)
+        {
+            var tier = kvp.Key;
+            var tierData = kvp.Value;
 
-        // Ammo
-        await SerializeAndWrite("Ammo", "Tier1_ammo.json", Tier1AmmoData);
-        await SerializeAndWrite("Ammo", "Tier2_ammo.json", Tier2AmmoData);
-        await SerializeAndWrite("Ammo", "Tier3_ammo.json", Tier3AmmoData);
-        await SerializeAndWrite("Ammo", "Tier4_ammo.json", Tier4AmmoData);
-        await SerializeAndWrite("Ammo", "Tier5_ammo.json", Tier5AmmoData);
-        await SerializeAndWrite("Ammo", "Tier6_ammo.json", Tier6AmmoData);
-        await SerializeAndWrite("Ammo", "Tier7_ammo.json", Tier7AmmoData);
+            if (tier == 0) continue;
 
-        // Appearance
-        await SerializeAndWrite("Appearance", "Tier1_appearance.json", Tier1AppearanceData);
-        await SerializeAndWrite("Appearance", "Tier2_appearance.json", Tier2AppearanceData);
-        await SerializeAndWrite("Appearance", "Tier3_appearance.json", Tier3AppearanceData);
-        await SerializeAndWrite("Appearance", "Tier4_appearance.json", Tier4AppearanceData);
-        await SerializeAndWrite("Appearance", "Tier5_appearance.json", Tier5AppearanceData);
-        await SerializeAndWrite("Appearance", "Tier6_appearance.json", Tier6AppearanceData);
-        await SerializeAndWrite("Appearance", "Tier7_appearance.json", Tier7AppearanceData);
+            await SerializeAndWrite("Equipment", $"Tier{tier}_equipment.json", tierData.EquipmentData);
+            await SerializeAndWrite("Ammo",$"Tier{tier}_ammo.json", tierData.AmmoData);
+            await SerializeAndWrite("Appearance", $"Tier{tier}_appearance.json", tierData.AppearanceData);
+            await SerializeAndWrite("Chances", $"Tier{tier}_chances.json", tierData.ChancesData);
+            await SerializeAndWrite("Mods", $"Tier{tier}_mods.json", tierData.ModsData);
+        }
 
-        // Chances
-        await SerializeAndWrite("Chances", "Tier1_chances.json", Tier1ChancesData);
-        await SerializeAndWrite("Chances", "Tier2_chances.json", Tier2ChancesData);
-        await SerializeAndWrite("Chances", "Tier3_chances.json", Tier3ChancesData);
-        await SerializeAndWrite("Chances", "Tier4_chances.json", Tier4ChancesData);
-        await SerializeAndWrite("Chances", "Tier5_chances.json", Tier5ChancesData);
-        await SerializeAndWrite("Chances", "Tier6_chances.json", Tier6ChancesData);
-        await SerializeAndWrite("Chances", "Tier7_chances.json", Tier7ChancesData);
-
-        // Mods
-        await SerializeAndWrite("Mods", "Tier1_mods.json", Tier1ModsData);
-        await SerializeAndWrite("Mods", "Tier2_mods.json", Tier2ModsData);
-        await SerializeAndWrite("Mods", "Tier3_mods.json", Tier3ModsData);
-        await SerializeAndWrite("Mods", "Tier4_mods.json", Tier4ModsData);
-        await SerializeAndWrite("Mods", "Tier5_mods.json", Tier5ModsData);
-        await SerializeAndWrite("Mods", "Tier6_mods.json", Tier6ModsData);
-        await SerializeAndWrite("Mods", "Tier7_mods.json", Tier7ModsData);
-        
         apbsLogger.Warning($"Preset: {ModConfig.Config.PresetName} changes saved to disk.");
         return true;
     }

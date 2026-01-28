@@ -1392,68 +1392,52 @@ public class BotConfigHelper(
     #endregion
     
     #region Helpers
+    /// <summary>
+    ///     Returns the ChancesTierData for the given tier.
+    ///     Throws if the tier is not between 1 and 7.
+    /// </summary>
     private ChancesTierData GetTierChancesData(int tier)
     {
-        switch (tier)
-        {
-            case 1: return dataLoader.Tier1ChancesData;
-            case 2: return dataLoader.Tier2ChancesData;
-            case 3: return dataLoader.Tier3ChancesData;
-            case 4: return dataLoader.Tier4ChancesData;
-            case 5: return dataLoader.Tier5ChancesData;
-            case 6: return dataLoader.Tier6ChancesData;
-            case 7: return dataLoader.Tier7ChancesData;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-        };
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
+            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+
+        return tierData.ChancesData;
     }
-    
+
+    /// <summary>
+    ///     Returns the AmmoTierData for the given tier.
+    ///     Throws if the tier is not between 1 and 7.
+    /// </summary>
     private AmmoTierData GetTierAmmoData(int tier)
     {
-        switch (tier)
-        {
-            case 1: return dataLoader.Tier1AmmoData;
-            case 2: return dataLoader.Tier2AmmoData;
-            case 3: return dataLoader.Tier3AmmoData;
-            case 4: return dataLoader.Tier4AmmoData;
-            case 5: return dataLoader.Tier5AmmoData;
-            case 6: return dataLoader.Tier6AmmoData;
-            case 7: return dataLoader.Tier7AmmoData;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-        };
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
+            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+
+        return tierData.AmmoData;
     }
-    
+
+    /// <summary>
+    ///     Returns the Mods dictionary for the given tier.
+    ///     Throws if the tier is not between 1 and 7.
+    /// </summary>
     private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierModsData(int tier)
     {
-        switch (tier)
-        {
-            case 1: return dataLoader.Tier1ModsData;
-            case 2: return dataLoader.Tier2ModsData;
-            case 3: return dataLoader.Tier3ModsData;
-            case 4: return dataLoader.Tier4ModsData;
-            case 5: return dataLoader.Tier5ModsData;
-            case 6: return dataLoader.Tier6ModsData;
-            case 7: return dataLoader.Tier7ModsData;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-        };
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
+            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+
+        return tierData.ModsData;
     }
-    
+
+    /// <summary>
+    ///     Returns the EquipmentTierData for the given tier.
+    ///     Throws if the tier is not between 1 and 7.
+    /// </summary>
     private EquipmentTierData GetTierEquipmentData(int tier)
     {
-        switch (tier)
-        {
-            case 1: return dataLoader.Tier1EquipmentData;
-            case 2: return dataLoader.Tier2EquipmentData;
-            case 3: return dataLoader.Tier3EquipmentData;
-            case 4: return dataLoader.Tier4EquipmentData;
-            case 5: return dataLoader.Tier5EquipmentData;
-            case 6: return dataLoader.Tier6EquipmentData;
-            case 7: return dataLoader.Tier7EquipmentData;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-        };
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
+            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
+
+        return tierData.EquipmentData;
     }
     
     #endregion

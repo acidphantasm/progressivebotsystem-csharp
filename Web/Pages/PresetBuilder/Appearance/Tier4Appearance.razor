@@ -8,7 +8,7 @@
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierAppearanceEditorComponent AppearanceData="@dataloader.Tier4AppearanceData" Tier="4"/>
+        <TierAppearanceEditorComponent AppearanceData="@dataloader.AllTierDataClean.Tiers[4].AppearanceData" Tier="4" />
     }
     else
     {

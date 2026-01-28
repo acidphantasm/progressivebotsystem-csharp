@@ -8,7 +8,7 @@
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierEquipmentEditorComponent EquipmentData="@dataloader.Tier4EquipmentData" Tier="4"/>
+        <TierEquipmentEditorComponent EquipmentData="@dataloader.AllTierDataClean.Tiers[4].EquipmentData" Tier="4"/>
     }
     else
     {

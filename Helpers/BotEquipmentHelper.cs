@@ -13,33 +13,22 @@ using SPTarkov.Server.Core.Utils.Cloners;
 namespace _progressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class BotEquipmentHelper : IOnLoad {
-    private readonly RandomUtil _randomUtil;
-    private readonly DataLoader _dataLoader;
-    private readonly ICloner _cloner;
-    private readonly ApbsLogger _apbsLogger;
+public class BotEquipmentHelper(
+    RandomUtil randomUtil, 
+    DataLoader dataLoader,
+    ICloner cloner,
+    ApbsLogger apbsLogger) : IOnLoad {
 
-    public BotEquipmentHelper(
-        RandomUtil randomUtil, 
-        DataLoader dataLoader,
-        ICloner cloner,
-        ApbsLogger apbsLogger)
-    {
-        _randomUtil = randomUtil;
-        _dataLoader = dataLoader;
-        _cloner = cloner;
-        _apbsLogger = apbsLogger;
-    }
 
     public Task OnLoad()
     {
-        _apbsLogger.Debug("BotConfigHelper.OnLoad()");
+        apbsLogger.Debug("BotConfigHelper.OnLoad()");
         return Task.CompletedTask;
     }
     
     private int CheckChadOrChill(int tierNumber)
     {
-        if (ModConfig.Config.GeneralConfig.OnlyChads && ModConfig.Config.GeneralConfig.TarkovAndChill) return _randomUtil.GetInt(1, 7);
+        if (ModConfig.Config.GeneralConfig.OnlyChads && ModConfig.Config.GeneralConfig.TarkovAndChill) return randomUtil.GetInt(1, 7);
         if (ModConfig.Config.GeneralConfig.OnlyChads) return 7;
         if (ModConfig.Config.GeneralConfig.TarkovAndChill) return 1;
         if (ModConfig.Config.GeneralConfig.BlickyMode) return 0;
@@ -50,136 +39,66 @@ public class BotEquipmentHelper : IOnLoad {
     private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
-        switch (tierNumber)
+
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
         {
-            case 0:
-                return _cloner.Clone(_dataLoader.Tier0ModsData);
-            case 1:
-                return _cloner.Clone(_dataLoader.Tier1ModsData);
-            case 2:
-                return _cloner.Clone(_dataLoader.Tier2ModsData);
-            case 3:
-                return _cloner.Clone(_dataLoader.Tier3ModsData);
-            case 4:
-                return _cloner.Clone(_dataLoader.Tier4ModsData);
-            case 5:
-                return _cloner.Clone(_dataLoader.Tier5ModsData);
-            case 6:
-                return _cloner.Clone(_dataLoader.Tier6ModsData);
-            case 7:
-                return _cloner.Clone(_dataLoader.Tier7ModsData);
-            default:
-                _apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
-                return _cloner.Clone(_dataLoader.Tier1ModsData);
+            apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
+            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ModsData); // fallback to tier 1
         }
+
+        return cloner.Clone(tierData.ModsData);
     }
 
     private ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
-        switch (tierNumber)
+
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
         {
-            case 0:
-                return _cloner.Clone(_dataLoader.Tier0ChancesData);
-            case 1:
-                return _cloner.Clone(_dataLoader.Tier1ChancesData);
-            case 2:
-                return _cloner.Clone(_dataLoader.Tier2ChancesData);
-            case 3:
-                return _cloner.Clone(_dataLoader.Tier3ChancesData);
-            case 4:
-                return _cloner.Clone(_dataLoader.Tier4ChancesData);
-            case 5:
-                return _cloner.Clone(_dataLoader.Tier5ChancesData);
-            case 6:
-                return _cloner.Clone(_dataLoader.Tier6ChancesData);
-            case 7:
-                return _cloner.Clone(_dataLoader.Tier7ChancesData);
-            default:
-                _apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
-                return _cloner.Clone(_dataLoader.Tier1ChancesData);
+            apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
+            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ChancesData); // fallback to tier 1
         }
+
+        return cloner.Clone(tierData.ChancesData);
     }
 
     private AmmoTierData GetTierAmmo(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
-        switch (tierNumber)
+
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
         {
-            case 0:
-                return _cloner.Clone(_dataLoader.Tier0AmmoData);
-            case 1:
-                return _cloner.Clone(_dataLoader.Tier1AmmoData);
-            case 2:
-                return _cloner.Clone(_dataLoader.Tier2AmmoData);
-            case 3:
-                return _cloner.Clone(_dataLoader.Tier3AmmoData);
-            case 4:
-                return _cloner.Clone(_dataLoader.Tier4AmmoData);
-            case 5:
-                return _cloner.Clone(_dataLoader.Tier5AmmoData);
-            case 6:
-                return _cloner.Clone(_dataLoader.Tier6AmmoData);
-            case 7:
-                return _cloner.Clone(_dataLoader.Tier7AmmoData);
-            default:
-                _apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
-                return _cloner.Clone(_dataLoader.Tier1AmmoData);
+            apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
+            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AmmoData); // fallback to tier 1
         }
+
+        return cloner.Clone(tierData.AmmoData);
     }
 
     private EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
-        switch (tierNumber)
+
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
         {
-            case 0:
-                return _cloner.Clone(_dataLoader.Tier0EquipmentData);
-            case 1:
-                return _cloner.Clone(_dataLoader.Tier1EquipmentData);
-            case 2:
-                return _cloner.Clone(_dataLoader.Tier2EquipmentData);
-            case 3:
-                return _cloner.Clone(_dataLoader.Tier3EquipmentData);
-            case 4:
-                return _cloner.Clone(_dataLoader.Tier4EquipmentData);
-            case 5:
-                return _cloner.Clone(_dataLoader.Tier5EquipmentData);
-            case 6:
-                return _cloner.Clone(_dataLoader.Tier6EquipmentData);
-            case 7:
-                return _cloner.Clone(_dataLoader.Tier7EquipmentData);
-            default:
-                _apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
-                return _cloner.Clone(_dataLoader.Tier1EquipmentData);
+            apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
+            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].EquipmentData); // fallback to tier 1
         }
+
+        return cloner.Clone(tierData.EquipmentData);
     }
-    
+
     private AppearanceTierData GetTierAppearance(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
-        switch (tierNumber)
+
+        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
         {
-            case 0:
-                return _cloner.Clone(_dataLoader.Tier0AppearanceData);
-            case 1:
-                return _cloner.Clone(_dataLoader.Tier1AppearanceData);
-            case 2:
-                return _cloner.Clone(_dataLoader.Tier2AppearanceData);
-            case 3:
-                return _cloner.Clone(_dataLoader.Tier3AppearanceData);
-            case 4:
-                return _cloner.Clone(_dataLoader.Tier4AppearanceData);
-            case 5:
-                return _cloner.Clone(_dataLoader.Tier5AppearanceData);
-            case 6:
-                return _cloner.Clone(_dataLoader.Tier6AppearanceData);
-            case 7:
-                return _cloner.Clone(_dataLoader.Tier7AppearanceData);
-            default:
-                _apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
-                return _cloner.Clone(_dataLoader.Tier1AppearanceData);
+            apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
+            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AppearanceData); // fallback to tier 1
         }
+
+        return cloner.Clone(tierData.AppearanceData);
     }
 
     public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetModsByBotRole(string botRole, int tierNumber)
@@ -389,7 +308,7 @@ public class BotEquipmentHelper : IOnLoad {
     {
         if (botRole is "pmcusec" or "pmcbear" && ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.Enable)
         {
-            if (_randomUtil.GetChance100(ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.SlideChance))
+            if (randomUtil.GetChance100(ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.SlideChance))
             {
                 var slideAmount = ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.SlideAmount;
                 var minTier = (tierNumber - slideAmount) <= 0 ? 1 : tierNumber - slideAmount;

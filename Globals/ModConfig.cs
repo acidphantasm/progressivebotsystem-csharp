@@ -101,6 +101,9 @@ public class ModConfig : IOnLoad
             {
                 await _dataLoader.AssignJsonData(_modPath);
             }
+
+            // DeepClone the Clean data into the Dirty data for use
+            _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
             
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
@@ -161,6 +164,9 @@ public class ModConfig : IOnLoad
                 await _dataLoader.AssignJsonData(_modPath);
             }
             
+            // DeepClone the Clean data into the Dirty data for use
+            _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
+            
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
 
@@ -182,7 +188,7 @@ public class ModConfig : IOnLoad
         }
     }
     
-    private static T DeepClone<T>(T source)
+    public static T DeepClone<T>(T source)
     {
         var json = _jsonUtil.Serialize(source);
         return _jsonUtil.Deserialize<T>(json)!;

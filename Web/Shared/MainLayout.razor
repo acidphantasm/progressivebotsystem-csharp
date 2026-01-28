@@ -660,37 +660,37 @@ else
     
     private void ApplyPresetChanges()
     {
-        ApplyEquipmentChangesToTier(Dataloader.Tier1EquipmentData, "1");
-        ApplyEquipmentChangesToTier(Dataloader.Tier2EquipmentData, "2");
-        ApplyEquipmentChangesToTier(Dataloader.Tier3EquipmentData, "3");
-        ApplyEquipmentChangesToTier(Dataloader.Tier4EquipmentData, "4");
-        ApplyEquipmentChangesToTier(Dataloader.Tier5EquipmentData, "5");
-        ApplyEquipmentChangesToTier(Dataloader.Tier6EquipmentData, "6");
-        ApplyEquipmentChangesToTier(Dataloader.Tier7EquipmentData, "7");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[1].EquipmentData, "1");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[2].EquipmentData, "2");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[3].EquipmentData, "3");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[4].EquipmentData, "4");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[5].EquipmentData, "5");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[6].EquipmentData, "6");
+        ApplyEquipmentChangesToTier(Dataloader.AllTierDataClean.Tiers[7].EquipmentData, "7");
         
-        ApplyAmmoChangesToTier(Dataloader.Tier1AmmoData, "1");
-        ApplyAmmoChangesToTier(Dataloader.Tier2AmmoData, "2");
-        ApplyAmmoChangesToTier(Dataloader.Tier3AmmoData, "3");
-        ApplyAmmoChangesToTier(Dataloader.Tier4AmmoData, "4");
-        ApplyAmmoChangesToTier(Dataloader.Tier5AmmoData, "5");
-        ApplyAmmoChangesToTier(Dataloader.Tier6AmmoData, "6");
-        ApplyAmmoChangesToTier(Dataloader.Tier7AmmoData, "7");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[1].AmmoData, "1");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[2].AmmoData, "2");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[3].AmmoData, "3");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[4].AmmoData, "4");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[5].AmmoData, "5");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[6].AmmoData, "6");
+        ApplyAmmoChangesToTier(Dataloader.AllTierDataClean.Tiers[7].AmmoData, "7");
         
-        ApplyChancesChangesToTier(Dataloader.Tier1ChancesData, "1");
-        ApplyChancesChangesToTier(Dataloader.Tier2ChancesData, "2");
-        ApplyChancesChangesToTier(Dataloader.Tier3ChancesData, "3");
-        ApplyChancesChangesToTier(Dataloader.Tier4ChancesData, "4");
-        ApplyChancesChangesToTier(Dataloader.Tier5ChancesData, "5");
-        ApplyChancesChangesToTier(Dataloader.Tier6ChancesData, "6");
-        ApplyChancesChangesToTier(Dataloader.Tier7ChancesData, "7");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[1].ChancesData, "1");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[2].ChancesData, "2");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[3].ChancesData, "3");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[4].ChancesData, "4");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[5].ChancesData, "5");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[6].ChancesData, "6");
+        ApplyChancesChangesToTier(Dataloader.AllTierDataClean.Tiers[7].ChancesData, "7");
 
-        ApplyAppearanceChangesToTier(Dataloader.Tier1AppearanceData, "1");
-        ApplyAppearanceChangesToTier(Dataloader.Tier2AppearanceData, "2");
-        ApplyAppearanceChangesToTier(Dataloader.Tier3AppearanceData, "3");
-        ApplyAppearanceChangesToTier(Dataloader.Tier4AppearanceData, "4");
-        ApplyAppearanceChangesToTier(Dataloader.Tier5AppearanceData, "5");
-        ApplyAppearanceChangesToTier(Dataloader.Tier6AppearanceData, "6");
-        ApplyAppearanceChangesToTier(Dataloader.Tier7AppearanceData, "7");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[1].AppearanceData, "1");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[2].AppearanceData, "2");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[3].AppearanceData, "3");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[4].AppearanceData, "4");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[5].AppearanceData, "5");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[6].AppearanceData, "6");
+        ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[7].AppearanceData, "7");
     }
     
     private static readonly Dictionary<string, ApbsEquipmentSlots> _stringToSlot = new()

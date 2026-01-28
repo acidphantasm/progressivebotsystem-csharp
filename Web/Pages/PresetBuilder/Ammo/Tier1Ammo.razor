@@ -8,7 +8,7 @@
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierAmmoEditorComponent AmmoData="@dataloader.Tier1AmmoData" Tier="1"/>
+        <TierAmmoEditorComponent AmmoData="@dataloader.AllTierDataClean.Tiers[1].AmmoData" Tier="1" />
     }
     else
     {

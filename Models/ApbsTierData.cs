@@ -6,17 +6,9 @@ using SPTarkov.Server.Core.Models.Enums;
 
 namespace _progressiveBotSystem.Models;
 
-[JsonDerivedType(typeof(TierInnerData))]
-public record TierLevels
+public record AllTierData
 {
-    public TierInnerData Tier0 { get; set; }
-    public TierInnerData Tier1 { get; set; }
-    public TierInnerData Tier2 { get; set; }
-    public TierInnerData Tier3 { get; set; }
-    public TierInnerData Tier4 { get; set; }
-    public TierInnerData Tier5 { get; set; }
-    public TierInnerData Tier6 { get; set; }
-    public TierInnerData Tier7 { get; set; }
+    public required Dictionary<int, TierInnerData> Tiers { get; set; }
 }
 
 public record TierInnerData

@@ -8,7 +8,7 @@
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierChancesEditorComponent ChancesData="@dataloader.Tier7ChancesData" Tier="7"/>
+        <TierChancesEditorComponent ChancesData="@dataloader.AllTierDataClean.Tiers[7].ChancesData" Tier="7"/>
     }
     else
     {
