@@ -16,8 +16,15 @@
                     
                     <MudItem xs="2">
                         <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                            <MudTooltip Text="Only valid MongoIDs are accepted. Enter the ID of the weapon you want blacklisted, then click the arrow (or press enter) to add it to the blacklist." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudIconButton Icon="@Icons.Material.Filled.Warning" />
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning"/>
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">Only valid MongoIDs are accepted. Enter the ID of the weapon you want blacklisted, then click the arrow (or press enter) to add it to the blacklist.</MudText>
+                                    <MudSpacer/><MudSpacer/>
+                                    <MudText Typo="Typo.caption">BLACKLISTING ITEMS MAY PERMANENTLY ALTER YOUR PRESET IF YOU USE ONE.</MudText>
+                                </TooltipContent>
                             </MudTooltip>
                             <MudText Align="Align.Center">Tier 1</MudText>
                         </MudPaper>
@@ -357,12 +364,19 @@
                 <MudGrid>
 
                 <MudItem xs="2">
-                        <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                            <MudTooltip Text="Only valid MongoIDs are accepted. Enter the ID of the equipment you want blacklisted, then click the arrow (or press enter) to add it to the blacklist." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudIconButton Icon="@Icons.Material.Filled.Warning" />
-                            </MudTooltip>
-                            <MudText Align="Align.Center">Tier 1</MudText>
-                        </MudPaper>
+                    <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
+                        <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <ChildContent>
+                                <MudIconButton Icon="@Icons.Material.Filled.Warning"/>
+                            </ChildContent>
+                            <TooltipContent>
+                                <MudText Typo="Typo.caption">Only valid MongoIDs are accepted. Enter the ID of the equipment you want blacklisted, then click the arrow (or press enter) to add it to the blacklist.</MudText>
+                                <MudSpacer/><MudSpacer/>
+                                <MudText Typo="Typo.caption">BLACKLISTING ITEMS MAY PERMANENTLY ALTER YOUR PRESET IF YOU USE ONE.</MudText>
+                            </TooltipContent>
+                        </MudTooltip>
+                        <MudText Align="Align.Center">Tier 1</MudText>
+                    </MudPaper>
                     </MudItem>
                     <MudItem xs="3" Class="align-center">
                         <MudTextField T="string" @bind-Value="_tier1EquipmentBlacklistEntryHolder"
@@ -700,8 +714,15 @@
 
                     <MudItem xs="2">
                         <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                            <MudTooltip Text="Only valid MongoIDs are accepted. Enter the ID of the ammo you want blacklisted, then click the arrow (or press enter) to add it to the blacklist." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudIconButton Icon="@Icons.Material.Filled.Warning" />
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning"/>
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">Only valid MongoIDs are accepted. Enter the ID of the ammo you want blacklisted, then click the arrow (or press enter) to add it to the blacklist.</MudText>
+                                    <MudSpacer/><MudSpacer/>
+                                    <MudText Typo="Typo.caption">BLACKLISTING ITEMS MAY PERMANENTLY ALTER YOUR PRESET IF YOU USE ONE.</MudText>
+                                </TooltipContent>
                             </MudTooltip>
                             <MudText Align="Align.Center">Tier 1</MudText>
                         </MudPaper>
@@ -1042,8 +1063,15 @@
 
                     <MudItem xs="2">
                         <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                            <MudTooltip Text="Only valid MongoIDs are accepted. Enter the ID of the attachment you want blacklisted, then click the arrow (or press enter) to add it to the blacklist." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudIconButton Icon="@Icons.Material.Filled.Warning" />
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning"/>
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">Only valid MongoIDs are accepted. Enter the ID of the attachment you want blacklisted, then click the arrow (or press enter) to add it to the blacklist.</MudText>
+                                    <MudSpacer/><MudSpacer/>
+                                    <MudText Typo="Typo.caption">BLACKLISTING ITEMS MAY PERMANENTLY ALTER YOUR PRESET IF YOU USE ONE.</MudText>
+                                </TooltipContent>
                             </MudTooltip>
                             <MudText Align="Align.Center">Tier 1</MudText>
                         </MudPaper>
@@ -1383,8 +1411,15 @@
 
                             <MudItem xs="2">
                                 <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                                    <MudTooltip Text="Only valid MongoIDs are accepted. Enter the ID of the clothing you want blacklisted, then click the arrow (or press enter) to add it to the blacklist." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Warning" />
+                                    <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <ChildContent>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Warning"/>
+                                        </ChildContent>
+                                        <TooltipContent>
+                                            <MudText Typo="Typo.caption">Only valid MongoIDs are accepted. Enter the ID of the clothing you want blacklisted, then click the arrow (or press enter) to add it to the blacklist.</MudText>
+                                            <MudSpacer/><MudSpacer/>
+                                            <MudText Typo="Typo.caption">BLACKLISTING ITEMS MAY PERMANENTLY ALTER YOUR PRESET IF YOU USE ONE.</MudText>
+                                        </TooltipContent>
                                     </MudTooltip>
                                     <MudText Align="Align.Center">Tier 1</MudText>
                                 </MudPaper>
