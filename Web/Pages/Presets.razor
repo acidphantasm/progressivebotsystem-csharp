@@ -1,8 +1,10 @@
 ﻿@page "/progressivebotsystem/presets"
+@using _progressiveBotSystem.Helpers
 @layout MainLayout
 
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject DataLoader DataLoader
 
 <MudMainContent>
     <MudContainer>
@@ -163,11 +165,11 @@
         if (result is not null && !result.Canceled)
         {
             var folderName = (string)result.Data;
-            CreateFolder(folderName);
+            await CreateFolder(folderName);
         }
     }
 
-    private void CreateFolder(string name)
+    private async Task CreateFolder(string name)
     {
         var path = Path.Combine(ModConfig._modPath, "Presets", name);
         Directory.CreateDirectory(path);
@@ -175,6 +177,9 @@
         CopyPresetBaseFiles(path);
         
         LoadFolderNames();
+        _presetName = name;
+        await DataLoader.AssignJsonDataFromPreset(ModConfig._modPath);
+        
         StateHasChanged();
     }
     
