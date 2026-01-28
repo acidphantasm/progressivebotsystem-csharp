@@ -18,6 +18,8 @@ public class ItemImportHelper(
     JsonUtil jsonUtil,
     ItemHelper itemHelper)
 {
+    private bool _alreadyRan = false;
+    
     private HashSet<MongoId> _vanillaEquipmentLookup = new();
     private HashSet<MongoId> _vanillaAttachmentLookup = new();
     private HashSet<MongoId> _vanillaAmmoLookup = new();
@@ -135,6 +137,8 @@ public class ItemImportHelper(
     /// </summary>
     public async Task BuildVanillaDictionaries()
     {
+        if (_alreadyRan) return;
+        
         _vanillaEquipmentSlotDictionary = await ValidateVanillaEquipmentDatabase();
         _vanillaAmmoDictionary = await ValidateVanillaAmmoDatabase();
         _vanillaAttachmentLookup = await ValidateVanillaAttachmentDatabase();
@@ -147,6 +151,8 @@ public class ItemImportHelper(
             .SelectMany(x => x.Value)
             .ToHashSet();
         //_vanillaClothingBotSlotDictionary = await ValidateVanillaClothingDatabase();
+
+        _alreadyRan = true;
     }
     
     /// <summary>

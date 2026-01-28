@@ -27,7 +27,8 @@ public class ModConfig : IOnLoad
         FileUtil fileUtil,
         BotConfigHelper botConfigHelper,
         DataLoader dataLoader,
-        BotBlacklistService  botBlacklistService)
+        BotBlacklistService  botBlacklistService,
+        ItemImportService itemImportService)
     {
         _apbsLogger = apbsLogger;
         _modHelper = modHelper;
@@ -36,6 +37,7 @@ public class ModConfig : IOnLoad
         _botConfigHelper = botConfigHelper;
         _dataLoader = dataLoader;
         _botBlacklistService = botBlacklistService;
+        _itemImportService = itemImportService;
         _modPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
     }
     private static ApbsLogger _apbsLogger;
@@ -45,6 +47,7 @@ public class ModConfig : IOnLoad
     private static BotConfigHelper _botConfigHelper;
     private static DataLoader _dataLoader;
     private static BotBlacklistService _botBlacklistService;
+    private static ItemImportService _itemImportService;
     public static ApbsServerConfig Config {get; private set;} = null!;
     public static ApbsServerConfig OriginalConfig {get; private set;} = null!;
     public static ApbsBlacklistConfig Blacklist { get; private set; } = null!;
@@ -106,6 +109,7 @@ public class ModConfig : IOnLoad
             _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
             
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
+            await _itemImportService.OnLoad();
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
 
             _apbsLogger.Success("ModConfig reloaded successfully.");
@@ -168,6 +172,7 @@ public class ModConfig : IOnLoad
             _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
             
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
+            await _itemImportService.OnLoad();
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
 
             // Update 'Original' config stuff since we've saved so the 'Undo' function works

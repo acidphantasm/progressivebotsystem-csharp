@@ -20,10 +20,17 @@ public class ItemImportService(
     DatabaseService databaseService,
     ItemHelper itemHelper): IOnLoad
 {
-    private Dictionary<ApbsEquipmentSlots, List<MongoId>> _moddedEquipmentSlotDictionary = new();
-    private Dictionary<string, Dictionary<string, List<MongoId>>> _moddedClothingBotSlotDictionary = new();
-    private Dictionary<string, List<MongoId>> _moddedAmmoDictionary = new();
-
+    private int _weaponCounter = 0;
+    private HashSet<MongoId> _uniqueWeaponAttachments = new HashSet<MongoId>();
+    private int _weaponAttachmentCounter = 0;
+    private int _caliberCounter = 0;
+    
+    private int _equipmentCounter = 0;
+    private HashSet<MongoId> _uniqueEquipmentAttachments = new HashSet<MongoId>();
+    private int _equipmentAttachmentCounter = 0;
+    
+    private int _appearanceCounter = 0;
+    
     private readonly HashSet<MongoId> _mountedHeadphones = new();
     
     private readonly Lock _equipmentLock = new();
@@ -46,9 +53,25 @@ public class ItemImportService(
         ImportEquipmentBySlot();
         
         stopwatch.Stop();
-        apbsLogger.Warning($"[IMPORT] Completed in {stopwatch.ElapsedMilliseconds} ms");
+        apbsLogger.Success($"[IMPORT] Completed in {stopwatch.ElapsedMilliseconds} ms");
+        _weaponCounter = LogAndClear("weapons", _weaponCounter, _uniqueWeaponAttachments);
+        _weaponAttachmentCounter = LogAndClear("unique weapon attachments", _weaponAttachmentCounter, _uniqueWeaponAttachments);
+        _caliberCounter = LogAndClear("calibers", _caliberCounter);
+        _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipmentAttachments);
+        _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
+        _appearanceCounter = LogAndClear("appearance items", _appearanceCounter);
     }
 
+    /// <summary>
+    ///     Fancy helper method to log the import counts and then reset the variables to 0
+    /// </summary>
+    private int LogAndClear(string name, int counter, HashSet<MongoId>? setToClear = null)
+    {
+        if (counter != 0) apbsLogger.Success($"[IMPORT] Imported {counter} {name}.");
+        setToClear?.Clear();
+        return 0;
+    }
+    
     /// <summary>
     ///     Start of the import process, all you're doing is validating if the item should be imported
     ///     If it should be imported, it's passed over to the sorting import process
@@ -222,7 +245,11 @@ public class ItemImportService(
                     AddAmmoToBotData(ammoId, ammoCaliber);
                 }
             }
+
+            _caliberCounter++;
         }
+
+        _weaponCounter++;
         
         if (weaponSlotsLength == 0)
         {
@@ -291,6 +318,8 @@ public class ItemImportService(
                 equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
             }
         }
+
+        _equipmentCounter++;
         
         if (equipmentSlotsLength == 0)
         {
@@ -418,6 +447,11 @@ public class ItemImportService(
                     apbsLogger.Debug($"[IMPORT][T{tier}] Added mod {itemToAdd.Id} to {parentItem.Id} in {slot}");
                 }
             }
+        }
+
+        if (_uniqueEquipmentAttachments.Add(itemToAdd.Id))
+        {
+            _equipmentAttachmentCounter++;
         }
     }
     

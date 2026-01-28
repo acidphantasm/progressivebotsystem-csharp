@@ -118,20 +118,11 @@ public class DataLoader(
         {
             tiers[tier] = new TierInnerData
             {
-                AmmoData = await DeserializeRequired<AmmoTierData>(
-                    Path.Combine(dataRoot, "Ammo", $"Tier{tier}_ammo.json")),
-
-                AppearanceData = await DeserializeRequired<AppearanceTierData>(
-                    Path.Combine(dataRoot, "Appearance", $"Tier{tier}_appearance.json")),
-
-                ChancesData = await DeserializeRequired<ChancesTierData>(
-                    Path.Combine(dataRoot, "Chances", $"Tier{tier}_chances.json")),
-
-                EquipmentData = await DeserializeRequired<EquipmentTierData>(
-                    Path.Combine(dataRoot, "Equipment", $"Tier{tier}_equipment.json")),
-
-                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(
-                    Path.Combine(dataRoot, "Mods", $"Tier{tier}_mods.json"))
+                AmmoData = await DeserializeRequired<AmmoTierData>(Path.Combine(dataRoot, "Ammo", $"Tier{tier}_ammo.json")),
+                AppearanceData = await DeserializeRequired<AppearanceTierData>(Path.Combine(dataRoot, "Appearance", $"Tier{tier}_appearance.json")),
+                ChancesData = await DeserializeRequired<ChancesTierData>(Path.Combine(dataRoot, "Chances", $"Tier{tier}_chances.json")),
+                EquipmentData = await DeserializeRequired<EquipmentTierData>(Path.Combine(dataRoot, "Equipment", $"Tier{tier}_equipment.json")),
+                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(dataRoot, "Mods", $"Tier{tier}_mods.json"))
             };
         }
 
@@ -149,8 +140,7 @@ public class DataLoader(
     
     private async Task<T> DeserializeRequired<T>(string path)
     {
-        return await jsonUtil.DeserializeFromFileAsync<T>(path)
-               ?? throw new InvalidDataException($"Failed to deserialize: {path}");
+        return await jsonUtil.DeserializeFromFileAsync<T>(path) ?? throw new InvalidDataException($"Failed to deserialize: {path}");
     }
     
     public async Task AssignJsonDataFromPreset(string pathToMod)
@@ -182,20 +172,11 @@ public class DataLoader(
 
             tiers[tier] = new TierInnerData
             {
-                AmmoData = await DeserializeRequired<AmmoTierData>(
-                    Path.Combine(root, "Ammo", $"Tier{tier}_ammo.json")),
-
-                AppearanceData = await DeserializeRequired<AppearanceTierData>(
-                    Path.Combine(root, "Appearance", $"Tier{tier}_appearance.json")),
-
-                ChancesData = await DeserializeRequired<ChancesTierData>(
-                    Path.Combine(root, "Chances", $"Tier{tier}_chances.json")),
-
-                EquipmentData = await DeserializeRequired<EquipmentTierData>(
-                    Path.Combine(root, "Equipment", $"Tier{tier}_equipment.json")),
-
-                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(
-                    Path.Combine(root, "Mods", $"Tier{tier}_mods.json"))
+                AmmoData = await DeserializeRequired<AmmoTierData>(Path.Combine(root, "Ammo", $"Tier{tier}_ammo.json")),
+                AppearanceData = await DeserializeRequired<AppearanceTierData>(Path.Combine(root, "Appearance", $"Tier{tier}_appearance.json")),
+                ChancesData = await DeserializeRequired<ChancesTierData>(Path.Combine(root, "Chances", $"Tier{tier}_chances.json")),
+                EquipmentData = await DeserializeRequired<EquipmentTierData>(Path.Combine(root, "Equipment", $"Tier{tier}_equipment.json")),
+                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(Path.Combine(root, "Mods", $"Tier{tier}_mods.json"))
             };
         }
 
