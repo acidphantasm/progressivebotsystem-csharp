@@ -18,7 +18,8 @@
       "Added V40 Mini-Grenade to Grenade List for Grenade counter in Bot Equipment Logging",
       "Added `unhandled` bot equipment logging (for bots not handled by APBS)",
       "Adjusted logic when creating a new preset - it will autoselect your newly made preset",
-      "Adjusted APBS database handling for sanitization purposes."
+      "Adjusted APBS database handling for sanitization purposes.",
+      "Adjusted webconfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"
     ],
     "BugFixes": [
       "Resolved PrestigeLevel being wiped out by SPT during bot gen",
