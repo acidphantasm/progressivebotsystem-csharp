@@ -47,7 +47,7 @@ public class AddDogTagToBot_Patch : AbstractPatch
         return false;
     }
 
-    private static Dictionary<string, Dictionary<MongoId, double>> dogTagDictionary = new()
+    private static readonly Dictionary<string, Dictionary<MongoId, double>> BackportDogtagDictionary = new()
     {
         { "usec", new Dictionary<MongoId, double>
             {
@@ -103,7 +103,7 @@ public class AddDogTagToBot_Patch : AbstractPatch
         };
     }
 
-    private static MongoId GetNonPrestigeDogTag(string side, string gameVersion, bool wttAvailable)
+    private static MongoId GetNonPrestigeDogTag(string side, string gameVersion, bool wttBackportAvailable)
     {
         var weightedRandomHelper = ServiceLocator.ServiceProvider.GetRequiredService<WeightedRandomHelper>();
         var randomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();
@@ -127,7 +127,7 @@ public class AddDogTagToBot_Patch : AbstractPatch
             };
         }
         
-        return wttAvailable ? weightedRandomHelper.GetWeightedValue(dogTagDictionary[side])
+        return wttBackportAvailable ? weightedRandomHelper.GetWeightedValue(BackportDogtagDictionary[side])
             : side == "usec" ? ItemTpl.BARTER_DOGTAG_USEC : ItemTpl.BARTER_DOGTAG_BEAR;
     }
 }
