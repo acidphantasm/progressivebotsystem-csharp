@@ -58,6 +58,7 @@ public class BotLogHelper(
         returnValue.Difficulty = botInfo.Settings?.BotDifficulty ?? "Unknown";
         returnValue.GameVersion = string.IsNullOrWhiteSpace(botInfo.GameVersion) ? "Unknown" : botInfo.GameVersion;
         returnValue.PrestigeLevel = botInfo.PrestigeLevel ?? 0;
+        returnValue.DogTagId = Tpl(Slot("Dogtag"));
         
         // Weapon Information
         var primaryWeapon = Slot("FirstPrimaryWeapon");
@@ -121,6 +122,7 @@ public class BotLogHelper(
             $"Difficulty: {botDetails.Difficulty}",
             $"GameVersion: {botDetails.GameVersion}",
             $"Prestige: {botDetails.PrestigeLevel}",
+            $"DogTagId: {botDetails.DogTagId}",
             $"Grenades: {(botDetails.GrenadeCount >= 1 ? botDetails.GrenadeCount.ToString() : "Unknown")}"
         };
         var temporaryMessage2 = new List<string>

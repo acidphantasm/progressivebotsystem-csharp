@@ -1,4 +1,6 @@
-﻿namespace _progressiveBotSystem.Models;
+﻿using SPTarkov.Server.Core.Models.Common;
+
+namespace _progressiveBotSystem.Models;
 
 public class BotLogData
 {
@@ -10,6 +12,7 @@ public class BotLogData
     public string Difficulty { get; set; } = string.Empty;
     public string GameVersion { get; set; } = string.Empty;
     public int PrestigeLevel { get; set; } = 0;
+    public string DogTagId { get; set; } = string.Empty;
     public string PrimaryWeaponId { get; set; } = string.Empty;
     public string PrimaryWeaponCaliber { get; set; } = string.Empty;
     public string SecondaryWeaponId { get; set; } = string.Empty;
