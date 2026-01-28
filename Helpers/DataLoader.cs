@@ -301,17 +301,17 @@ public class DataLoader(
         return true;
     }
     
-    public async Task SavePresetChangesToDisk(string pathToMod)
+    public async Task<bool> SavePresetChangesToDisk(string pathToMod)
     {
         var fullPathToPreset = Path.Combine(pathToMod, "Presets", ModConfig.Config.PresetName);
-        if (!Directory.Exists(fullPathToPreset)) return;
+        if (!Directory.Exists(fullPathToPreset)) return false;
         if (!ValidatePresetFolder(fullPathToPreset, out var errorMessage))
         {
             apbsLogger.Error($"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}");
             apbsLogger.Error($"{errorMessage}");
             ModConfig.Config.UsePreset = false;
             await AssignJsonData(pathToMod);
-            return;
+            return false;
         }
 
         async Task SerializeAndWrite<T>(string subfolder, string fileName, T data)
@@ -376,5 +376,6 @@ public class DataLoader(
         await SerializeAndWrite("Mods", "Tier7_mods.json", Tier7ModsData);
         
         apbsLogger.Warning($"Preset: {ModConfig.Config.PresetName} changes saved to disk.");
+        return true;
     }
 }

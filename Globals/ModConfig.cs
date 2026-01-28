@@ -92,7 +92,16 @@ public class ModConfig : IOnLoad
             OriginalConfig = DeepClone(Config);
             Blacklist = blacklistTask.Result ?? throw new ArgumentNullException(nameof(Blacklist));
             OriginalBlacklist = DeepClone(Blacklist);
-
+            
+            if (Config.UsePreset)
+            {
+                await _dataLoader.AssignJsonDataFromPreset(_modPath);
+            }
+            else
+            {
+                await _dataLoader.AssignJsonData(_modPath);
+            }
+            
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
 
@@ -132,19 +141,24 @@ public class ModConfig : IOnLoad
             var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
             
-            if (Config.UsePreset && !OriginalConfig.UsePreset)
+            if (Config.UsePreset)
             {
-                await _dataLoader.AssignJsonDataFromPreset(_modPath);
+                var goodToReassignPreset = false;
+                if (savePresetToDisk)
+                {
+                    if (await _dataLoader.SavePresetChangesToDisk(_modPath))
+                    {
+                        goodToReassignPreset = true;
+                    }
+                }
+                if (goodToReassignPreset)
+                {
+                    await _dataLoader.AssignJsonDataFromPreset(_modPath);
+                }
             }
-            else if (!Config.UsePreset && OriginalConfig.UsePreset)
+            else
             {
                 await _dataLoader.AssignJsonData(_modPath);
-                savePresetToDisk = false;
-            }
-            
-            if (savePresetToDisk)
-            {
-                await _dataLoader.SavePresetChangesToDisk(_modPath);
             }
             
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
