@@ -60,9 +60,10 @@ public class GenerateBotLevel : AbstractPatch
         var maxLevelIndex = expTable.Length - 1;
         level = Math.Clamp(level, 1, maxLevelIndex + 1);
         
-        bot.Info.AddToExtensionData("Tier", tierHelper.GetTierByLevel(level));
-        botGenerationDetails.AddToExtensionData("Tier", tierHelper.GetTierByLevel(level));
         bot.Info.PrestigeLevel = SetBotPrestigeInfo(level, botGenerationDetails);
+        bot.Info.AddToExtensionData("Tier", tierHelper.GetTierByLevel(level));
+        bot.Info.AddToExtensionData("PrestigeLevel", bot.Info.PrestigeLevel);
+        botGenerationDetails.AddToExtensionData("Tier", tierHelper.GetTierByLevel(level));
         
         var baseExp = expTable.Take(level).Sum(entry => entry.Experience);
         var fractionalExp = level < maxLevelIndex ? randomUtil.GetInt(0, expTable[level].Experience - 1) : 0;

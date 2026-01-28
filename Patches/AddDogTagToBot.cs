@@ -1,23 +1,17 @@
-﻿using SPTarkov.DI.Annotations;
-using SPTarkov.Reflection.Patching;
+﻿using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Models.Spt.Mod;
-using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Utils;
 using System.Reflection;
-using _progressiveBotSystem.Constants;
+using System.Text.Json;
 using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Utils;
 using HarmonyLib;
+using SPTarkov.Common.Extensions;
 using SPTarkov.Server.Core.Constants;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
-using SPTarkov.Server.Core.Models.Spt.Bots;
-using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Servers;
 
 namespace _progressiveBotSystem.Patches;
 
@@ -31,6 +25,15 @@ public class AddDogTagToBot_Patch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(BotBase bot)
     {
+        // Recover and reset the PrestigeLevel from the GenerateBotLevel patch
+        if (bot.Info.TryGetExtensionData(out var extensionData))
+        {
+            if (extensionData.TryGetValue("PrestigeLevel", out var tierElement) && tierElement is JsonElement { ValueKind: JsonValueKind.Number } jsonElement)
+            {
+                bot.Info.PrestigeLevel = jsonElement.GetInt32();
+            }
+        }
+        
         Item inventoryItem = new()
         {
             Id = new MongoId(),
