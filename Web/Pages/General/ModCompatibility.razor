@@ -441,6 +441,38 @@
                         }
                     </MudItem>
 
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enables bot equipment logs in \user\mods\acidphantasm-progressivebotsystem\logs\*_generation.log" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
+                            <MudText>
+                                <MudTooltip Text="Enable or disable Bot Equipment logging for APBS. Very miniscule performance decrease when enabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Bot Equipment Logging</MudText>
+                                </MudTooltip>
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_botEquipmentLogging" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_debugLogging</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_botEquipmentLogging"))
+                        {
+                            <MudButton @onclick="undoBotLog" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle && _botEquipmentLogging != true)
+                        {
+                            <MudButton @onclick="defaultBotLog" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
                 </MudGrid>
             </MudExpansionPanel>
         </MudExpansionPanels>
@@ -634,6 +666,17 @@
     }
     private void undoDebug() => _debugLogging = ModConfig.OriginalConfig.EnableDebugLog;
     private void defaultDebug() => _debugLogging = false;
+    private bool _botEquipmentLogging
+    {
+        get => ModConfig.Config.EnableBotEquipmentLog;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.EnableBotEquipmentLog);
+            ModConfig.Config.EnableBotEquipmentLog = value;
+        }
+    }
+    private void undoBotLog() => _botEquipmentLogging = ModConfig.OriginalConfig.EnableBotEquipmentLog;
+    private void defaultBotLog() => _botEquipmentLogging = false;
     #endregion
 
     #region GETTER FOR DELEGATES NOT HERE

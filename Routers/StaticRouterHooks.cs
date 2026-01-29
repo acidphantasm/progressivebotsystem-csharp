@@ -55,19 +55,22 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    try
+                    if (ModConfig.Config.EnableBotEquipmentLog)
                     {
-                        var outputData = _jsonUtil.Deserialize<GetBodyResponseData<IEnumerable<BotBase?>>>(output);
-
-                        if (outputData?.Data != null)
+                        try
                         {
-                            // Fire and forget
-                            _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data));
+                            var outputData = _jsonUtil.Deserialize<GetBodyResponseData<IEnumerable<BotBase?>>>(output);
+
+                            if (outputData?.Data != null)
+                            {
+                                // Fire and forget
+                                _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data));
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        _apbsLogger.Error($"Failed to deserialize bots: {ex}");
+                        catch (Exception ex)
+                        {
+                            _apbsLogger.Error($"Failed to deserialize bots: {ex}");
+                        }
                     }
                     return output;
                 }),

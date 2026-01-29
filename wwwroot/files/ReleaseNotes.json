@@ -10,7 +10,8 @@
       "Mod Compatibility Configuration has returned",
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
       "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
-      "Webconfig toggle to set chance of TUE/EOD bots having version specific dogtags"
+      "Webconfig slider to set chance of TUE/EOD bots having version specific dogtags",
+      "Webconfig toggle for Bot Equipment logging"
     ],
     "Changes": [
       "Removed leftover console logging when changing presets",

@@ -29,6 +29,8 @@ public class ApbsServerConfig
     public required CustomLevelDelta CustomLevelDeltas { get; set; }
     [JsonPropertyName("customScavLevelDeltas")]
     public required CustomLevelDelta CustomScavLevelDeltas { get; set; }
+    [JsonPropertyName("enableBotEquipmentLog")]
+    public bool EnableBotEquipmentLog { get; set; }
     [JsonPropertyName("enableDebugLog")]
     public bool EnableDebugLog { get; set; }
     [JsonPropertyName("configAppSettings")]

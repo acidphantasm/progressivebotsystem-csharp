@@ -1164,6 +1164,7 @@
       "max": -10
     }
   },
+  "enableBotEquipmentLog": true,
   "enableDebugLog": false,
   "configAppSettings": {
     "showUndo": true,
