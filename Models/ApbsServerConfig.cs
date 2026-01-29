@@ -461,18 +461,32 @@ public class NormalizeHealthConfig
 {
     [JsonPropertyName("enable")]
     public bool Enable { get; set; }
+    [JsonPropertyName("setHead")]
+    public bool SetHead { get; set; }
     [JsonPropertyName("healthHead")]
     public int HealthHead { get; set; }
+    [JsonPropertyName("setChest")]
+    public bool SetChest { get; set; }
     [JsonPropertyName("healthChest")]
     public int HealthChest { get; set; }
+    [JsonPropertyName("setStomach")]
+    public bool SetStomach { get; set; }
     [JsonPropertyName("healthStomach")]
     public int HealthStomach { get; set; }
+    [JsonPropertyName("setLeftArm")]
+    public bool SetLeftArm { get; set; }
     [JsonPropertyName("healthLeftArm")]
     public int HealthLeftArm { get; set; }
+    [JsonPropertyName("setRightArm")]
+    public bool SetRightArm { get; set; }
     [JsonPropertyName("healthRightArm")]
     public int HealthRightArm { get; set; }
+    [JsonPropertyName("setLeftLeg")]
+    public bool SetLeftLeg { get; set; }
     [JsonPropertyName("healthLeftLeg")]
     public int HealthLeftLeg { get; set; }
+    [JsonPropertyName("setRightLeg")]
+    public bool SetRightLeg { get; set; }
     [JsonPropertyName("healthRightLeg")]
     public int HealthRightLeg { get; set; }
     [JsonPropertyName("excludedBots")]

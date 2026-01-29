@@ -1118,20 +1118,69 @@ public class BotConfigHelper(
             var bodyParts = data.BotHealth.BodyParts;
             foreach (var bodyPart in bodyParts)
             {
-                bodyPart.Head.Min = ModConfig.Config.NormalizedHealthPool.HealthHead > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 35;
-                bodyPart.Head.Max = ModConfig.Config.NormalizedHealthPool.HealthHead > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 35;
-                bodyPart.Chest.Min = ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthChest : 85;
-                bodyPart.Chest.Max = ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthChest : 85;
-                bodyPart.Stomach.Min = ModConfig.Config.NormalizedHealthPool.HealthStomach > 0 ? ModConfig.Config.NormalizedHealthPool.HealthStomach : 70;
-                bodyPart.Stomach.Max = ModConfig.Config.NormalizedHealthPool.HealthStomach > 0 ? ModConfig.Config.NormalizedHealthPool.HealthStomach : 70;
-                bodyPart.LeftArm.Min = ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm : 60;
-                bodyPart.LeftArm.Max = ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm : 60;
-                bodyPart.RightArm.Min = ModConfig.Config.NormalizedHealthPool.HealthRightArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthRightArm : 60;
-                bodyPart.RightArm.Max = ModConfig.Config.NormalizedHealthPool.HealthRightArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthRightArm : 60;
-                bodyPart.LeftLeg.Min = ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg : 65;
-                bodyPart.LeftLeg.Max = ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg : 65;
-                bodyPart.RightLeg.Min = ModConfig.Config.NormalizedHealthPool.HealthRightLeg > 0 ? ModConfig.Config.NormalizedHealthPool.HealthRightLeg : 65;
-                bodyPart.RightLeg.Max = ModConfig.Config.NormalizedHealthPool.HealthRightLeg > 0 ? ModConfig.Config.NormalizedHealthPool.HealthRightLeg : 65;
+                if (ModConfig.Config.NormalizedHealthPool.SetHead)
+                {
+                    bodyPart.Head.Min = ModConfig.Config.NormalizedHealthPool.HealthHead > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthHead
+                        : 35;
+                    bodyPart.Head.Max = ModConfig.Config.NormalizedHealthPool.HealthHead > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthHead
+                        : 35;
+                }
+                if (ModConfig.Config.NormalizedHealthPool.SetChest)
+                {
+                    bodyPart.Chest.Min = ModConfig.Config.NormalizedHealthPool.HealthChest > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthChest
+                        : 85;
+                    bodyPart.Chest.Max = ModConfig.Config.NormalizedHealthPool.HealthChest > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthChest
+                        : 85;
+                }
+                if (ModConfig.Config.NormalizedHealthPool.SetStomach)
+                {
+                    bodyPart.Stomach.Min = ModConfig.Config.NormalizedHealthPool.HealthStomach > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthStomach
+                        : 70;
+                    bodyPart.Stomach.Max = ModConfig.Config.NormalizedHealthPool.HealthStomach > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthStomach
+                        : 70;
+                }
+                if (ModConfig.Config.NormalizedHealthPool.SetLeftArm)
+                {
+                    bodyPart.LeftArm.Min = ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm
+                        : 60;
+                    bodyPart.LeftArm.Max = ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm
+                        : 60;
+                }
+                if (ModConfig.Config.NormalizedHealthPool.SetRightArm)
+                {
+                    bodyPart.RightArm.Min = ModConfig.Config.NormalizedHealthPool.HealthRightArm > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthRightArm
+                        : 60;
+                    bodyPart.RightArm.Max = ModConfig.Config.NormalizedHealthPool.HealthRightArm > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthRightArm
+                        : 60;
+                }
+                if (ModConfig.Config.NormalizedHealthPool.SetLeftLeg)
+                {
+                    bodyPart.LeftLeg.Min = ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg
+                        : 65;
+                    bodyPart.LeftLeg.Max = ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg
+                        : 65;
+                }
+                if (ModConfig.Config.NormalizedHealthPool.SetRightLeg)
+                {
+                    bodyPart.RightLeg.Min = ModConfig.Config.NormalizedHealthPool.HealthRightLeg > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthRightLeg
+                        : 65;
+                    bodyPart.RightLeg.Max = ModConfig.Config.NormalizedHealthPool.HealthRightLeg > 0
+                        ? ModConfig.Config.NormalizedHealthPool.HealthRightLeg
+                        : 65;
+                }
             }
         }
     }

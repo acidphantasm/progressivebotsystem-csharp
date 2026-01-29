@@ -19,6 +19,13 @@
   },
   "normalizedHealthPool": {
     "enable": false,
+    "setHead": true,
+    "setChest": true,
+    "setStomach": true,
+    "setLeftArm": true,
+    "setRightArm": true,
+    "setLeftLeg": true,
+    "setRightLeg": true,
     "healthHead": 35,
     "healthChest": 85,
     "healthStomach": 70,

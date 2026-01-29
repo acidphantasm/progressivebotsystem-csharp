@@ -53,17 +53,22 @@
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthHead</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthHead" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthHeadEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthHead") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthHeadEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthHead</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthHead" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthHeadEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthHead") || MainLayout.pendingChanges.Contains("_allNormalizeHealthHeadEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthHead" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthHead != 35 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthHead != 35 || _allNormalizeHealthHeadEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthHead" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -72,23 +77,28 @@
                     <MudItem xs="2" />
                     <MudItem xs="3">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Health of Chest." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Health of Chest. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Chest Health</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthChest</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthChest" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthChestEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthChest") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthChestEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthChest</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthChest" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthChestEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthChest") || MainLayout.pendingChanges.Contains("_allNormalizeHealthChestEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthChest" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthChest != 85 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthChest != 85 || _allNormalizeHealthChestEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthChest" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -97,23 +107,28 @@
                     <MudItem xs="2" />
                     <MudItem xs="3">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Health of Stomach." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Health of Stomach. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Stomach Health</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthStomach</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthStomach" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthStomachEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthStomach") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthStomachEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthStomach</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthStomach" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthStomachEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthStomach") || MainLayout.pendingChanges.Contains("_allNormalizeHealthStomachEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthStomach" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthStomach != 70 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthStomach != 70 || _allNormalizeHealthStomachEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthStomach" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -122,23 +137,28 @@
                     <MudItem xs="2" />
                     <MudItem xs="3">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Health of Left Arm." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Health of Left Arm. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Left Arm Health</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthLeftArm</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthLeftArm" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthLeftArmEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthLeftArm") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthLeftArmEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthLeftArm</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthLeftArm" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthLeftArmEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthLeftArm") || MainLayout.pendingChanges.Contains("_allNormalizeHealthLeftArmEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthLeftArm" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthLeftArm != 60 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthLeftArm != 60 || _allNormalizeHealthLeftArmEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthLeftArm" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -147,23 +167,28 @@
                     <MudItem xs="2" />
                     <MudItem xs="3">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Health of Right Arm." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Health of Right Arm. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Right Arm Health</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthRightArm</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthRightArm" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthRightArmEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthRightArm") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthRightArmEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthRightArm</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthRightArm" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthRightArmEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthRightArm") || MainLayout.pendingChanges.Contains("_allNormalizeHealthRightArmEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthRightArm" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthRightArm != 60 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthRightArm != 60 || _allNormalizeHealthRightArmEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthRightArm" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -172,23 +197,28 @@
                     <MudItem xs="2" />
                     <MudItem xs="3">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Health of Left Leg." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Health of Left Leg. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Left Leg Health</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthLeftLeg</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthLeftLeg" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthLeftLegEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthLeftLeg") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthLeftLegEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthLeftLeg</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthLeftLeg" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthLeftLegEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthLeftLeg") || MainLayout.pendingChanges.Contains("_allNormalizeHealthLeftLegEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthLeftLeg" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthLeftLeg != 65 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthLeftLeg != 65 || _allNormalizeHealthLeftLegEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthLeftLeg" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -197,23 +227,28 @@
                     <MudItem xs="2" />
                     <MudItem xs="3">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Health of Right Leg." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Health of Right Leg. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Right Leg Health</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthEnable">@_allNormalizeHealthRightLeg</MudButton>
-                    </MudItem>
-                    <MudItem xs="5">
-                        <MudSlider @bind-Value="_allNormalizeHealthRightLeg" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthEnable" />
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_allNormalizeHealthRightLegEnable" Color="Color.Success" UncheckedColor="Color.Default" Disabled="!_allNormalizeHealthEnable"/>
+                        </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_allNormalizeHealthRightLeg") && MainLayout._appUndoButtonToggle)
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_allNormalizeHealthRightLegEnable || !_allNormalizeHealthEnable">@_allNormalizeHealthRightLeg</MudButton>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudSlider @bind-Value="_allNormalizeHealthRightLeg" ValueLabel="true" Min="1" Max="250" Color="Color.Info" Size="Size.Medium" Disabled="!_allNormalizeHealthRightLegEnable || !_allNormalizeHealthEnable" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if ((MainLayout.pendingChanges.Contains("_allNormalizeHealthRightLeg") || MainLayout.pendingChanges.Contains("_allNormalizeHealthRightLegEnable")) && MainLayout._appUndoButtonToggle)
                         {
                             <MudButton @onclick="undoNormalizeHealthRightLeg" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small" >Undo</MudButton>
                         }
-                        else if (_allNormalizeHealthRightLeg != 65 && MainLayout._appDefaultButtonToggle)
+                        else if ((_allNormalizeHealthRightLeg != 65 || _allNormalizeHealthRightLegEnable != true) && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultNormalizeHealthRightLeg" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -1512,7 +1547,15 @@
     }
     private void undoNormalizeHealthEnable() => _allNormalizeHealthEnable = ModConfig.OriginalConfig.NormalizedHealthPool.Enable;
     private void defaultNormalizeHealthEnable() => _allNormalizeHealthEnable = false;
-
+    private bool _allNormalizeHealthHeadEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetHead;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetHead);
+            ModConfig.Config.NormalizedHealthPool.SetHead = value;
+        }
+    }
     private int _allNormalizeHealthHead
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthHead;
@@ -1522,9 +1565,26 @@
             ModConfig.Config.NormalizedHealthPool.HealthHead = value;
         }
     }
-    private void undoNormalizeHealthHead() => _allNormalizeHealthHead = ModConfig.OriginalConfig.NormalizedHealthPool.HealthHead;
-    private void defaultNormalizeHealthHead() => _allNormalizeHealthHead = 35;
-
+    private void undoNormalizeHealthHead()
+    {
+        _allNormalizeHealthHeadEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetHead;
+        _allNormalizeHealthHead = ModConfig.OriginalConfig.NormalizedHealthPool.HealthHead;
+    }
+    private void defaultNormalizeHealthHead() 
+    {
+        _allNormalizeHealthHeadEnable = true;
+        _allNormalizeHealthHead = 35;
+    }
+    
+    private bool _allNormalizeHealthChestEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetChest;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetChest);
+            ModConfig.Config.NormalizedHealthPool.SetChest = value;
+        }
+    }
     private int _allNormalizeHealthChest
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthChest;
@@ -1534,9 +1594,26 @@
             ModConfig.Config.NormalizedHealthPool.HealthChest = value;
         }
     }
-    private void undoNormalizeHealthChest() => _allNormalizeHealthChest = ModConfig.OriginalConfig.NormalizedHealthPool.HealthChest;
-    private void defaultNormalizeHealthChest() => _allNormalizeHealthChest = 85;
+    private void undoNormalizeHealthChest()
+    {
+        _allNormalizeHealthChestEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetChest;
+        _allNormalizeHealthChest = ModConfig.OriginalConfig.NormalizedHealthPool.HealthChest;
+    }
+    private void defaultNormalizeHealthChest()
+    {
+        _allNormalizeHealthChestEnable = true;
+        _allNormalizeHealthChest = 85;
+    }
 
+    private bool _allNormalizeHealthStomachEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetStomach;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetStomach);
+            ModConfig.Config.NormalizedHealthPool.SetStomach = value;
+        }
+    }
     private int _allNormalizeHealthStomach
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthStomach;
@@ -1546,9 +1623,26 @@
             ModConfig.Config.NormalizedHealthPool.HealthStomach = value;
         }
     }
-    private void undoNormalizeHealthStomach() => _allNormalizeHealthStomach = ModConfig.OriginalConfig.NormalizedHealthPool.HealthStomach;
-    private void defaultNormalizeHealthStomach() => _allNormalizeHealthStomach = 70;
+    private void undoNormalizeHealthStomach()
+    {
+        _allNormalizeHealthStomachEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetStomach;
+        _allNormalizeHealthStomach = ModConfig.OriginalConfig.NormalizedHealthPool.HealthStomach;
+    }
+    private void defaultNormalizeHealthStomach()
+    {
+        _allNormalizeHealthStomachEnable = true;
+        _allNormalizeHealthStomach = 70;
+    }
 
+    private bool _allNormalizeHealthLeftArmEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetLeftArm;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetLeftArm);
+            ModConfig.Config.NormalizedHealthPool.SetLeftArm = value;
+        }
+    }
     private int _allNormalizeHealthLeftArm
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthLeftArm;
@@ -1558,9 +1652,26 @@
             ModConfig.Config.NormalizedHealthPool.HealthLeftArm = value;
         }
     }
-    private void undoNormalizeHealthLeftArm() => _allNormalizeHealthLeftArm = ModConfig.OriginalConfig.NormalizedHealthPool.HealthLeftArm;
-    private void defaultNormalizeHealthLeftArm() => _allNormalizeHealthLeftArm = 60;
+    private void undoNormalizeHealthLeftArm()
+    {
+        _allNormalizeHealthLeftArmEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetLeftArm;
+        _allNormalizeHealthLeftArm = ModConfig.OriginalConfig.NormalizedHealthPool.HealthLeftArm;
+    }
+    private void defaultNormalizeHealthLeftArm()
+    {
+        _allNormalizeHealthLeftArmEnable = true;
+        _allNormalizeHealthLeftArm = 60;
+    }
 
+    private bool _allNormalizeHealthRightArmEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetRightArm;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetRightArm);
+            ModConfig.Config.NormalizedHealthPool.SetRightArm = value;
+        }
+    }
     private int _allNormalizeHealthRightArm
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthRightArm;
@@ -1570,9 +1681,26 @@
             ModConfig.Config.NormalizedHealthPool.HealthRightArm = value;
         }
     }
-    private void undoNormalizeHealthRightArm() => _allNormalizeHealthRightArm = ModConfig.OriginalConfig.NormalizedHealthPool.HealthRightArm;
-    private void defaultNormalizeHealthRightArm() => _allNormalizeHealthRightArm = 60;
+    private void undoNormalizeHealthRightArm()
+    {
+        _allNormalizeHealthRightArmEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetRightArm;
+        _allNormalizeHealthRightArm = ModConfig.OriginalConfig.NormalizedHealthPool.HealthRightArm;
+    }
+    private void defaultNormalizeHealthRightArm()
+    {
+        _allNormalizeHealthRightArmEnable = true;
+        _allNormalizeHealthRightArm = 60;
+    }
 
+    private bool _allNormalizeHealthLeftLegEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetLeftLeg;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetLeftLeg);
+            ModConfig.Config.NormalizedHealthPool.SetLeftLeg = value;
+        }
+    }
     private int _allNormalizeHealthLeftLeg
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthLeftLeg;
@@ -1582,9 +1710,26 @@
             ModConfig.Config.NormalizedHealthPool.HealthLeftLeg = value;
         }
     }
-    private void undoNormalizeHealthLeftLeg() => _allNormalizeHealthLeftLeg = ModConfig.OriginalConfig.NormalizedHealthPool.HealthLeftLeg;
-    private void defaultNormalizeHealthLeftLeg() => _allNormalizeHealthLeftLeg = 65;
+    private void undoNormalizeHealthLeftLeg()
+    {
+        _allNormalizeHealthLeftLegEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetLeftLeg;
+        _allNormalizeHealthLeftLeg = ModConfig.OriginalConfig.NormalizedHealthPool.HealthLeftLeg;
+    }
+    private void defaultNormalizeHealthLeftLeg()
+    {
+        _allNormalizeHealthLeftLegEnable = true;
+        _allNormalizeHealthLeftLeg = 65;
+    }
 
+    private bool _allNormalizeHealthRightLegEnable
+    {
+        get => ModConfig.Config.NormalizedHealthPool.SetRightLeg;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.NormalizedHealthPool.SetRightLeg);
+            ModConfig.Config.NormalizedHealthPool.SetRightLeg = value;
+        }
+    }
     private int _allNormalizeHealthRightLeg
     {
         get => ModConfig.Config.NormalizedHealthPool.HealthRightLeg;
@@ -1594,8 +1739,16 @@
             ModConfig.Config.NormalizedHealthPool.HealthRightLeg = value;
         }
     }
-    private void undoNormalizeHealthRightLeg() => _allNormalizeHealthRightLeg = ModConfig.OriginalConfig.NormalizedHealthPool.HealthRightLeg;
-    private void defaultNormalizeHealthRightLeg() => _allNormalizeHealthRightLeg = 65;
+    private void undoNormalizeHealthRightLeg()
+    {
+        _allNormalizeHealthRightLegEnable = ModConfig.OriginalConfig.NormalizedHealthPool.SetRightLeg;
+        _allNormalizeHealthRightLeg = ModConfig.OriginalConfig.NormalizedHealthPool.HealthRightLeg;
+    }
+    private void defaultNormalizeHealthRightLeg()
+    {
+        _allNormalizeHealthRightLegEnable = true;
+        _allNormalizeHealthRightLeg = 65;
+    }
 
     private List<string> _allNormalizeHealthExcludedBots
     {
@@ -1611,8 +1764,8 @@
     {
         "arenafighter", "arenafighterevent", "assault",
         "bossboar", "bossboarsniper", "bossbully", "bossgluhar",
-        "bosskilla", "bossknight", "bosskojaniy",
-        "bosskolontay", "bosspartisan", "bosssanitar", "bosstagilla", "bosszryachiy",
+        "bosskilla", "bosskillaagro", "bossknight", "bosskojaniy",
+        "bosskolontay", "bosspartisan", "bosssanitar", "bosstagilla", "bosstagillaagro", "tagillahelperagro", "bosszryachiy",
         "exusec", "followerbigpipe", "followerbirdeye", "followerboar", "followerboarclose1",
         "followerboarclose2", "followerbully", "followergluharassault", "followergluharscout",
         "followergluharsecurity", "followergluharsnipe", "followerkojaniy", "followerkolontayassault",
