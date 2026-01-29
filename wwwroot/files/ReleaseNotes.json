@@ -11,6 +11,7 @@
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
       "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
       "Webconfig slider to set chance of TUE/EOD bots having version specific dogtags",
+      "Webconfig toggles for individual body part health normalization",
       "Webconfig toggle for Bot Equipment logging"
     ],
     "Changes": [
@@ -20,6 +21,7 @@
       "Added Dogtag Template ID to bot logging",
       "Added `unhandled` bot equipment logging (for bots not handled by APBS)",
       "Added Release Note formatter so I dont have to keep reformatting everything for Github releases. Lol.",
+      "Added Labyrinth Tagilla, Killa, and Helpers to be handled by APBS",
       "Adjusted logic when creating a new preset - it will autoselect your newly made preset",
       "Adjusted APBS database handling for sanitization purposes.",
       "Adjusted webconfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"
