@@ -128,7 +128,7 @@ public class DataLoader(
 
         AllTierDataClean = new AllTierData { Tiers = tiers };
 
-        apbsLogger.Success($"Database Loaded ({tiers.Count} tiers)");
+        apbsLogger.Success($"Database Loaded");
     }
     
     private static int ExtractTierFromManifestPath(string path)
@@ -182,7 +182,7 @@ public class DataLoader(
 
         AllTierDataClean = new AllTierData { Tiers = tiers };
 
-        apbsLogger.Success($"Preset Loaded: {ModConfig.Config.PresetName} ({tiers.Count} tiers)");
+        apbsLogger.Success($"Preset Loaded: {ModConfig.Config.PresetName}");
     }
 
     private async Task AssignTierData(string pathToMod)
