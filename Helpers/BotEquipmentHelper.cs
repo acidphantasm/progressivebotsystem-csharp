@@ -111,10 +111,12 @@ public class BotEquipmentHelper(
             case "bossbully":
             case "bossgluhar":
             case "bosskilla":
+            case "bosskillaagro":
             case "bosskojaniy":
             case "bosskolontay":
             case "bosssanitar":
             case "bosstagilla":
+            case "bosstagillaagro":
             case "bosspartisan":
             case "bossknight":
             case "followerbigpipe":
@@ -159,6 +161,8 @@ public class BotEquipmentHelper(
                 return tieredEquipmentData.BossGluhar.Equipment;
             case "bosskilla":
                 return tieredEquipmentData.BossKilla.Equipment;
+            case "bosskillaagro":
+                return tieredEquipmentData.BossKillaAgro.Equipment;
             case "bosskojaniy":
                 return tieredEquipmentData.BossKojaniy.Equipment;
             case "bosskolontay":
@@ -167,6 +171,8 @@ public class BotEquipmentHelper(
                 return tieredEquipmentData.BossSanitar.Equipment;
             case "bosstagilla":
                 return tieredEquipmentData.BossTagilla.Equipment;
+            case "bosstagillaagro":
+                return tieredEquipmentData.BossTagillaAgro.Equipment;
             case "bosspartisan":
                 return tieredEquipmentData.BossPartisan.Equipment;
             case "bosszryachiy":
@@ -215,6 +221,8 @@ public class BotEquipmentHelper(
                 return tieredEquipmentData.BossGluhar.Equipment[slot];
             case "bosskilla":
                 return tieredEquipmentData.BossKilla.Equipment[slot];
+            case "bosskillaagro":
+                return tieredEquipmentData.BossKillaAgro.Equipment[slot];
             case "bosskojaniy":
                 return tieredEquipmentData.BossKojaniy.Equipment[slot];
             case "bosskolontay":
@@ -223,6 +231,8 @@ public class BotEquipmentHelper(
                 return tieredEquipmentData.BossSanitar.Equipment[slot];
             case "bosstagilla":
                 return tieredEquipmentData.BossTagilla.Equipment[slot];
+            case "bosstagillaagro":
+                return tieredEquipmentData.BossTagillaAgro.Equipment[slot];
             case "bosspartisan":
                 return tieredEquipmentData.BossPartisan.Equipment[slot];
             case "bosszryachiy":
@@ -271,6 +281,8 @@ public class BotEquipmentHelper(
                 return tieredChancesData.BossGluhar.Chances;
             case "bosskilla":
                 return tieredChancesData.BossKilla.Chances;
+            case "bosskillaagro":
+                return tieredChancesData.BossKillaAgro.Chances;
             case "bosskojaniy":
                 return tieredChancesData.BossKojaniy.Chances;
             case "bosskolontay":
@@ -279,6 +291,8 @@ public class BotEquipmentHelper(
                 return tieredChancesData.BossSanitar.Chances;
             case "bosstagilla":
                 return tieredChancesData.BossTagilla.Chances;
+            case "bosstagillaagro":
+                return tieredChancesData.BossTagillaAgro.Chances;
             case "bosspartisan":
                 return tieredChancesData.BossPartisan.Chances;
             case "bosszryachiy":

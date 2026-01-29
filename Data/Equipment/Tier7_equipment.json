@@ -1656,6 +1656,49 @@
       }
     }
   },
+  "bosskillaagro": {
+    "equipment": {
+      "FirstPrimaryWeapon_LongRange": {
+        "59ff346386f77477562ff5e2": 2653,
+        "5beed0f50db834001c062b12": 3968
+      },
+      "FirstPrimaryWeapon_ShortRange": {
+        "59ff346386f77477562ff5e2": 2653,
+        "5beed0f50db834001c062b12": 3968
+      },
+      "Holster": {
+        "571a12c42459771f627b58a0": 1
+      },
+      "Scabbard": {
+        "5bffdc370db834001d23eca8": 1
+      },
+      "SecondPrimaryWeapon_LongRange": {},
+      "SecondPrimaryWeapon_ShortRange": {},
+      "Pockets": {
+        "5af99e9186f7747c447120b8": 1
+      },
+      "SecuredContainer": {
+        "5c0a794586f77461c458f892": 1
+      },
+      "ArmBand": {},
+      "ArmorVest": {
+        "5c0e541586f7747fa54205c9": 15,
+        "674d91ce6e862d5a95059ed6": 1
+      },
+      "Backpack": {},
+      "Earpiece": {},
+      "Eyewear": {},
+      "FaceCover": {},
+      "Headwear": {
+        "5c0e874186f7745dc7616606": 15,
+        "6759af0f9c8a538dd70bfae6": 1
+      },
+      "TacticalVest": {
+        "5c0e9f2c86f77432297fe0a3": 1
+      },
+      "ArmouredRig": {}
+    }
+  },
   "bossknight": {
     "equipment": {
       "FirstPrimaryWeapon_LongRange": {
@@ -2025,6 +2068,43 @@
       "ArmouredRig": {
         "609e860ebd219504d8507525": 242,
         "61bcc89aef0f505f0c6cd0fc": 67
+      }
+    }
+  },
+  "bosstagillaagro": {
+    "equipment": {
+      "FirstPrimaryWeapon_LongRange": {
+        "6499849fc93611967b034949": 2642,
+        "674fe9a75e51f1c47c04ec23": 3979
+      },
+      "FirstPrimaryWeapon_ShortRange": {
+        "6499849fc93611967b034949": 2642,
+        "674fe9a75e51f1c47c04ec23": 3979
+      },
+      "Holster": {},
+      "Scabbard": {
+        "679ba90d269ddfea47012159": 1
+      },
+      "SecondPrimaryWeapon_LongRange": {},
+      "SecondPrimaryWeapon_ShortRange": {},
+      "Pockets": {
+        "60c7272c204bc17802313365": 1
+      },
+      "SecuredContainer": {
+        "5c0a794586f77461c458f892": 1
+      },
+      "ArmBand": {},
+      "ArmorVest": {},
+      "Backpack": {},
+      "Earpiece": {},
+      "Eyewear": {},
+      "FaceCover": {
+        "678f84bb9e85556ca60f0362": 1
+      },
+      "Headwear": {},
+      "TacticalVest": {},
+      "ArmouredRig": {
+        "609e860ebd219504d8507525": 1
       }
     }
   },

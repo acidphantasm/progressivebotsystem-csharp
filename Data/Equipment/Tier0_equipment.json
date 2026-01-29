@@ -372,6 +372,52 @@
       }
     }
   },
+  "bosskillaagro": {
+    "equipment": {
+      "FirstPrimaryWeapon_LongRange": {},
+      "FirstPrimaryWeapon_ShortRange": {},
+      "Holster": {
+        "66015072e9f84d5680039678": 1
+      },
+      "Scabbard": {
+        "57e26ea924597715ca604a09": 15,
+        "57e26fc7245977162a14b800": 15,
+        "54491bb74bdc2d09088b4567": 15,
+        "5bffdc370db834001d23eca8": 15,
+        "5c07df7f0db834001b73588a": 2,
+        "5c012ffc0db834001d23f03f": 1,
+        "5bead2e00db834001c062938": 4,
+        "5bc9c1e2d4351e00367fbcf0": 4
+      },
+      "SecondPrimaryWeapon_LongRange": {},
+      "SecondPrimaryWeapon_ShortRange": {},
+      "Pockets": {
+        "5af99e9186f7747c447120b8": 1
+      },
+      "SecuredContainer": {
+        "5c0a794586f77461c458f892": 1
+      },
+      "ArmBand": {},
+      "ArmorVest": {
+        "62a09d79de7ac81993580530": 1
+      },
+      "Backpack": {
+        "61b9e1aaef9a1b5d6a79899a": 1
+      },
+      "Earpiece": {},
+      "Eyewear": {},
+      "FaceCover": {
+        "5b4326435acfc433000ed01d": 1
+      },
+      "Headwear": {},
+      "TacticalVest": {
+        "6034d0230ca681766b6a0fb5": 1
+      },
+      "ArmouredRig": {
+        "6034d0230ca681766b6a0fb5": 1
+      }
+    }
+  },
   "bossknight": {
     "equipment": {
       "FirstPrimaryWeapon_LongRange": {},
@@ -534,6 +580,45 @@
     }
   },
   "bosstagilla": {
+    "equipment": {
+      "FirstPrimaryWeapon_LongRange": {},
+      "FirstPrimaryWeapon_ShortRange": {},
+      "Holster": {
+        "66015072e9f84d5680039678": 1
+      },
+      "Scabbard": {
+        "6087e570b998180e9f76dc24": 1
+      },
+      "SecondPrimaryWeapon_LongRange": {},
+      "SecondPrimaryWeapon_ShortRange": {},
+      "Pockets": {
+        "60c7272c204bc17802313365": 1
+      },
+      "SecuredContainer": {
+        "5c0a794586f77461c458f892": 1
+      },
+      "ArmBand": {},
+      "ArmorVest": {
+        "62a09d79de7ac81993580530": 1
+      },
+      "Backpack": {
+        "61b9e1aaef9a1b5d6a79899a": 1
+      },
+      "Earpiece": {},
+      "Eyewear": {},
+      "FaceCover": {
+        "5b4326435acfc433000ed01d": 1
+      },
+      "Headwear": {},
+      "TacticalVest": {
+        "6034d0230ca681766b6a0fb5": 1
+      },
+      "ArmouredRig": {
+        "6034d0230ca681766b6a0fb5": 1
+      }
+    }
+  },
+  "bosstagillaagro": {
     "equipment": {
       "FirstPrimaryWeapon_LongRange": {},
       "FirstPrimaryWeapon_ShortRange": {},

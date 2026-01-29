@@ -37,6 +37,8 @@ public class EquipmentTierData
     public ApbsEquipmentBot BossGluhar { get; set; }
     [JsonPropertyName("bosskilla")]
     public ApbsEquipmentBot BossKilla { get; set; }
+    [JsonPropertyName("bosskillaagro")]
+    public ApbsEquipmentBot BossKillaAgro { get; set; }
     [JsonPropertyName("bossknight")]
     public ApbsEquipmentBot BossKnight { get; set; }
     [JsonPropertyName("bosskojaniy")]
@@ -47,6 +49,8 @@ public class EquipmentTierData
     public ApbsEquipmentBot BossSanitar { get; set; }
     [JsonPropertyName("bosstagilla")]
     public ApbsEquipmentBot BossTagilla { get; set; }
+    [JsonPropertyName("bosstagillaagro")]
+    public ApbsEquipmentBot BossTagillaAgro { get; set; }
     [JsonPropertyName("bosspartisan")]
     public ApbsEquipmentBot BossPartisan { get; set; }
     [JsonPropertyName("bosszryachiy")]
@@ -85,6 +89,8 @@ public class ChancesTierData
     public BotChancesData BossGluhar { get; set; }
     [JsonPropertyName("bosskilla")]
     public BotChancesData BossKilla { get; set; }
+    [JsonPropertyName("bosskillaagro")]
+    public BotChancesData BossKillaAgro { get; set; }
     [JsonPropertyName("bossknight")]
     public BotChancesData BossKnight { get; set; }
     [JsonPropertyName("bosskojaniy")]
@@ -95,6 +101,8 @@ public class ChancesTierData
     public BotChancesData BossSanitar { get; set; }
     [JsonPropertyName("bosstagilla")]
     public BotChancesData BossTagilla { get; set; }
+    [JsonPropertyName("bosstagillaagro")]
+    public BotChancesData BossTagillaAgro { get; set; }
     [JsonPropertyName("bosspartisan")]
     public BotChancesData BossPartisan { get; set; }
     [JsonPropertyName("bosszryachiy")]

@@ -8,9 +8,6 @@ public class AlwaysDisabledBots
     public const string BossUntarOfficer = "bossuntarofficer";
     public const string FollowerUntar = "followeruntar";
     public const string FollowerUntarMarksman = "followeruntarmarksman";
-    public const string BossKillaAgro = "bosskillaagro";
-    public const string BossTagillaAgro = "bosstagillaagro";
-    public const string TagillaHelperAgro = "tagillahelperagro";
 }
 
 public class BossBots
@@ -31,6 +28,8 @@ public class BossBots
     public const string BossLegion = "bosslegion";
     public const string BossPunisher = "bosspunisher";
     public const string Boss = "boss";
+    public const string BossKillaAgro = "bosskillaagro";
+    public const string BossTagillaAgro = "bosstagillaagro";
 }
 
 public class FollowerBots
@@ -51,6 +50,7 @@ public class FollowerBots
     public const string FollowerTagilla = "followertagilla";
     public const string FollowerZryachiy = "followerzryachiy";
     public const string Follower = "follower";
+    public const string TagillaHelperAgro = "tagillahelperagro";
 }
 
 public class SpecialBots
