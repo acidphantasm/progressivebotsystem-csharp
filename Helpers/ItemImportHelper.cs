@@ -118,6 +118,140 @@ public class ItemImportHelper(
         ItemTpl.AMMO_40X46_M716,
         ItemTpl.AMMO_556X45_6MM_BB,
     ];
+
+    private readonly FrozenSet<MongoId> _bannedAttachments =
+    [
+        "b098f4d751ddc6246acdf160", // B-22 Attachment from EpicRangeTime-Weapons
+        "b2d57758abe9bb9345c58e4a", // 34mm gieselle mount from EpicRangeTime-Weapons
+        "67ea8b32e0d7701fc6bfc5bf", // 34mm gieselle mount from EpicRangeTime-Weapons
+        "6cec33dd595d9c2d4e531eb7", // Weird split handguard from EpicRangeTime-Weapons
+        "7422ca92107da0fc0e26f7d9", // Weird split handguard from EpicRangeTime-Weapons
+        "cbba369e0fbb09a1eda36c83", // Weird split handguard from EpicRangeTime-Weapons
+        "672e2e75c7c7c5232e513062", // Transparent dust cover from MoxoPixel-TGC
+        "672e37d178e24689d6ff50ce", // Range finder from Black-Core
+        "5c110624d174af029e69734c", // NVG/Thermals
+        "5d1b5e94d7ad1a2b865a96b0", // FLIR
+        "6478641c19d732620e045e17", // ECHO1
+        "5a1eaa87fcdbcb001865f75e", // REAPIR
+        "609bab8b455afd752b2e6138", // T12W Thermal
+        "63fc44e2429a8a166c7f61e6", // Zues
+        "5a1ead28fcdbcb001912fa9f", // DLOC
+        "5ae30e795acfc408fb139a0b", // M4A1 Dumb Gasblock
+        "63fc449f5bd61c6cf3784a88", // Zues sight mount
+        "5b3b6dc75acfc47a8773fb1e", // Vulcan base
+        "5c11046cd174af02a012e42b", // PVS-7
+        "5a7c74b3e899ef0014332c29", // DOVETAILNV
+        "544a3f024bdc2d1d388b4568", // Bugged optics
+        "544a3d0a4bdc2d1b388b4567", // NXS Scope
+        "5cf638cbd7f00c06595bc936",
+        "576fd4ec2459777f0b518431",
+        "5c82343a2e221644f31c0611",
+        "5d0a29ead7ad1a0026013f27",
+        "5dfe6104585a0c3e995c7b82",
+        "618b9643526131765025ab35",
+        "618bab21526131765025ab3f",
+        "6171407e50224f204c1da3c5",
+        "5aa66a9be5b5b0214e506e89", // 34mm optic mounts
+        "5aa66be6e5b5b0214e506e97",
+        "5aa66c72e5b5b00016327c93",
+        "5c86592b2e2216000e69e77c",
+        "61713cc4d8e3106d9806c109",
+        "62811f461d5df4475f46a332",
+        "6761759e7ee06333f108bf86",
+        "676175789dcee773150c6925",
+        "5648b62b4bdc2d9d488b4585", // General Attachments
+        "5c0e2ff6d174af02a1659d4a",
+        "5c0e2f5cd174af02a012cfc9",
+        "5c6592372e221600133e47d7",
+        "544a378f4bdc2d30388b4567",
+        "5d1340bdd7ad1a0e8d245aab",
+        "6764139c44b3c96e7b0e2f7b",
+        "67641a851b2899700609901a",
+        "67641b461c2eb66ade05dba6",
+        "676176a162e0497044079f46",
+        "67641bec4ad898aa100c1079",
+        "628120f210e26c1f344e6558", // AXMC .308 conversion part
+        "62811d61578c54356d6d67ea", // AXMC .308 conversion part
+        "628120415631d45211793c99", // AXMC .308 conversion part
+        "6281214c1d5df4475f46a33a", // AXMC .308 conversion part
+        "6281215b4fa03b6b6c35dc6c", // AXMC .308 conversion part
+        "628121651d5df4475f46a33c", // AXMC .308 conversion part
+        "6761765f1f08ed5e8800b7a6",
+        "671d85439ae8365d69117ba6",
+        "6241c2c2117ad530666a5108", // airsoft mag
+        "670e8eab8c1bb0e5a7075acf",
+        "671d8617a3e45c1f5908278c",
+        "671d8ac8a3e45c1f59082799",
+        "671d8b38b769f0d88c0950f8",
+        "671d8b8c0959c721a50ca838",
+        "55d5f46a4bdc2d1b198b4567",
+        "57ffb0062459777a045af529",
+        "5926d2be86f774134d668e4e",
+        "5a37cb10c4a282329a73b4e7",
+        "5d0a29fed7ad1a002769ad08",
+        "57dc334d245977597164366f",
+        "618a75c9a3884f56c957ca1b",
+        "59e5f5a486f7746c530b3ce2",
+        "55d481904bdc2d8c2f8b456a",
+        "5b1fb3e15acfc4001637f068",
+        "564ca9df4bdc2d35148b4569",
+        "61a4cda622af7f4f6a3ce617" // Rhino speedloader
+    ];
+    
+    private readonly FrozenSet<MongoId> _tier4Optics = 
+    [            
+        "5c0517910db83400232ffee5",
+        "558022b54bdc2dac148b458d",
+        "58491f3324597764bc48fa02",
+        "584924ec24597768f12ae244",
+        "60a23797a37c940de7062d02",
+        "59f9d81586f7744c7506ee62",
+        "5b2389515acfc4771e1be0c0",
+        "5b3b99265acfc4704b4a1afb",
+        "5b31163c5acfc400153b71cb",
+        "64785e7c19d732620e045e15",
+        "655f13e0a246670fb0373245",
+        "6567e751a715f85433025998",
+        "67617ec9ea1e82ea5e103054",
+        "672e37d19f3e60fb0cbbe568",
+        "5649a2464bdc2d91118b45a8"
+    ];
+    
+    private readonly FrozenSet<MongoId> _modScope000Whitelist = 
+    [
+        "5b2388675acfc4771e1be0be",
+        "5b3b99475acfc432ff4dcbee",
+        "5a37cb10c4a282329a73b4e7",
+        "617151c1d92c473c770214ab",
+        "57c5ac0824597754771e88a9",
+        "6567e7681265c8a131069b0f",
+        "67617ec9ea1e82ea5e103054",
+        "672e37d19f3e60fb0cbbe568"
+    ];
+    
+    private readonly FrozenSet<MongoId> _foldingModSights = 
+    [
+        "5caf16a2ae92152ac412efbc",
+        "61816fcad92c473c770215cc",
+        "61817865d3a39d50044c13a4",
+        "5bb20e49d4351e3bac1212de",
+        "5ba26b01d4351e0085325a51",
+        "5ba26b17d4351e00367f9bdd",
+        "5c1780312e221602b66cc189",
+        "5c17804b2e2216152006c02f",
+        "5dfa3d7ac41b2312ea33362a",
+        "5dfa3d950dee1b22f862eae0",
+        "5fb6564947ce63734e3fa1da",
+        "5fb6567747ce63734e3fa1dc",
+        "5bc09a18d4351e003562b68e",
+        "5bc09a30d4351e00367fb7c8",
+        "5c18b90d2e2216152142466b",
+        "5c18b9192e2216398b5a8104",
+        "5fc0fa362770a0045c59c677",
+        "5fc0fa957283c4046c58147e",
+        "5894a73486f77426d259076c",
+        "5894a81786f77427140b8347"
+    ];
     
     /// <summary>
     ///     Validates any configuration options, corrects them if needed and logs if they're invalid
@@ -714,52 +848,151 @@ public class ItemImportHelper(
         return headphoneTemplateItem.Properties?.BlocksEarpiece != null && (bool)headphoneTemplateItem.Properties?.BlocksEarpiece.Value;
     }
 
-    public bool AttachmentNeedsImporting(TemplateItem parentItem, TemplateItem itemToAdd)
+    public bool AttachmentNeedsImporting(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
+        if (_bannedAttachments.Contains(itemToAdd.Id)) 
+            return false;
         
         if (ModConfig.Config.CompatibilityConfig.EnableSafeGuard)
         {
             if (_vanillaAttachmentLookup.Contains(parentItem.Id) &&
                 _vanillaAttachmentLookup.Contains(itemToAdd.Id))
-            {
                 return false;
-            }
         }
 
         if (!ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
         {
             if (!_vanillaAttachmentLookup.Contains(itemToAdd.Id) &&
                 _vanillaEquipmentLookup.Contains(parentItem.Id))
-            {
                 return false;
-            }
         }
+
+        if (VssValCheck(parentItem, slot))
+            return false;
+
+        if (Ar15Mod1Check(parentItem, slot))
+            return false;
+
+        if (MagazineWithNoCount(itemToAdd, slot))
+            return false;
+
+        if (IsFrontOrRearSightAndVanillaItem(parentItem, slot))
+            return false;
+
+        if (IsBannedModScope000(itemToAdd, slot))
+            return false;
+
+        if (IsFrontOrRearSightAndDoesntFold(itemToAdd, slot))
+            return false;
         
         return true;
     }
 
-    public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd)
+    private bool VssValCheck(TemplateItem parentItem, string slot)
     {
-        if (ModConfig.Config.CompatibilityConfig.EnableSafeGuard)
+        return (parentItem.Id == ItemTpl.MARKSMANRIFLE_VSS_VINTOREZ_9X39_SPECIAL_SNIPER_RIFLE ||
+                parentItem.Id == ItemTpl.ASSAULTCARBINE_AS_VAL_9X39_SPECIAL_ASSAULT_RIFLE) 
+               && slot == "mod_mount_000";
+    }
+    
+    private bool Ar15Mod1Check(TemplateItem parentItem, string slot)
+    {
+        return parentItem.Id == ItemTpl.HANDGUARD_AR15_AB_ARMS_MOD1 && slot == "mod_scope";
+    }
+
+    private bool MagazineWithNoCount(TemplateItem itemToAdd, string slot)
+    {
+        return slot == "mod_magazine" && !(itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount.HasValue ?? false);
+    }
+
+    private bool IsFrontOrRearSightAndVanillaItem(TemplateItem parentItem, string slot)
+    {
+        return slot.StartsWith("mod_sight_") && _vanillaAttachmentLookup.Contains(parentItem.Id);
+    }
+
+    private bool IsBannedModScope000(TemplateItem itemToAdd, string slot)
+    {
+        return slot == "mod_scope_000" && !_modScope000Whitelist.Contains(itemToAdd.Id);
+    }
+
+    private bool IsFrontOrRearSightAndDoesntFold(TemplateItem itemToAdd, string slot)
+    {
+        return slot.StartsWith("mod_sight_") && !_foldingModSights.Contains(itemToAdd.Id);
+    }
+
+    public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd, string slot, int tier)
+    {
+        var isHighTier = tier >= 4;
+
+        // Magazine Size
+        if (slot.StartsWith("mod_magazine"))
         {
-            if (_vanillaAttachmentLookup.Contains(parentItem.Id) &&
-                _vanillaAttachmentLookup.Contains(itemToAdd.Id))
-            {
-                apbsLogger.Debug($"[IMPORT][MODS] Skipping. Both attachments are vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
-                return false;
-            }
+            if (!HasLowerAndUpperOptionsAvailable(parentItem, slot, 30))
+                return true;
+
+            var maxCount = itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount;
+            if (!maxCount.HasValue)
+                return true;
+
+            return isHighTier ? maxCount.Value >= 30 : maxCount.Value <= 30;
         }
 
-        if (!ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
+        // Ergonomics Check
+        if (slot.StartsWith("mod_stock") || slot.StartsWith("mod_handguard") || slot.StartsWith("mod_reciever"))
         {
-            if (!_vanillaAttachmentLookup.Contains(itemToAdd.Id) &&
-                _vanillaEquipmentLookup.Contains(parentItem.Id))
-            {
-                apbsLogger.Debug($"[IMPORT][MODS] Skipping. Attachment is modded and parent item is vanilla. Parent: {parentItem.Id} | Child: {itemToAdd.Id}");
-                return false;
-            }
+            if (!HasLowerAndUpperOptionsAvailable(parentItem, slot, 8))
+                return true;
+
+            var ergo = itemToAdd.Properties?.Ergonomics;
+            if (!ergo.HasValue)
+                return true;
+
+            return isHighTier ? ergo.Value >= 8 : ergo.Value <= 8;
         }
-        
+
+        // Scopes
+        if (slot.StartsWith("mod_scope"))
+            return isHighTier && _tier4Optics.Contains(itemToAdd.Id);
+
         return true;
+    }
+
+    private bool HasLowerAndUpperOptionsAvailable(TemplateItem parentItem, string slot, int thresholdValue)
+    {
+        var slotData = parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot);
+        if (slotData == null) return false;
+        
+        var itemFilters = slotData.Properties?.Filters?.FirstOrDefault()?.Filter;
+        var hasUpperOptions = false;
+        var hasLowerOptions = false;
+        var checkedValue = 0;
+
+        foreach (var item in itemFilters ?? [])
+        {
+            var itemData = itemHelper.GetItem(item).Value;
+            if (itemData == null || _bannedAttachments.Contains(itemData.Id))
+                continue;
+
+            var value = slot switch
+            {
+                "mod_magazine" => (int?)itemData.Properties?.Cartridges?.FirstOrDefault()?.MaxCount,
+                
+                "mod_handguard" or "mod_reciever" or "mod_stock"
+                    or "mod_stock_000" or "mod_stock_001" or "mod_stock_002"
+                    or "mod_stock_akms" or "mod_stock_axis"
+                    => (int?)itemData.Properties?.Ergonomics,
+                _ => null
+            };
+
+            if (!value.HasValue) continue;
+
+            if (value >= thresholdValue) hasUpperOptions = true;
+            if (value <= thresholdValue) hasLowerOptions = true;
+
+            if (hasUpperOptions && hasLowerOptions)
+                return true;
+        }
+            
+        return false;
     }
 }

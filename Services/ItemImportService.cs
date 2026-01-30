@@ -101,7 +101,7 @@ public class ItemImportService(
         var itemId = templateItem.Id;
         if (itemImportHelper.IsHolster(itemId))
         {
-            //AddWeaponToBotData(ApbsEquipmentSlots.Holster, templateItem);
+            AddWeaponToBotData(ApbsEquipmentSlots.Holster, templateItem);
             return;
         }
         
@@ -109,12 +109,12 @@ public class ItemImportService(
         {
             if (itemImportHelper.IsLongRangePrimaryWeapon(itemId))
             {
-                //AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange, templateItem);
-                //AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange, templateItem);
+                AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange, templateItem);
+                AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange, templateItem);
                 return;
             }
-            //AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange, templateItem);
-            //AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange, templateItem);
+            AddWeaponToBotData(ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange, templateItem);
+            AddWeaponToBotData(ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange, templateItem);
             return;
         }
         
@@ -230,7 +230,7 @@ public class ItemImportService(
             {
                 if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
                 
-                apbsLogger.Warning($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
+                apbsLogger.Debug($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
                 AddAmmoToBotData(ammoId, ammoCaliber);
             }
 
@@ -241,7 +241,7 @@ public class ItemImportService(
                 {
                     if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) continue;
                     
-                    apbsLogger.Warning($"Adding AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
+                    apbsLogger.Debug($"Adding Fallback AmmoCaliber: {ammoCaliber} and ammoId: {ammoId}");
                     AddAmmoToBotData(ammoId, ammoCaliber);
                 }
             }
@@ -258,7 +258,7 @@ public class ItemImportService(
         }
         
         var context = new ImportContext();
-        StartEquipmentFilterItemImport(templateItem, context);
+        StartEquipmentFilterItemImport(templateItem, context, true);
         
         apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id} | Recursive calls: {context.RecursiveCalls} | Max depth: {context.MaxDepth}");
     }
@@ -337,7 +337,7 @@ public class ItemImportService(
     ///     This is a recursive lookup, it starts here and then actually calls adding the item to the data
     ///     If the item has children, it will then process those and also call adding the item to the data and itself recursively
     /// </summary>
-    private void StartEquipmentFilterItemImport(TemplateItem parentItem, ImportContext context)
+    private void StartEquipmentFilterItemImport(TemplateItem parentItem, ImportContext context, bool weaponImport = false)
     {
         var parentItemSlots = parentItem.Properties?.Slots?.ToList();
         if (parentItemSlots is null || parentItemSlots.Count == 0) return;
@@ -384,8 +384,8 @@ public class ItemImportService(
                     var childItem = itemHelper.GetItem(childItemId);
                     if (childItem.Value is null) continue;
 
-                    AddModsToBotData(parentItem, childItem.Value, slotName);
-                    StartEquipmentFilterItemImport(childItem.Value, context);
+                    AddModsToBotData(parentItem, childItem.Value, slotName, weaponImport);
+                    StartEquipmentFilterItemImport(childItem.Value, context, weaponImport);
                 }
 
                 context.Ancestors.Remove(parentItem.Id);
@@ -403,11 +403,11 @@ public class ItemImportService(
     ///     Checks if the item should be imported first
     ///     Should safely add the item to the bot data, because if it fails at any point it adds the relevant data
     /// </summary>
-    private void AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
+    private void AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport = false)
     {
-        if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd)) return;
+        if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd, slot)) return;
         
-        if (itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
+        if (!weaponImport && itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
         {
             if (itemImportHelper.AreHeadphonesMountable(itemToAdd))
             {
@@ -424,6 +424,9 @@ public class ItemImportService(
         {
             var modsData = itemImportTierHelper.GetModsTierData(tier);
 
+            if (weaponImport && !itemImportHelper.AttachmentShouldBeInTier(parentItem, itemToAdd, slot, tier))
+                continue;
+            
             lock (_modsLock)
             {
                 if (!modsData.TryGetValue(parentItem.Id, out var knownItemData))

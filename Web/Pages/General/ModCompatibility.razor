@@ -43,7 +43,7 @@
                         <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_modCustomWeaponsEnabled">@_modPMCWeaponWeights</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="_modPMCWeaponWeights" ValueLabel="true" Min="1" Max="15" Color="Color.Info" Size="Size.Medium" Disabled="!_modCustomWeaponsEnabled" />
+                        <MudSlider @bind-Value="_modPMCWeaponWeights" ValueLabel="true" Min="1" Max="20" Color="Color.Info" Size="Size.Medium" Disabled="!_modCustomWeaponsEnabled" />
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_modPMCWeaponWeights"))
@@ -68,7 +68,7 @@
                         <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_modCustomWeaponsEnabled">@_modScavWeaponWeights</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="_modScavWeaponWeights" ValueLabel="true" Min="1" Max="15" Color="Color.Info" Size="Size.Medium" Disabled="!_modCustomWeaponsEnabled" />
+                        <MudSlider @bind-Value="_modScavWeaponWeights" ValueLabel="true" Min="1" Max="20" Color="Color.Info" Size="Size.Medium" Disabled="!_modCustomWeaponsEnabled" />
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_modScavWeaponWeights"))
@@ -93,7 +93,7 @@
                         <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_modCustomWeaponsEnabled">@_modFollowerWeaponWeights</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="_modFollowerWeaponWeights" ValueLabel="true" Min="1" Max="15" Color="Color.Info" Size="Size.Medium" Disabled="!_modCustomWeaponsEnabled"/>
+                        <MudSlider @bind-Value="_modFollowerWeaponWeights" ValueLabel="true" Min="1" Max="20" Color="Color.Info" Size="Size.Medium" Disabled="!_modCustomWeaponsEnabled"/>
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_modFollowerWeaponWeights"))
