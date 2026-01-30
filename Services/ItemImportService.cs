@@ -80,16 +80,15 @@ public class ItemImportService(
     private void ImportEquipmentBySlot()
     {
         var allItems = databaseService.GetItems();
+        var itemsToImport = allItems.Values
+            .Where(item => itemImportHelper.EquipmentNeedsImporting(item.Id))
+            .ToList();
+
         Parallel.ForEach(
-            allItems.Values,
-            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 },
-            templateItem =>
-            {
-                if (itemImportHelper.EquipmentNeedsImporting(templateItem.Id))
-                {
-                    SortAndStartEquipmentImport(templateItem);
-                }
-            });
+            itemsToImport,
+            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2},
+            SortAndStartEquipmentImport
+        );
     }
     
     /// <summary>
