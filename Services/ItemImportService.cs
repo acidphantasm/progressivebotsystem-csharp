@@ -257,7 +257,7 @@ public class ItemImportService(
             return;
         }
         
-        var context = new ImportContext();
+        var context = new ImportContext { RootItemId = templateItem.Id };
         StartEquipmentFilterItemImport(templateItem, context, true);
         
         apbsLogger.Debug($"[{slot.ToString()}] Completed mod import: {templateItem.Id} | Recursive calls: {context.RecursiveCalls} | Max depth: {context.MaxDepth}");
