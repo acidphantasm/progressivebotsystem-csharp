@@ -32,6 +32,7 @@ public class ItemImportHelper(
     // Because we're looping the database, and holster is super special, we cache that slot once from default inventory instead of repeated lookups
     private HashSet<MongoId>? _holsterAllowedItems;
     private bool _holsterCacheInitialized;
+    private readonly Lock _holsterLock = new();
     
     // Custom Base classes
     private static readonly MongoId BaseClassPackNStrapBelt = "6815465859b8c6ff13f94026";
@@ -571,19 +572,21 @@ public class ItemImportHelper(
     /// </summary>
     private void EnsureHolsterCacheExistsFirst()
     {
-        if (_holsterCacheInitialized) return;
+        lock (_holsterLock)
+        {
+            if (_holsterCacheInitialized) return;
 
-        var defaultInventory =
-            itemHelper.GetItem(ItemTpl.INVENTORY_DEFAULT).Value;
+            var defaultInventory = itemHelper.GetItem(ItemTpl.INVENTORY_DEFAULT).Value;
 
-        _holsterAllowedItems = defaultInventory?
-            .Properties?.Slots?.FirstOrDefault(x => x.Name == "Holster")?
-            .Properties?.Filters?.FirstOrDefault(f => f.Filter?.Count > 0)?
-            .Filter is { } filter
-            ? [..filter]
-            : null;
+            _holsterAllowedItems = defaultInventory?
+                .Properties?.Slots?.FirstOrDefault(x => x.Name == "Holster")?
+                .Properties?.Filters?.FirstOrDefault(f => f.Filter?.Count > 0)?
+                .Filter is { } filter
+                ? [..filter]
+                : null;
 
-        _holsterCacheInitialized = true;
+            _holsterCacheInitialized = true;
+        }
     }
     
     /// <summary>
