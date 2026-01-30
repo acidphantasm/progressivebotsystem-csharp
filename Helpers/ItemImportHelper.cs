@@ -273,11 +273,17 @@ public class ItemImportHelper(
     public async Task BuildVanillaDictionaries()
     {
         if (_alreadyRan) return;
-        
-        _vanillaEquipmentSlotDictionary = await ValidateVanillaEquipmentDatabase();
-        _vanillaAmmoDictionary = await ValidateVanillaAmmoDatabase();
-        _vanillaAttachmentLookup = await ValidateVanillaAttachmentDatabase();
-        
+
+        var equipmentTask = ValidateVanillaEquipmentDatabase();
+        var ammoTask = ValidateVanillaAmmoDatabase();
+        var attachmentTask = ValidateVanillaAttachmentDatabase();
+
+        await Task.WhenAll(equipmentTask, ammoTask, attachmentTask);
+
+        _vanillaEquipmentSlotDictionary = equipmentTask.Result;
+        _vanillaAmmoDictionary = ammoTask.Result;
+        _vanillaAttachmentLookup = attachmentTask.Result;
+
         _vanillaEquipmentLookup = _vanillaEquipmentSlotDictionary
             .SelectMany(x => x.Value)
             .ToHashSet();
@@ -285,7 +291,8 @@ public class ItemImportHelper(
         _vanillaAmmoLookup = _vanillaAmmoDictionary
             .SelectMany(x => x.Value)
             .ToHashSet();
-        //_vanillaClothingBotSlotDictionary = await ValidateVanillaClothingDatabase();
+
+        // _vanillaClothingBotSlotDictionary = await ValidateVanillaClothingDatabase();
 
         _alreadyRan = true;
     }
@@ -298,8 +305,11 @@ public class ItemImportHelper(
         var returnDictionary = Enum
             .GetValues<ApbsEquipmentSlots>()
             .ToDictionary(slot => slot, _ => new HashSet<MongoId>());
-        
-        var primary = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", "PrimaryWeapon.json")) ?? throw new ArgumentNullException();
+
+        var primaryPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", "PrimaryWeapon.json");
+        var primary = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(primaryPath)
+                      ?? throw new ArgumentNullException(nameof(primaryPath));
+
         foreach (var kvp in primary)
         {
             var itemId = kvp.Key;
@@ -311,24 +321,30 @@ public class ItemImportHelper(
                 returnDictionary[slot].Add(itemId);
             }
         }
-        
-        await AddEquipmentToSlotAsync(returnDictionary, "Holster.json", ApbsEquipmentSlots.Holster);
-        await AddEquipmentToSlotAsync(returnDictionary, "Headwear.json", ApbsEquipmentSlots.Headwear);
-        await AddEquipmentToSlotAsync(returnDictionary, "ArmorVest.json", ApbsEquipmentSlots.ArmorVest);
-        await AddEquipmentToSlotAsync(returnDictionary, "ArmouredRig.json", ApbsEquipmentSlots.ArmouredRig);
-        await AddEquipmentToSlotAsync(returnDictionary, "Backpack.json", ApbsEquipmentSlots.Backpack);
-        await AddEquipmentToSlotAsync(returnDictionary, "Earpiece.json", ApbsEquipmentSlots.Earpiece);
-        await AddEquipmentToSlotAsync(returnDictionary, "Eyewear.json", ApbsEquipmentSlots.Eyewear);
-        await AddEquipmentToSlotAsync(returnDictionary, "FaceCover.json", ApbsEquipmentSlots.FaceCover);
-        await AddEquipmentToSlotAsync(returnDictionary, "Scabbard.json", ApbsEquipmentSlots.Scabbard);
-        await AddEquipmentToSlotAsync(returnDictionary, "TacticalVest.json", ApbsEquipmentSlots.TacticalVest);
-        await AddEquipmentToSlotAsync(returnDictionary, "ArmBand.json", ApbsEquipmentSlots.ArmBand);
 
-        // Debug Slot Logging
+        var equipmentFiles = new (string FileName, ApbsEquipmentSlots Slot)[]
+        {
+            ("Holster.json", ApbsEquipmentSlots.Holster),
+            ("Headwear.json", ApbsEquipmentSlots.Headwear),
+            ("ArmorVest.json", ApbsEquipmentSlots.ArmorVest),
+            ("ArmouredRig.json", ApbsEquipmentSlots.ArmouredRig),
+            ("Backpack.json", ApbsEquipmentSlots.Backpack),
+            ("Earpiece.json", ApbsEquipmentSlots.Earpiece),
+            ("Eyewear.json", ApbsEquipmentSlots.Eyewear),
+            ("FaceCover.json", ApbsEquipmentSlots.FaceCover),
+            ("Scabbard.json", ApbsEquipmentSlots.Scabbard),
+            ("TacticalVest.json", ApbsEquipmentSlots.TacticalVest),
+            ("ArmBand.json", ApbsEquipmentSlots.ArmBand)
+        };
+
+        var tasks = equipmentFiles.Select(f => AddEquipmentToSlotAsync(returnDictionary, f.FileName, f.Slot));
+        await Task.WhenAll(tasks);
+
         foreach (var (slot, items) in returnDictionary)
         {
-            apbsLogger.Debug($"[VANILLA] Equipment slot: {slot.ToString()} contains {items.Count} items");
+            apbsLogger.Debug($"[VANILLA] Equipment slot: {slot} contains {items.Count} items");
         }
+
         return returnDictionary;
     }
     
@@ -356,39 +372,45 @@ public class ItemImportHelper(
     {
         var returnDictionary = new Dictionary<string, HashSet<MongoId>>();
 
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber9x18PM.json", "Caliber9x18PM");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber9x19PARA.json", "Caliber9x19PARA");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber9x21.json", "Caliber9x21");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber9x33R.json", "Caliber9x33R");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber9x39.json", "Caliber9x39");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber12g.json", "Caliber12g");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber20g.json", "Caliber20g");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber23x75.json", "Caliber23x75");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber40mmRU.json", "Caliber40mmRU");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber40x46.json", "Caliber40x46");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber46x30.json", "Caliber46x30");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber57x28.json", "Caliber57x28");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber68x51.json", "Caliber68x51");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber86x70.json", "Caliber86x70");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber127x33.json", "Caliber127x33");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber127x55.json", "Caliber127x55");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber127x99.json", "Caliber127x99");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber366TKM.json", "Caliber366TKM");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber545x39.json", "Caliber545x39");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber556x45NATO.json", "Caliber556x45NATO");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber725.json", "Caliber725");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber762x25TT.json", "Caliber762x25TT");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber762x35.json", "Caliber762x35");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber762x39.json", "Caliber762x39");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber762x51.json", "Caliber762x51");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber762x54R.json", "Caliber762x54R");
-        await AddAmmoToCaliberAsync(returnDictionary, "Caliber1143x23ACP.json", "Caliber1143x23ACP");
-        
-        // Debug Slot Logging
+        var ammoFiles = new (string FileName, string Caliber)[]
+        {
+            ("Caliber9x18PM.json", "Caliber9x18PM"),
+            ("Caliber9x19PARA.json", "Caliber9x19PARA"),
+            ("Caliber9x21.json", "Caliber9x21"),
+            ("Caliber9x33R.json", "Caliber9x33R"),
+            ("Caliber9x39.json", "Caliber9x39"),
+            ("Caliber12g.json", "Caliber12g"),
+            ("Caliber20g.json", "Caliber20g"),
+            ("Caliber23x75.json", "Caliber23x75"),
+            ("Caliber40mmRU.json", "Caliber40mmRU"),
+            ("Caliber40x46.json", "Caliber40x46"),
+            ("Caliber46x30.json", "Caliber46x30"),
+            ("Caliber57x28.json", "Caliber57x28"),
+            ("Caliber68x51.json", "Caliber68x51"),
+            ("Caliber86x70.json", "Caliber86x70"),
+            ("Caliber127x33.json", "Caliber127x33"),
+            ("Caliber127x55.json", "Caliber127x55"),
+            ("Caliber127x99.json", "Caliber127x99"),
+            ("Caliber366TKM.json", "Caliber366TKM"),
+            ("Caliber545x39.json", "Caliber545x39"),
+            ("Caliber556x45NATO.json", "Caliber556x45NATO"),
+            ("Caliber725.json", "Caliber725"),
+            ("Caliber762x25TT.json", "Caliber762x25TT"),
+            ("Caliber762x35.json", "Caliber762x35"),
+            ("Caliber762x39.json", "Caliber762x39"),
+            ("Caliber762x51.json", "Caliber762x51"),
+            ("Caliber762x54R.json", "Caliber762x54R"),
+            ("Caliber1143x23ACP.json", "Caliber1143x23ACP")
+        };
+
+        var tasks = ammoFiles.Select(f => AddAmmoToCaliberAsync(returnDictionary, f.FileName, f.Caliber));
+        await Task.WhenAll(tasks);
+
         foreach (var (caliber, items) in returnDictionary)
         {
             apbsLogger.Debug($"[VANILLA] Ammo Caliber: {caliber} contains {items.Count} items");
         }
+
         return returnDictionary;
     }
     
@@ -406,8 +428,8 @@ public class ItemImportHelper(
             
             if (!dictionary.TryGetValue(caliber, out var list))
             {
-                list = [];
-                dictionary[caliber] = [];
+                list = new HashSet<MongoId>();
+                dictionary[caliber] = list;
             }
             list.Add(itemId);
         }
@@ -487,22 +509,6 @@ public class ItemImportHelper(
 
     /// <summary>
     ///     Check if the item is banned from import
-    ///     Check if the import is even enabled, and if it's importable
-    ///     If neither the weapon nor equipment check pass, go ahead and return false so we skip this item for import
-    ///     If either of them pass, go ahead and check if the vanilla dictionary contains that item, if it does then skip it
-    ///     If all checks are completed, go ahead and mark the item for import
-    /// </summary>
-    public bool AttachmentNeedsImporting(MongoId itemId)
-    {
-        if (_bannedItems.Contains(itemId)) return false;
-        if (_vanillaAttachmentLookup.Contains(itemId)) return false;
-        if (!itemHelper.IsOfBaseclass(itemId, BaseClasses.MOD)) return false;
-
-        return true;
-    }
-
-    /// <summary>
-    ///     Check if the item is banned from import
     ///     Check if the item is ammo
     ///     The Caliber9x18PM caliber is also used for grenade shrapnel, so lets check those and skip if they are shrapnel
     ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn these
@@ -553,10 +559,8 @@ public class ItemImportHelper(
         }
 
         var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId(null));
-        if (!magazineTemplate.Key)
-        {
-            return [];
-        }
+        if (magazineTemplate.Value?.Properties == null) return new HashSet<MongoId>();
+
 
         var cartridges =
             magazineTemplate.Value.Properties.Slots.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter
