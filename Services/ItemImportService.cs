@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Models.Enums;
@@ -21,17 +22,17 @@ public class ItemImportService(
     ItemHelper itemHelper): IOnLoad
 {
     private int _weaponCounter = 0;
-    private HashSet<MongoId> _uniqueWeaponAttachments = new HashSet<MongoId>();
+    private readonly ConcurrentDictionary<MongoId, byte> _uniqueWeaponAttachments = new();
     private int _weaponAttachmentCounter = 0;
     private int _caliberCounter = 0;
     
     private int _equipmentCounter = 0;
-    private HashSet<MongoId> _uniqueEquipmentAttachments = new HashSet<MongoId>();
+    private readonly ConcurrentDictionary<MongoId, byte> _uniqueEquipmentAttachments = new();
     private int _equipmentAttachmentCounter = 0;
     
     private int _appearanceCounter = 0;
     
-    private readonly HashSet<MongoId> _mountedHeadphones = new();
+    private readonly ConcurrentDictionary<MongoId, byte> _mountedHeadphones = new();
     
     private readonly Lock _equipmentLock = new();
     private readonly Lock _modsLock = new();
@@ -54,9 +55,9 @@ public class ItemImportService(
         
         stopwatch.Stop();
         apbsLogger.Success($"[IMPORT] Completed in {stopwatch.ElapsedMilliseconds} ms");
+        _caliberCounter = LogAndClear("calibers", _caliberCounter);
         _weaponCounter = LogAndClear("weapons", _weaponCounter, _uniqueWeaponAttachments);
         _weaponAttachmentCounter = LogAndClear("unique weapon attachments", _weaponAttachmentCounter, _uniqueWeaponAttachments);
-        _caliberCounter = LogAndClear("calibers", _caliberCounter);
         _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipmentAttachments);
         _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
         _appearanceCounter = LogAndClear("appearance items", _appearanceCounter);
@@ -65,10 +66,10 @@ public class ItemImportService(
     /// <summary>
     ///     Fancy helper method to log the import counts and then reset the variables to 0
     /// </summary>
-    private int LogAndClear(string name, int counter, HashSet<MongoId>? setToClear = null)
+    private int LogAndClear(string name, int counter, ConcurrentDictionary<MongoId, byte>? dictToClear = null)
     {
         if (counter != 0) apbsLogger.Success($"[IMPORT] Imported {counter} {name}.");
-        setToClear?.Clear();
+        dictToClear?.Clear();
         return 0;
     }
     
@@ -178,7 +179,7 @@ public class ItemImportService(
         
         if (itemImportHelper.IsHeadphones(itemId))
         {
-            if (_mountedHeadphones.Contains(itemId)) return;
+            if (_mountedHeadphones.ContainsKey(itemId)) return;
             if (itemImportHelper.AreHeadphonesMountable(templateItem)) return;
             
             AddEquipmentToBotData(ApbsEquipmentSlots.Earpiece, templateItem);
@@ -246,10 +247,10 @@ public class ItemImportService(
                 }
             }
 
-            _caliberCounter++;
+            Interlocked.Increment(ref _caliberCounter);
         }
 
-        _weaponCounter++;
+        Interlocked.Increment(ref _weaponCounter);
         
         if (weaponSlotsLength == 0)
         {
@@ -319,7 +320,7 @@ public class ItemImportService(
             }
         }
 
-        _equipmentCounter++;
+        Interlocked.Increment(ref _equipmentCounter);
         
         if (equipmentSlotsLength == 0)
         {
@@ -411,7 +412,7 @@ public class ItemImportService(
         {
             if (itemImportHelper.AreHeadphonesMountable(itemToAdd))
             {
-                _mountedHeadphones.Add(itemToAdd.Id);
+                _mountedHeadphones.TryAdd(itemToAdd.Id, 0);
             }
             else
             {
@@ -452,9 +453,13 @@ public class ItemImportService(
             }
         }
 
-        if (_uniqueEquipmentAttachments.Add(itemToAdd.Id))
+        if (!weaponImport && _uniqueEquipmentAttachments.TryAdd(itemToAdd.Id, 0))
         {
-            _equipmentAttachmentCounter++;
+            Interlocked.Increment(ref _equipmentAttachmentCounter);
+        }
+        else if (weaponImport && _uniqueWeaponAttachments.TryAdd(itemToAdd.Id, 0))
+        {
+            Interlocked.Increment(ref _weaponAttachmentCounter);
         }
     }
     
