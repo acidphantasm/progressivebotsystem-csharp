@@ -1,7 +1,7 @@
 ﻿[
   {
     "Version": "2.1.0",
-    "ReleaseDate": "January 27, 2025",
+    "ReleaseDate": "January 30, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "Blacklisting functionality has returned",
@@ -27,6 +27,7 @@
       "Adjusted webconfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"
     ],
     "BugFixes": [
+      "Resolved recursive banned/blocked attachments from sneaking into Weapon import",
       "Resolved PrestigeLevel being wiped out by SPT during bot gen",
       "Resolved Zryachiy not being handled by APBS",
       "Resolved bot logging not logging the correct tier if the bot was marked for poverty",

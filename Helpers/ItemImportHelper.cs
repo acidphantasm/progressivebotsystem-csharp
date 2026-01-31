@@ -122,6 +122,7 @@ public class ItemImportHelper(
 
     private readonly FrozenSet<MongoId> _bannedAttachments =
     [
+        "686a5a6247c881f613196f91", // canted aiming attachment from echos of tarkov
         "b098f4d751ddc6246acdf160", // B-22 Attachment from EpicRangeTime-Weapons
         "b2d57758abe9bb9345c58e4a", // 34mm gieselle mount from EpicRangeTime-Weapons
         "67ea8b32e0d7701fc6bfc5bf", // 34mm gieselle mount from EpicRangeTime-Weapons

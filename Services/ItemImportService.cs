@@ -384,8 +384,10 @@ public class ItemImportService(
                     var childItem = itemHelper.GetItem(childItemId);
                     if (childItem.Value is null) continue;
 
-                    AddModsToBotData(parentItem, childItem.Value, slotName, weaponImport);
-                    StartEquipmentFilterItemImport(childItem.Value, context, weaponImport);
+                    if (AddModsToBotData(parentItem, childItem.Value, slotName, weaponImport))
+                    {
+                        StartEquipmentFilterItemImport(childItem.Value, context, weaponImport);
+                    }
                 }
 
                 context.Ancestors.Remove(parentItem.Id);
@@ -403,9 +405,9 @@ public class ItemImportService(
     ///     Checks if the item should be imported first
     ///     Should safely add the item to the bot data, because if it fails at any point it adds the relevant data
     /// </summary>
-    private void AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport = false)
+    private bool AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport = false)
     {
-        if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd, slot)) return;
+        if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd, slot)) return false;
         
         if (!weaponImport && itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
         {
@@ -416,7 +418,7 @@ public class ItemImportService(
             else
             {
                 apbsLogger.Debug($"Item: {itemToAdd.Id} is not mountable headphones but some mod says it is");
-                return;
+                return false;
             }
         }
         
@@ -460,6 +462,8 @@ public class ItemImportService(
         {
             Interlocked.Increment(ref _weaponAttachmentCounter);
         }
+
+        return true;
     }
     
     /// <summary>
