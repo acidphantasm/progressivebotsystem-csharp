@@ -64,6 +64,7 @@ public class ItemImportService(
         _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipmentAttachments);
         _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
         _appearanceCounter = LogAndClear("appearance items", _appearanceCounter);
+        _processedModCombos.Clear();
     }
 
     /// <summary>
