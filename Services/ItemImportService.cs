@@ -21,6 +21,9 @@ public class ItemImportService(
     DatabaseService databaseService,
     ItemHelper itemHelper): IOnLoad
 {
+    
+    private readonly ConcurrentDictionary<(MongoId ParentId, string Slot, MongoId ChildId), byte> _processedModCombos = new();
+
     private int _weaponCounter = 0;
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueWeaponAttachments = new();
     private int _weaponAttachmentCounter = 0;
@@ -408,6 +411,10 @@ public class ItemImportService(
     private bool AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport = false)
     {
         if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd, slot)) return false;
+        
+        var comboKey = (parentItem.Id, slot, itemToAdd.Id);
+        if (!_processedModCombos.TryAdd(comboKey, 0))
+            return false;
         
         if (!weaponImport && itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
         {
