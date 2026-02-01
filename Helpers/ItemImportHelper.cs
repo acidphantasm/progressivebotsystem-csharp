@@ -374,8 +374,10 @@ public class ItemImportHelper(
             ("ArmBand.json", ApbsEquipmentSlots.ArmBand)
         };
 
-        var tasks = equipmentFiles.Select(f => AddEquipmentToSlotAsync(returnDictionary, f.FileName, f.Slot));
-        await Task.WhenAll(tasks);
+        foreach (var (fileName, slot) in equipmentFiles)
+        {
+            await AddEquipmentToSlotAsync(returnDictionary, fileName, slot);
+        }
 
         foreach (var (slot, items) in returnDictionary)
         {
@@ -440,8 +442,10 @@ public class ItemImportHelper(
             ("Caliber1143x23ACP.json", "Caliber1143x23ACP")
         };
 
-        var tasks = ammoFiles.Select(f => AddAmmoToCaliberAsync(returnDictionary, f.FileName, f.Caliber));
-        await Task.WhenAll(tasks);
+        foreach (var (fileName, caliber) in ammoFiles)
+        {
+            await AddAmmoToCaliberAsync(returnDictionary, fileName, caliber);
+        }
 
         foreach (var (caliber, items) in returnDictionary)
         {
