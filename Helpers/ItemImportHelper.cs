@@ -532,8 +532,15 @@ public class ItemImportHelper(
     {
         if (_bannedItems.Contains(itemId)) 
             return false;
-        if (_vanillaEquipmentLookup.Contains(itemId)) 
-            return false;
+        
+        if (_vanillaEquipmentLookup.Contains(itemId))
+        {
+            var isVanillaWeapon = itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
+            if (isVanillaWeapon && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
+                return false;
+
+            return isVanillaWeapon;
+        }
 
         var isWeapon = ModConfig.Config.CompatibilityConfig.EnableModdedWeapons &&
                         itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
@@ -541,9 +548,15 @@ public class ItemImportHelper(
         var isEquipment = ModConfig.Config.CompatibilityConfig.EnableModdedEquipment &&
                            itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
 
-        if (!isWeapon && !isEquipment) return false;
+        return isWeapon || isEquipment;
+    }
 
-        return true;
+    /// <summary>
+    ///     Check if the weapon is vanilla
+    /// </summary>
+    public bool WeaponOrEquipmentIsVanilla(MongoId itemId)
+    {
+        return _vanillaEquipmentLookup.Contains(itemId);
     }
 
     /// <summary>
@@ -906,16 +919,15 @@ public class ItemImportHelper(
         
         if (ModConfig.Config.CompatibilityConfig.EnableSafeGuard)
         {
-            if (_vanillaAttachmentLookup.Contains(parentItem.Id) &&
-                _vanillaAttachmentLookup.Contains(itemToAdd.Id))
+            if ((IsVanillaAttachment(parentItem.Id) || WeaponOrEquipmentIsVanilla(parentItem.Id)) 
+                && IsVanillaAttachment(itemToAdd.Id))
                 return false;
         }
 
-        if (!ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
+        if (WeaponOrEquipmentIsVanilla(parentItem.Id) && IsVanillaAttachment(itemToAdd.Id) && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
         {
-            if (!_vanillaAttachmentLookup.Contains(itemToAdd.Id) &&
-                _vanillaEquipmentLookup.Contains(parentItem.Id))
-                return false;
+            // This is a safety check, but I'm pretty sure it's never ever going to hit it due to prior safety checks
+            return false;
         }
 
         if (VssValCheck(parentItem, slot))
@@ -937,6 +949,11 @@ public class ItemImportHelper(
             return false;
         
         return true;
+    }
+
+    public bool IsVanillaAttachment(MongoId itemId)
+    {
+        return _vanillaAttachmentLookup.Contains(itemId);
     }
 
     private bool VssValCheck(TemplateItem parentItem, string slot)
