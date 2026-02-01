@@ -1,10 +1,13 @@
 ﻿@page "/progressivebotsystem/presets"
 @using _progressiveBotSystem.Helpers
+@using _progressiveBotSystem.Models
+@using SPTarkov.Server.Core.Utils
 @layout MainLayout
 
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject DataLoader DataLoader
+@inject JsonUtil JsonUtil
 
 <MudMainContent>
     <MudContainer>
@@ -225,6 +228,16 @@
                 }
             }
         }
+        
+        var manifest = new PresetManifest
+        {
+            PresetName = Path.GetFileName(newFolderPath),
+            Version = ModConfig.CurrentPresetManifestVersion
+        };
+
+        var manifestPath = Path.Combine(newFolderPath, "manifest.json");
+        var manifestJson = JsonUtil.Serialize(manifest);
+        File.WriteAllText(manifestPath, manifestJson);
     }
 
     [CascadingParameter] public MainLayout? Layout { get; set; }

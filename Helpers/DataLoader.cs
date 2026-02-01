@@ -151,6 +151,7 @@ public class DataLoader(
             apbsLogger.Error($"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}");
             apbsLogger.Error($"{errorMessage}");
             ModConfig.Config.UsePreset = false;
+            ModConfig.Config.PresetName = string.Empty;
             await AssignJsonData(pathToMod);
             return;
         }
@@ -196,6 +197,12 @@ public class DataLoader(
         if (!Directory.Exists(fullPathToPresetRoot))
         {
             errorMessage = $"Preset Folder Not Found: {fullPathToPresetRoot}";
+            return false;
+        }
+
+        if (NeedsANewPreset(fullPathToPresetRoot))
+        {
+            errorMessage = $"Preset is no longer valid. Make a new preset. This is rarely required but it is for you.";
             return false;
         }
 
@@ -249,6 +256,7 @@ public class DataLoader(
             apbsLogger.Error($"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}");
             apbsLogger.Error($"{errorMessage}");
             ModConfig.Config.UsePreset = false;
+            ModConfig.Config.PresetName = string.Empty;
             await AssignJsonData(pathToMod);
             return false;
         }
@@ -259,13 +267,7 @@ public class DataLoader(
             Directory.CreateDirectory(folderPath);
 
             var filePath = Path.Combine(folderPath, fileName);
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Converters = { new JsonStringEnumConverter(), new MongoIdDictionaryKeyConverter() } 
-            };
-
-            var json = JsonSerializer.Serialize(data, options);
+            var json = jsonUtil.Serialize(data);
             await File.WriteAllTextAsync(filePath, json);
         }
 
@@ -285,5 +287,14 @@ public class DataLoader(
 
         apbsLogger.Warning($"Preset: {ModConfig.Config.PresetName} changes saved to disk.");
         return true;
+    }
+    
+    private bool NeedsANewPreset(string rootPresetFolder)
+    {
+        var manifestPath = Path.Combine(rootPresetFolder, "manifest.json");
+        if (!File.Exists(manifestPath)) return true;
+
+        var manifest = jsonUtil.DeserializeFromFile<PresetManifest>(manifestPath) ?? new PresetManifest() { Version = 0 };
+        return manifest.Version != ModConfig.CurrentPresetManifestVersion;
     }
 }

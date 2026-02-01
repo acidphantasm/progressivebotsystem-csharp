@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
@@ -190,7 +191,6 @@ public class VanillaItemHelper(
         await WriteManifestAsync(mappingDir);
     }
     
-    private const int CurrentManifestVersion = 1;
     private bool NeedsRegeneration(string mappingDir)
     {
         var manifestPath = Path.Combine(mappingDir, "manifest.json");
@@ -200,7 +200,7 @@ public class VanillaItemHelper(
 
         var manifest = jsonUtil.DeserializeFromFile<VanillaMappingManifest>(manifestPath) ?? new VanillaMappingManifest() { ManifestVersion = 0 };
 
-        return manifest.ManifestVersion != CurrentManifestVersion;
+        return manifest.ManifestVersion != ModConfig.CurrentVanillaMappingManifestVersion;
     }
 
     private Task LoadVanillaItemsMapping()
@@ -344,7 +344,7 @@ public class VanillaItemHelper(
         
         var manifest = new VanillaMappingManifest
         {
-            ManifestVersion = CurrentManifestVersion,
+            ManifestVersion = ModConfig.CurrentVanillaMappingManifestVersion,
         };
 
         var path = Path.Combine(outputDirectory, "manifest.json");
