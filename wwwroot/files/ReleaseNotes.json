@@ -1,18 +1,19 @@
 ﻿[
   {
     "Version": "2.1.0",
-    "ReleaseDate": "January 30, 2025",
+    "ReleaseDate": "February 1, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "Blacklisting functionality has returned",
       "Bot Equipment logging functionality has returned",
-      "Custom Item Import Functionality has returned",
+      "Custom Item Import Functionality has returned (Weapons+Equipment only)",
       "Mod Compatibility Configuration has returned",
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
       "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
       "Webconfig slider to set chance of TUE/EOD bots having version specific dogtags",
       "Webconfig toggles for individual body part health normalization",
-      "Webconfig toggle for Bot Equipment logging"
+      "Webconfig toggle for Bot Equipment logging",
+      "Preset Version validation"
     ],
     "Changes": [
       "Removed leftover console logging when changing presets",
@@ -27,6 +28,7 @@
       "Adjusted webconfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"
     ],
     "BugFixes": [
+      "Resolved lack of zoom zoom on mod importing",
       "Resolved recursive banned/blocked attachments from sneaking into Weapon import",
       "Resolved PrestigeLevel being wiped out by SPT during bot gen",
       "Resolved Zryachiy not being handled by APBS",
