@@ -84,7 +84,7 @@ public class BotBlacklistService(
 
                     if (blockedFrom.Count > 0)
                     {
-                        apbsLogger.Debug($"[WEAPON BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only weapon left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
+                        apbsLogger.Warning($"[WEAPON BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only weapon left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
                     }
                 }
             }
@@ -147,7 +147,7 @@ public class BotBlacklistService(
 
                     if (blockedFrom.Count > 0)
                     {
-                        apbsLogger.Debug($"[EQUIPMENT BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only item left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
+                        apbsLogger.Warning($"[EQUIPMENT BLACKLIST] Could NOT remove {item} from Tier {tier} because it was the only item left in slot(s): {string.Join(", ", blockedFrom)} on bot: {botType}");
                     }
                 }
             }
@@ -197,7 +197,7 @@ public class BotBlacklistService(
         
         if (blockedRemovals.Count > 0)
         {
-            apbsLogger.Debug($"[AMMO BLACKLIST] Could NOT remove {ammoToRemove} from Tier: {tierToRemove} because it was the only ammo left in caliber(s): {string.Join(", ", blockedRemovals)} for {botType}");
+            apbsLogger.Warning($"[AMMO BLACKLIST] Could NOT remove {ammoToRemove} from Tier: {tierToRemove} because it was the only ammo left in caliber(s): {string.Join(", ", blockedRemovals)} for {botType}");
         }
     }
     
@@ -247,7 +247,7 @@ public class BotBlacklistService(
         
         if (blockedRemovals.Count > 0)
         {
-            apbsLogger.Debug($"[ATTACHMENT BLACKLIST] Could NOT remove {itemToRemove} from Tier {tier} because it was the only mod left in slot(s): {string.Join(", ", blockedRemovals)}");
+            apbsLogger.Warning($"[ATTACHMENT BLACKLIST] Could NOT remove {itemToRemove} from Tier {tier} because it was the only mod left in slot(s): {string.Join(", ", blockedRemovals)}");
         }
     }
     
