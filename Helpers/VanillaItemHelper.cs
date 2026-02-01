@@ -329,9 +329,7 @@ public class VanillaItemHelper(
         foreach (var (fileName, map) in CategoryMaps)
         {
             var path = Path.Combine(outputDirectory, $"{fileName}.json");
-
-            var json = jsonUtil.Serialize(map);
-            await File.WriteAllTextAsync(path, json);
+            await File.WriteAllTextAsync(path, jsonUtil.Serialize(map));
         }
     }
     
@@ -349,6 +347,6 @@ public class VanillaItemHelper(
 
         var path = Path.Combine(outputDirectory, "manifest.json");
 
-        await File.WriteAllTextAsync(path, jsonUtil.Serialize(manifest));
+        await File.WriteAllTextAsync(path, jsonUtil.Serialize(manifest, true));
     }
 }

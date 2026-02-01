@@ -267,8 +267,7 @@ public class DataLoader(
             Directory.CreateDirectory(folderPath);
 
             var filePath = Path.Combine(folderPath, fileName);
-            var json = jsonUtil.Serialize(data);
-            await File.WriteAllTextAsync(filePath, json);
+            await File.WriteAllTextAsync(filePath, jsonUtil.Serialize(data, true));
         }
 
         foreach (var kvp in AllTierDataClean.Tiers)

@@ -236,8 +236,7 @@
         };
 
         var manifestPath = Path.Combine(newFolderPath, "manifest.json");
-        var manifestJson = JsonUtil.Serialize(manifest);
-        File.WriteAllText(manifestPath, manifestJson);
+        File.WriteAllText(manifestPath, JsonUtil.Serialize(manifest, true));
     }
 
     [CascadingParameter] public MainLayout? Layout { get; set; }
