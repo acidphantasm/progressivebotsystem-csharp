@@ -1,5 +1,6 @@
 ﻿using System.Collections.Frozen;
 using _progressiveBotSystem.Globals;
+using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
 using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
@@ -16,7 +17,9 @@ namespace _progressiveBotSystem.Helpers;
 public class ItemImportHelper(
     ApbsLogger apbsLogger,
     JsonUtil jsonUtil,
-    ItemHelper itemHelper)
+    ItemHelper itemHelper,
+    ItemImportTierHelper itemImportTierHelper,
+    BotBlacklistHelper botBlacklistHelper)
 {
     private bool _alreadyRan = false;
     
@@ -24,6 +27,9 @@ public class ItemImportHelper(
     private HashSet<MongoId> _vanillaAttachmentLookup = new();
     private HashSet<MongoId> _vanillaAmmoLookup = new();
     private HashSet<MongoId> _vanillaClothingLookup = new();
+    
+    
+    private Dictionary<int, HashSet<MongoId>> _fullModConfigBlacklist = new();
     
     private Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> _vanillaEquipmentSlotDictionary = new();
     private Dictionary<string, HashSet<MongoId>> _vanillaAmmoDictionary = new();
@@ -120,9 +126,9 @@ public class ItemImportHelper(
         ItemTpl.AMMO_556X45_6MM_BB,
     ];
 
+    // "686a5a6247c881f613196f91", // canted aiming attachment from echos of tarkov
     private readonly FrozenSet<MongoId> _bannedAttachments =
     [
-        "686a5a6247c881f613196f91", // canted aiming attachment from echos of tarkov
         "b098f4d751ddc6246acdf160", // B-22 Attachment from EpicRangeTime-Weapons
         "b2d57758abe9bb9345c58e4a", // 34mm gieselle mount from EpicRangeTime-Weapons
         "67ea8b32e0d7701fc6bfc5bf", // 34mm gieselle mount from EpicRangeTime-Weapons
@@ -265,6 +271,36 @@ public class ItemImportHelper(
             ModConfig.Config.CompatibilityConfig.InitalTierAppearance = 3;
             apbsLogger.Warning($"Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp.");
         }
+
+        _fullModConfigBlacklist = BuildFullModConfigBlacklistByTier();
+    }
+
+    private Dictionary<int, HashSet<MongoId>> BuildFullModConfigBlacklistByTier()
+    {
+        var result = new Dictionary<int, HashSet<MongoId>>();
+
+        for (var tier = 1; tier <= 7; tier++)
+        {
+            var tierSet = new HashSet<MongoId>();
+
+            Add(tierSet, botBlacklistHelper.GetWeaponBlacklistTierData(tier));
+            Add(tierSet, botBlacklistHelper.GetAmmoBlacklistTierData(tier));
+            Add(tierSet, botBlacklistHelper.GetAttachmentBlacklistTierData(tier));
+            Add(tierSet, botBlacklistHelper.GetClothingBlacklistTierData(tier));
+            Add(tierSet, botBlacklistHelper.GetEquipmentBlacklistTierData(tier));
+
+            result[tier] = tierSet;
+        }
+
+        return result;
+    }
+
+    private static void Add(HashSet<MongoId> set, List<string>? list)
+    {
+        if (list is null) return;
+
+        foreach (var id in list)
+            set.Add(id);
     }
     
     /// <summary>
@@ -494,8 +530,10 @@ public class ItemImportHelper(
     /// </summary>
     public bool EquipmentNeedsImporting(MongoId itemId)
     {
-        if (_bannedItems.Contains(itemId)) return false;
-        if (_vanillaEquipmentLookup.Contains(itemId)) return false;
+        if (_bannedItems.Contains(itemId)) 
+            return false;
+        if (_vanillaEquipmentLookup.Contains(itemId)) 
+            return false;
 
         var isWeapon = ModConfig.Config.CompatibilityConfig.EnableModdedWeapons &&
                         itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
@@ -518,14 +556,19 @@ public class ItemImportHelper(
     /// </summary>
     public bool AmmoNeedsImporting(MongoId itemId, string caliber)
     {
-        if (_bannedItems.Contains(itemId)) return false;
-        if (!itemHelper.IsOfBaseclass(itemId, BaseClasses.AMMO)) return false;
-        if (caliber == string.Empty) return false;
+        if (_bannedItems.Contains(itemId)) 
+            return false;
+        if (!itemHelper.IsOfBaseclass(itemId, BaseClasses.AMMO)) 
+            return false;
+        if (caliber == string.Empty) 
+            return false;
         
         // Specifically check grenade shrapnel which also happens to always have 9x18PM as the caliber
-        if (caliber == "Caliber9x18PM" && itemHelper.GetItemName(itemId).Contains("shrapnel")) return false;
+        if (caliber == "Caliber9x18PM" && itemHelper.GetItemName(itemId).Contains("shrapnel")) 
+            return false;
         // Skip these calibers as they are for things we don't spawn on bots (or we already have like the disks)
-        if (caliber == "Caliber127x108" || caliber == "Caliber30x29" || caliber == "Caliber26x75" || caliber == "Caliber20x1mm") return false;
+        if (caliber == "Caliber127x108" || caliber == "Caliber30x29" || caliber == "Caliber26x75" || caliber == "Caliber20x1mm") 
+            return false;
         
         if (_vanillaAmmoLookup.Contains(itemId)) return false;
 
@@ -973,7 +1016,6 @@ public class ItemImportHelper(
         var itemFilters = slotData.Properties?.Filters?.FirstOrDefault()?.Filter;
         var hasUpperOptions = false;
         var hasLowerOptions = false;
-        var checkedValue = 0;
 
         foreach (var item in itemFilters ?? [])
         {
@@ -1002,5 +1044,13 @@ public class ItemImportHelper(
         }
             
         return false;
+    }
+    
+    /// <summary>
+    ///     Check if the item is banned from import
+    /// </summary>
+    public bool IsBlacklistedViaModConfig(MongoId itemId, int tier)
+    {
+        return _fullModConfigBlacklist[tier].Contains(itemId);
     }
 }
