@@ -124,11 +124,12 @@ public class ItemImportHelper(
         ItemTpl.AMMO_23X75_CHER7M,
         ItemTpl.AMMO_40X46_M716,
         ItemTpl.AMMO_556X45_6MM_BB,
+        "683df636e1e3fa1bf165f7ed"
     ];
 
-    // "686a5a6247c881f613196f91", // canted aiming attachment from echos of tarkov
     private readonly FrozenSet<MongoId> _bannedAttachments =
     [
+        "686a5a6247c881f613196f91", // canted aiming attachment from echos of tarkov
         "b098f4d751ddc6246acdf160", // B-22 Attachment from EpicRangeTime-Weapons
         "b2d57758abe9bb9345c58e4a", // 34mm gieselle mount from EpicRangeTime-Weapons
         "67ea8b32e0d7701fc6bfc5bf", // 34mm gieselle mount from EpicRangeTime-Weapons
@@ -926,12 +927,6 @@ public class ItemImportHelper(
             if ((IsVanillaAttachment(parentItem.Id) || WeaponOrEquipmentIsVanilla(parentItem.Id)) 
                 && IsVanillaAttachment(itemToAdd.Id))
                 return false;
-        }
-
-        if (WeaponOrEquipmentIsVanilla(parentItem.Id) && IsVanillaAttachment(itemToAdd.Id) && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
-        {
-            // This is a safety check, but I'm pretty sure it's never ever going to hit it due to prior safety checks
-            return false;
         }
 
         if (VssValCheck(parentItem, slot))
