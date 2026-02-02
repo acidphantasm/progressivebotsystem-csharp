@@ -1,18 +1,19 @@
 ﻿[
   {
     "Version": "2.1.0",
-    "ReleaseDate": "February 1, 2025",
+    "ReleaseDate": "February 2, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "Blacklisting functionality has returned",
       "Bot Equipment logging functionality has returned",
-      "Custom Item Import Functionality has returned (Weapons+Equipment only)",
+      "Custom Item Import Functionality has returned (Weapons+Equipment+Attachments only)",
       "Mod Compatibility Configuration has returned",
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
       "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
       "Webconfig slider to set chance of TUE/EOD bots having version specific dogtags",
       "Webconfig toggles for individual body part health normalization",
       "Webconfig toggle for Bot Equipment logging",
+      "Webconfig toggle for Scavs to very rarely have a 1m stack of Roubles",
       "Preset Version validation"
     ],
     "Changes": [
