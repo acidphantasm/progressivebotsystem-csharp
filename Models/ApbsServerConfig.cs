@@ -98,6 +98,8 @@ public class ScavBotData
     public required KeyConfig KeyConfig { get; set; }
     [JsonPropertyName("additionalOptions")]
     public required ScavSpecificConfig AdditionalOptions { get; set; }
+    [JsonPropertyName("secrets")]
+    public required ScavSecrets Secrets { get; set; }
 }
 
 public class ApbsBlacklistConfig
@@ -574,6 +576,11 @@ public class PmcSecrets
 {
     [JsonPropertyName("developerSettings")]
     public required DeveloperSettings DeveloperSettings { get; set; }
+}
+public class ScavSecrets
+{
+    [JsonPropertyName("jackpotScavRoubleStack")]
+    public required bool JackpotScavRoubleStack { get; set; }
 }
 public class DeveloperSettings
 {

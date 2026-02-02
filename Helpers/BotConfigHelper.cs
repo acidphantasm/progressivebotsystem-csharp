@@ -272,6 +272,7 @@ public class BotConfigHelper(
         ScavIdenticalWeightConfig();
         ScavLevelDeltas();
         ScavPlateClasses();
+        ScavOmegaLolRoubleStack();
     }
     #region ScavConfigs
     private void ScavPushKeyConfig()
@@ -463,6 +464,49 @@ public class BotConfigHelper(
                 Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier7
             });
         }
+    }
+
+    private void ScavOmegaLolRoubleStack()
+    {
+        if (!ModConfig.Config.ScavBots.Secrets.JackpotScavRoubleStack) 
+            return;
+        
+        var currencyStackSize = _botConfig.CurrencyStackSize;
+        var roubleTpl = ItemTpl.MONEY_ROUBLES;
+        var roubleMaxStack = databaseService.GetItems()[roubleTpl].Properties?.StackMaxSize ?? 1000000;
+        roubleMaxStack = Math.Min(roubleMaxStack, 1000000);
+        
+        var defaultAssaultRoubleStacks = new Dictionary<string, double>
+        {
+            ["10000"] = 51,
+            ["15000"] = 28,
+            ["20000"] = 13,
+            ["25000"] = 8,
+            ["30000"] = 3,
+            ["350000"] = 1,
+            ["5000"] = 200
+        };
+        
+        if (!currencyStackSize.TryGetValue("assault", out var assaultDict))
+        {
+            assaultDict = new Dictionary<string, Dictionary<string, double>>();
+            currencyStackSize["assault"] = assaultDict;
+        }
+        
+        if (!assaultDict.TryGetValue(roubleTpl, out var roubleStacks))
+        {
+            roubleStacks = new Dictionary<string, double>(defaultAssaultRoubleStacks);
+            assaultDict[roubleTpl] = roubleStacks;
+        }
+        
+        const double targetChance = 0.005;
+        var totalWeight = roubleStacks.Values.Sum();
+        var rawWeight = (targetChance * totalWeight) / (1 - targetChance);
+        var finalWeight = Math.Max(1, Math.Round(rawWeight));
+        
+        var key = roubleMaxStack.ToString();
+        roubleStacks[key] = finalWeight;
+        apbsLogger.Debug($"Scav Jackpot rouble stack chance configured. Good luck.");
     }
     #endregion
     private void BossConfigs()
