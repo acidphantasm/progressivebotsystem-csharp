@@ -74,6 +74,53 @@ public class ItemImportService(
         _appearanceCounter = LogAndClear("appearance items", _appearanceCounter);
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
+
+        /*
+        // Debug Validation logging
+        var parentId = new MongoId("6895bb82c4519957df062f82");
+        var maxTier = 7;
+
+        for (var tier = 1; tier <= maxTier; tier++)
+        {
+            var modsData = itemImportTierHelper.GetModsTierData(tier);
+            var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
+
+            // Log modsData
+            if (modsData.TryGetValue(parentId, out var knownItemData))
+            {
+                apbsLogger.Warning($"[TEST][Tier{tier}] Parent {parentId}: {knownItemData.Count} slots");
+
+                foreach (var slot in knownItemData)
+                {
+                    var slotName = slot.Key;
+                    var attachments = slot.Value;
+                    apbsLogger.Warning($"[TEST][Tier{tier}] Slot '{slotName}': {attachments.Count} attachments");
+                }
+            }
+            else
+            {
+                apbsLogger.Warning($"[TEST][Tier{tier}] Parent {parentId} not found in modsData");
+            }
+
+            // Log equipmentData
+            var scavEquip = equipmentData.Scav.Equipment;
+            bool foundInAnySlot = false;
+
+            foreach (var slotKey in scavEquip.Keys)
+            {
+                if (scavEquip[slotKey].ContainsKey(parentId))
+                {
+                    apbsLogger.Warning($"[TEST][Tier{tier}] Scav has {parentId} in slot '{slotKey}'");
+                    foundInAnySlot = true;
+                }
+            }
+
+            if (!foundInAnySlot)
+            {
+                apbsLogger.Warning($"[TEST][Tier{tier}] Parent {parentId} not found in any Scav equipment slot");
+            }
+        }
+        */
     }
 
     /// <summary>
@@ -102,11 +149,7 @@ public class ItemImportService(
             .Where(item => itemImportHelper.EquipmentNeedsImporting(item.Id))
             .ToList();
 
-        Parallel.ForEach(
-            itemsToImport,
-            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2},
-            SortAndStartEquipmentImport
-        );
+        Parallel.ForEach(itemsToImport, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, SortAndStartEquipmentImport);
     }
     
     /// <summary>
@@ -231,7 +274,7 @@ public class ItemImportService(
                 apbsLogger.Debug($"[IMPORT] {templateItem.Id}: Blacklisted Via Mod Config in Tier{tier}");
                 continue;
             }
-
+            
             if (weaponIsVanilla)
             {
                 var context = new ImportContext { RootItemId = templateItem.Id };
@@ -248,38 +291,38 @@ public class ItemImportService(
                 equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "default");
             }
             
-            
             if (_uniqueWeapons.TryAdd(templateItem.Id, 0))
                 Interlocked.Increment(ref _weaponCounter);
+
+            if (string.IsNullOrEmpty(ammoCaliber) || !itemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber)) continue;
             
-            if (!string.IsNullOrEmpty(ammoCaliber) && itemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber))
+            var chambers = templateItem.Properties?.Chambers ?? [];
+            var filter = chambers
+                .SelectMany(c => c?.Properties?.Filters ?? [])
+                .Select(f => f.Filter)
+                .FirstOrDefault(f => f != null);
+
+            var ammoIds = filter ?? itemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
+
+            foreach (var ammoId in ammoIds)
             {
-                var chambers = templateItem.Properties?.Chambers ?? [];
-                var filter = chambers
-                    .SelectMany(c => c?.Properties?.Filters ?? [])
-                    .Select(f => f.Filter)
-                    .FirstOrDefault(f => f != null);
+                if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) 
+                    continue;
 
-                var ammoIds = filter ?? itemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
-
-                foreach (var ammoId in ammoIds)
-                {
-                    if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) 
-                        continue;
-
-                    AddAmmoToBotData(ammoId, ammoCaliber, tier);
-                    
-                    if (_uniqueCalibers.TryAdd(ammoCaliber, 0))
-                    {
-                        Interlocked.Increment(ref _caliberCounter);
-                        apbsLogger.Debug($"[T{tier}] Adding AmmoCaliber: {ammoCaliber} and {ammoIds.Count} ammunition types.");
-                    }
-                }
+                AddAmmoToBotData(ammoId, ammoCaliber, tier);
+                if (!_uniqueCalibers.TryAdd(ammoCaliber, 0)) continue;
+                
+                Interlocked.Increment(ref _caliberCounter);
+                apbsLogger.Debug($"[T{tier}] Adding AmmoCaliber: {ammoCaliber} and {ammoIds.Count} ammunition types.");
             }
-            
-            if (weaponSlotsLength > 0)
+        }
+        
+        if (!weaponIsVanilla && weaponSlotsLength > 0)
+        {
+            var context = new ImportContext { RootItemId = templateItem.Id };
+            context.Ancestors.Add(context.RootItemId);
+            for (var tier = 1; tier <= 7; tier++)
             {
-                var context = new ImportContext { RootItemId = templateItem.Id };
                 StartEquipmentFilterItemImport(templateItem, context, true, tier);
             }
         }
@@ -319,39 +362,44 @@ public class ItemImportService(
                 
                 foreach (var childItemId in filters)
                 {
-                    var childItem = itemHelper.GetItem(childItemId).Value;
-                    if (childItem is null) 
-                        continue;
-
-                    // Skip vanilla attachments
-                    if (itemImportHelper.IsVanillaAttachment(childItem.Id)) 
-                        continue;
-
-                    var comboKey = (ParentId: parentItem.Id, Slot: slotName, ChildId: childItem.Id, Tier: tier);
-                    if (!_processedVanillaWeaponModCombos.TryAdd(comboKey, 0)) 
-                        continue;
-
-                    // Recursion tracking
-                    if (context.ParentStack.Any(x => x.ItemId == childItemId))
+                    if (!context.Ancestors.Add(childItemId))
                     {
                         var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
                         apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Full path: {stackStr} -> {childItemId} (slot '{slotName}')");
                         continue;
                     }
-                    context.ParentStack.Push((childItem.Id, slotName));
 
-                    if (AddModsToBotData(parentItem, childItem, slotName, weaponImport: true, tier, context, true))
+                    context.ParentStack.Push((childItemId, slotName));
+
+                    try
                     {
-                        if (_uniqueVanillaWeaponModAttachment.TryAdd(childItem.Id, 0))
-                            Interlocked.Increment(ref _vanillaWeaponModAttachmentCounter);
+                        var childItem = itemHelper.GetItem(childItemId).Value;
+                        if (childItem is null)
+                            continue;
 
-                        if (!ModConfig.Config.CompatibilityConfig.EnableModdedWeapons)
+                        if (itemImportHelper.IsVanillaAttachment(childItem.Id))
+                            continue;
+
+                        var comboKey = (ParentId: parentItem.Id, Slot: slotName, ChildId: childItem.Id, Tier: tier);
+                        if (!_processedVanillaWeaponModCombos.TryAdd(comboKey, 0))
+                            continue;
+
+                        if (AddModsToBotData(parentItem, childItem, slotName, weaponImport: true, tier, context, true))
                         {
-                            StartVanillaWeaponModAttachmentImport(childItem, tier, context);
+                            if (_uniqueVanillaWeaponModAttachment.TryAdd(childItem.Id, 0))
+                                Interlocked.Increment(ref _vanillaWeaponModAttachmentCounter);
+
+                            if (!ModConfig.Config.CompatibilityConfig.EnableModdedWeapons)
+                            {
+                                StartVanillaWeaponModAttachmentImport(childItem, tier, context);
+                            }
                         }
                     }
-
-                    context.ParentStack.Pop();
+                    finally
+                    {
+                        context.ParentStack.Pop();
+                        context.Ancestors.Remove(childItemId);
+                    }
                 }
             }
         }
@@ -416,11 +464,16 @@ public class ItemImportService(
             
             if (_uniqueEquipment.TryAdd(templateItem.Id, 0))
                 Interlocked.Increment(ref _equipmentCounter);
-
-            if (equipmentSlotsLength <= 0) continue;
-            
+        }
+        
+        if (equipmentSlotsLength > 0)
+        {
             var context = new ImportContext { RootItemId = templateItem.Id };
-            StartEquipmentFilterItemImport(templateItem, context, false, tier);
+            context.Ancestors.Add(context.RootItemId);
+            for (var tier = 1; tier <= 7; tier++)
+            {
+                StartEquipmentFilterItemImport(templateItem, context, false, tier);
+            }
         }
 
         if (_uniqueEquipment.ContainsKey(templateItem.Id))
@@ -454,34 +507,39 @@ public class ItemImportService(
                 var filters = slot.Properties?.Filters?
                     .FirstOrDefault(x => x.Filter is { Count: > 0 })?
                     .Filter;
-
                 if (filters is null) 
                     continue;
-                
+
                 if (filters.Contains(ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP) && ModConfig.Config.CompatibilityConfig.EnableMprSafeGuard)
                     filters.ExceptWith(filters.Where(itemId => itemId != ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP).ToList());
-                    
+
                 foreach (var childItemId in filters)
                 {
-                    if (context.ParentStack.Any(x => x.ItemId == childItemId))
+                    if (!context.Ancestors.Add(childItemId))
                     {
                         var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
                         apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Full path: {stackStr} -> {childItemId} (slot '{slotName}')");
                         continue;
                     }
 
-                    var childItem = itemHelper.GetItem(childItemId);
-                    if (childItem.Value is null) 
-                        continue;
-
-                    if (!AddModsToBotData(parentItem, childItem.Value, slotName, weaponImport, tier, context)) 
-                        continue;
-                    
                     context.ParentStack.Push((childItemId, slotName));
 
-                    StartEquipmentFilterItemImport(childItem.Value, context, weaponImport, tier);
+                    try
+                    {
+                        var childItem = itemHelper.GetItem(childItemId).Value;
+                        if (childItem == null) 
+                            continue;
 
-                    context.ParentStack.Pop();
+                        if (AddModsToBotData(parentItem, childItem, slotName, weaponImport, tier, context))
+                        {
+                            StartEquipmentFilterItemImport(childItem, context, weaponImport, tier);
+                        }
+                    }
+                    finally
+                    {
+                        context.ParentStack.Pop();
+                        context.Ancestors.Remove(childItemId);
+                    }
                 }
             }
         }
@@ -504,37 +562,34 @@ public class ItemImportService(
         var comboKey = (ParentId: parentItem.Id, Slot: slot, ChildId: itemToAdd.Id, Tier: tier);
         if (!_processedModCombos.TryAdd(comboKey, 0))
             return false;
-
-        if (!weaponImport && itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES))
+        
+        switch (weaponImport)
         {
-            if (itemImportHelper.AreHeadphonesMountable(itemToAdd))
+            case false when itemHelper.IsOfBaseclass(itemToAdd.Id, BaseClasses.HEADPHONES):
             {
-                _mountedHeadphones.TryAdd(itemToAdd.Id, 0);
+                if (itemImportHelper.AreHeadphonesMountable(itemToAdd))
+                {
+                    _mountedHeadphones.TryAdd(itemToAdd.Id, 0);
+                }
+                else
+                {
+                    apbsLogger.Debug($"[IMPORT] Item: {itemToAdd.Id} is not mountable headphones but some mod says it is");
+                    return false;
+                }
+                break;
             }
-            else
-            {
-                apbsLogger.Debug($"[IMPORT] Item: {itemToAdd.Id} is not mountable headphones but some mod says it is");
+            case true when !itemImportHelper.AttachmentShouldBeInTier(parentItem, itemToAdd, slot, tier):
                 return false;
-            }
         }
 
-        if (weaponImport && !itemImportHelper.AttachmentShouldBeInTier(parentItem, itemToAdd, slot, tier))
-            return false;
-        
         var modsData = itemImportTierHelper.GetModsTierData(tier);
         lock (_modsLock)
         {
             if (!modsData.TryGetValue(parentItem.Id, out var knownItemData))
-            {
-                knownItemData = new Dictionary<string, HashSet<MongoId>>();
-                modsData[parentItem.Id] = knownItemData;
-            }
+                modsData[parentItem.Id] = knownItemData = new Dictionary<string, HashSet<MongoId>>();
 
             if (!knownItemData.TryGetValue(slot, out var knownAttachmentIds))
-            {
-                knownAttachmentIds = new HashSet<MongoId>();
-                knownItemData[slot] = knownAttachmentIds;
-            }
+                knownItemData[slot] = knownAttachmentIds = new HashSet<MongoId>();
 
             if (knownAttachmentIds.Add(itemToAdd.Id))
             {
@@ -563,6 +618,7 @@ public class ItemImportService(
     private sealed class ImportContext
     {
         public readonly Stack<(MongoId ItemId, string SlotName)> ParentStack = new();
+        public readonly HashSet<MongoId> Ancestors = new();
         public MongoId RootItemId { get; init; }
         public int CurrentDepth;
         public int MaxDepth;

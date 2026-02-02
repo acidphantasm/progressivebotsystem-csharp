@@ -124,7 +124,8 @@ public class ItemImportHelper(
         ItemTpl.AMMO_23X75_CHER7M,
         ItemTpl.AMMO_40X46_M716,
         ItemTpl.AMMO_556X45_6MM_BB,
-        "683df636e1e3fa1bf165f7ed"
+        "683df636e1e3fa1bf165f7ed", // Weird dual caliber gun from, uhhh, ECOT? I dont member
+        "660b2d05cec10101410e7d7b" // avenger a10 warthog weapon from fire support
     ];
 
     private readonly FrozenSet<MongoId> _bannedAttachments =
@@ -990,24 +991,25 @@ public class ItemImportHelper(
     public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd, string slot, int tier)
     {
         var isHighTier = tier >= 4;
+        var hasDualOptions = HasLowerAndUpperOptionsAvailable(parentItem, slot, slot.StartsWith("mod_magazine") ? 30 : 8);
 
-        // Magazine Size
+        // MAGAZINES
         if (slot.StartsWith("mod_magazine"))
         {
-            if (!HasLowerAndUpperOptionsAvailable(parentItem, slot, 30))
+            if (!hasDualOptions)
                 return true;
 
             var maxCount = itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount;
             if (!maxCount.HasValue)
                 return true;
-
+            
             return isHighTier ? maxCount.Value >= 30 : maxCount.Value <= 30;
         }
 
-        // Ergonomics Check
-        if (slot.StartsWith("mod_stock") || slot.StartsWith("mod_handguard") || slot.StartsWith("mod_reciever"))
+        // STOCKS / HANDGUARDS / RECEIVERS / PISTOLGRIP
+        if (slot.StartsWith("mod_stock") || slot.StartsWith("mod_handguard") || slot.StartsWith("mod_reciever") || slot.StartsWith("mod_pistol_grip"))
         {
-            if (!HasLowerAndUpperOptionsAvailable(parentItem, slot, 8))
+            if (!hasDualOptions)
                 return true;
 
             var ergo = itemToAdd.Properties?.Ergonomics;
@@ -1017,12 +1019,16 @@ public class ItemImportHelper(
             return isHighTier ? ergo.Value >= 8 : ergo.Value <= 8;
         }
 
-        // Scopes
+        // SCOPES
         if (slot.StartsWith("mod_scope"))
+        {
             return isHighTier && _tier4Optics.Contains(itemToAdd.Id);
+        }
 
         return true;
     }
+
+
 
     private bool HasLowerAndUpperOptionsAvailable(TemplateItem parentItem, string slot, int thresholdValue)
     {
