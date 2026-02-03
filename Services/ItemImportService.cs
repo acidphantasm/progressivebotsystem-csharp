@@ -39,8 +39,9 @@ public class ItemImportService(
     private int _equipmentCounter = 0;
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueEquipmentAttachments = new();
     private int _equipmentAttachmentCounter = 0;
-    
-    private int _appearanceCounter = 0;
+
+    private int _bearClothingCounter = 0;
+    private int _usecClothingCounter = 0;
     
     private readonly ConcurrentDictionary<MongoId, byte> _mountedHeadphones = new();
     
@@ -50,10 +51,7 @@ public class ItemImportService(
     
     public async Task OnLoad()
     {
-        if (!ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
-            && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments
-            && !ModConfig.Config.CompatibilityConfig.EnableModdedClothing
-            && !ModConfig.Config.CompatibilityConfig.EnableModdedWeapons)
+        if (itemImportHelper.ShouldSkipImport())
             return;
         
         var stopwatch = Stopwatch.StartNew();
@@ -71,7 +69,8 @@ public class ItemImportService(
         _vanillaWeaponModAttachmentCounter = LogAndClear("unique weapon attachments added to vanilla items", _vanillaWeaponModAttachmentCounter, _uniqueVanillaWeaponModAttachment);
         _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipmentAttachments);
         _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
-        _appearanceCounter = LogAndClear("appearance items", _appearanceCounter);
+        _bearClothingCounter = LogAndClear("Bear bodies and legs", _bearClothingCounter);
+        _usecClothingCounter = LogAndClear("Usec bodies and legs", _usecClothingCounter);
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
 
@@ -148,8 +147,18 @@ public class ItemImportService(
         var itemsToImport = allItems.Values
             .Where(item => itemImportHelper.EquipmentNeedsImporting(item.Id))
             .ToList();
-
+        
         Parallel.ForEach(itemsToImport, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, SortAndStartEquipmentImport);
+        
+        var customizationItems = databaseService.GetCustomization();
+        var customizationToImport = customizationItems.Values
+            .Where(itemImportHelper.CustomizationNeedsImporting)
+            .ToList();
+        
+        foreach (var item in customizationToImport)
+        {
+            SortAndStartCustomizationImport(item);
+        }
     }
     
     /// <summary>
@@ -254,6 +263,45 @@ public class ItemImportService(
         
         // Log if something managed to make it this far and not get sorted for import.
         apbsLogger.Error($"[IMPORT][EQUIP][FAIL] No Classification Handling. Report This. ItemId: {itemId} | Name: {itemHelper.GetItemName(itemId)}");
+    }
+
+    private void SortAndStartCustomizationImport(CustomizationItem templateItem)
+    {
+        if (templateItem.Properties.Side.Contains("Bear"))
+            _bearClothingCounter++;
+        if (templateItem.Properties.Side.Contains("Usec"))
+            _usecClothingCounter++;
+        
+        var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
+        for (var tier = startTier; tier <= 7; tier++)
+        {
+            var clothingData = itemImportTierHelper.GetAppearanceTierData(tier);
+            
+            if (templateItem.Properties.Side.Contains("Bear"))
+            {
+                switch (templateItem.Properties.BodyPart)
+                {
+                    case "Feet":
+                        clothingData.PmcBear["appearance"].Feet[templateItem.Id] = 1;
+                        break;
+                    case "Body":
+                        clothingData.PmcBear["appearance"].Body[templateItem.Id] = 1;
+                        break;
+                }
+            }
+            if (templateItem.Properties.Side.Contains("Usec"))
+            {
+                switch (templateItem.Properties.BodyPart)
+                {
+                    case "Feet":
+                        clothingData.PmcUsec["appearance"].Feet[templateItem.Id] = 1;
+                        break;
+                    case "Body":
+                        clothingData.PmcUsec["appearance"].Body[templateItem.Id] = 1;
+                        break;
+                }
+            }
+        }
     }
 
     /// <summary>

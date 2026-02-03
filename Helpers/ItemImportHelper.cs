@@ -8,6 +8,7 @@ using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using Path = System.IO.Path;
 
@@ -18,6 +19,7 @@ public class ItemImportHelper(
     ApbsLogger apbsLogger,
     JsonUtil jsonUtil,
     ItemHelper itemHelper,
+    DatabaseService databaseService,
     ItemImportTierHelper itemImportTierHelper,
     BotBlacklistHelper botBlacklistHelper)
 {
@@ -264,6 +266,18 @@ public class ItemImportHelper(
     ];
     
     /// <summary>
+    ///     Helper to skip importing entirely
+    /// </summary>
+    public bool ShouldSkipImport()
+    {
+        return !ModConfig.Config.CompatibilityConfig.EnableModdedEquipment &&
+               !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments &&
+               !ModConfig.Config.CompatibilityConfig.EnableModdedWeapons &&
+               (!ModConfig.Config.CompatibilityConfig.EnableModdedClothing ||
+                ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance);
+    }
+    
+    /// <summary>
     ///     Validates any configuration options, corrects them if needed and logs if they're invalid
     /// </summary>
     public void ValidateConfig()
@@ -271,7 +285,7 @@ public class ItemImportHelper(
         if (ModConfig.Config.CompatibilityConfig.InitalTierAppearance < 1 || ModConfig.Config.CompatibilityConfig.InitalTierAppearance > 7)
         {
             ModConfig.Config.CompatibilityConfig.InitalTierAppearance = 3;
-            apbsLogger.Warning($"Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp.");
+            apbsLogger.Error($"Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp.");
         }
 
         _fullModConfigBlacklist = BuildFullModConfigBlacklistByTier();
@@ -316,12 +330,14 @@ public class ItemImportHelper(
         var equipmentTask = ValidateVanillaEquipmentDatabase();
         var ammoTask = ValidateVanillaAmmoDatabase();
         var attachmentTask = ValidateVanillaAttachmentDatabase();
+        var clothingTask = ValidateVanillaClothingDatabase();
 
         await Task.WhenAll(equipmentTask, ammoTask, attachmentTask);
 
         _vanillaEquipmentSlotDictionary = equipmentTask.Result;
         _vanillaAmmoDictionary = ammoTask.Result;
         _vanillaAttachmentLookup = attachmentTask.Result;
+        _vanillaClothingBotSlotDictionary = clothingTask.Result;
 
         _vanillaEquipmentLookup = _vanillaEquipmentSlotDictionary
             .SelectMany(x => x.Value)
@@ -331,8 +347,11 @@ public class ItemImportHelper(
             .SelectMany(x => x.Value)
             .ToHashSet();
 
-        // _vanillaClothingBotSlotDictionary = await ValidateVanillaClothingDatabase();
-
+        _vanillaClothingLookup = _vanillaClothingBotSlotDictionary
+            .SelectMany(x => x.Value)
+            .SelectMany(x => x.Value)
+            .ToHashSet();
+        
         _alreadyRan = true;
     }
     
@@ -512,9 +531,66 @@ public class ItemImportHelper(
     /// <summary>
     ///     Deserializes all the clothing JSON's from the VanillaMappings and adds those items to the dictionary
     /// </summary>
-    private Task<Dictionary<string, Dictionary<string, List<MongoId>>>> ValidateVanillaClothingDatabase()
+    private async Task<Dictionary<string, Dictionary<string, HashSet<MongoId>>>> ValidateVanillaClothingDatabase()
     {
-        return null;
+        var returnDictionary = new Dictionary<string, Dictionary<string, HashSet<MongoId>>>();
+
+        var clothingFiles = new (string FileName, string Side, string Slot)[]
+        {
+            ("BearFeet.json", "pmcBEAR", "feet"),
+            ("BearHands.json", "pmcBEAR", "hands"),
+            ("BearHead.json", "pmcBEAR", "head"),
+            ("BearBody.json", "pmcBEAR", "body"),
+
+            ("UsecFeet.json", "pmcUSEC", "feet"),
+            ("UsecHands.json", "pmcUSEC", "hands"),
+            ("UsecHead.json", "pmcUSEC", "head"),
+            ("UsecBody.json", "pmcUSEC", "body")
+        };
+
+        foreach (var (fileName, side, slot) in clothingFiles)
+        {
+            await AddClothingToModAsync(returnDictionary, fileName, side, slot);
+        }
+
+        foreach (var (side, slotDict) in returnDictionary)
+        {
+            foreach (var (slot, items) in slotDict)
+            {
+                apbsLogger.Debug($"[VANILLA] Clothing Side: {side}, Slot: {slot} contains {items.Count} items");
+            }
+        }
+
+        return returnDictionary;
+    }
+
+    /// <summary>
+    /// Adds clothing items to the vanilla dictionary
+    /// </summary>
+    private async Task AddClothingToModAsync(Dictionary<string, Dictionary<string, HashSet<MongoId>>> dictionary, string fileName, string side, string slot)
+    {
+        var clothingData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)) ?? throw new ArgumentNullException(fileName);
+        
+        if (!dictionary.TryGetValue(side, out var slotDict))
+        {
+            slotDict = new Dictionary<string, HashSet<MongoId>>();
+            dictionary[side] = slotDict;
+        }
+
+        if (!slotDict.TryGetValue(slot, out var items))
+        {
+            items = new HashSet<MongoId>();
+            slotDict[slot] = items;
+        }
+
+        foreach (var itemId in clothingData.Keys)
+        {
+            var item = databaseService.GetCustomization();
+            if (!item.TryGetValue(itemId, out var itemData))
+                continue;
+            
+            items.Add(itemId);
+        }
     }
 
     /// <summary>
@@ -553,8 +629,34 @@ public class ItemImportHelper(
 
         var isEquipment = ModConfig.Config.CompatibilityConfig.EnableModdedEquipment &&
                            itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
-
+        
         return isWeapon || isEquipment;
+    }
+
+    /// <summary>
+    ///     Check if the item is banned from import
+    ///     If it's a customization and also enabled return that
+    /// </summary>
+    public bool CustomizationNeedsImporting(CustomizationItem templateItem)
+    {
+        if (_bannedItems.Contains(templateItem.Id)) 
+            return false;
+
+        var isCustomization = ModConfig.Config.CompatibilityConfig.EnableModdedClothing && 
+                              !ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance &&
+                              !_vanillaClothingLookup.Contains(templateItem.Id);
+
+        if (!isCustomization) 
+            return false;
+        
+        if (templateItem.Properties?.Side is null)
+            return false;
+        
+        if (!templateItem.Properties.Side.Contains("Bear") &&
+            !templateItem.Properties.Side.Contains("Usec")) 
+            return false;
+            
+        return templateItem.Properties.BodyPart is "Body" or "Feet";
     }
 
     /// <summary>
