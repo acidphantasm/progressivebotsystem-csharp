@@ -893,7 +893,7 @@ public class ItemImportHelper(
         var unlootableFromSide = new List<PlayerSideMask> { PlayerSideMask.Bear, PlayerSideMask.Usec, PlayerSideMask.Savage };
         itemDetails.Properties.Unlootable = true;
         itemDetails.Properties.UnlootableFromSide = unlootableFromSide;
-        itemDetails.Properties.UnlootableFromSlot = "Armband";
+        itemDetails.Properties.UnlootableFromSlot = "ArmBand";
     }
     
     /// <summary>
@@ -998,7 +998,7 @@ public class ItemImportHelper(
         var armorClass = templateItem.Properties?.ArmorClass ?? 0;
         return slot switch
         {
-            ApbsEquipmentSlots.ArmBand => 3,
+            ApbsEquipmentSlots.ArmBand => 300,
             ApbsEquipmentSlots.ArmorVest => 10,
             ApbsEquipmentSlots.ArmouredRig => 7,
             ApbsEquipmentSlots.Backpack => 5,
