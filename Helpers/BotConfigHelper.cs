@@ -6,6 +6,7 @@ using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Utils;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services;
@@ -277,44 +278,65 @@ public class BotConfigHelper(
     #region ScavConfigs
     private void ScavPushKeyConfig()
     {
-        if (!ModConfig.Config.ScavBots.KeyConfig.AddAllKeysToScavs &&
-            !ModConfig.Config.ScavBots.KeyConfig.AddOnlyKeyCardsToScavs &&
-            !ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs) return;
+        var keyConfig = ModConfig.Config.ScavBots.KeyConfig;
+        
+        if (!keyConfig.AddAllKeysToScavs &&
+            !keyConfig.AddOnlyKeyCardsToScavs &&
+            !keyConfig.AddOnlyMechanicalKeysToScavs) 
+            return;
 
-        apbsLogger.Debug("Setting Scav Key Loot");
-        if (!databaseService.GetBots().Types.TryGetValue("assault", out var assaultBot))
+        var bots = databaseService.GetBots().Types;
+        if (!bots.TryGetValue("assault", out var assaultBot))
         {
-            apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. What did you do?");
+            apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. Key assignment aborted.");
+            return;
         }
 
-        if (!databaseService.GetBots().Types.TryGetValue("marksman", out var marksmanBot))
-        {
-            apbsLogger.Warning("[ScavKeyConfig] Marksman bot type not found. What did you do?");
-        }
+        if (assaultBot is null) 
+            return;
 
         var itemValueCollection = databaseService.GetItems().Values;
-        var filteredKeyItems = itemValueCollection.Where(item => itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()));
+        var filteredKeyItems = itemValueCollection
+            .Where(item => itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()) && !VanillaItemConstants.LabyrinthKeys.Contains(item.Id))
+            .ToList();
 
         var assaultBotCount = 0;
-        var marksmanBotCount = 0;
-        foreach (var item in filteredKeyItems ?? [])
+        var assaultBotTotalWeight = 0;
+        var keyProbability = keyConfig.KeyProbability;
+        if (keyProbability > 0.5)
         {
-            if (VanillaItemConstants.LabyrinthKeys.Contains(item.Id)) continue;
-            if (assaultBot is not null && assaultBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var assaultItemWeight)) assaultItemWeight = 1;
-            else if (assaultBot is not null)
+            apbsLogger.Warning($"[ScavKeyConfig] KeyProbability of {keyProbability} exceeds max of 0.5. Capping to 0.5.");
+            keyProbability = 0.5;
+        }
+        
+        double GetNonKeyBackpackWeight(BotType bot)
+        {
+            return bot.BotInventory.Items.Backpack.Where(kvp => filteredKeyItems.All(f => f.Id != kvp.Key)).Sum(kvp => kvp.Value);
+        }
+
+        void ApplyKeys(BotType bot, ref int counter, ref int totalWeight)
+        {
+            var nonKeyWeight = GetNonKeyBackpackWeight(bot);
+            var totalKeyWeight = (int)Math.Ceiling(nonKeyWeight * keyProbability);
+            if (totalKeyWeight <= 0) return;
+
+            var weightPerKey = Math.Max(1, totalKeyWeight / filteredKeyItems.Count);
+            foreach (var keyItem in filteredKeyItems)
             {
-                assaultBot.BotInventory.Items.Backpack.Add(item.Id, 1);
-                assaultBotCount++;
-            }
-            
-            if (marksmanBot is not null && marksmanBot.BotInventory.Items.Backpack.TryGetValue(item.Id, out var marksmanItemWeight)) marksmanItemWeight = 1;
-            else if (marksmanBot is not null)
-            {
-                marksmanBot.BotInventory.Items.Backpack.Add(item.Id, 1);
-                marksmanBotCount++;
+                bot.BotInventory.Items.Backpack[keyItem.Id] = weightPerKey;
+                counter++;
+                totalWeight += weightPerKey;
             }
         }
-        apbsLogger.Debug($"Added {assaultBotCount} keys to Scavs and {marksmanBotCount} keys to Marksman. Key Class Config: {GetKeyConfig()}");
+
+        var assaultBotNonKeyWeight = GetNonKeyBackpackWeight(assaultBot);
+        var totalBackpackWeight = assaultBotNonKeyWeight + assaultBotTotalWeight;
+        var perKeyWeight = filteredKeyItems.Count > 0 ? (double)assaultBotTotalWeight / filteredKeyItems.Count : 0;
+        var perKeyChance = totalBackpackWeight > 0 ? perKeyWeight / totalBackpackWeight : 0;
+
+        ApplyKeys(assaultBot, ref assaultBotCount, ref assaultBotTotalWeight);
+
+        apbsLogger.Debug($"Added {assaultBotCount} key types to Scavs, Key Class Config: {GetKeyConfig()}, Key Probability: {keyProbability} - Total Key Chance (per item roll): {perKeyChance:P2}");
     }
     private MongoId GetKeyConfig()
     {

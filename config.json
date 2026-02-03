@@ -982,7 +982,8 @@
     "keyConfig": {
       "addAllKeysToScavs": false,
       "addOnlyMechanicalKeysToScavs": false,
-      "addOnlyKeyCardsToScavs": false
+      "addOnlyKeyCardsToScavs": false,
+      "keyProbability": 0.15
     },
     "additionalOptions": {
       "enableScavAttachmentTiering": false,

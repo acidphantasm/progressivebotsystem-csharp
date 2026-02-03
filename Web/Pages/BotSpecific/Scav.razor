@@ -738,15 +738,45 @@
                     <MudItem xs="1">
                         @if (MainLayout.pendingChanges.Contains("_scavAddKeycards") && MainLayout._appUndoButtonToggle)
                         {
-                        <MudButton @onclick="undoScavKeyCards" Variant="Variant.Filled" Color="Color.Inherit"
-                                   Size="Size.Small">Undo
-                        </MudButton>
+                            <MudButton @onclick="undoScavKeyCards" Variant="Variant.Filled" Color="Color.Inherit"
+                                       Size="Size.Small">Undo
+                            </MudButton>
                         }
                         else if (_scavAddKeycards != false && MainLayout._appDefaultButtonToggle)
                         {
-                        <MudButton @onclick="defaultScavKeyCards" Variant="Variant.Filled" Color="Color.Dark"
-                                   Size="Size.Small">Default
-                        </MudButton>
+                            <MudButton @onclick="defaultScavKeyCards" Variant="Variant.Filled" Color="Color.Dark"
+                                       Size="Size.Small">Default
+                            </MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1"/>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Chance of key being picked for backpack loot (rolled once per item rolled to be added). 0.5 = roughly 50%" Color="Color.Primary"
+                                        Placement="Placement.Right" Arrow="true">
+                                <MudText>Key Probability</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scavAddKeycards && !_scavAddMechanicalKeys && !_scavAddAllKeys">@_scavKeyProbability</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scavKeyProbability" ValueLabel="true" Min="0.01" Max="0.5" Step="0.01" Color="Color.Info" Size="Size.Medium" Disabled="!_scavAddKeycards && !_scavAddMechanicalKeys && !_scavAddAllKeys" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_scavKeyProbability") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoScavKeyProbability" Variant="Variant.Filled" Color="Color.Inherit"
+                                       Size="Size.Small">Undo
+                            </MudButton>
+                        }
+                        else if (Math.Abs(_scavKeyProbability - 0.15) > 0.00001 && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultScavKeyProbability" Variant="Variant.Filled" Color="Color.Dark"
+                                       Size="Size.Small">Default
+                            </MudButton>
                         }
                     </MudItem>
 
@@ -3482,6 +3512,18 @@
     }
     private void undoScavKeyCards() => _scavAddKeycards = ModConfig.OriginalConfig.ScavBots.KeyConfig.AddOnlyKeyCardsToScavs;
     private void defaultScavKeyCards() => _scavAddKeycards = false;
+    
+    private double _scavKeyProbability
+    {
+        get => ModConfig.Config.ScavBots.KeyConfig.KeyProbability;
+        set
+        {
+            ModConfig.Config.ScavBots.KeyConfig.KeyProbability = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.KeyConfig.KeyProbability);
+        }
+    }
+    private void undoScavKeyProbability() => _scavKeyProbability = ModConfig.OriginalConfig.ScavBots.KeyConfig.KeyProbability;
+    private void defaultScavKeyProbability() => _scavKeyProbability = 0.15;
     #endregion
     #region OTHER
     private bool _scavAttachmentTieringEnabled

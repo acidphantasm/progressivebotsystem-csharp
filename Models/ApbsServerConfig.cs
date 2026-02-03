@@ -214,6 +214,8 @@ public class KeyConfig
     public bool AddOnlyMechanicalKeysToScavs { get; set; }
     [JsonPropertyName("addOnlyKeyCardsToScavs")]
     public bool AddOnlyKeyCardsToScavs { get; set; }
+    [JsonPropertyName("keyProbability")]
+    public double KeyProbability { get; set; }
 }
 public class GeneralConfig
 {
