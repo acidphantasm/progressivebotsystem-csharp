@@ -525,8 +525,7 @@ public class CustomBotInventoryGenerator
             );
 
             // Edge case: Filter the armor items mod pool if bot exists in config dict + config has armor slot
-            if (
-                _botConfig.Equipment.ContainsKey(settings.BotData.EquipmentRole)
+            if (_botConfig.Equipment.ContainsKey(settings.BotData.EquipmentRole)
                 && settings.RandomisationDetails?.RandomisedArmorSlots != null
                 && settings.RandomisationDetails.RandomisedArmorSlots.Contains(settings.RootEquipmentSlot.ToString())
             )
@@ -555,8 +554,9 @@ public class CustomBotInventoryGenerator
                 settings.Inventory.Items.Add(item);
             }
 
-            // Cache container ready for items to be added in
-            if (_equipmentSlotsWithInventory.Contains(settings.RootEquipmentSlot))
+            // Cache container ready for items to be added in (or pack n strap belt)
+            if (_equipmentSlotsWithInventory.Contains(settings.RootEquipmentSlot) || 
+                (settings.RootEquipmentSlot == ApbsEquipmentSlots.ArmBand && CheckIfPackNStrap(item.Template)))
             {
                 if (settings.RootEquipmentSlot == ApbsEquipmentSlots.ArmouredRig)
                     settings.RootEquipmentSlot = ApbsEquipmentSlots.TacticalVest;
@@ -565,11 +565,19 @@ public class CustomBotInventoryGenerator
                 _botInventoryContainerService.AddEmptyContainerToBot(settings.BotId, newRootEquipmentSlot, item);
             }
             
-            
             return true;
         }
         
         return false;
+    }
+
+    private bool CheckIfPackNStrap(MongoId itemId)
+    {
+        var itemDetails = _itemHelper.GetItem(itemId).Value;
+        if (itemDetails is null)
+            return false;
+
+        return itemDetails.Parent == "6815465859b8c6ff13f94026";
     }
     
     private IEnumerable<DesiredWeapons> GetDesiredWeaponsForBot(ApbsChances equipmentChances)

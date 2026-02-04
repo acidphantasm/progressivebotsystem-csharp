@@ -121,9 +121,13 @@ public class ApbsExternalInventoryMagGen(
                 );
             }
 
+            HashSet<EquipmentSlots> inventorySlots = ModConfig.WttPackNStrap
+                ? [EquipmentSlots.ArmBand, EquipmentSlots.TacticalVest, EquipmentSlots.Pockets]
+                : [EquipmentSlots.TacticalVest, EquipmentSlots.Pockets];
+            
             var fitsIntoInventory = botGeneratorHelper.AddItemWithChildrenToEquipmentSlot(
                 inventoryMagGen.GetBotId(),
-                [EquipmentSlots.TacticalVest, EquipmentSlots.Pockets],
+                inventorySlots,
                 magazineWithAmmo[0].Id,
                 magazineTpl,
                 magazineWithAmmo,

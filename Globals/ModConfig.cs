@@ -58,6 +58,7 @@ public class ModConfig : IOnLoad
 
     public static bool WttBackport;
     public static bool PrestigeBackport;
+    public static bool WttPackNStrap;
     
     public static int CurrentVanillaMappingManifestVersion = 1;
     public static int CurrentPresetManifestVersion = 1;
