@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.1.1",
+    "ReleaseDate": "February 3, 2025",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved preset builder incorrectly saving equipment data"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.0",
     "ReleaseDate": "February 2, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Blacklisting functionality has returned",
       "Bot Equipment logging functionality has returned",

@@ -267,7 +267,14 @@ public class DataLoader(
             Directory.CreateDirectory(folderPath);
 
             var filePath = Path.Combine(folderPath, fileName);
-            await File.WriteAllTextAsync(filePath, jsonUtil.Serialize(data, true));
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Converters = { new JsonStringEnumConverter(), new MongoIdDictionaryKeyConverter() } 
+            };
+
+            var json = JsonSerializer.Serialize(data, options);
+            await File.WriteAllTextAsync(filePath, json);
         }
 
         foreach (var kvp in AllTierDataClean.Tiers)
