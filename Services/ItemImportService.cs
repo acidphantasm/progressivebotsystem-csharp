@@ -67,7 +67,7 @@ public class ItemImportService(
         _weaponCounter = LogAndClear("weapons", _weaponCounter, _uniqueWeapons);
         _weaponAttachmentCounter = LogAndClear("unique weapon attachments", _weaponAttachmentCounter, _uniqueWeaponAttachments);
         _vanillaWeaponModAttachmentCounter = LogAndClear("unique weapon attachments added to vanilla items", _vanillaWeaponModAttachmentCounter, _uniqueVanillaWeaponModAttachment);
-        _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipmentAttachments);
+        _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipment);
         _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
         _bearClothingCounter = LogAndClear("Bear bodies and legs", _bearClothingCounter);
         _usecClothingCounter = LogAndClear("Usec bodies and legs", _usecClothingCounter);
