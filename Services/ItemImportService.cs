@@ -26,22 +26,22 @@ public class ItemImportService(
     private readonly ConcurrentDictionary<(MongoId ParentId, string Slot, MongoId ChildId, int Tier), byte> _processedVanillaWeaponModCombos = new();
 
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueWeapons = new();
-    private int _weaponCounter = 0;
+    private int _weaponCounter;
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueWeaponAttachments = new();
-    private int _weaponAttachmentCounter = 0;
+    private int _weaponAttachmentCounter;
     private readonly ConcurrentDictionary<string, byte> _uniqueCalibers = new();
-    private int _caliberCounter = 0;
+    private int _caliberCounter;
     
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueVanillaWeaponModAttachment = new();
-    private int _vanillaWeaponModAttachmentCounter = 0;
+    private int _vanillaWeaponModAttachmentCounter;
     
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueEquipment = new();
-    private int _equipmentCounter = 0;
+    private int _equipmentCounter;
     private readonly ConcurrentDictionary<MongoId, byte> _uniqueEquipmentAttachments = new();
-    private int _equipmentAttachmentCounter = 0;
+    private int _equipmentAttachmentCounter;
 
-    private int _bearClothingCounter = 0;
-    private int _usecClothingCounter = 0;
+    private int _bearClothingCounter;
+    private int _usecClothingCounter;
     
     private readonly ConcurrentDictionary<MongoId, byte> _mountedHeadphones = new();
     
@@ -346,7 +346,7 @@ public class ItemImportService(
             
             var chambers = templateItem.Properties?.Chambers ?? [];
             var filter = chambers
-                .SelectMany(c => c?.Properties?.Filters ?? [])
+                .SelectMany(c => c.Properties?.Filters ?? [])
                 .Select(f => f.Filter)
                 .FirstOrDefault(f => f != null);
 
@@ -387,7 +387,6 @@ public class ItemImportService(
         if (weaponSlots is null || weaponSlots.Count == 0)
             return;
 
-        context.RecursiveCalls++;
         context.CurrentDepth++;
         context.MaxDepth = Math.Max(context.MaxDepth, context.CurrentDepth);
         
@@ -432,7 +431,7 @@ public class ItemImportService(
                         if (!_processedVanillaWeaponModCombos.TryAdd(comboKey, 0))
                             continue;
 
-                        if (AddModsToBotData(parentItem, childItem, slotName, weaponImport: true, tier, context, true))
+                        if (AddModsToBotData(parentItem, childItem, slotName, weaponImport: true, tier, true))
                         {
                             if (_uniqueVanillaWeaponModAttachment.TryAdd(childItem.Id, 0))
                                 Interlocked.Increment(ref _vanillaWeaponModAttachmentCounter);
@@ -540,7 +539,6 @@ public class ItemImportService(
         var parentItemSlots = parentItem.Properties?.Slots?.ToList();
         if (parentItemSlots is null || parentItemSlots.Count == 0) return;
 
-        context.RecursiveCalls++;
         context.CurrentDepth++;
         context.MaxDepth = Math.Max(context.MaxDepth, context.CurrentDepth);
 
@@ -578,7 +576,7 @@ public class ItemImportService(
                         if (childItem == null) 
                             continue;
 
-                        if (AddModsToBotData(parentItem, childItem, slotName, weaponImport, tier, context))
+                        if (AddModsToBotData(parentItem, childItem, slotName, weaponImport, tier))
                         {
                             StartEquipmentFilterItemImport(childItem, context, weaponImport, tier);
                         }
@@ -602,7 +600,7 @@ public class ItemImportService(
     ///     Checks if the item should be imported first
     ///     Should safely add the item to the bot data, because if it fails at any point it adds the relevant data
     /// </summary>
-    private bool AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport, int tier, ImportContext context, bool isFromVanilla = false)
+    private bool AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport, int tier, bool isFromVanilla = false)
     {
         if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd, slot))
             return false;
@@ -670,6 +668,5 @@ public class ItemImportService(
         public MongoId RootItemId { get; init; }
         public int CurrentDepth;
         public int MaxDepth;
-        public int RecursiveCalls;
     }
 }
