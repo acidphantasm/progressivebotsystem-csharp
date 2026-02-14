@@ -28,77 +28,75 @@ public class BotEquipmentHelper(
     
     private int CheckChadOrChill(int tierNumber)
     {
-        if (ModConfig.Config.GeneralConfig.OnlyChads && ModConfig.Config.GeneralConfig.TarkovAndChill) return randomUtil.GetInt(1, 7);
-        if (ModConfig.Config.GeneralConfig.OnlyChads) return 7;
-        if (ModConfig.Config.GeneralConfig.TarkovAndChill) return 1;
-        if (ModConfig.Config.GeneralConfig.BlickyMode) return 0;
+        if (ModConfig.Config.GeneralConfig.OnlyChads)
+            return ModConfig.Config.GeneralConfig.TarkovAndChill
+                ? randomUtil.GetInt(1, 7)
+                : 7;
 
-        return tierNumber;
+        if (ModConfig.Config.GeneralConfig.TarkovAndChill)
+            return 1;
+
+        return ModConfig.Config.GeneralConfig.BlickyMode ? 0 : tierNumber;
     }
     
     private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-        {
-            apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
-            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ModsData); // fallback to tier 1
-        }
+        if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
+            return cloner.Clone(tierData.ModsData) ?? throw new InvalidOperationException();
+        
+        apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
+        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ModsData) ?? throw new InvalidOperationException(); // fallback to tier 1
 
-        return cloner.Clone(tierData.ModsData);
     }
 
     private ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-        {
-            apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
-            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ChancesData); // fallback to tier 1
-        }
+        if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
+            return cloner.Clone(tierData.ChancesData) ?? throw new InvalidOperationException();
+        
+        apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
+        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ChancesData) ?? throw new InvalidOperationException(); // fallback to tier 1
 
-        return cloner.Clone(tierData.ChancesData);
     }
 
     private AmmoTierData GetTierAmmo(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-        {
-            apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
-            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AmmoData); // fallback to tier 1
-        }
+        if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
+            return cloner.Clone(tierData.AmmoData) ?? throw new InvalidOperationException();
+        
+        apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
+        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AmmoData) ?? throw new InvalidOperationException(); // fallback to tier 1
 
-        return cloner.Clone(tierData.AmmoData);
     }
 
     private EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-        {
-            apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
-            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].EquipmentData); // fallback to tier 1
-        }
+        if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
+            return cloner.Clone(tierData.EquipmentData) ?? throw new InvalidOperationException();
+        
+        apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
+        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].EquipmentData) ?? throw new InvalidOperationException(); // fallback to tier 1
 
-        return cloner.Clone(tierData.EquipmentData);
     }
 
     private AppearanceTierData GetTierAppearance(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-        {
-            apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
-            return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AppearanceData); // fallback to tier 1
-        }
+        if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
+            return cloner.Clone(tierData.AppearanceData) ?? throw new InvalidOperationException();
+        
+        apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
+        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AppearanceData) ?? throw new InvalidOperationException(); // fallback to tier 1
 
-        return cloner.Clone(tierData.AppearanceData);
     }
 
     public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetModsByBotRole(string botRole, int tierNumber)
