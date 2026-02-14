@@ -36,14 +36,14 @@ public class BotLogHelper(
 
         // Local helper methods to reduce repeating code
         string Tpl(Item? item) => item?.Template.ToString() ?? "Unknown";
-        Item? Slot(string slotId) => botInventory.FirstOrDefault(i => i?.SlotId == slotId);
+        Item? Slot(string slotId) => botInventory.FirstOrDefault(i => i.SlotId == slotId);
         Item? Caliber(Item? weapon) => weapon == null ? null : botInventory.FirstOrDefault(i => i is { SlotId: "patron_in_weapon", ParentId: not null } && i.ParentId == weapon.Id);
         Item? Plate(string slotId, string parentId) => botInventory.FirstOrDefault(i => i.SlotId == slotId && i.ParentId == parentId);
         
         // Bot Information
         if (botInfo.TryGetExtensionData(out var extensionData))
         {
-            if (extensionData.TryGetValue("Tier", out var tierElement) && tierElement is JsonElement { ValueKind: JsonValueKind.Number } jsonElement)
+            if (extensionData != null && extensionData.TryGetValue("Tier", out var tierElement) && tierElement is JsonElement { ValueKind: JsonValueKind.Number } jsonElement)
             {
                 returnValue.Tier = jsonElement.GetInt32();
                 if (tierHelper.GetTierByLevel(botInfo.Level ?? 0) != returnValue.Tier)
@@ -107,11 +107,6 @@ public class BotLogHelper(
             !value.Contains("Unknown", StringComparison.OrdinalIgnoreCase);
         bool RemoveNonArmouredRigs(string value) => !new[] { "Armour/Rig:" }.Any(element => value.Contains(element));
         bool RemoveInvalidPlates(string value) => !value.Contains("69420");
-
-        string? realMessage1 = null;
-        string? realMessage2 = null;
-        string? realMessage3 = null;
-        string? realMessage4 = null;
         
         var temporaryMessage1 = new List<string>
         {
@@ -153,20 +148,20 @@ public class BotLogHelper(
         
         // Filter out "Unknown" values
         temporaryMessage1 = temporaryMessage1.Where(RemoveNoneValues).ToList();
-        realMessage1 = temporaryMessage1.Any() ? string.Join(" | ", temporaryMessage1.Where(s => !string.IsNullOrWhiteSpace(s))) : "No Bot Details";
+        var realMessage1 = temporaryMessage1.Any() ? string.Join(" | ", temporaryMessage1.Where(s => !string.IsNullOrWhiteSpace(s))) : "No Bot Details";
 
         temporaryMessage2 = temporaryMessage2.Where(RemoveNoneValues).ToList();
-        realMessage2 = temporaryMessage2.Any() ? string.Join(" | ", temporaryMessage2.Where(s => !string.IsNullOrWhiteSpace(s))) : "No Weapon Details";
+        var realMessage2 = temporaryMessage2.Any() ? string.Join(" | ", temporaryMessage2.Where(s => !string.IsNullOrWhiteSpace(s))) : "No Weapon Details";
 
         if (!botDetails.CanHavePlates)
         {
             temporaryMessage3 = temporaryMessage3.Where(RemoveNonArmouredRigs).ToList();
         }
         temporaryMessage3 = temporaryMessage3.Where(RemoveNoneValues).ToList();
-        realMessage3 = temporaryMessage3.Any() ? string.Join(" | ", temporaryMessage3.Where(s => !string.IsNullOrWhiteSpace(s))) : "No Gear Details";
+        var realMessage3 = temporaryMessage3.Any() ? string.Join(" | ", temporaryMessage3.Where(s => !string.IsNullOrWhiteSpace(s))) : "No Gear Details";
 
         temporaryMessage4 = temporaryMessage4.Where(RemoveInvalidPlates).ToList();
-        realMessage4 = temporaryMessage4.Count > 1 ? string.Join(" ", temporaryMessage4.Where(s => !string.IsNullOrWhiteSpace(s))) : " ";
+        var realMessage4 = temporaryMessage4.Count > 1 ? string.Join(" ", temporaryMessage4.Where(s => !string.IsNullOrWhiteSpace(s))) : " ";
 
         // Return all messages
         return [realMessage1, realMessage2, realMessage3, realMessage4];
