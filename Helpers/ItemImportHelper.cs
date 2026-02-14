@@ -127,7 +127,14 @@ public class ItemImportHelper(
         ItemTpl.AMMO_40X46_M716,
         ItemTpl.AMMO_556X45_6MM_BB,
         "683df636e1e3fa1bf165f7ed", // Weird dual caliber gun from, uhhh, ECOT? I dont member
-        "660b2d05cec10101410e7d7b" // avenger a10 warthog weapon from fire support
+        "660b2d05cec10101410e7d7b", // avenger a10 warthog weapon from fire support
+        "68f5333abc75f09d96d97500", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "690e9265772bfce1d043966d", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "695f8753d24480b7b1921023", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "68f51bfb3e92385d1908db68", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "696504ca8ce4c9b2404e1b32", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "6964ea3a5e4c1218314e1b2f", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "69669ea64847b58fd5393f71" // FPV Drone mod ID (probably not needed, but I'm not chancing it)
     ];
 
     private readonly FrozenSet<MongoId> _bannedAttachments =
