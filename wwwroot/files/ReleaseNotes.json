@@ -1,8 +1,25 @@
 ﻿[
   {
+    "Version": "2.1.2",
+    "ReleaseDate": "February 14, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Webconfig toggle to allow bosses to have WTT Armoury weapons intended by the authors",
+      "Webconfig toggle to disallow other bots to have WTT Armoury weapons intended by the authors to be on bosses"
+    ],
+    "Changes": [
+      "Various logging changes",
+      "Various additional internal blacklist changes"
+    ],
+    "BugFixes": [
+      "Resolved Import Equipment counter not resetting when reapplying config settings"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.1",
     "ReleaseDate": "February 3, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [
