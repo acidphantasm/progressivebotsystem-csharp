@@ -14,23 +14,23 @@ public class TierHelper
     }
     public int GetTierByLevel(int level)
     {
-        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel).Tier;
+        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel)!.Tier;
     }
     
     public int GetTierUpperLevelDeviation(int level)
     {
-        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel).BotMaxLevelVariance;
+        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel)!.BotMaxLevelVariance;
     }
     public  int GetTierLowerLevelDeviation(int level)
     {
-        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel).BotMinLevelVariance;
+        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel)!.BotMinLevelVariance;
     }
     public int GetScavTierUpperLevelDeviation(int level)
     {
-        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel).ScavMaxLevelVariance;
+        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel)!.ScavMaxLevelVariance;
     }
     public int GetScavTierLowerLevelDeviation(int level)
     {
-        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel).ScavMinLevelVariance;
+        return _tierInformation.Tiers.FirstOrDefault(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel)!.ScavMinLevelVariance;
     }
 }

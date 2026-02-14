@@ -60,7 +60,7 @@ public class DataLoader(
             InternalFileValidation(pathToMod);
             apbsLogger.Debug("Database Loaded and hash-verified");
         }
-        catch (Exception ex)
+        catch
         {
             apbsLogger.Error("Data has been tampered with. If you have any issues you did this to yourself. No support.");
         }

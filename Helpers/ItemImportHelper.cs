@@ -1,6 +1,5 @@
 ﻿using System.Collections.Frozen;
 using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
 using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
@@ -20,10 +19,9 @@ public class ItemImportHelper(
     JsonUtil jsonUtil,
     ItemHelper itemHelper,
     DatabaseService databaseService,
-    ItemImportTierHelper itemImportTierHelper,
     BotBlacklistHelper botBlacklistHelper)
 {
-    private bool _alreadyRan = false;
+    private bool _alreadyRan;
     
     private HashSet<MongoId> _vanillaEquipmentLookup = new();
     private HashSet<MongoId> _vanillaAttachmentLookup = new();
@@ -657,7 +655,7 @@ public class ItemImportHelper(
         foreach (var itemId in clothingData.Keys)
         {
             var item = databaseService.GetCustomization();
-            if (!item.TryGetValue(itemId, out var itemData))
+            if (!item.TryGetValue(itemId, out var _))
                 continue;
             
             items.Add(itemId);
