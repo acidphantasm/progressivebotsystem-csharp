@@ -7,6 +7,7 @@ using SPTarkov.Server.Core.Utils;
 using System.Reflection;
 using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Globals;
+using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Utils;
 using HarmonyLib;
 using SPTarkov.Common.Extensions;

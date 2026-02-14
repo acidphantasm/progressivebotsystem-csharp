@@ -7,6 +7,7 @@ using SPTarkov.Server.Core.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using _progressiveBotSystem.Globals;
+using _progressiveBotSystem.Helpers;
 using SPTarkov.Common.Extensions;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;

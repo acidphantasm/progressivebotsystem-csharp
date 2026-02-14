@@ -1,7 +1,7 @@
 ﻿using _progressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 
-namespace _progressiveBotSystem.Utils;
+namespace _progressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class TierHelper
