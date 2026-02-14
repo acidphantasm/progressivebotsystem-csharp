@@ -117,7 +117,7 @@ public class BotConfigHelper(
         if (ModConfig.Config.PmcBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Setting Pmc Loot");
-            foreach (var item in ModConfig.Config.PmcBots.LootConfig.Blacklist ?? [])
+            foreach (var item in ModConfig.Config.PmcBots.LootConfig.Blacklist)
             {
                 _pmcConfig.BackpackLoot.Blacklist.Add(item);
                 _pmcConfig.VestLoot.Blacklist.Add(item);
@@ -191,76 +191,36 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Pmc Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
-        foreach (var (botType, equipmentFilters) in botConfigEquipment)
+        foreach (var (botType, _) in botConfigEquipment)
         {
-            if (!botActivityHelper.IsBotEnabled(botType)) continue;
-            if (!PmcRoles.Contains(botType)) continue;
+            if (!botActivityHelper.IsBotEnabled(botType)) 
+                continue;
+            if (!PmcRoles.Contains(botType)) 
+                continue;
             
-            botConfigEquipment[botType].FilterPlatesByLevel = true;
-            botConfigEquipment[botType].ArmorPlateWeighting = new List<ArmorPlateWeights>();
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
+            var equipment = botConfigEquipment[botType];
+            if (equipment is null) 
+                continue;
+            
+            equipment.FilterPlatesByLevel = true;
+            equipment.ArmorPlateWeighting = new List<ArmorPlateWeights>();
+            
+            void AddTier(int min, int max, Dictionary<string,Dictionary<string,double>> values)
             {
-                LevelRange = new MinMax<int>()
+                equipment.ArmorPlateWeighting.Add(new ArmorPlateWeights
                 {
-                    Min = 1,
-                    Max = 10
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier1
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 11,
-                    Max = 20
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier2
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 21,
-                    Max = 30
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier3
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 31,
-                    Max = 40
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier4
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 41,
-                    Max = 50
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier5
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 51,
-                    Max = 60
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier6
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 61,
-                    Max = 100
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier7
-            });
+                    LevelRange = new MinMax<int> { Min = min, Max = max },
+                    Values = values
+                });
+            }
+
+            AddTier(1, 10,  ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier1);
+            AddTier(11, 20, ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier2);
+            AddTier(21, 30, ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier3);
+            AddTier(31, 40, ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier4);
+            AddTier(41, 50, ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier5);
+            AddTier(51, 60, ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier6);
+            AddTier(61, 100,ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier7);
         }
     }
     #endregion
@@ -359,7 +319,7 @@ public class BotConfigHelper(
             {
                 if (!ScavRoles.Contains(botType)) continue;
                 if (data is null) continue;
-                foreach (var item in ModConfig.Config.ScavBots.LootConfig.Blacklist ?? [])
+                foreach (var item in ModConfig.Config.ScavBots.LootConfig.Blacklist)
                 {
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
@@ -375,10 +335,10 @@ public class BotConfigHelper(
         for (var i = 1; i <= 7; i++)
         {
             var equipmentData = GetTierEquipmentData(i);
-            foreach (var (slotName, data) in equipmentData.Scav.Equipment)
+            foreach (var (_, data) in equipmentData.Scav.Equipment)
             {
                 if (data.Count == 0) continue;
-                foreach (var (mongoId, weight) in data)
+                foreach (var (mongoId, _) in data)
                 {
                     data[mongoId] = 1;
                 }
@@ -415,75 +375,33 @@ public class BotConfigHelper(
     {
         var botConfigEquipment = _botConfig.Equipment;
         apbsLogger.Debug("Setting Scav Plate Classes");
-        foreach (var (botType, equipmentFilters) in botConfigEquipment)
+        foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             if (!ScavRoles.Contains(botType)) continue;
-            botConfigEquipment[botType].FilterPlatesByLevel = true;
-            botConfigEquipment[botType].ArmorPlateWeighting = new List<ArmorPlateWeights>();
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
+            var equipment = botConfigEquipment[botType];
+            if (equipment is null) 
+                continue;
+            
+            equipment.FilterPlatesByLevel = true;
+            equipment.ArmorPlateWeighting = new List<ArmorPlateWeights>();
+            
+            void AddTier(int min, int max, Dictionary<string,Dictionary<string,double>> values)
             {
-                LevelRange = new MinMax<int>()
+                equipment.ArmorPlateWeighting.Add(new ArmorPlateWeights
                 {
-                    Min = 1,
-                    Max = 10
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier1
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 11,
-                    Max = 20
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier2
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 21,
-                    Max = 30
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier3
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 31,
-                    Max = 40
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier4
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 41,
-                    Max = 50
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier5
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 51,
-                    Max = 60
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier6
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 61,
-                    Max = 100
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier7
-            });
+                    LevelRange = new MinMax<int> { Min = min, Max = max },
+                    Values = values
+                });
+            }
+
+            AddTier(1, 10,  ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier1);
+            AddTier(11, 20, ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier2);
+            AddTier(21, 30, ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier3);
+            AddTier(31, 40, ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier4);
+            AddTier(41, 50, ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier5);
+            AddTier(51, 60, ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier6);
+            AddTier(61, 100,ModConfig.Config.GeneralConfig.PlateClasses.Scav.Tier7);
         }
     }
 
@@ -556,7 +474,7 @@ public class BotConfigHelper(
                 if (!BossRoles.Contains(botType)) continue;
                 if (data is null) continue;
                 
-                foreach (var item in ModConfig.Config.BossBots.LootConfig.Blacklist ?? [])
+                foreach (var item in ModConfig.Config.BossBots.LootConfig.Blacklist)
                 {
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
@@ -569,75 +487,33 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Boss Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
-        foreach (var (botType, equipmentFilters) in botConfigEquipment)
+        foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             if (!BossRoles.Contains(botType)) continue;
-            botConfigEquipment[botType].FilterPlatesByLevel = true;
-            botConfigEquipment[botType].ArmorPlateWeighting = new List<ArmorPlateWeights>();
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
+            var equipment = botConfigEquipment[botType];
+            if (equipment is null) 
+                continue;
+            
+            equipment.FilterPlatesByLevel = true;
+            equipment.ArmorPlateWeighting = new List<ArmorPlateWeights>();
+            
+            void AddTier(int min, int max, Dictionary<string,Dictionary<string,double>> values)
             {
-                LevelRange = new MinMax<int>()
+                equipment.ArmorPlateWeighting.Add(new ArmorPlateWeights
                 {
-                    Min = 1,
-                    Max = 10
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 11,
-                    Max = 20
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 21,
-                    Max = 30
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 31,
-                    Max = 40
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 41,
-                    Max = 50
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 51,
-                    Max = 60
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 61,
-                    Max = 100
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7
-            });
+                    LevelRange = new MinMax<int> { Min = min, Max = max },
+                    Values = values
+                });
+            }
+
+            AddTier(1, 10,  ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1);
+            AddTier(11, 20, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2);
+            AddTier(21, 30, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3);
+            AddTier(31, 40, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4);
+            AddTier(41, 50, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5);
+            AddTier(51, 60, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6);
+            AddTier(61, 100,ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7);
         }
     }
     #endregion
@@ -666,7 +542,7 @@ public class BotConfigHelper(
             {
                 if (!FollowerRoles.Contains(botType)) continue;
                 if (data is null) continue;
-                foreach (var item in ModConfig.Config.FollowerBots.LootConfig.Blacklist ?? [])
+                foreach (var item in ModConfig.Config.FollowerBots.LootConfig.Blacklist)
                 {
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
@@ -679,75 +555,33 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Follower Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
-        foreach (var (botType, equipmentFilters) in botConfigEquipment)
+        foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             if (!FollowerRoles.Contains(botType)) continue;
-            botConfigEquipment[botType].FilterPlatesByLevel = true;
-            botConfigEquipment[botType].ArmorPlateWeighting = new List<ArmorPlateWeights>();
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
+            var equipment = botConfigEquipment[botType];
+            if (equipment is null) 
+                continue;
+            
+            equipment.FilterPlatesByLevel = true;
+            equipment.ArmorPlateWeighting = new List<ArmorPlateWeights>();
+            
+            void AddTier(int min, int max, Dictionary<string,Dictionary<string,double>> values)
             {
-                LevelRange = new MinMax<int>()
+                equipment.ArmorPlateWeighting.Add(new ArmorPlateWeights
                 {
-                    Min = 1,
-                    Max = 10
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 11,
-                    Max = 20
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 21,
-                    Max = 30
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 31,
-                    Max = 40
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 41,
-                    Max = 50
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 51,
-                    Max = 60
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 61,
-                    Max = 100
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7
-            });
+                    LevelRange = new MinMax<int> { Min = min, Max = max },
+                    Values = values
+                });
+            }
+
+            AddTier(1, 10,  ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1);
+            AddTier(11, 20, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2);
+            AddTier(21, 30, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3);
+            AddTier(31, 40, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4);
+            AddTier(41, 50, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5);
+            AddTier(51, 60, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6);
+            AddTier(61, 100,ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7);
         }
     }
     #endregion
@@ -776,7 +610,7 @@ public class BotConfigHelper(
             {
                 if (!SpecialRoles.Contains(botType)) continue;
                 if (data is null) continue;
-                foreach (var item in ModConfig.Config.SpecialBots.LootConfig.Blacklist ?? [])
+                foreach (var item in ModConfig.Config.SpecialBots.LootConfig.Blacklist)
                 {
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
@@ -789,75 +623,33 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Special Bot Plate Classes");
         var botConfigEquipment = _botConfig.Equipment;
-        foreach (var (botType, equipmentFilters) in botConfigEquipment)
+        foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             if (!SpecialRoles.Contains(botType)) continue;
-            botConfigEquipment[botType].FilterPlatesByLevel = true;
-            botConfigEquipment[botType].ArmorPlateWeighting = new List<ArmorPlateWeights>();
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
+            var equipment = botConfigEquipment[botType];
+            if (equipment is null) 
+                continue;
+            
+            equipment.FilterPlatesByLevel = true;
+            equipment.ArmorPlateWeighting = new List<ArmorPlateWeights>();
+            
+            void AddTier(int min, int max, Dictionary<string,Dictionary<string,double>> values)
             {
-                LevelRange = new MinMax<int>()
+                equipment.ArmorPlateWeighting.Add(new ArmorPlateWeights
                 {
-                    Min = 1,
-                    Max = 10
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 11,
-                    Max = 20
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 21,
-                    Max = 30
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 31,
-                    Max = 40
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 41,
-                    Max = 50
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 51,
-                    Max = 60
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6
-            });
-            botConfigEquipment[botType].ArmorPlateWeighting.Add(new ArmorPlateWeights()
-            {
-                LevelRange = new MinMax<int>()
-                {
-                    Min = 61,
-                    Max = 100
-                },
-                Values = ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7
-            });
+                    LevelRange = new MinMax<int> { Min = min, Max = max },
+                    Values = values
+                });
+            }
+
+            AddTier(1, 10,  ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1);
+            AddTier(11, 20, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2);
+            AddTier(21, 30, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3);
+            AddTier(31, 40, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4);
+            AddTier(41, 50, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5);
+            AddTier(51, 60, ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6);
+            AddTier(61, 100,ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7);
         }
     }
     #endregion
@@ -869,7 +661,7 @@ public class BotConfigHelper(
         SetBotLevels();
         SetWeaponDurability();
         SetArmourDurability();
-        AdjustNVGs();
+        AdjustNvGs();
         SetItemResourceRandomization();
         SetWeaponModLimits();
         AmmoStackCompatibility();
@@ -909,7 +701,7 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Bot Levels");
         var allBotTypes = databaseService.GetBots().Types;
-        foreach (var (bot, botData) in allBotTypes)
+        foreach (var (bot, _) in allBotTypes)
         {
             allBotTypes[bot]!.BotExperience.Level.Min = 1;
             allBotTypes[bot]!.BotExperience.Level.Max = 79;
@@ -920,7 +712,7 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Bot Weapon Durability");
         var botDurability = _botConfig.Durability;
-        foreach (var (botType, data) in botDurability.BotDurabilities)
+        foreach (var (botType, _) in botDurability.BotDurabilities)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.WeaponDurability.Enable)
@@ -970,7 +762,7 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Bot Armour Durability");
         var botDurability = _botConfig.Durability;
-        foreach (var (botType, data) in botDurability.BotDurabilities)
+        foreach (var (botType, _) in botDurability.BotDurabilities)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.ArmourDurability.Enable)
@@ -1016,7 +808,7 @@ public class BotConfigHelper(
         botDurability.Pmc.Armor.MinLimitPercent = ModConfig.Config.PmcBots.ArmourDurability.MinLimitPercent;
     }
     
-    private void AdjustNVGs()
+    private void AdjustNvGs()
     {
         apbsLogger.Debug("Setting Bot Laser, Flashlight, and Nvg Activity Chances");
         var botConfigEquipment = _botConfig.Equipment;
@@ -1037,84 +829,50 @@ public class BotConfigHelper(
         apbsLogger.Debug("Setting Bot Food and Medical Item Randomisation");
         // Loop the bot types instead of the botconfig, even though the actual values exist in the bot config - I need proper bot names
         var botTable = databaseService.GetBots().Types;
-        foreach (var (botType, data) in botTable)
+        foreach (var (botType, _) in botTable)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             
-            var setValues = false;
-            var foodMaxChance = 100;
-            var medMaxChange = 100;
-            var foodResourcePercent = 60;
-            var medResourcePercent = 60;
+            var resourceRandomizationConfig = GetResourceRandomizationConfig(botType);
+            if (resourceRandomizationConfig is null)
+                continue;
 
-            if (PmcRoles.Contains(botType) && ModConfig.Config.PmcBots.ResourceRandomization.Enable)
+            _botConfig.LootItemResourceRandomization[botType] = new RandomisedResourceDetails
             {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.PmcBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.PmcBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.PmcBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.PmcBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.ScavBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.ScavBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.ScavBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.ScavBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (BossRoles.Contains(botType) && ModConfig.Config.BossBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.BossBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.BossBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.BossBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.BossBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (FollowerRoles.Contains(botType) && ModConfig.Config.FollowerBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.FollowerBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.FollowerBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.FollowerBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.FollowerBots.ResourceRandomization.MedRateUsagePercent;
-            }
-            else if (SpecialRoles.Contains(botType) && ModConfig.Config.SpecialBots.ResourceRandomization.Enable)
-            {
-                setValues = true;
-                foodMaxChance = ModConfig.Config.SpecialBots.ResourceRandomization.FoodRateMaxChance;
-                medMaxChange = ModConfig.Config.SpecialBots.ResourceRandomization.MedRateMaxChance;
-                foodResourcePercent = ModConfig.Config.SpecialBots.ResourceRandomization.FoodRateUsagePercent;
-                medResourcePercent = ModConfig.Config.SpecialBots.ResourceRandomization.MedRateUsagePercent;
-            }
-
-            if (!setValues) continue;
-
-            if (!_botConfig.LootItemResourceRandomization.TryGetValue(botType, out var randomisedResourceDetails))
-            {
-                _botConfig.LootItemResourceRandomization[botType] = new RandomisedResourceDetails()
+                Food = new RandomisedResourceValues
                 {
-                    Food = new RandomisedResourceValues()
-                    {
-                        ChanceMaxResourcePercent = foodMaxChance,
-                        ResourcePercent = foodResourcePercent,
-                    },
-                    Meds = new RandomisedResourceValues()
-                    {
-                        ChanceMaxResourcePercent = medMaxChange,
-                        ResourcePercent = medResourcePercent,
-                    }
-                };
-            }
-            else
-            {
-                randomisedResourceDetails.Food.ChanceMaxResourcePercent = foodMaxChance;
-                randomisedResourceDetails.Food.ResourcePercent = foodResourcePercent;
-                randomisedResourceDetails.Meds.ChanceMaxResourcePercent = medMaxChange;
-                randomisedResourceDetails.Meds.ResourcePercent = medResourcePercent;
-            }
+                    ChanceMaxResourcePercent = resourceRandomizationConfig.FoodRateMaxChance,
+                    ResourcePercent = resourceRandomizationConfig.FoodRateUsagePercent,
+                },
+                Meds = new RandomisedResourceValues
+                {
+                    ChanceMaxResourcePercent = resourceRandomizationConfig.MedRateMaxChance,
+                    ResourcePercent = resourceRandomizationConfig.MedRateUsagePercent,
+                }
+            };
         }
     }
+    
+    private ResourceRandomizationConfig? GetResourceRandomizationConfig(string botType)
+    {
+        if (PmcRoles.Contains(botType) && ModConfig.Config.PmcBots.ResourceRandomization.Enable)
+            return ModConfig.Config.PmcBots.ResourceRandomization;
+
+        if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.ResourceRandomization.Enable)
+            return ModConfig.Config.ScavBots.ResourceRandomization;
+
+        if (BossRoles.Contains(botType) && ModConfig.Config.BossBots.ResourceRandomization.Enable)
+            return ModConfig.Config.BossBots.ResourceRandomization;
+
+        if (FollowerRoles.Contains(botType) && ModConfig.Config.FollowerBots.ResourceRandomization.Enable)
+            return ModConfig.Config.FollowerBots.ResourceRandomization;
+
+        if (SpecialRoles.Contains(botType) && ModConfig.Config.SpecialBots.ResourceRandomization.Enable)
+            return ModConfig.Config.SpecialBots.ResourceRandomization;
+
+        return null;
+    }
+
     private void SetWeaponModLimits()
     {
         if (!ModConfig.Config.GeneralConfig.ForceWeaponModLimits) return;
@@ -1123,20 +881,23 @@ public class BotConfigHelper(
         var botConfigEquipment = _botConfig.Equipment;
         foreach (var (botType, data) in botConfigEquipment)
         {
-            if (!botActivityHelper.IsBotEnabled(botType)) continue;
+            if (!botActivityHelper.IsBotEnabled(botType))
+                continue;
+            if (data is null)
+                continue;
 
-            botConfigEquipment[botType].WeaponModLimits ??= new ModLimits()
+            data.WeaponModLimits ??= new ModLimits
             {
                 ScopeLimit = 2,
                 LightLaserLimit = 1
             };
-            
-            botConfigEquipment[botType]!.WeaponModLimits!.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
-            botConfigEquipment[botType]!.WeaponModLimits!.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
+
+            data.WeaponModLimits.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
+            data.WeaponModLimits.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
         }
         
-        botConfigEquipment["pmc"].WeaponModLimits.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
-        botConfigEquipment["pmc"].WeaponModLimits.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
+        botConfigEquipment["pmc"]!.WeaponModLimits!.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
+        botConfigEquipment["pmc"]!.WeaponModLimits!.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
     }
     private void AmmoStackCompatibility()
     {
@@ -1311,9 +1072,6 @@ public class BotConfigHelper(
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
-            if (chancesData == null)
-                continue;
-            
             var indexPosition = i - 1;
             
             foreach (var botProp in typeof(ChancesTierData).GetProperties())
@@ -1335,28 +1093,28 @@ public class BotConfigHelper(
                     
                     if (botType == "pmcusec" || botType == "pmcbear")
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance[indexPosition], ["back_plate", "front_plate"]);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"]);
                     }
                     if (botType == "followerbirdeye" || botType == "followerbigpipe" || botType.Contains("boss"))
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance[indexPosition], ["back_plate", "front_plate"]);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"]);
                     }
                     if (botType == "scav")
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance[indexPosition], ["back_plate", "front_plate"]);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"]);
                     }
                     if (botType == "exusec" || botType == "pmcbot" || botType.Contains("sectant"))
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance[indexPosition], ["back_plate", "front_plate"]);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"]);
                     }
                     if (botType == "default")
                     {
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance[indexPosition], ["back_plate", "front_plate"], botType);
-                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"], botType);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance[indexPosition], ["back_plate", "front_plate"]);
+                        SetModChance(chancesDict, ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance[indexPosition], ["left_side_plate", "right_side_plate"]);
                     }
                 }
             }
@@ -1369,12 +1127,9 @@ public class BotConfigHelper(
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
-            if (chancesData == null)
-                continue;
             
             foreach (var botProp in typeof(ChancesTierData).GetProperties())
             {
-                var botType = botProp.Name;
                 var data = botProp.GetValue(chancesData) as BotChancesData;
                 if (data?.Chances == null)
                     continue;
@@ -1389,7 +1144,7 @@ public class BotConfigHelper(
                     if (chancesDict == null)
                         continue;
                     
-                    SetModChance(chancesDict, 100, ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms", "mod_stock_axis"], botType);
+                    SetModChance(chancesDict, 100, ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms", "mod_stock_axis"]);
                 }
             }
         }
@@ -1401,12 +1156,9 @@ public class BotConfigHelper(
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
-            if (chancesData == null)
-                continue;
             
             foreach (var botProp in typeof(ChancesTierData).GetProperties())
             {
-                var botType = botProp.Name;
                 var data = botProp.GetValue(chancesData) as BotChancesData;
                 if (data?.Chances == null)
                     continue;
@@ -1421,7 +1173,7 @@ public class BotConfigHelper(
                     if (chancesDict == null)
                         continue;
                     
-                    SetModChance(chancesDict, 100, ["mod_reciever"], botType);
+                    SetModChance(chancesDict, 100, ["mod_reciever"]);
                 }
             }
         }
@@ -1433,12 +1185,9 @@ public class BotConfigHelper(
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
-            if (chancesData == null)
-                continue;
             
             foreach (var botProp in typeof(ChancesTierData).GetProperties())
             {
-                var botType = botProp.Name;
                 var data = botProp.GetValue(chancesData) as BotChancesData;
                 if (data?.Chances == null)
                     continue;
@@ -1453,7 +1202,7 @@ public class BotConfigHelper(
                     if (chancesDict == null)
                         continue;
                     
-                    SetModChance(chancesDict, 100, ["mod_scope"], botType);
+                    SetModChance(chancesDict, 100, ["mod_scope"]);
                 }
             }
         }
@@ -1465,14 +1214,10 @@ public class BotConfigHelper(
         for (var i = 1; i <= 7; i++)
         {
             var chancesData = GetTierChancesData(i);
-            if (chancesData == null)
-                continue;
 
             var indexPosition = i - 1;
-
             foreach (var botProp in typeof(ChancesTierData).GetProperties())
             {
-                var botType = botProp.Name;
                 var data = botProp.GetValue(chancesData) as BotChancesData;
                 if (data?.Chances == null)
                     continue;
@@ -1488,13 +1233,13 @@ public class BotConfigHelper(
                         continue;
 
                     var muzzleChance = ModConfig.Config.GeneralConfig.MuzzleChance[indexPosition];
-                    SetModChance(chancesDict, muzzleChance, ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"], botType);
+                    SetModChance(chancesDict, muzzleChance, ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"]);
                 }
             }
         }
     }
     
-    private void SetModChance(Dictionary<string, double> dict, double value, string[] keys, string botType)
+    private void SetModChance(Dictionary<string, double> dict, double value, string[] keys)
     {
         foreach (var key in keys)
         {
@@ -1510,10 +1255,7 @@ public class BotConfigHelper(
     /// </summary>
     private ChancesTierData GetTierChancesData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-
-        return tierData.ChancesData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData) ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.") : tierData.ChancesData;
     }
 
     /// <summary>
@@ -1522,10 +1264,7 @@ public class BotConfigHelper(
     /// </summary>
     private AmmoTierData GetTierAmmoData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-
-        return tierData.AmmoData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData) ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.") : tierData.AmmoData;
     }
 
     /// <summary>
@@ -1534,10 +1273,7 @@ public class BotConfigHelper(
     /// </summary>
     private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierModsData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-
-        return tierData.ModsData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData) ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.") : tierData.ModsData;
     }
 
     /// <summary>
@@ -1546,10 +1282,7 @@ public class BotConfigHelper(
     /// </summary>
     private EquipmentTierData GetTierEquipmentData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-            throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.");
-
-        return tierData.EquipmentData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData) ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.") : tierData.EquipmentData;
     }
     
     #endregion
