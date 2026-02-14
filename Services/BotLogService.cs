@@ -24,7 +24,7 @@ public class BotLogService(
     {
         try
         {
-            foreach (var bot in botData ?? [])
+            foreach (var bot in botData)
             {
                 var botLogData = botLogHelper.GetBotDetails(bot);
                 var logMessages = botLogHelper.GetLogMessage(botLogData);

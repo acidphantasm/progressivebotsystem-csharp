@@ -161,7 +161,7 @@ public class BotBlacklistService(
             var currentTierBlacklist = botBlacklistHelper.GetAmmoBlacklistTierData(tier);
             var currentAmmoTierData = itemImportTierHelper.GetAmmoTierData(tier);
             
-            foreach (var item in currentTierBlacklist ?? [])
+            foreach (var item in currentTierBlacklist)
             {
                 RemoveAmmo(currentAmmoTierData.ScavAmmo, "Scav", item, tier);
                 RemoveAmmo(currentAmmoTierData.PmcAmmo, "Pmc", item, tier);
@@ -208,7 +208,7 @@ public class BotBlacklistService(
             var currentTierBlacklist = botBlacklistHelper.GetAttachmentBlacklistTierData(tier);
             var currentAttachmentData = itemImportTierHelper.GetModsTierData(tier);
             
-            foreach (var item in currentTierBlacklist ?? [])
+            foreach (var item in currentTierBlacklist)
             {
                 RemoveAttachment(currentAttachmentData, item, tier);
             }
@@ -258,7 +258,7 @@ public class BotBlacklistService(
             var currentTierBlacklist = botBlacklistHelper.GetClothingBlacklistTierData(tier);
             var currentAppearanceData = itemImportTierHelper.GetAppearanceTierData(tier);
             
-            foreach (var item in currentTierBlacklist ?? [])
+            foreach (var item in currentTierBlacklist)
             {
                 ProcessAppearanceDict(currentAppearanceData.PmcUsec, item, tier, "USEC");
                 ProcessAppearanceDict(currentAppearanceData.PmcBear, item, tier, "BEAR");
@@ -282,7 +282,6 @@ public class BotBlacklistService(
             RemoveFromAppearance(
                 appearanceData,
                 item,
-                tier,
                 $"{label}",
                 removedFrom,
                 blockedRemovals);
@@ -299,7 +298,7 @@ public class BotBlacklistService(
         }
     }
     
-    private void RemoveFromAppearance(Appearance appearance, MongoId itemToRemove, int tier, string context, List<string> removedFrom, List<string> blockedRemovals)
+    private void RemoveFromAppearance(Appearance appearance, MongoId itemToRemove, string context, List<string> removedFrom, List<string> blockedRemovals)
     {
         RemoveAppearanceItem(appearance.Body,  itemToRemove, $"{context}:Body",  removedFrom, blockedRemovals);
         RemoveAppearanceItem(appearance.Feet,  itemToRemove, $"{context}:Feet",  removedFrom, blockedRemovals);

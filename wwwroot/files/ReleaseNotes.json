@@ -1,8 +1,21 @@
 ﻿[
   {
-    "Version": "2.1.2",
+    "Version": "2.1.3",
     "ReleaseDate": "February 14, 2025",
     "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Bunch of code cleanup"
+    ],
+    "BugFixes": [
+      "Resolved Boss, Follower, and Special bot loot toggles being flipped"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.1.2",
+    "ReleaseDate": "February 14, 2025",
+    "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggle to allow bosses to have WTT Armoury weapons intended by the authors",
       "Webconfig toggle to disallow other bots to have WTT Armoury weapons intended by the authors to be on bosses"

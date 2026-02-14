@@ -1,8 +1,5 @@
-﻿using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using SPTarkov.DI.Annotations;
+﻿using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Models.Utils;
 using _progressiveBotSystem.Patches;
 using _progressiveBotSystem.Utils;
 

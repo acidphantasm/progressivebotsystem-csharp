@@ -1,13 +1,10 @@
 ﻿using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Utils;
 
 namespace _progressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class BotBlacklistHelper()
+public class BotBlacklistHelper
 {
     /// <summary>
     ///     Used to get and return the correct weapon blacklist data that was deserialized from either the preset or the default data
