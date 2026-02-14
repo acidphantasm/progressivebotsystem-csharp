@@ -45,6 +45,9 @@ public class BotQuestHelper : IOnLoad
 
     public QuestData? SelectQuest(int botLevel, string? location)
     {
+        if (string.IsNullOrEmpty(location))
+            return null;
+        
         var availableQuests = GetAvailableQuests(botLevel, location);
         return availableQuests.Count == 0 ? null : _randomUtil.DrawRandomFromList(availableQuests).FirstOrDefault();
     }
