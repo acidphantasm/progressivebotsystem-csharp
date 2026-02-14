@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
+using _progressiveBotSystem.Models;
 using _progressiveBotSystem.Models.Enums;
 using _progressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
@@ -333,35 +334,22 @@ public class ItemImportService(
             var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
             lock (_equipmentLock)
             {
-                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-                equipmentData.Scav.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "scav");
-                equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetWeaponSlotWeight(slot, "default");
+                if (itemImportHelper.IsWttBossWeapon(templateItem.Id))
+                {
+                    AssignBossWeapon(slot, templateItem.Id, equipmentData);
+                }
+                else
+                {
+                    AssignDefaultWeapon(slot, templateItem.Id, equipmentData);
+                }
             }
             
             if (_uniqueWeapons.TryAdd(templateItem.Id, 0))
                 Interlocked.Increment(ref _weaponCounter);
 
-            if (string.IsNullOrEmpty(ammoCaliber) || !itemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber)) continue;
-            
-            var chambers = templateItem.Properties?.Chambers ?? [];
-            var filter = chambers
-                .SelectMany(c => c.Properties?.Filters ?? [])
-                .Select(f => f.Filter)
-                .FirstOrDefault(f => f != null);
-
-            var ammoIds = filter ?? itemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
-
-            foreach (var ammoId in ammoIds)
+            if (!string.IsNullOrEmpty(ammoCaliber) && itemImportHelper.AmmoCaliberNeedsAdded(ammoCaliber))
             {
-                if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) 
-                    continue;
-
-                AddAmmoToBotData(ammoId, ammoCaliber, tier);
-                if (!_uniqueCalibers.TryAdd(ammoCaliber, 0)) continue;
-                
-                Interlocked.Increment(ref _caliberCounter);
-                apbsLogger.Debug($"[T{tier}] Adding AmmoCaliber: {ammoCaliber} and {ammoIds.Count} ammunition types.");
+                ProcessAmmoForWeapon(templateItem, ammoCaliber, tier);
             }
         }
         
@@ -378,6 +366,75 @@ public class ItemImportService(
         if (_uniqueWeapons.ContainsKey(templateItem.Id))
         {
             apbsLogger.Debug($"[{slot}] Completed mod import: {templateItem.Id}");
+        }
+    }
+    
+    private void AssignBossWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
+    {
+        var assignedBosses = itemImportHelper.BossAssignmentPerWtt(itemId);
+        foreach (var boss in assignedBosses)
+        {
+            var data = boss switch
+            {
+                "bossbully" => equipmentData.BossBully,
+                "bossgluhar" => equipmentData.BossGluhar,
+                "bosskilla" => equipmentData.BossKilla,
+                "bossknight" => equipmentData.BossKnight,
+                "followerbigpipe" => equipmentData.FollowerBigPipe,
+                "followerbirdeye" => equipmentData.FollowerBirdeye,
+                "bosskojaniy" => equipmentData.BossKojaniy,
+                "bosspartisan" => equipmentData.BossPartisan,
+                "bosszryachiy" => equipmentData.BossZryachiy,
+                _ => throw new InvalidOperationException($"Unknown boss {boss}")
+            };
+
+            if (!data.Equipment.TryGetValue(slot, out var slotDictionary))
+            {
+                slotDictionary = new Dictionary<MongoId, double>();
+                data.Equipment[slot] = slotDictionary;
+            }
+
+            var existingCount = slotDictionary.Count;
+            var totalWeight = slotDictionary.Values.Sum();
+            var averageWeight = existingCount > 0 ? Math.Round(totalWeight / existingCount) : 1.0;
+
+            slotDictionary[itemId] = averageWeight;
+        }
+        
+        if (ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToOthers)
+        {
+            AssignDefaultWeapon(slot, itemId, equipmentData);
+        }
+    }
+
+    private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
+    {
+        equipmentData.PmcUsec.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+        equipmentData.PmcBear.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+        equipmentData.Scav.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "scav");
+        equipmentData.Default.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "default");
+    }
+    
+    private void ProcessAmmoForWeapon(TemplateItem templateItem, string ammoCaliber, int tier)
+    {
+        var chambers = templateItem.Properties?.Chambers ?? [];
+        var filter = chambers
+            .SelectMany(c => c.Properties?.Filters ?? [])
+            .Select(f => f.Filter)
+            .FirstOrDefault(f => f != null);
+
+        var ammoIds = filter ?? itemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
+
+        foreach (var ammoId in ammoIds)
+        {
+            if (!itemImportHelper.AmmoNeedsImporting(ammoId, ammoCaliber)) 
+                continue;
+
+            AddAmmoToBotData(ammoId, ammoCaliber, tier);
+            if (_uniqueCalibers.TryAdd(ammoCaliber, 0))
+                Interlocked.Increment(ref _caliberCounter);
+
+            apbsLogger.Debug($"[T{tier}] Adding AmmoCaliber: {ammoCaliber} and {ammoIds.Count} ammunition types.");
         }
     }
 

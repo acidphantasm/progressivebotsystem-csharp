@@ -568,6 +568,10 @@ public class ModCompatibilityConfig
     public bool PackNStrapUnlootablePmcArmbandBelts { get; set; }
     [JsonPropertyName("WttBackPort_AllowDogtags")]
     public bool WttBackPortAllowDogtags { get; set; }
+    [JsonPropertyName("WttArmoury_AddBossVariantsToBosses")]
+    public bool WttArmouryAddBossVariantsToBosses { get; set; }
+    [JsonPropertyName("WttArmoury_AddBossVariantsToOthers")]
+    public bool WttArmouryAddBossVariantsToOthers { get; set; }
     [JsonPropertyName("Realism_AddGasMasksToBots")]
     public bool RealismAddGasMasksToBots { get; set; }
     [JsonPropertyName("General_SecureContainerAmmoStacks")]

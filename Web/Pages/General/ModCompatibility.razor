@@ -332,6 +332,70 @@
                             <MudButton @onclick="defaultWttBackportDogtags" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
+
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="WTT Armoury Only" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
+                            <MudText>
+                                <MudTooltip Text="Allows Bosses to also get the weapons that WTT intends for them. If disabled, they will only go to Pmcs, scavs, and guards." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    WTT Armoury Bosses Have Variants
+                                </MudTooltip>
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_modWttArmouryBossVariantsOnBosses" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_modWttArmouryBossVariantsOnBosses</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_modWttArmouryBossVariantsOnBosses"))
+                        {
+                            <MudButton @onclick="undoWttArmouryBosses" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle && _modWttArmouryBossVariantsOnBosses != true)
+                        {
+                            <MudButton @onclick="defaultArmouryBosses" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="WTT Armoury Only" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
+                            <MudText>
+                                <MudTooltip Text="Enabling this will also allow other bots to get those weapons. If disabled then they will only go to the bosses WTT has dictated." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    WTT Armoury Others Have Variants
+                                </MudTooltip>
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_modWttArmouryBossVariantsOnOthers" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="!_modWttArmouryBossVariantsOnBosses">@_modWttArmouryBossVariantsOnOthers</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_modWttArmouryBossVariantsOnOthers"))
+                        {
+                            <MudButton @onclick="undoWttArmouryOthers" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle && _modWttArmouryBossVariantsOnOthers != true)
+                        {
+                            <MudButton @onclick="defaultWttArmouryOthers" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
                     
                     <MudItem xs="1">
                         <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
@@ -628,6 +692,30 @@
     }
     private void undoWttBackportDogtags() => _modWttBackportDogtags = ModConfig.OriginalConfig.CompatibilityConfig.WttBackPortAllowDogtags;
     private void defaultWttBackportDogtags() => _modWttBackportDogtags = true;
+
+    private bool _modWttArmouryBossVariantsOnBosses
+    {
+        get => ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.WttArmouryAddBossVariantsToBosses);
+            ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses = value;
+        }
+    }
+    private void undoWttArmouryBosses() => _modWttArmouryBossVariantsOnBosses = ModConfig.OriginalConfig.CompatibilityConfig.WttArmouryAddBossVariantsToBosses;
+    private void defaultArmouryBosses() => _modWttArmouryBossVariantsOnBosses = true;
+
+    private bool _modWttArmouryBossVariantsOnOthers
+    {
+        get => ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToOthers;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.WttArmouryAddBossVariantsToOthers);
+            ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToOthers = value;
+        }
+    }
+    private void undoWttArmouryOthers() => _modWttArmouryBossVariantsOnOthers = ModConfig.OriginalConfig.CompatibilityConfig.WttArmouryAddBossVariantsToOthers;
+    private void defaultWttArmouryOthers() => _modWttArmouryBossVariantsOnOthers = true;
 
     private bool _modRealismCompatibility
     {

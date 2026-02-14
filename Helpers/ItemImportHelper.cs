@@ -264,6 +264,70 @@ public class ItemImportHelper(
         "5894a73486f77426d259076c",
         "5894a81786f77427140b8347"
     ];
+
+    private readonly FrozenSet<MongoId> _armouryBossVariantWeapons =
+    [
+        "677ca3e62e9e964a11a55d8e", // golden ae50 (reshala) holster
+        "679a6a534f3d279c99b135b9", // custom aen94 (gluhar) primary
+        "690ebacfc047a9a9f1a98782", // RO991 SMG (gluhar) secondary
+        "676b4e2ff185a450a0b300b4", // wages of sin (killa) primary
+        "68677d09339b397ed3d37522", // sr2 udav (killa)  holster
+        "6868d249cdee524f8c0ba45f", // beretta 92fs (knight + bigpipe + birdeye) holster
+        "6657bd4d3a4d6e7c33fd2fdc", // camo svd (shturman) primary
+        "686093d590c3dce07984c38a", // aek973 (shturman) secondary
+        "68e0002a0d6a4dab56810fbd", // m78 lmg (parmesan) primary
+        "6840ebf5b8687ba34f8dfbca", // browning auto-5 shotty (parmesan) secondary
+        "684e32eaec9f5eb3cacc7ca7", // msr .300 (lighthouse shitter) primary
+        "68a3836826dffa87b5767c04", // axmc .300 (lighthouse shitter) primary
+        "6945dc69fe52c2415de357f7", // xm AMR op af (lighthouse shitter) primary
+        "6761b213607f9a6f79017c7e", // pdw .300 (big pipe) primary
+        "69161a1d649768162e8219ef", // custom masada (big pipe) primary
+        "66e718dc498d978477e0ba75", // m249 lmg (big pipe) secondary
+        "deee28079e76d537f532021c", // .338 lm (birdeye) primary
+        "1bf618e47cce6d69bec01e9f", // .338 lm (birdeye) primary
+        "68fd7d14ff5a09197b5ab82a", // cheytac m2000 (birdeye) primary
+        "682d460e951a926af552d764", // ak5c custom (birdeye) secondary
+        "68b7f4060a4536984f82cf4b", // mk23 .45 (birdeye) holster
+    ];
+    
+    private readonly Dictionary<MongoId, string[]> _bossWeaponLookup =
+    new()
+    {
+        ["677ca3e62e9e964a11a55d8e"] = ["bossbully"],
+
+        ["679a6a534f3d279c99b135b9"] = ["bossgluhar"],
+        ["690ebacfc047a9a9f1a98782"] = ["bossgluhar"],
+
+        ["676b4e2ff185a450a0b300b4"] = ["bosskilla"],
+        ["68677d09339b397ed3d37522"] = ["bosskilla"],
+
+        ["6868d249cdee524f8c0ba45f"] =
+        [
+            "bossknight",
+            "followerbigpipe",
+            "followerbirdeye"
+        ],
+
+        ["6657bd4d3a4d6e7c33fd2fdc"] = ["bosskojaniy"],
+        ["686093d590c3dce07984c38a"] = ["bosskojaniy"],
+
+        ["68e0002a0d6a4dab56810fbd"] = ["bosspartisan"],
+        ["6840ebf5b8687ba34f8dfbca"] = ["bosspartisan"],
+
+        ["684e32eaec9f5eb3cacc7ca7"] = ["bosszryachiy"],
+        ["68a3836826dffa87b5767c04"] = ["bosszryachiy"],
+        ["6945dc69fe52c2415de357f7"] = ["bosszryachiy"],
+
+        ["6761b213607f9a6f79017c7e"] = ["followerbigpipe"],
+        ["69161a1d649768162e8219ef"] = ["followerbigpipe"],
+        ["66e718dc498d978477e0ba75"] = ["followerbigpipe"],
+
+        ["deee28079e76d537f532021c"] = ["followerbirdeye"],
+        ["1bf618e47cce6d69bec01e9f"] = ["followerbirdeye"],
+        ["68fd7d14ff5a09197b5ab82a"] = ["followerbirdeye"],
+        ["682d460e951a926af552d764"] = ["followerbirdeye"],
+        ["68b7f4060a4536984f82cf4b"] = ["followerbirdeye"],
+    };
     
     /// <summary>
     ///     Helper to skip importing entirely
@@ -1176,5 +1240,15 @@ public class ItemImportHelper(
     public bool IsBlacklistedViaModConfig(MongoId itemId, int tier)
     {
         return _fullModConfigBlacklist[tier].Contains(itemId);
+    }
+
+    public bool IsWttBossWeapon(MongoId itemId)
+    {
+        return ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses && _armouryBossVariantWeapons.Contains(itemId);
+    }
+
+    public string[] BossAssignmentPerWtt(MongoId itemId)
+    {
+        return _bossWeaponLookup.TryGetValue(itemId, out var bossList) ? bossList : [];
     }
 }
