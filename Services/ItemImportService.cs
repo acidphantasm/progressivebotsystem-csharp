@@ -365,7 +365,7 @@ public class ItemImportService(
 
         if (_uniqueWeapons.ContainsKey(templateItem.Id))
         {
-            apbsLogger.Debug($"[{slot}] Completed mod import: {templateItem.Id}");
+            apbsLogger.Debug($"[IMPORT][{slot}] Completed mod import: {templateItem.Id}");
         }
     }
     
@@ -434,7 +434,7 @@ public class ItemImportService(
             if (_uniqueCalibers.TryAdd(ammoCaliber, 0))
                 Interlocked.Increment(ref _caliberCounter);
 
-            apbsLogger.Debug($"[T{tier}] Adding AmmoCaliber: {ammoCaliber} and {ammoIds.Count} ammunition types.");
+            apbsLogger.Debug($"[IMPORT][T{tier}] Adding AmmoCaliber: {ammoCaliber} and {ammoIds.Count} ammunition types.");
         }
     }
 
@@ -553,7 +553,7 @@ public class ItemImportService(
             }
             if (itemImportHelper.IfArmouredHelmetAndShouldSkip(templateItem, tier))
             {
-                apbsLogger.Debug($"[{slot.ToString()}][T${tier}] Skipping item in tier: {templateItem.Id} due to armour class 4 or higher");
+                apbsLogger.Debug($"[IMPORT][{slot.ToString()}][T${tier}] Skipping item in tier: {templateItem.Id} due to armour class 4 or higher");
                 continue;
             }
             
@@ -582,7 +582,7 @@ public class ItemImportService(
 
         if (_uniqueEquipment.ContainsKey(templateItem.Id))
         {
-            apbsLogger.Debug($"[{slot}] Completed mod import: {templateItem.Id}");
+            apbsLogger.Debug($"[IMPORT][{slot}] Completed mod import: {templateItem.Id}");
         }
     }
 
