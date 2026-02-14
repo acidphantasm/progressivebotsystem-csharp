@@ -358,10 +358,9 @@ public class BotConfigHelper(
             foreach (var (botType, data) in bots)
             {
                 if (!ScavRoles.Contains(botType)) continue;
+                if (data is null) continue;
                 foreach (var item in ModConfig.Config.ScavBots.LootConfig.Blacklist ?? [])
                 {
-                    if (data is null) continue;
-                    
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
                     data.BotInventory.Items.Backpack.Remove(item);
@@ -541,7 +540,7 @@ public class BotConfigHelper(
     #region BossConfigs
     private void BossLoot()
     {
-        if (ModConfig.Config.BossBots.LootConfig.Enable)
+        if (!ModConfig.Config.BossBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Boss Loot");
             foreach (var botType in BossRoles)
@@ -555,10 +554,10 @@ public class BotConfigHelper(
             foreach (var (botType, data) in bots)
             {
                 if (!BossRoles.Contains(botType)) continue;
+                if (data is null) continue;
+                
                 foreach (var item in ModConfig.Config.BossBots.LootConfig.Blacklist ?? [])
                 {
-                    if (data is null) continue;
-                    
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
                     data.BotInventory.Items.Backpack.Remove(item);
@@ -652,7 +651,7 @@ public class BotConfigHelper(
     #region FollowerConfigs
     private void FollowerLoot()
     {
-        if (ModConfig.Config.FollowerBots.LootConfig.Enable)
+        if (!ModConfig.Config.FollowerBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Follower Loot");
             foreach (var botType in FollowerRoles)
@@ -666,10 +665,9 @@ public class BotConfigHelper(
             foreach (var (botType, data) in bots)
             {
                 if (!FollowerRoles.Contains(botType)) continue;
+                if (data is null) continue;
                 foreach (var item in ModConfig.Config.FollowerBots.LootConfig.Blacklist ?? [])
                 {
-                    if (data is null) continue;
-                    
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
                     data.BotInventory.Items.Backpack.Remove(item);
@@ -763,7 +761,7 @@ public class BotConfigHelper(
     #region SpecialConfigs
     private void SpecialLoot()
     {
-        if (ModConfig.Config.SpecialBots.LootConfig.Enable)
+        if (!ModConfig.Config.SpecialBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Special Bot Loot");
             foreach (var botType in SpecialRoles)
@@ -777,10 +775,9 @@ public class BotConfigHelper(
             foreach (var (botType, data) in bots)
             {
                 if (!SpecialRoles.Contains(botType)) continue;
+                if (data is null) continue;
                 foreach (var item in ModConfig.Config.SpecialBots.LootConfig.Blacklist ?? [])
                 {
-                    if (data is null) continue;
-                    
                     data.BotInventory.Items.TacticalVest.Remove(item);
                     data.BotInventory.Items.Pockets.Remove(item);
                     data.BotInventory.Items.Backpack.Remove(item);
