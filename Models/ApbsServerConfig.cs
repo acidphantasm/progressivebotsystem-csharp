@@ -13,6 +13,8 @@ public class ApbsServerConfig
     public required ModCompatibilityConfig CompatibilityConfig { get; set; }
     [JsonPropertyName("normalizedHealthPool")]
     public required NormalizeHealthConfig NormalizedHealthPool { get; set; }
+    [JsonPropertyName("playerScavConfig")]
+    public required PlayerScavConfig PlayerScavConfig { get; set; }
     [JsonPropertyName("generalConfig")]
     public required GeneralConfig GeneralConfig { get; set; }
     [JsonPropertyName("pmcBots")]
@@ -35,6 +37,16 @@ public class ApbsServerConfig
     public bool EnableDebugLog { get; set; }
     [JsonPropertyName("configAppSettings")]
     public required ConfigAppSettings ConfigAppSettings { get; set; }
+}
+
+public class PlayerScavConfig
+{
+    [JsonPropertyName("enable")]
+    public bool Enable {  get; set; }
+    [JsonPropertyName("chance")]
+    public int Chance {  get; set; }
+    [JsonPropertyName("allowedBosses")]
+    public required List<string> AllowedBosses { get; set; }
 }
 public class GeneralBotData
 {

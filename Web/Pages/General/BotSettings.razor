@@ -258,13 +258,13 @@
                     <MudItem xs="9">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1"  Elevation="0">
                             <MudSelect T="string" Label="Excluded Bots"
-                            MultiSelection="true"
-                            SelectedValues="_allNormalizeHealthExcludedBots"
-                            SelectedValuesChanged="OnExcludedBotsValueChanged"
-                            Variant="Variant.Filled"
-                            AnchorOrigin="Origin.CenterLeft"
-                            Dense Clearable
-                            Disabled="!_allNormalizeHealthEnable">
+                                       MultiSelection="true"
+                                       SelectedValues="_allNormalizeHealthExcludedBots"
+                                       SelectedValuesChanged="OnExcludedBotsValueChanged"
+                                       Variant="Variant.Filled"
+                                       AnchorOrigin="Origin.CenterLeft"
+                                       Dense Clearable
+                                       Disabled="!_allNormalizeHealthEnable">
                                 @foreach (var name in BotNames)
                                 {
                                     <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
@@ -313,6 +313,95 @@
                         }
                     </MudItem>
 
+                </MudGrid>
+            </MudExpansionPanel>
+            
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Player Scav Settings" Expanded=true>
+                <MudGrid>
+                    
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Yes, this is super strong as you'll always have good ammo and gear." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enabling allows your player scav to regenerate as a boss based on configured chance." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Player's Scav as Boss</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pscavEnableBossRegeneration" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pscavEnableBossRegeneration</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavEnableBossRegeneration") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavBossEnable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (_pscavEnableBossRegeneration != false && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavBossEnable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Health of Right Leg. Toggle switch to enable or disable this body part." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Chance</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pscavEnableBossRegeneration">@_pscavBossRegenerationChance</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pscavBossRegenerationChance" ValueLabel="true" Min="1" Max="100" Color="Color.Info" Size="Size.Medium" Disabled="!_pscavEnableBossRegeneration" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavBossRegenerationChance") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavBossChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small" >Undo</MudButton>
+                        }
+                        else if (_pscavBossRegenerationChance != 5 && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavBossChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="2" />
+                    <MudItem xs="9">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1"  Elevation="0">
+                            <MudSelect T="string" Label="Allowed Bosses"
+                                       MultiSelection="true"
+                                       SelectedValues="_pscavBossRegenerationAllowedBosses"
+                                       SelectedValuesChanged="OnAllowedBossValueChanged"
+                                       Variant="Variant.Filled"
+                                       AnchorOrigin="Origin.CenterLeft"
+                                       Dense Clearable
+                                       Disabled="!_pscavEnableBossRegeneration">
+                                @foreach (var name in BossNames)
+                                {
+                                    <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavBossRegenerationAllowedBosses") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavBossAllowedBosses" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (_pscavBossRegenerationAllowedBosses.Count > 0 && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavBossAllowedBosses" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
                 </MudGrid>
             </MudExpansionPanel>
 
@@ -1797,6 +1886,58 @@
     private void defaultNormalizeSkillsEnable() => _allNormalizeSkillsEnable = false;
     #endregion
 
+    #region PLAYERSCAV
+    private bool _pscavEnableBossRegeneration
+    {
+        get => ModConfig.Config.PlayerScavConfig.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.Enable);
+            ModConfig.Config.PlayerScavConfig.Enable = value;
+        }
+    }
+    private void undoPlayerScavBossEnable() => _pscavEnableBossRegeneration = ModConfig.OriginalConfig.PlayerScavConfig.Enable;
+    private void defaultPlayerScavBossEnable() => _pscavEnableBossRegeneration = false;
+    private int _pscavBossRegenerationChance
+    {
+        get => ModConfig.Config.PlayerScavConfig.Chance;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.Chance);
+            ModConfig.Config.PlayerScavConfig.Chance = value;
+        }
+    }
+
+    private void undoPlayerScavBossChance() => _pscavBossRegenerationChance = ModConfig.OriginalConfig.PlayerScavConfig.Chance;
+    private void defaultPlayerScavBossChance() => _pscavBossRegenerationChance = 5;
+    private List<string> _pscavBossRegenerationAllowedBosses
+    {
+        get => ModConfig.Config.PlayerScavConfig.AllowedBosses;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.AllowedBosses);
+            ModConfig.Config.PlayerScavConfig.AllowedBosses = value;
+        }
+    }
+
+    private string[] BossNames =
+    {
+        "bossBoar", "bossBully", "bossGluhar",
+        "bossKilla", "bossKillaAgro", "bossKnight", "bossKojaniy",
+        "bossKolontay", "bossPartisan", "bossSanitar", "bossTagilla", "bossTagillaAgro", "bossZryachiy",
+        "followerBigPipe", "followerBirdEye","sectantPriest"
+    };
+
+    private void OnAllowedBossValueChanged(IEnumerable<string> selected)
+    {
+        MainLayout.EnableUnsavedChangesButton();
+        _pscavBossRegenerationAllowedBosses = selected.ToList();
+    }
+
+    private void undoPlayerScavBossAllowedBosses() => _pscavBossRegenerationAllowedBosses = ModConfig.OriginalConfig.PlayerScavConfig.AllowedBosses;
+    private void defaultPlayerScavBossAllowedBosses() => _pscavBossRegenerationAllowedBosses.Clear();
+    #endregion
+    
     #region WEAPON CONFIG
     private bool _allPerWeaponAttachmentRolls
     {

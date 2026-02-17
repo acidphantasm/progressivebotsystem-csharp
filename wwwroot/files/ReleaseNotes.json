@@ -1,8 +1,21 @@
 ﻿[
   {
-    "Version": "2.1.3",
+    "Version": "2.1.4",
     "ReleaseDate": "February 14, 2025",
     "IsLatest": true,
+    "NewFeatures": [
+      "Webconfig toggle to allow your scav to generate as a boss",
+      "Webconfig slider to adjust the chance your scav will generate as a boss",
+      "Webconfig selection to allow/disallow specific bosses from being selected"
+    ],
+    "Changes": [],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.1.3",
+    "ReleaseDate": "February 14, 2025",
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Bunch of code cleanup"

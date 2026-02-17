@@ -38,6 +38,17 @@
     "excludedBots": [],
     "normalizeSkills": false
   },
+  "playerScavConfig": {
+    "enable": false,
+    "chance": 5,
+    "allowedBosses": [
+      "bossBully",
+      "bossGluhar",
+      "bossKilla",
+      "bossSanitar",
+      "bossTagilla"
+    ]
+  },
   "generalConfig": {
     "enablePerWeaponTypeAttachmentChances": true,
     "enableLargeCapacityMagazineLimit": true,
