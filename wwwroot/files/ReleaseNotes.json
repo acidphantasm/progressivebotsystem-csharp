@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.1.5",
+    "ReleaseDate": "February 28, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Webconfig toggle to allow the scav boss generation feature to also use their health values"
+    ],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved MPR45 Safeguard mutating database filters on mod import"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.4",
     "ReleaseDate": "February 16, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggle to allow your scav to generate as a boss",
       "Webconfig slider to adjust the chance your scav will generate as a boss",
