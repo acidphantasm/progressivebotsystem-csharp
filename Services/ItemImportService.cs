@@ -422,7 +422,7 @@ public class ItemImportService(
             .SelectMany(c => c.Properties?.Filters ?? [])
             .Select(f => f.Filter)
             .FirstOrDefault(f => f != null);
-
+        
         var ammoIds = filter ?? itemImportHelper.GetCompatibleCartridgesFromMagazineTemplate(templateItem);
 
         foreach (var ammoId in ammoIds)
@@ -455,16 +455,18 @@ public class ItemImportService(
                 if (slotName is null) 
                     continue;
 
-                var filters = slot.Properties?.Filters?
+                var originalFilters = slot.Properties?.Filters?
                     .FirstOrDefault(x => x.Filter is { Count: > 0 })?
                     .Filter;
-                if (filters is null) 
+                if (originalFilters is null) 
                     continue;
                 
-                if (filters.Contains(ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP) && ModConfig.Config.CompatibilityConfig.EnableMprSafeGuard)
-                    filters.ExceptWith(filters.Where(itemId => itemId != ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP).ToList());
+                var workingFilters = new HashSet<MongoId>(originalFilters);
                 
-                foreach (var childItemId in filters)
+                if (workingFilters.Contains(ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP) && ModConfig.Config.CompatibilityConfig.EnableMprSafeGuard)
+                    workingFilters.RemoveWhere(id => id != ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP);
+                
+                foreach (var childItemId in workingFilters)
                 {
                     if (!context.Ancestors.Add(childItemId))
                     {
@@ -607,16 +609,17 @@ public class ItemImportService(
                 if (slotName is null) 
                     continue;
 
-                var filters = slot.Properties?.Filters?
+                var originalFilters = slot.Properties?.Filters?
                     .FirstOrDefault(x => x.Filter is { Count: > 0 })?
                     .Filter;
-                if (filters is null) 
+                if (originalFilters is null) 
                     continue;
 
-                if (filters.Contains(ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP) && ModConfig.Config.CompatibilityConfig.EnableMprSafeGuard)
-                    filters.ExceptWith(filters.Where(itemId => itemId != ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP).ToList());
+                var workingFilters = new HashSet<MongoId>(originalFilters);
+                if (workingFilters.Contains(ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP) && ModConfig.Config.CompatibilityConfig.EnableMprSafeGuard)
+                    workingFilters.RemoveWhere(id => id != ItemTpl.MOUNT_NCSTAR_MPR45_BACKUP);
 
-                foreach (var childItemId in filters)
+                foreach (var childItemId in workingFilters)
                 {
                     if (!context.Ancestors.Add(childItemId))
                     {
