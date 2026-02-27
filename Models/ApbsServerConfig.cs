@@ -43,6 +43,8 @@ public class PlayerScavConfig
 {
     [JsonPropertyName("enable")]
     public bool Enable {  get; set; }
+    [JsonPropertyName("useBossHealth")]
+    public bool UseBossHealth {  get; set; }
     [JsonPropertyName("chance")]
     public int Chance {  get; set; }
     [JsonPropertyName("allowedBosses")]

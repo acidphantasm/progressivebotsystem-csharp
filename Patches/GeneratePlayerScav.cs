@@ -63,5 +63,39 @@ public class GeneratePlayerScav_Patch : AbstractPatch
         __result.Customization.Head = bot.BotAppearance.Head.Last().Key;
         __result.Customization.Hands = bot.BotAppearance.Hands.First().Key;
         __result.Customization.Voice = bot.BotAppearance.Voice.First().Key;
+
+        if (!ModConfig.Config.PlayerScavConfig.UseBossHealth)
+            return;
+        
+        var newBotBodyParts = bot.BotHealth.BodyParts.FirstOrDefault();
+        if (newBotBodyParts is null)
+            return;
+        
+        if (__result.Health?.BodyParts is null)
+            return;
+        
+        foreach (var (partName, partProperties) in __result.Health.BodyParts)
+        {
+            if (partProperties.Health is null)
+                continue;
+
+            var sourceMinMax = partName switch
+            {
+                "Head" => newBotBodyParts.Head,
+                "Chest" => newBotBodyParts.Chest,
+                "Stomach" => newBotBodyParts.Stomach,
+                "LeftArm" => newBotBodyParts.LeftArm,
+                "RightArm" => newBotBodyParts.RightArm,
+                "LeftLeg" => newBotBodyParts.LeftLeg,
+                "RightLeg" => newBotBodyParts.RightLeg,
+                _ => null
+            };
+
+            if (sourceMinMax == null)
+                continue;
+
+            partProperties.Health.Maximum = sourceMinMax.Max;
+            partProperties.Health.Current = sourceMinMax.Max;
+        }
     }
 }

@@ -40,6 +40,7 @@
   },
   "playerScavConfig": {
     "enable": false,
+    "useBossHealth": false,
     "chance": 5,
     "allowedBosses": [
       "bossBully",
