@@ -17,7 +17,6 @@ public class PlayerScavGeneratorGeneratePatch : AbstractPatch
     private static readonly ICloner Cloner = ServiceLocator.ServiceProvider.GetRequiredService<ICloner>();
     private static readonly SaveServer SaveServer = ServiceLocator.ServiceProvider.GetRequiredService<SaveServer>();
     
-    
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(PlayerScavGenerator),"Generate");
