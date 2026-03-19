@@ -26,6 +26,8 @@ public class PatchManager : IOnLoad
         new AddDogTagToBot_Patch().Enable();
         new SetRandomisedGameVersionAndCategory_Patch().Enable();
         new GetRandomizedMaxArmorDurability_Patch().Enable();
+        new PlayerScavGeneratorGeneratePatch().Enable();
+        new HandlePostRaidPlayerScav_Patch().Enable();
         
         return Task.CompletedTask;
     }

@@ -30,6 +30,9 @@ public class GeneratePlayerScav_Patch : AbstractPatch
         
         if (!ModConfig.Config.PlayerScavConfig.Enable)
             return;
+        
+        if (!ModConfig.Config.PlayerScavConfig.AllowBossRegeneration)
+            return;
 
         if (ModConfig.Config.PlayerScavConfig.AllowedBosses.Count == 0)
             return;

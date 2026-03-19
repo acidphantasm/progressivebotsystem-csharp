@@ -40,15 +40,12 @@
   },
   "playerScavConfig": {
     "enable": false,
+    "usePmcSkills": false,
+    "writebackSkillsToPmc": false,
+    "allowBossRegeneration": false,
     "useBossHealth": false,
     "chance": 5,
-    "allowedBosses": [
-      "bossBully",
-      "bossGluhar",
-      "bossKilla",
-      "bossSanitar",
-      "bossTagilla"
-    ]
+    "allowedBosses": []
   },
   "generalConfig": {
     "enablePerWeaponTypeAttachmentChances": true,

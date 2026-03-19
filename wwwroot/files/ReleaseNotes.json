@@ -1,8 +1,23 @@
 ﻿[
   {
-    "Version": "2.1.5",
-    "ReleaseDate": "February 28, 2025",
+    "Version": "2.1.6",
+    "ReleaseDate": "March 19, 2026",
     "IsLatest": true,
+    "NewFeatures": [
+      "Webconfig toggle to to allow using or disable all player scav options at once",
+      "Webconfig toggle to allow the Scav to use Pmc skill values",
+      "Webconfig toggle to allow the Pmc to acquire skill gains from Player Scav raids"
+    ],
+    "Changes": [
+      "Altered config values for Scav as Boss. Now has its own enable toggle"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.1.5",
+    "ReleaseDate": "February 28, 2026",
+    "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggle to allow the scav boss generation feature to also use their health values"
     ],
@@ -14,7 +29,7 @@
   },
   {
     "Version": "2.1.4",
-    "ReleaseDate": "February 16, 2025",
+    "ReleaseDate": "February 16, 2026",
     "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggle to allow your scav to generate as a boss",
@@ -27,7 +42,7 @@
   },
   {
     "Version": "2.1.3",
-    "ReleaseDate": "February 14, 2025",
+    "ReleaseDate": "February 14, 2026",
     "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
@@ -40,7 +55,7 @@
   },
   {
     "Version": "2.1.2",
-    "ReleaseDate": "February 14, 2025",
+    "ReleaseDate": "February 14, 2026",
     "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggle to allow bosses to have WTT Armoury weapons intended by the authors",
@@ -57,7 +72,7 @@
   },
   {
     "Version": "2.1.1",
-    "ReleaseDate": "February 3, 2025",
+    "ReleaseDate": "February 3, 2026",
     "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
@@ -68,7 +83,7 @@
   },
   {
     "Version": "2.1.0",
-    "ReleaseDate": "February 2, 2025",
+    "ReleaseDate": "February 2, 2026",
     "IsLatest": false,
     "NewFeatures": [
       "Blacklisting functionality has returned",

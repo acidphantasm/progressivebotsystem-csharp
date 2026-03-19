@@ -43,10 +43,16 @@ public class PlayerScavConfig
 {
     [JsonPropertyName("enable")]
     public bool Enable {  get; set; }
-    [JsonPropertyName("useBossHealth")]
-    public bool UseBossHealth {  get; set; }
+    [JsonPropertyName("usePmcSkills")]
+    public bool UsePmcSkills {  get; set; }
+    [JsonPropertyName("writebackSkillsToPmc")]
+    public bool WritebackSkillsToPmc {  get; set; }
+    [JsonPropertyName("allowBossRegeneration")]
+    public bool AllowBossRegeneration {  get; set; }
     [JsonPropertyName("chance")]
     public int Chance {  get; set; }
+    [JsonPropertyName("useBossHealth")]
+    public bool UseBossHealth {  get; set; }
     [JsonPropertyName("allowedBosses")]
     public required List<string> AllowedBosses { get; set; }
 }

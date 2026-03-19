@@ -321,6 +321,84 @@
                     
                     <MudItem xs="1">
                         <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="These settings drastically change progression by altering your player scav." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enabling allows you to adjust player scav configs." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Player Scav Options</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pscavEnable" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pscavEnable</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavEnable") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavEnable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (_pscavEnable != false && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavEnable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1"/>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enabling will generate your scav with your Pmc skill values." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Use Pmc Skills</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pscavEnablePmcSkills" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="!_pscavEnable">@_pscavEnablePmcSkills</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavEnablePmcSkills") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavPmcSkills" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (_pscavEnablePmcSkills != false && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavPmcSkills" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1"/>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enabling will write back your skill gains during a Scav raid back to your Pmc." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Pmc Skill Writeback</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pscavEnablePmcSkillWriteback" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="!_pscavEnable">@_pscavEnablePmcSkillWriteback</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavEnablePmcSkillWriteback") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavPmcSkillWriteback" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (_pscavEnablePmcSkillWriteback != false && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavPmcSkillWriteback" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
                             <MudTooltip Text="Yes, this is super strong as you'll always have good ammo and gear." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
                             </MudTooltip>
@@ -328,14 +406,14 @@
                     </MudItem>
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Enabling allows your player scav to regenerate as a boss based on configured chance." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Player's Scav as Boss</MudText>
+                            <MudTooltip Text="Enabling allows your player scav to regenerate as a boss based on configured chance, does not use boss skills." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Scav as Boss</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="_pscavEnableBossRegeneration" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pscavEnableBossRegeneration</MudSwitch>
+                            <MudSwitch T="bool" @bind-Value="_pscavEnableBossRegeneration" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="!_pscavEnable">@_pscavEnableBossRegeneration</MudSwitch>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
@@ -346,30 +424,6 @@
                         else if (_pscavEnableBossRegeneration != false && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultPlayerScavBossEnable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
-                        }
-                    </MudItem>
-                    
-                    <MudItem xs="1" />
-                    <MudItem xs="4">
-                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Enabling will use the bosses limb health values, if disabled will use your Pmcs limb health values." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Use Boss Health Values</MudText>
-                            </MudTooltip>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="_pscavEnableBossHealthValues" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="!_pscavEnableBossRegeneration">@_pscavEnableBossHealthValues</MudSwitch>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("_pscavEnableBossHealthValues") && MainLayout._appUndoButtonToggle)
-                        {
-                            <MudButton @onclick="undoPlayerScavBossHealthValues" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
-                        }
-                        else if (_pscavEnableBossRegeneration != false && MainLayout._appDefaultButtonToggle)
-                        {
-                            <MudButton @onclick="defaultPlayerScavBossHealthValues" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -395,6 +449,30 @@
                         else if (_pscavBossRegenerationChance != 5 && MainLayout._appDefaultButtonToggle)
                         {
                             <MudButton @onclick="defaultPlayerScavBossChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enabling will use the bosses limb health values, if disabled will use your Pmcs limb health values." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Use Boss Health Values</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pscavEnableBossHealthValues" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="!_pscavEnableBossRegeneration">@_pscavEnableBossHealthValues</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout.pendingChanges.Contains("_pscavEnableBossHealthValues") && MainLayout._appUndoButtonToggle)
+                        {
+                            <MudButton @onclick="undoPlayerScavBossHealthValues" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (_pscavEnableBossRegeneration != false && MainLayout._appDefaultButtonToggle)
+                        {
+                            <MudButton @onclick="defaultPlayerScavBossHealthValues" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
                     
@@ -1911,16 +1989,66 @@
     #endregion
 
     #region PLAYERSCAV
-    private bool _pscavEnableBossRegeneration
+    private bool _pscavEnable
     {
         get => ModConfig.Config.PlayerScavConfig.Enable;
         set
         {
             Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.Enable);
             ModConfig.Config.PlayerScavConfig.Enable = value;
+
+            if (!value)
+            {
+                defaultPlayerScavPmcSkills();
+                defaultPlayerScavPmcSkillWriteback();
+                defaultPlayerScavBossEnable();
+                defaultPlayerScavBossHealthValues();
+                defaultPlayerScavBossChance();
+                defaultPlayerScavBossAllowedBosses();
+            }
         }
     }
-    private void undoPlayerScavBossEnable() => _pscavEnableBossRegeneration = ModConfig.OriginalConfig.PlayerScavConfig.Enable;
+    private void undoPlayerScavEnable() => _pscavEnable = ModConfig.OriginalConfig.PlayerScavConfig.Enable;
+    private void defaultPlayerScavEnable() => _pscavEnable = false;
+    private bool _pscavEnablePmcSkills
+    {
+        get => ModConfig.Config.PlayerScavConfig.UsePmcSkills;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.UsePmcSkills);
+            ModConfig.Config.PlayerScavConfig.UsePmcSkills = value;
+        }
+    }
+    private void undoPlayerScavPmcSkills() => _pscavEnablePmcSkills = ModConfig.OriginalConfig.PlayerScavConfig.UsePmcSkills;
+    private void defaultPlayerScavPmcSkills() => _pscavEnablePmcSkills = false;
+    private bool _pscavEnablePmcSkillWriteback
+    {
+        get => ModConfig.Config.PlayerScavConfig.WritebackSkillsToPmc;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.WritebackSkillsToPmc);
+            ModConfig.Config.PlayerScavConfig.WritebackSkillsToPmc = value;
+        }
+    }
+    private void undoPlayerScavPmcSkillWriteback() => _pscavEnablePmcSkillWriteback = ModConfig.OriginalConfig.PlayerScavConfig.WritebackSkillsToPmc;
+    private void defaultPlayerScavPmcSkillWriteback() => _pscavEnablePmcSkillWriteback = false;
+    private bool _pscavEnableBossRegeneration
+    {
+        get => ModConfig.Config.PlayerScavConfig.AllowBossRegeneration;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.AllowBossRegeneration);
+            ModConfig.Config.PlayerScavConfig.AllowBossRegeneration = value;
+
+            if (!value)
+            {
+                defaultPlayerScavBossHealthValues();
+                defaultPlayerScavBossChance();
+                defaultPlayerScavBossAllowedBosses();
+            }
+        }
+    }
+    private void undoPlayerScavBossEnable() => _pscavEnableBossRegeneration = ModConfig.OriginalConfig.PlayerScavConfig.AllowBossRegeneration;
     private void defaultPlayerScavBossEnable() => _pscavEnableBossRegeneration = false;
     private bool _pscavEnableBossHealthValues
     {
