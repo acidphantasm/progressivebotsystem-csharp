@@ -1,10 +1,21 @@
 ﻿[
   {
-    "Version": "2.1.6",
-    "ReleaseDate": "March 19, 2026",
+    "Version": "2.1.7",
+    "ReleaseDate": "April 1, 2026",
     "IsLatest": true,
     "NewFeatures": [
-      "Webconfig toggle to to allow using or disable all player scav options at once",
+      "Nothing at all I promise"
+    ],
+    "Changes": [],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.1.6",
+    "ReleaseDate": "March 19, 2026",
+    "IsLatest": false,
+    "NewFeatures": [
+      "Webconfig toggle to allow using or disable all player scav options at once",
       "Webconfig toggle to allow the Scav to use Pmc skill values",
       "Webconfig toggle to allow the Pmc to acquire skill gains from Player Scav raids"
     ],

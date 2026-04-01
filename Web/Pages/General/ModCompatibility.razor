@@ -523,7 +523,7 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="_botEquipmentLogging" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_debugLogging</MudSwitch>
+                            <MudSwitch T="bool" @bind-Value="_botEquipmentLogging" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_botEquipmentLogging</MudSwitch>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
@@ -538,6 +538,38 @@
                     </MudItem>
 
                 </MudGrid>
+            </MudExpansionPanel>
+
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Nothing to see here..." Expanded=false>
+                    <MudGrid>
+                        
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
+                                <MudText>
+                                    <MudTooltip Text="Enables April Fool's event. It inverts the tiering." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>April Fool's Event</MudText>
+                                    </MudTooltip>
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_aprilFoolsEvent" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_aprilFoolsEvent</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_aprilFoolsEvent"))
+                            {
+                                <MudButton @onclick="undoAprilFools" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && _aprilFoolsEvent != true)
+                            {
+                                <MudButton @onclick="defaultAprilFools" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                    </MudGrid>
             </MudExpansionPanel>
         </MudExpansionPanels>
     </MudContainer>
@@ -765,6 +797,20 @@
     }
     private void undoBotLog() => _botEquipmentLogging = ModConfig.OriginalConfig.EnableBotEquipmentLog;
     private void defaultBotLog() => _botEquipmentLogging = false;
+    #endregion
+    
+    #region SECRETS
+    private bool _aprilFoolsEvent
+    {
+        get => ModConfig.Config.EnableBotEquipmentLog;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.EnableBotEquipmentLog);
+            ModConfig.Config.EnableBotEquipmentLog = value;
+        }
+    }
+    private void undoAprilFools() => _botEquipmentLogging = ModConfig.OriginalConfig.EnableBotEquipmentLog;
+    private void defaultAprilFools() => _botEquipmentLogging = false;
     #endregion
 
     #region GETTER FOR DELEGATES NOT HERE

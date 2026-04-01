@@ -17,7 +17,10 @@
     "WttArmoury_AddBossVariantsToBosses": true,
     "WttArmoury_AddBossVariantsToOthers": true,
     "Realism_AddGasMasksToBots": false,
-    "General_SecureContainerAmmoStacks": 20
+    "General_SecureContainerAmmoStacks": 20,
+    "secrets": {
+      "AprilFoolsEvent": true
+    }
   },
   "normalizedHealthPool": {
     "enable": false,

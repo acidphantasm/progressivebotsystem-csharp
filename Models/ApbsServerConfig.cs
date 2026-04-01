@@ -596,8 +596,15 @@ public class ModCompatibilityConfig
     public bool RealismAddGasMasksToBots { get; set; }
     [JsonPropertyName("General_SecureContainerAmmoStacks")]
     public int GeneralSecureContainerAmmoStacks { get; set; }
+    [JsonPropertyName("secrets")]
+    public required ModSecrets Secrets { get; set; }
 }
 
+public class ModSecrets
+{
+    [JsonPropertyName("AprilFoolsEvent")]
+    public bool AprilFoolsEvent { get; set; }
+}
 public class PmcSecrets
 {
     [JsonPropertyName("developerSettings")]
