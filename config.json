@@ -20,7 +20,8 @@
     "General_SecureContainerAmmoStacks": 20,
     "secrets": {
       "AprilFoolsEvent": true,
-      "HalloweenEvent": true
+      "HalloweenEvent": true,
+      "ChristmasEvent": true
     }
   },
   "normalizedHealthPool": {

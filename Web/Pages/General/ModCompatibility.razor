@@ -547,7 +547,7 @@
                         <MudItem xs="4">
                             <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
                                 <MudText>
-                                    <MudTooltip Text="Active: April 1st. It inverts the tiering." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudTooltip Text="Active: April 1. It inverts the tiering." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                         <MudText>April Fool's Event</MudText>
                                     </MudTooltip>
                                 </MudText>
@@ -555,15 +555,15 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                                <MudSwitch T="bool" @bind-Value="_aprilFoolsEvent" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_aprilFoolsEvent</MudSwitch>
+                                <MudSwitch T="bool" @bind-Value="_eventsAprilFools" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_eventsAprilFools</MudSwitch>
                             </MudPaper>
                         </MudItem>
                         <MudItem xs="1">
-                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_aprilFoolsEvent"))
+                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_eventsAprilFools"))
                             {
                                 <MudButton @onclick="undoAprilFools" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                             }
-                            else if (MainLayout._appDefaultButtonToggle && _aprilFoolsEvent != true)
+                            else if (MainLayout._appDefaultButtonToggle && _eventsAprilFools != true)
                             {
                                 <MudButton @onclick="defaultAprilFools" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                             }
@@ -573,7 +573,7 @@
                         <MudItem xs="4">
                             <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
                                 <MudText>
-                                    <MudTooltip Text="Active: October 31st. All bots get pumpkin heads." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudTooltip Text="Active: October 31. All bots get pumpkin heads." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                         <MudText>Halloween Event</MudText>
                                     </MudTooltip>
                                 </MudText>
@@ -581,17 +581,43 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                                <MudSwitch T="bool" @bind-Value="_halloweenEvent" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_halloweenEvent</MudSwitch>
+                                <MudSwitch T="bool" @bind-Value="_eventsHalloween" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_eventsHalloween</MudSwitch>
                             </MudPaper>
                         </MudItem>
                         <MudItem xs="1">
-                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_halloweenEvent"))
+                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_eventsHalloween"))
                             {
-                                <MudButton @onclick="undoHalloweenEvent" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                <MudButton @onclick="undoHalloween" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                             }
-                            else if (MainLayout._appDefaultButtonToggle && _halloweenEvent != true)
+                            else if (MainLayout._appDefaultButtonToggle && _eventsHalloween != true)
                             {
-                                <MudButton @onclick="defaultHalloweenEvent" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                <MudButton @onclick="defaultHalloween" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-left mud-width-full ma-1" Elevation="0">
+                                <MudText>
+                                    <MudTooltip Text="Active: December 24-25. All bots get Killa's Christmas Helmet and Armour." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Christmas Event</MudText>
+                                    </MudTooltip>
+                                </MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_eventsChristmas" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_eventsChristmas</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_eventsChristmas"))
+                            {
+                                <MudButton @onclick="undoChristmas" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && _eventsChristmas != true)
+                            {
+                                <MudButton @onclick="defaultChristmas" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                             }
                         </MudItem>
 
@@ -826,7 +852,7 @@
     #endregion
     
     #region SECRETS
-    private bool _aprilFoolsEvent
+    private bool _eventsAprilFools
     {
         get => ModConfig.Config.CompatibilityConfig.Secrets.AprilFoolsEvent;
         set
@@ -835,9 +861,9 @@
             ModConfig.Config.CompatibilityConfig.Secrets.AprilFoolsEvent = value;
         }
     }
-    private void undoAprilFools() => _aprilFoolsEvent = ModConfig.OriginalConfig.CompatibilityConfig.Secrets.AprilFoolsEvent;
-    private void defaultAprilFools() => _aprilFoolsEvent = true;
-    private bool _halloweenEvent
+    private void undoAprilFools() => _eventsAprilFools = ModConfig.OriginalConfig.CompatibilityConfig.Secrets.AprilFoolsEvent;
+    private void defaultAprilFools() => _eventsAprilFools = true;
+    private bool _eventsHalloween
     {
         get => ModConfig.Config.CompatibilityConfig.Secrets.HalloweenEvent;
         set
@@ -846,8 +872,19 @@
             ModConfig.Config.CompatibilityConfig.Secrets.HalloweenEvent = value;
         }
     }
-    private void undoHalloweenEvent() => _halloweenEvent = ModConfig.OriginalConfig.CompatibilityConfig.Secrets.HalloweenEvent;
-    private void defaultHalloweenEvent() => _halloweenEvent = true;
+    private void undoHalloween() => _eventsHalloween = ModConfig.OriginalConfig.CompatibilityConfig.Secrets.HalloweenEvent;
+    private void defaultHalloween() => _eventsHalloween = true;
+    private bool _eventsChristmas
+    {
+        get => ModConfig.Config.CompatibilityConfig.Secrets.ChristmasEvent;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.Secrets.ChristmasEvent);
+            ModConfig.Config.CompatibilityConfig.Secrets.ChristmasEvent = value;
+        }
+    }
+    private void undoChristmas() => _eventsChristmas = ModConfig.OriginalConfig.CompatibilityConfig.Secrets.ChristmasEvent;
+    private void defaultChristmas() => _eventsChristmas = true;
     #endregion
 
     #region GETTER FOR DELEGATES NOT HERE

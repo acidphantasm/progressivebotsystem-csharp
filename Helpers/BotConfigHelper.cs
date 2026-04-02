@@ -668,6 +668,7 @@ public class BotConfigHelper(
         SetWeaponModLimits();
         AmmoStackCompatibility();
         EnableHalloweenEvent();
+        EnableChristmasEvent();
     }
     #region AllBotConfigs
     private void SetLevelDeltas()
@@ -933,7 +934,50 @@ public class BotConfigHelper(
                 bot.Chances.EquipmentChances["Eyewear"] = 0;
             }
         }
-        apbsLogger.Warning("Halloween bots available");
+        apbsLogger.Warning("AI seems to be dressing up for the occasion!");
+    }
+
+    private void EnableChristmasEvent()
+    {
+        if (!dateHelper.IsChristmasEnabled()) return;
+        for (var i = 1; i <= 7; i++)
+        {
+            var equipmentData = GetTierEquipmentData(i);
+            foreach (var bot in equipmentData.GetAllBots())
+            {
+                bot.Equipment[ApbsEquipmentSlots.Headwear] = new Dictionary<MongoId, double>
+                {
+                    [ItemTpl.HEADWEAR_MASKA1SCH_BULLETPROOF_HELMET_CHRISTMAS_EDITION] = 1
+                };
+                bot.Equipment[ApbsEquipmentSlots.ArmorVest] = new Dictionary<MongoId, double>
+                {
+                    [ItemTpl.ARMOR_6B13_M_ASSAULT_ARMOR_CHRISTMAS_EDITION] = 1
+                };
+            }
+
+            var modsData = GetTierModsData(i);
+            if (modsData.TryGetValue(ItemTpl.HEADWEAR_MASKA1SCH_BULLETPROOF_HELMET_CHRISTMAS_EDITION,
+                    out var killaChristmasHelmet))
+            {
+                killaChristmasHelmet["mod_equipment"] = [ItemTpl.ARMOREDEQUIPMENT_MASKA1SCH_FACE_SHIELD_KILLA_EDITION];
+            }
+
+            var chanceData = GetTierChancesData(i);
+            foreach (var bot in chanceData.GetAllBots())
+            {
+                bot.Chances.EquipmentChances["Headwear"] = 100;
+                bot.Chances.EquipmentChances["ArmorVest"] = 100;
+                bot.Chances.EquipmentChances["FaceCover"] = 0;
+                bot.Chances.EquipmentChances["Eyewear"] = 0;
+                bot.Chances.EquipmentChances["Earpiece"] = 0;
+                bot.Chances.EquipmentModsChances["back_plate"] = 100;
+                bot.Chances.EquipmentModsChances["front_plate"] = 100;
+                bot.Chances.EquipmentModsChances["left_side_plate"] = 100;
+                bot.Chances.EquipmentModsChances["right_side_plate"] = 100;
+                bot.Chances.EquipmentModsChances["mod_equipment"] = 100;
+            }
+        }
+        apbsLogger.Warning("IT IS CHRISTMAS TIME? Where's my gift?");
     }
     #endregion
     private void AllBotsConfigsBypassEnableCheck()
