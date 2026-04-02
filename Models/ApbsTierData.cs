@@ -21,106 +21,161 @@ public record TierInnerData
 }
 public class EquipmentTierData
 {
+    public IEnumerable<ApbsEquipmentBot> GetAllBots()
+    {
+        yield return PmcUsec;
+        yield return PmcBear;
+        yield return Scav;
+        yield return BossBoar;
+        yield return BossBoarSniper;
+        yield return BossBully;
+        yield return BossGluhar;
+        yield return BossKilla;
+        yield return BossKillaAgro;
+        yield return BossKnight;
+        yield return BossKojaniy;
+        yield return BossKolontay;
+        yield return BossSanitar;
+        yield return BossTagilla;
+        yield return BossTagillaAgro;
+        yield return BossPartisan;
+        yield return BossZryachiy;
+        yield return FollowerBigPipe;
+        yield return FollowerBirdeye;
+        yield return SectantPriest;
+        yield return SectantWarrior;
+        yield return ExUsec;
+        yield return PmcBot;
+        yield return Default;
+    }
+    
     [JsonPropertyName("pmcUSEC")]
-    public ApbsEquipmentBot PmcUsec { get; set; }
+    public required ApbsEquipmentBot PmcUsec { get; set; }
     [JsonPropertyName("pmcBEAR")]
-    public ApbsEquipmentBot PmcBear { get; set; }
+    public required ApbsEquipmentBot PmcBear { get; set; }
     [JsonPropertyName("scav")]
-    public ApbsEquipmentBot Scav { get; set; }
+    public required ApbsEquipmentBot Scav { get; set; }
     [JsonPropertyName("bossboar")]
-    public ApbsEquipmentBot BossBoar { get; set; }
+    public required ApbsEquipmentBot BossBoar { get; set; }
     [JsonPropertyName("bossboarsniper")]
-    public ApbsEquipmentBot BossBoarSniper { get; set; }
+    public required ApbsEquipmentBot BossBoarSniper { get; set; }
     [JsonPropertyName("bossbully")]
-    public ApbsEquipmentBot BossBully { get; set; }
+    public required ApbsEquipmentBot BossBully { get; set; }
     [JsonPropertyName("bossgluhar")]
-    public ApbsEquipmentBot BossGluhar { get; set; }
+    public required ApbsEquipmentBot BossGluhar { get; set; }
     [JsonPropertyName("bosskilla")]
-    public ApbsEquipmentBot BossKilla { get; set; }
+    public required ApbsEquipmentBot BossKilla { get; set; }
     [JsonPropertyName("bosskillaagro")]
-    public ApbsEquipmentBot BossKillaAgro { get; set; }
+    public required ApbsEquipmentBot BossKillaAgro { get; set; }
     [JsonPropertyName("bossknight")]
-    public ApbsEquipmentBot BossKnight { get; set; }
+    public required ApbsEquipmentBot BossKnight { get; set; }
     [JsonPropertyName("bosskojaniy")]
-    public ApbsEquipmentBot BossKojaniy { get; set; }
+    public required ApbsEquipmentBot BossKojaniy { get; set; }
     [JsonPropertyName("bosskolontay")]
-    public ApbsEquipmentBot BossKolontay { get; set; }
+    public required ApbsEquipmentBot BossKolontay { get; set; }
     [JsonPropertyName("bosssanitar")]
-    public ApbsEquipmentBot BossSanitar { get; set; }
+    public required ApbsEquipmentBot BossSanitar { get; set; }
     [JsonPropertyName("bosstagilla")]
-    public ApbsEquipmentBot BossTagilla { get; set; }
+    public required ApbsEquipmentBot BossTagilla { get; set; }
     [JsonPropertyName("bosstagillaagro")]
-    public ApbsEquipmentBot BossTagillaAgro { get; set; }
+    public required ApbsEquipmentBot BossTagillaAgro { get; set; }
     [JsonPropertyName("bosspartisan")]
-    public ApbsEquipmentBot BossPartisan { get; set; }
+    public required ApbsEquipmentBot BossPartisan { get; set; }
     [JsonPropertyName("bosszryachiy")]
-    public ApbsEquipmentBot BossZryachiy { get; set; }
+    public required ApbsEquipmentBot BossZryachiy { get; set; }
     [JsonPropertyName("followerbigpipe")]
-    public ApbsEquipmentBot FollowerBigPipe { get; set; }
+    public required ApbsEquipmentBot FollowerBigPipe { get; set; }
     [JsonPropertyName("followerbirdeye")]
-    public ApbsEquipmentBot FollowerBirdeye { get; set; }
+    public required ApbsEquipmentBot FollowerBirdeye { get; set; }
     [JsonPropertyName("sectantpriest")]
-    public ApbsEquipmentBot SectantPriest { get; set; }
+    public required ApbsEquipmentBot SectantPriest { get; set; }
     [JsonPropertyName("sectantwarrior")]
-    public ApbsEquipmentBot SectantWarrior { get; set; }
+    public required ApbsEquipmentBot SectantWarrior { get; set; }
     [JsonPropertyName("exusec")]
-    public ApbsEquipmentBot ExUsec { get; set; }
+    public required ApbsEquipmentBot ExUsec { get; set; }
     [JsonPropertyName("pmcbot")]
-    public ApbsEquipmentBot PmcBot { get; set; }
+    public required ApbsEquipmentBot PmcBot { get; set; }
     [JsonPropertyName("default")]
-    public ApbsEquipmentBot Default { get; set; }
+    public required ApbsEquipmentBot Default { get; set; }
 }
 
 public class ChancesTierData
 {
+    public IEnumerable<BotChancesData> GetAllBots()
+    {
+        yield return PmcUsec;
+        yield return PmcBear;
+        yield return Scav;
+        yield return BossBoar;
+        yield return BossBoarSniper;
+        yield return BossBully;
+        yield return BossGluhar;
+        yield return BossKilla;
+        yield return BossKillaAgro;
+        yield return BossKnight;
+        yield return BossKojaniy;
+        yield return BossKolontay;
+        yield return BossSanitar;
+        yield return BossTagilla;
+        yield return BossTagillaAgro;
+        yield return BossPartisan;
+        yield return BossZryachiy;
+        yield return FollowerBigPipe;
+        yield return FollowerBirdeye;
+        yield return SectantPriest;
+        yield return SectantWarrior;
+        yield return ExUsec;
+        yield return PmcBot;
+        yield return Default;
+    }
     [JsonPropertyName("pmcUSEC")]
-    public BotChancesData PmcUsec { get; set; }
+    public required BotChancesData PmcUsec { get; set; }
     [JsonPropertyName("pmcBEAR")]
-    public BotChancesData PmcBear { get; set; }
+    public required BotChancesData PmcBear { get; set; }
     [JsonPropertyName("scav")]
-    public BotChancesData Scav { get; set; }
+    public required BotChancesData Scav { get; set; }
     [JsonPropertyName("bossboar")]
-    public BotChancesData BossBoar { get; set; }
+    public required BotChancesData BossBoar { get; set; }
     [JsonPropertyName("bossboarsniper")]
-    public BotChancesData BossBoarSniper { get; set; }
+    public required BotChancesData BossBoarSniper { get; set; }
     [JsonPropertyName("bossbully")]
-    public BotChancesData BossBully { get; set; }
+    public required BotChancesData BossBully { get; set; }
     [JsonPropertyName("bossgluhar")]
-    public BotChancesData BossGluhar { get; set; }
+    public required BotChancesData BossGluhar { get; set; }
     [JsonPropertyName("bosskilla")]
-    public BotChancesData BossKilla { get; set; }
+    public required BotChancesData BossKilla { get; set; }
     [JsonPropertyName("bosskillaagro")]
-    public BotChancesData BossKillaAgro { get; set; }
+    public required BotChancesData BossKillaAgro { get; set; }
     [JsonPropertyName("bossknight")]
-    public BotChancesData BossKnight { get; set; }
+    public required BotChancesData BossKnight { get; set; }
     [JsonPropertyName("bosskojaniy")]
-    public BotChancesData BossKojaniy { get; set; }
+    public required BotChancesData BossKojaniy { get; set; }
     [JsonPropertyName("bosskolontay")]
-    public BotChancesData BossKolontay { get; set; }
+    public required BotChancesData BossKolontay { get; set; }
     [JsonPropertyName("bosssanitar")]
-    public BotChancesData BossSanitar { get; set; }
+    public required BotChancesData BossSanitar { get; set; }
     [JsonPropertyName("bosstagilla")]
-    public BotChancesData BossTagilla { get; set; }
+    public required BotChancesData BossTagilla { get; set; }
     [JsonPropertyName("bosstagillaagro")]
-    public BotChancesData BossTagillaAgro { get; set; }
+    public required BotChancesData BossTagillaAgro { get; set; }
     [JsonPropertyName("bosspartisan")]
-    public BotChancesData BossPartisan { get; set; }
+    public required BotChancesData BossPartisan { get; set; }
     [JsonPropertyName("bosszryachiy")]
-    public BotChancesData BossZryachiy { get; set; }
+    public required BotChancesData BossZryachiy { get; set; }
     [JsonPropertyName("followerbigpipe")]
-    public BotChancesData FollowerBigPipe { get; set; }
+    public required BotChancesData FollowerBigPipe { get; set; }
     [JsonPropertyName("followerbirdeye")]
-    public BotChancesData FollowerBirdeye { get; set; }
+    public required BotChancesData FollowerBirdeye { get; set; }
     [JsonPropertyName("sectantpriest")]
-    public BotChancesData SectantPriest { get; set; }
+    public required BotChancesData SectantPriest { get; set; }
     [JsonPropertyName("sectantwarrior")]
-    public BotChancesData SectantWarrior { get; set; }
+    public required BotChancesData SectantWarrior { get; set; }
     [JsonPropertyName("exusec")]
-    public BotChancesData ExUsec { get; set; }
+    public required BotChancesData ExUsec { get; set; }
     [JsonPropertyName("pmcbot")]
-    public BotChancesData PmcBot { get; set; }
+    public required BotChancesData PmcBot { get; set; }
     [JsonPropertyName("default")]
-    public BotChancesData Default { get; set; }
+    public required BotChancesData Default { get; set; }
 
 }
 
