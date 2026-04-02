@@ -19,7 +19,8 @@ public class ItemImportHelper(
     JsonUtil jsonUtil,
     ItemHelper itemHelper,
     DatabaseService databaseService,
-    BotBlacklistHelper botBlacklistHelper)
+    BotBlacklistHelper botBlacklistHelper,
+    DateHelper dateHelper)
 {
     private bool _alreadyRan;
     
@@ -698,6 +699,9 @@ public class ItemImportHelper(
 
         var isEquipment = ModConfig.Config.CompatibilityConfig.EnableModdedEquipment &&
                            itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
+
+        if (itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR) && dateHelper.IsHalloweenEnabled())
+            return false;
         
         return isWeapon || isEquipment;
     }

@@ -604,6 +604,8 @@ public class ModSecrets
 {
     [JsonPropertyName("AprilFoolsEvent")]
     public bool AprilFoolsEvent { get; set; }
+    [JsonPropertyName("HalloweenEvent")]
+    public bool HalloweenEvent { get; set; }
 }
 public class PmcSecrets
 {

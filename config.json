@@ -19,7 +19,8 @@
     "Realism_AddGasMasksToBots": false,
     "General_SecureContainerAmmoStacks": 20,
     "secrets": {
-      "AprilFoolsEvent": true
+      "AprilFoolsEvent": true,
+      "HalloweenEvent": true
     }
   },
   "normalizedHealthPool": {

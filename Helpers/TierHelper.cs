@@ -13,7 +13,7 @@ public class TierHelper(
         var tiers = tierInformation.Tiers;
         var matchingData = tiers.First(x => level >= x.PlayerMinLevel && level <= x.PlayerMaxLevel);
 
-        if (!dateHelper.IsAprilFools())
+        if (!dateHelper.IsAprilFoolsEnabled())
             return matchingData;
 
         var ordered = tiers.OrderBy(x => x.Tier).ToList();

@@ -3,6 +3,7 @@ using SPTarkov.Server.Core.DI;
 using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Models;
+using _progressiveBotSystem.Models.Enums;
 using _progressiveBotSystem.Utils;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
@@ -21,7 +22,8 @@ public class BotConfigHelper(
     BotActivityHelper botActivityHelper,
     ItemHelper itemHelper,
     TierInformation tierInformation,
-    DataLoader dataLoader)
+    DataLoader dataLoader,
+    DateHelper dateHelper)
     : IOnLoad
 {
     private readonly BotConfig _botConfig = configServer.GetConfig<BotConfig>();
@@ -665,6 +667,7 @@ public class BotConfigHelper(
         SetItemResourceRandomization();
         SetWeaponModLimits();
         AmmoStackCompatibility();
+        EnableHalloweenEvent();
     }
     #region AllBotConfigs
     private void SetLevelDeltas()
@@ -905,6 +908,32 @@ public class BotConfigHelper(
         
         _botConfig.SecureContainerAmmoStackCount =
             ModConfig.Config.CompatibilityConfig.GeneralSecureContainerAmmoStacks;
+    }
+
+    private void EnableHalloweenEvent()
+    {
+        if (!dateHelper.IsHalloweenEnabled()) return;
+        for (var i = 1; i <= 7; i++)
+        {
+            var equipmentData = GetTierEquipmentData(i);
+            foreach (var bot in equipmentData.GetAllBots())
+            {
+                bot.Equipment[ApbsEquipmentSlots.Headwear] = new Dictionary<MongoId, double>
+                {
+                    [ItemTpl.HEADWEAR_JACKOLANTERN_TACTICAL_PUMPKIN_HELMET] = 1
+                };
+            }
+
+            var chanceData = GetTierChancesData(i);
+            foreach (var bot in chanceData.GetAllBots())
+            {
+                bot.Chances.EquipmentChances["Headwear"] = 100;
+                bot.Chances.EquipmentChances["Earpiece"] = 0;
+                bot.Chances.EquipmentChances["FaceCover"] = 0;
+                bot.Chances.EquipmentChances["Eyewear"] = 0;
+            }
+        }
+        apbsLogger.Warning("Halloween bots available");
     }
     #endregion
     private void AllBotsConfigsBypassEnableCheck()

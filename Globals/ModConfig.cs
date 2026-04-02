@@ -22,7 +22,8 @@ public class ModConfig : IOnLoad
         BotConfigHelper botConfigHelper,
         DataLoader dataLoader,
         BotBlacklistService  botBlacklistService,
-        ItemImportService itemImportService)
+        ItemImportService itemImportService,
+        DateHelper dateHelper)
     {
         _apbsLogger = apbsLogger;
         _modHelper = modHelper;
@@ -32,6 +33,7 @@ public class ModConfig : IOnLoad
         _dataLoader = dataLoader;
         _botBlacklistService = botBlacklistService;
         _itemImportService = itemImportService;
+        _dateHelper = dateHelper;
         _modPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
     }
     private static ApbsLogger _apbsLogger;
@@ -42,6 +44,8 @@ public class ModConfig : IOnLoad
     private static DataLoader _dataLoader;
     private static BotBlacklistService _botBlacklistService;
     private static ItemImportService _itemImportService;
+    private static DateHelper _dateHelper;
+    
     public static ApbsServerConfig Config {get; private set;} = null!;
     public static ApbsServerConfig OriginalConfig {get; private set;} = null!;
     public static ApbsBlacklistConfig Blacklist { get; private set; } = null!;
@@ -105,7 +109,8 @@ public class ModConfig : IOnLoad
 
             // DeepClone the Clean data into the Dirty data for use
             _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
-            
+
+            await Task.Run(() => _dateHelper.OnLoad());
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
             await _itemImportService.OnLoad();
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
@@ -169,6 +174,7 @@ public class ModConfig : IOnLoad
             // DeepClone the Clean data into the Dirty data for use
             _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
             
+            await Task.Run(() => _dateHelper.OnLoad());
             await Task.Run(() => _botConfigHelper.ReapplyConfig());
             await _itemImportService.OnLoad();
             await Task.Run(() => _botBlacklistService.RunBlacklisting());
