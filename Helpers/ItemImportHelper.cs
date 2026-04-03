@@ -992,7 +992,7 @@ public class ItemImportHelper(
             "scav" => slot switch
             {
                 ApbsEquipmentSlots.Holster  => 1,
-                ApbsEquipmentSlots.Scabbard => 3,
+                ApbsEquipmentSlots.Scabbard => 1,
                 _ => 1
             },
 
