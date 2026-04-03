@@ -19,7 +19,7 @@
       },
       "equipmentMods": {
         "back_plate": 75,
-        "front_plate": 95,
+        "front_plate": 100,
         "left_side_plate": 50,
         "mod_equipment": 10,
         "mod_equipment_000": 10,
@@ -748,7 +748,7 @@
       },
       "equipmentMods": {
         "back_plate": 75,
-        "front_plate": 95,
+        "front_plate": 100,
         "left_side_plate": 50,
         "mod_equipment": 10,
         "mod_equipment_000": 10,
