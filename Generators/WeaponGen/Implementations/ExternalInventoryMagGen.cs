@@ -44,7 +44,7 @@ public class ApbsExternalInventoryMagGen(
         var magTemplate = inventoryMagGen.GetMagazineTemplate();
         var magazineTpl = magTemplate.Id;
         
-        HashSet<MongoId> attemptedMagBlacklist = [];
+        var attemptedMagBlacklist = new HashSet<MongoId>();
         
         var weapon = inventoryMagGen.GetWeaponTemplate();
         var ammoCaliber = inventoryMagGen.GetAmmoTemplate().Properties.Caliber;
