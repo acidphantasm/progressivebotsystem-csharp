@@ -43,11 +43,11 @@ public class GetRandomizedMaxArmorDurability_Patch : AbstractPatch
         var logger = ServiceLocator.ServiceProvider.GetRequiredService<ISptLogger<DurabilityLimitsHelper>>();
 
         if (RaidInformation.FreshProfile || RaidInformation.CurrentSessionId is null || botRole is null || !botActivityHelper.IsBotEnabled(botRole)) return true;
-        if (!ModConfig.Config.ScavBots.ArmourDurability.Enable && ScavRoles.Contains(botRole)) return true;
-        if (!ModConfig.Config.BossBots.ArmourDurability.Enable && BossRoles.Contains(botRole)) return true;
-        if (!ModConfig.Config.FollowerBots.ArmourDurability.Enable && FollowerRoles.Contains(botRole)) return true;
-        if (!ModConfig.Config.SpecialBots.ArmourDurability.Enable && SpecialRoles.Contains(botRole)) return true;
-        if (!ModConfig.Config.PmcBots.ArmourDurability.Enable && PmcRoles.Contains(botRole)) return true;
+        if (ScavRoles.Contains(botRole) && !ModConfig.Config.ScavBots.ArmourDurability.Enable) return true;
+        if (BossRoles.Contains(botRole) && !ModConfig.Config.BossBots.ArmourDurability.Enable) return true;
+        if (FollowerRoles.Contains(botRole) && !ModConfig.Config.FollowerBots.ArmourDurability.Enable) return true;
+        if (SpecialRoles.Contains(botRole) && !ModConfig.Config.SpecialBots.ArmourDurability.Enable) return true;
+        if (PmcRoles.Contains(botRole) && !ModConfig.Config.PmcBots.ArmourDurability.Enable) return true;
         
         var itemMaxDurability = itemTemplate?.Properties?.MaxDurability;
         if (!itemMaxDurability.HasValue)
