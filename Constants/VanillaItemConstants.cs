@@ -26,7 +26,8 @@ public class VanillaItemConstants
         "6513ef33e06849f06c0957ca",
         "65268d8ecb944ff1e90ea385",
         "65fb023261d5829b2d090755",
-        "661ceb1b9311543c7104149b"
+        "661ceb1b9311543c7104149b",
+        "574d967124597745970e7c94"
     };
 
     public static readonly List<MongoId> LabyrinthKeys = new List<MongoId>
