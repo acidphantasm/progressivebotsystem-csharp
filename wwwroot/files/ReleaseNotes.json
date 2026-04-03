@@ -1,8 +1,32 @@
 ﻿[
   {
+    "Version": "2.1.8",
+    "ReleaseDate": "April 3, 2026",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Webconfig toggles for secret stuff"
+    ],
+    "Changes": [
+      "Removed excess LINQ in weapon gen for questing",
+      "Adjusted T1-7 Scav scabbard weights",
+      "Adjusted T1-3 Pmc weapon weights slightly",
+      "Adjusted T1-3 Pmc to have 100% front plate chance",
+      "Adjusted webconfig default T3 Pmc Plate Class weighting slightly",
+      "Adjusted mod slot equipment selection to always process front plate slot first",
+      "Added logic to cap back plate armour class to front plate armour class on Pmcs when possible",
+      "Adjusted webconfig max weight limit for importing weapons for some reason",
+      "Adjusted `Armband` mod import weight from 3 to 4",
+      "Adjusted `Scabbard` mod import weight for scavs from 3 to 1"
+    ],
+    "BugFixes": [
+      "Resolved some quest weapon generation logic issues"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.7",
     "ReleaseDate": "April 1, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Nothing at all I promise"
     ],
