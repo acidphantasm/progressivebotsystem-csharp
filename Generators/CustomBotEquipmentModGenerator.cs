@@ -114,9 +114,24 @@ public class CustomBotEquipmentModGenerator(
             logger.Warning($"bot: {settings.BotData.Role} lacks a mod slot pool for item: {parentTemplate.Id} {parentTemplate.Name}");
         }
 
+        // Ensure the front_plate is before the back_plate
+        var orderedCompatibleModsPool = (compatibleModsPool ?? [])
+            .OrderBy(pair =>
+            {
+                if (pair.Key.Equals("front_plate", StringComparison.OrdinalIgnoreCase)) return 0;
+                if (pair.Key.Equals("back_plate", StringComparison.OrdinalIgnoreCase)) return 1;
+                return 2;
+            })
+            .ToList();
+        
+        var frontPlateSpawned = false;
+        
         // Iterate over mod pool and choose mods to add to item
-        foreach (var (modSlotName, modPool) in compatibleModsPool ?? [])
+        foreach (var (modSlotName, modPool) in orderedCompatibleModsPool)
         {
+            if (modSlotName.Equals("back_plate", StringComparison.OrdinalIgnoreCase) && settings.BotData.EquipmentRole.Equals("pmc", StringComparison.OrdinalIgnoreCase) && !frontPlateSpawned)
+                continue;
+            
             // Get the templates slot object from db
             var itemSlotTemplate = GetModItemSlotFromDbTemplate(modSlotName, parentTemplate);
             if (itemSlotTemplate is null)
@@ -174,11 +189,25 @@ public class CustomBotEquipmentModGenerator(
             // Slot can hold armor plates + we are filtering possible items by bot level, handle
             if (settings.BotEquipmentConfig.FilterPlatesByLevel.GetValueOrDefault(false) && itemHelper.IsRemovablePlateSlot(modSlotName.ToLowerInvariant()))
             {
+                int? frontArmorLevel = null;
+                if (modSlotName.Equals("back_plate", StringComparison.OrdinalIgnoreCase))
+                {
+                    var frontPlate = equipment.FirstOrDefault(item => item.SlotId.Equals("front_plate", StringComparison.OrdinalIgnoreCase));
+
+                    if (frontPlate != null)
+                    {
+                        var frontPlateTemplate = itemHelper.GetItem(frontPlate.Template).Value;
+                        frontArmorLevel = frontPlateTemplate?.Properties?.ArmorClass;
+                    }
+                }
+
+                // Pass cap into plate filtering
                 var plateSlotFilteringOutcome = FilterPlateModsForSlotByLevel(
                     settings,
                     modSlotName.ToLowerInvariant(),
                     compatibleModsPool.GetValueOrDefault(modSlotName),
-                    parentTemplate
+                    parentTemplate,
+                    frontArmorLevel
                 );
                 switch (plateSlotFilteringOutcome.Result)
                 {
@@ -197,6 +226,11 @@ public class CustomBotEquipmentModGenerator(
                             $"Plate slot: {modSlotName} lacks weights for armor: {parentTemplate.Id}, unable to adjust plate choice, using existing data"
                         );
                         break;
+                }
+                
+                if (modSlotName.Equals("front_plate", StringComparison.OrdinalIgnoreCase))
+                {
+                    frontPlateSpawned = true;
                 }
 
                 // Replace mod pool with pool of chosen plate items
@@ -264,12 +298,14 @@ public class CustomBotEquipmentModGenerator(
     /// <param name="modSlot">Armor slot being filtered</param>
     /// <param name="existingPlateTplPool">Plates tpls to choose from</param>
     /// <param name="armorItem">The armor items db template</param>
+    /// <param name="maxArmorLevel">The armor's front place level</param>
     /// <returns>Array of plate tpls to choose from</returns>
     public FilterPlateModsForSlotByLevelResult FilterPlateModsForSlotByLevel(
         ApbsGenerateEquipmentProperties settings,
         string modSlot,
         HashSet<MongoId> existingPlateTplPool,
-        TemplateItem armorItem
+        TemplateItem armorItem,
+        int? maxArmorLevel = null
     )
     {
         var result = new FilterPlateModsForSlotByLevelResult { Result = Result.UNKNOWN_FAILURE, PlateModTemplates = null };
@@ -301,12 +337,19 @@ public class CustomBotEquipmentModGenerator(
         // Choose a plate level based on weighting
         var chosenArmorPlateLevelString = weightedRandomHelper.GetWeightedValue(plateWeights);
 
+        if (maxArmorLevel.HasValue)
+        {
+            var chosenLevel = int.Parse(chosenArmorPlateLevelString);
+            if (chosenLevel > maxArmorLevel.Value)
+                chosenArmorPlateLevelString = maxArmorLevel.Value.ToString();
+        }
+        
         // Convert the array of ids into database items
         var platesFromDb = existingPlateTplPool.Select(plateTpl => itemHelper.GetItem(plateTpl).Value);
 
         // Filter plates to the chosen level based on its armorClass property
         var platesOfDesiredLevel = platesFromDb.Where(item =>
-            item.Properties.ArmorClass.Value == double.Parse(chosenArmorPlateLevelString, CultureInfo.InvariantCulture)
+            item.Properties.ArmorClass.Value == int.Parse(chosenArmorPlateLevelString, CultureInfo.InvariantCulture)
         );
         if (platesOfDesiredLevel.Any())
         {
