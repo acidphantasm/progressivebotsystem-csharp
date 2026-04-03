@@ -259,7 +259,6 @@ public class CustomBotWeaponGenerator(
                 case "5447b6094bdc2dc3278b4567":
                     weaponChances = modChances.ShotgunChances;
                     break;
-                case "5447bedf4bdc2d87278b4568":
                 default:
                     weaponChances = modChances.WeaponModsChances;
                     break;
