@@ -1071,7 +1071,7 @@ public class ItemImportHelper(
         var armorClass = templateItem.Properties?.ArmorClass ?? 0;
         return slot switch
         {
-            ApbsEquipmentSlots.ArmBand => 3,
+            ApbsEquipmentSlots.ArmBand => 4,
             ApbsEquipmentSlots.ArmorVest => 10,
             ApbsEquipmentSlots.ArmouredRig => 7,
             ApbsEquipmentSlots.Backpack => 5,
