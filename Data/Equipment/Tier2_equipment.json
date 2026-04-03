@@ -2,11 +2,11 @@
   "pmcUSEC": {
     "equipment": {
       "FirstPrimaryWeapon_LongRange": {
-        "5c07c60e0db834002330051f": 25,
+        "5c07c60e0db834002330051f": 30,
         "5d43021ca4b9362eab4b5e25": 3,
         "5b0bbe4e5acfc40dc528a72d": 1,
-        "5bfea6e90db834001b7347f3": 15,
-        "623063e994fc3f7b302a9696": 8,
+        "5bfea6e90db834001b7347f3": 20,
+        "623063e994fc3f7b302a9696": 10,
         "5447a9cd4bdc2dbd208b4567": 8
       },
       "FirstPrimaryWeapon_ShortRange": {
@@ -55,11 +55,11 @@
         "5bc9c1e2d4351e00367fbcf0": 1
       },
       "SecondPrimaryWeapon_LongRange": {
-        "5c07c60e0db834002330051f": 25,
+        "5c07c60e0db834002330051f": 30,
         "5d43021ca4b9362eab4b5e25": 3,
         "5b0bbe4e5acfc40dc528a72d": 1,
-        "5bfea6e90db834001b7347f3": 15,
-        "623063e994fc3f7b302a9696": 8,
+        "5bfea6e90db834001b7347f3": 20,
+        "623063e994fc3f7b302a9696": 10,
         "5447a9cd4bdc2dbd208b4567": 8
       },
       "SecondPrimaryWeapon_ShortRange": {
