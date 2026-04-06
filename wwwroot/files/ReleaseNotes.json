@@ -1,8 +1,20 @@
 ﻿[
   {
+    "Version": "2.1.9",
+    "ReleaseDate": "April 6, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved mod importing skipping iron sights if none of them folded",
+      "Resolved mod importing skipping optic slots if none of the items were optics (they are mounts)"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.8",
     "ReleaseDate": "April 3, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggles for secret stuff"
     ],
