@@ -587,7 +587,7 @@ public class CustomBotEquipmentModGenerator(
                 BotData = request.BotData,
             };
             var modToAdd = ChooseModToPutIntoSlot(modToSpawnRequest, questData, weaponTpl);
-
+            
             // Compatible mod not found
             if (modToAdd is null)
             {
@@ -654,8 +654,7 @@ public class CustomBotEquipmentModGenerator(
 
             // Handguard mod can take a sub handguard mod + weapon has no UBGL (takes same slot)
             // Force spawn chance to be 100% to ensure it gets added
-            if (
-                modSlot == "mod_handguard"
+            if (modSlot == "mod_handguard"
                 && modToAddTemplate.Properties?.Slots is not null
                 && modToAddTemplate.Properties.Slots.Any(slot => slot.Name == "mod_handguard")
                 && !request.Weapon.Any(item => item.SlotId == "mod_launcher")
@@ -1009,9 +1008,7 @@ public class CustomBotEquipmentModGenerator(
         }
 
         var spawnMod = randomUtil.RollChance(modSpawnChances.GetValueOrDefault(modSlotName.ToLowerInvariant()));
-        if (
-            !spawnMod
-            && (slotRequired.GetValueOrDefault(false) || (botEquipConfig.WeaponSlotIdsToMakeRequired?.Contains(modSlotName) ?? false))
+        if (!spawnMod && (slotRequired.GetValueOrDefault(false) || (botEquipConfig.WeaponSlotIdsToMakeRequired?.Contains(modSlotName) ?? false))
         )
         // Edge case: Mod is required but spawn chance roll failed, choose default mod spawn for slot
         {
