@@ -1120,7 +1120,7 @@ public class ItemImportHelper(
         if (IsBannedModScope000(itemToAdd, slot))
             return false;
 
-        if (IsFrontOrRearSightAndDoesntFold(itemToAdd, slot))
+        if (IsFrontOrRearSightAndDoesntFold(parentItem, itemToAdd, slot))
             return false;
         
         return true;
@@ -1158,9 +1158,21 @@ public class ItemImportHelper(
         return slot == "mod_scope_000" && !_modScope000Whitelist.Contains(itemToAdd.Id);
     }
 
-    private bool IsFrontOrRearSightAndDoesntFold(TemplateItem itemToAdd, string slot)
+    private bool IsFrontOrRearSightAndDoesntFold(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
-        return slot.StartsWith("mod_sight_") && !_foldingModSights.Contains(itemToAdd.Id);
+        if (!slot.StartsWith("mod_sight_") || _foldingModSights.Contains(itemToAdd.Id))
+            return false;
+
+        var filters = parentItem.Properties?.Slots?
+            .FirstOrDefault(s => s.Name == slot)?
+            .Properties?.Filters?
+            .FirstOrDefault(f => f.Filter != null && f.Filter.Count > 0)?
+            .Filter;
+
+        if (filters != null && filters.All(id => !_foldingModSights.Contains(id)))
+            return false;
+
+        return true;
     }
 
     public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd, string slot, int tier)
@@ -1168,6 +1180,12 @@ public class ItemImportHelper(
         var isHighTier = tier >= 4;
         var hasDualOptions = HasLowerAndUpperOptionsAvailable(parentItem, slot, slot.StartsWith("mod_magazine") ? 30 : 8);
 
+        // Slot is marked required
+        if (parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false)
+        {
+            return true;
+        }
+        
         // MAGAZINES
         if (slot.StartsWith("mod_magazine"))
         {
