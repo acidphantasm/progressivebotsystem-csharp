@@ -112,7 +112,19 @@ public class CustomBotWeaponGenerator(
         {
             var mapWeightings = ModConfig.Config.GeneralConfig.MapRangeWeighting[RaidInformation.RaidLocation].ToDictionary();
             var rangeType = weightedRandomHelper.GetWeightedValue<string>(mapWeightings);
-            equipmentSlot += "_" + rangeType;
+            
+            switch (botRole)
+            {
+                case "marksman":
+                    equipmentSlot += "_LongRange";
+                    break;
+                case "assault":
+                    equipmentSlot += "_ShortRange";
+                    break;
+                default:
+                    equipmentSlot += "_" + rangeType;
+                    break;
+            }
         }
         if (!Enum.TryParse(equipmentSlot, out ApbsEquipmentSlots key))
         {
