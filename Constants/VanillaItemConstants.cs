@@ -27,7 +27,8 @@ public class VanillaItemConstants
         "65268d8ecb944ff1e90ea385",
         "65fb023261d5829b2d090755",
         "661ceb1b9311543c7104149b",
-        "574d967124597745970e7c94"
+        "574d967124597745970e7c94",
+        "66e718dc498d978477e0ba75" // Armory M249
     };
 
     public static readonly List<MongoId> LabyrinthKeys = new List<MongoId>
