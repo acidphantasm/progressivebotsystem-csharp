@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.1.11",
+    "ReleaseDate": "April 10, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Added fallback logic for modded weapons that have an incorrectly defined default magazine"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.10",
     "ReleaseDate": "April 8, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [

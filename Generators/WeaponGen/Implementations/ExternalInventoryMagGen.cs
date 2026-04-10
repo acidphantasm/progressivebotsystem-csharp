@@ -85,7 +85,7 @@ public class ApbsExternalInventoryMagGen(
                     if (currentMagazineSize > 35 && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1)
                     {
                         isTryingSmallerMags = true;
-                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool);
+                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 25, 40);
                         if (smallMagazinePool.Count != 0)
                         {
                             magazineTpl = randomUtil.GetArrayValue(smallMagazinePool);
@@ -182,11 +182,19 @@ public class ApbsExternalInventoryMagGen(
                 // Set chosen magazine tpl to the weapons default magazine tpl and try to fit into inventory next loop
                 magazineTpl = defaultMagazineTpl.Value;
                 magTemplate = itemHelper.GetItem(magazineTpl).Value;
+                
                 if (magTemplate is null)
                 {
                     logger.Error(serverLocalisationService.GetText("bot-unable_to_find_default_magazine_item", magazineTpl));
 
                     break;
+                }
+                
+                // This fix is for when the default mag doesn't fit the parent weapon. This primarily happens with modded weapons.
+                if (!DoesMagazineFitWeapon(weapon, magTemplate))
+                {
+                    magTemplate = inventoryMagGen.GetFallbackFittingMagazine(modPool, weapon, magTemplate, tier);
+                    magazineTpl = magTemplate.Id;
                 }
 
                 // Edge case - some weapons (SKS + shotguns) have an internal magazine as default, choose random non-internal magazine to add to bot instead
@@ -228,7 +236,8 @@ public class ApbsExternalInventoryMagGen(
             // Reset fit counter now it succeeded
             {
                 fitAttempts = 0;
-                if (isTryingSmallerMags) hasSwitchedToSmallerMags = true;
+                if (isTryingSmallerMags) 
+                    hasSwitchedToSmallerMags = true;
             }
         }
     }

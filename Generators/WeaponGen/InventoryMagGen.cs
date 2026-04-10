@@ -286,7 +286,7 @@ public class ApbsInventoryMagGen()
         }
     }
     
-    public List<MongoId> GetCustomFilteredMagazinePoolByCapacity(int tier, TemplateItem weapon, HashSet<MongoId> modPool)
+    public List<MongoId> GetCustomFilteredMagazinePoolByCapacity(int tier, TemplateItem weapon, HashSet<MongoId> modPool, int min, int max)
     {
         var itemHelper = ServiceLocator.ServiceProvider.GetService<ItemHelper>();
         var apbsLogger = ServiceLocator.ServiceProvider.GetService<ApbsLogger>();
@@ -295,8 +295,11 @@ public class ApbsInventoryMagGen()
         var desiredMagazineTpls = modPool.Where(magTpl =>
         {
             var magazineDb = itemHelper.GetItem(magTpl).Value;
-            return magazineDb?.Properties?.Cartridges is not null
-                   && magazineDb.Properties.Cartridges.FirstOrDefault()?.MaxCount < 40 && magazineDb.Properties.Cartridges.FirstOrDefault()?.MaxCount >= 25;
+            var maxCount = magazineDb?.Properties?.Cartridges?.Max(x => x.MaxCount.Value);
+
+            return maxCount is not null
+                   && maxCount < max
+                   && maxCount >= min;
         }).ToList();
 
         if (desiredMagazineTpls.Count == 0)
@@ -305,6 +308,49 @@ public class ApbsInventoryMagGen()
         }
 
         return desiredMagazineTpls;
+    }
+
+    public TemplateItem GetFallbackFittingMagazine(Dictionary<MongoId,Dictionary<string,HashSet<MongoId>>> modPool, TemplateItem weapon, TemplateItem magTemplate, int tier)
+    {
+        var itemHelper = ServiceLocator.ServiceProvider.GetService<ItemHelper>();
+        var randomUtil = ServiceLocator.ServiceProvider.GetService<RandomUtil>();
+        
+        
+        if (!modPool.TryGetValue(weapon.Id, out var weaponModPool) ||
+            !weaponModPool.TryGetValue("mod_magazine", out var magazinePool))
+        {
+            return magTemplate;
+        }
+
+        if (magazinePool.Contains(magTemplate.Id))
+        {
+            return magTemplate;
+        }
+        
+        var filteredPool = GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 10, 31);
+
+        if (filteredPool.Count > 0)
+        {
+            var tpl = randomUtil.GetArrayValue(filteredPool);
+            return itemHelper.GetItem(tpl).Value;
+        }
+
+        if (magazinePool.Count > 0)
+        {
+            var tpl = randomUtil.GetArrayValue(magazinePool.ToList());
+            return itemHelper.GetItem(tpl).Value;
+        }
+
+        return magTemplate;
+    }
+
+    protected bool DoesMagazineFitWeapon(TemplateItem weapon, TemplateItem magTemplate)
+    {
+        return weapon?.Properties?.Slots?
+            .FirstOrDefault(s => s.Name == "mod_magazine")?
+            .Properties?.Filters?
+            .SelectMany(f => f?.Filter ?? Enumerable.Empty<MongoId>())
+            .Contains(magTemplate.Id) == true;
     }
     
     public MongoId GetWeightedCompatibleAmmo(Dictionary<string, Dictionary<MongoId, double>> cartridgePool, TemplateItem weaponTemplate)

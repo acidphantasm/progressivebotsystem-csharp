@@ -409,10 +409,18 @@ public class ItemImportService(
 
     private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
     {
-        equipmentData.PmcUsec.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-        equipmentData.PmcBear.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-        equipmentData.Scav.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "scav");
-        equipmentData.Default.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "default");
+        var testMode = false;
+        var testId = "6962f22fddc6698c6309b620";
+        var isTestItem = testMode && itemId == testId;
+
+        var pmcWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
+        var scavWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "scav");
+        var defaultWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "default");
+
+        equipmentData.PmcUsec.Equipment[slot][itemId] = pmcWeight;
+        equipmentData.PmcBear.Equipment[slot][itemId] = pmcWeight;
+        equipmentData.Scav.Equipment[slot][itemId] = scavWeight;
+        equipmentData.Default.Equipment[slot][itemId] = defaultWeight;
     }
     
     private void ProcessAmmoForWeapon(TemplateItem templateItem, string ammoCaliber, int tier)
