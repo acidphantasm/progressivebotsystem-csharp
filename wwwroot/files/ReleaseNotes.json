@@ -5,7 +5,8 @@
     "IsLatest": true,
     "NewFeatures": [],
     "Changes": [
-      "Added fallback logic for modded weapons that have an incorrectly defined default magazine"
+      "Added fallback logic for modded weapons that have an incorrectly defined default magazine",
+      "Adjusted Large Magazine fallback failure message to be debug - it isn't an issue but it's a nice to know"
     ],
     "BugFixes": [],
     "KnownIssues": []
