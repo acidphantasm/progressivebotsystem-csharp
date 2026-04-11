@@ -1,8 +1,19 @@
 ﻿[
   {
-    "Version": "2.1.11",
+    "Version": "2.1.12",
     "ReleaseDate": "April 10, 2026",
     "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved saving preset data to disk when you change to a new preset"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.1.11",
+    "ReleaseDate": "April 10, 2026",
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Added fallback logic for modded weapons that have an incorrectly defined default magazine",

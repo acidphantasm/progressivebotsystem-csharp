@@ -128,8 +128,8 @@ public class ModConfig : IOnLoad
             Interlocked.Exchange(ref _isActivelyProcessingFlag, 0);
         }
     }
-    
-    public static async Task<ConfigOperationResult> SaveConfig(bool savePresetToDisk = false)
+
+    public static async Task<ConfigOperationResult> SaveConfig(bool savePresetToDisk = false, bool presetNameChange = false)
     {
         if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
@@ -161,7 +161,7 @@ public class ModConfig : IOnLoad
                         goodToReassignPreset = true;
                     }
                 }
-                if (goodToReassignPreset)
+                if (presetNameChange || goodToReassignPreset)
                 {
                     await _dataLoader.AssignJsonDataFromPreset(_modPath);
                 }

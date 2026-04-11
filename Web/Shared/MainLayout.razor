@@ -464,15 +464,18 @@ else
             _isSaving = true;
             StateHasChanged();
 
-            var updatePresetOnDisk = HasPendingPresetNameOrFolderChange();
-
+            var savePresetToDisk = false;
+            var presetNameChange = HasPendingPresetNameOrFolderChange();
+            
             if (HasPendingPresetChanges())
             {
-                updatePresetOnDisk = true;
                 ApplyPresetChanges();
+                savePresetToDisk = true;
+                
             }
-            var result = await ModConfig.SaveConfig(updatePresetOnDisk);
-
+            
+            var result = await ModConfig.SaveConfig(savePresetToDisk, presetNameChange);
+            
             StateHasChanged();
             switch (result)
             {
