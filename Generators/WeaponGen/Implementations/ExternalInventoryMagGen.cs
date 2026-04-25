@@ -58,9 +58,6 @@ public class ApbsExternalInventoryMagGen(
         var modPool = botEquipmentHelper.GetModsByBotRole(botRole, tier);
         var rerollConfig = inventoryMagGen.GetRerollDetails();
         var toploadConfig = inventoryMagGen.GetToploadConfig();
-
-        var hasSwitchedToSmallerMags = false;
-        var isTryingSmallerMags = false;
         
         var shouldBotRerollAmmo = rerollConfig.Enable && !toploadConfig.Enable && randomUtil.GetChance100(rerollConfig.Chance);
         var shouldBotTopload = toploadConfig.Enable && !rerollConfig.Enable && randomUtil.GetChance100(toploadConfig.Chance);
@@ -70,27 +67,23 @@ public class ApbsExternalInventoryMagGen(
         
         for (var i = 0; i < randomizedMagazineCount; i++)
         {
-            if (ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit &&
-                !VanillaItemConstants.WeaponsWithNoSmallMagazines.Contains(weapon.Id) && 
-                !hasSwitchedToSmallerMags)
+            if (ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit && !VanillaItemConstants.WeaponsWithNoSmallMagazines.Contains(weapon.Id))
             {
                 modPool.TryGetValue(weapon.Id, out var weaponModPool);
                 HashSet<MongoId>? magazinePool = null;
                 weaponModPool?.TryGetValue("mod_magazine", out magazinePool);
-                
+    
                 if (magazinePool is not null && magazinePool.Count != 0)
                 {
                     var currentMagazineSize = magTemplate.Properties.Cartridges.Max(x => x.MaxCount.Value);
 
                     if (currentMagazineSize > 35 && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1)
                     {
-                        isTryingSmallerMags = true;
-                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 25, 40);
-                        if (smallMagazinePool.Count != 0)
-                        {
-                            magazineTpl = randomUtil.GetArrayValue(smallMagazinePool);
-                            magTemplate = itemHelper.GetItem(magazineTpl).Value;
-                        }
+                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(
+                            tier, weapon, magazinePool, 25, 40);
+
+                        magazineTpl = randomUtil.GetArrayValue(smallMagazinePool);
+                        magTemplate = itemHelper.GetItem(magazineTpl).Value;
                     }
                 }
             }
@@ -225,9 +218,9 @@ public class ApbsExternalInventoryMagGen(
 
                     magazineTpl = result.Id;
                     magTemplate = result;
-                    fitAttempts++;
                 }
 
+                fitAttempts++;
                 // Reduce loop counter by 1 to ensure we get full cout of desired magazines
                 i--;
             }
@@ -236,8 +229,6 @@ public class ApbsExternalInventoryMagGen(
             // Reset fit counter now it succeeded
             {
                 fitAttempts = 0;
-                if (isTryingSmallerMags) 
-                    hasSwitchedToSmallerMags = true;
             }
         }
     }

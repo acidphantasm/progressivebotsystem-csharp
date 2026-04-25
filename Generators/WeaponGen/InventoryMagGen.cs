@@ -304,7 +304,8 @@ public class ApbsInventoryMagGen()
 
         if (desiredMagazineTpls.Count == 0)
         {
-            apbsLogger.Debug($"[MAGAZINE] Magazine size filter for: {weaponTpl} does not have small capacity magazines available in tier {tier}. Ignoring filter.");
+            apbsLogger.Debug($"[MAGAZINE] Magazine size filter for: {weaponTpl} does not have small capacity magazines available in tier {tier}. Using any available magazine.");
+            return modPool.ToList();
         }
 
         return desiredMagazineTpls;

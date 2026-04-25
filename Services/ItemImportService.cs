@@ -418,7 +418,7 @@ public class ItemImportService(
     private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
     {
         var testMode = false;
-        var testId = "6962f22fddc6698c6309b620";
+        var testId = "67f425638b8cbfdc0cd1b5f2";
         var isTestItem = testMode && itemId == testId;
 
         var pmcWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
