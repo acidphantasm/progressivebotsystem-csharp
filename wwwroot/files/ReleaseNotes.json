@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.1.13",
+    "ReleaseDate": "April 23, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "General performance and optimization passes"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.12",
     "ReleaseDate": "April 10, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [

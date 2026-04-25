@@ -1,4 +1,5 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Globalization;
 using _progressiveBotSystem.Constants;
 using _progressiveBotSystem.Globals;
@@ -1188,121 +1189,136 @@ public class CustomBotEquipmentModGenerator(
 
         return itemHelper.GetItem(chosenModResult.ChosenTemplate.Value);
     }
+    
+    private readonly ConcurrentDictionary<MongoId, bool> _canHoldSilencerCache = new();
+    private readonly ConcurrentDictionary<MongoId, HashSet<MongoId>> _barrelModsCache = new();
+    private readonly ConcurrentDictionary<MongoId, HashSet<MongoId>> _muzzleModsCache = new();
+
 
     private HashSet<MongoId> GetBarrelModsForSilencer(TemplateItem requestParentTemplate)
     {
-        var modSlot = (requestParentTemplate.Properties?.Slots ?? []).FirstOrDefault(slot => slot.Name == "mod_barrel");
-
-        var result = new HashSet<MongoId>();
-        
-        if (modSlot == null)
-            return result;
-
-        foreach (var slotFilter in modSlot.Properties?.Filters ?? [])
+        return _barrelModsCache.GetOrAdd(requestParentTemplate.Id, _ =>
         {
-            var filter = slotFilter.Filter;
-            if (filter == null)
-                continue;
+            var modSlot =
+                (requestParentTemplate.Properties?.Slots ?? []).FirstOrDefault(slot => slot.Name == "mod_barrel");
 
-            foreach (var templateId in filter)
+            var result = new HashSet<MongoId>();
+
+            if (modSlot == null)
+                return result;
+
+            foreach (var slotFilter in modSlot.Properties?.Filters ?? [])
             {
-                var itemResult = itemHelper.GetItem(templateId);
-                if (!itemResult.Key || itemResult.Value == null)
-                    continue;
-                
-                var item = itemResult.Value;
-
-                var slots = item.Properties?.Slots;
-                if (slots == null)
+                var filter = slotFilter.Filter;
+                if (filter == null)
                     continue;
 
-                foreach (var slot in slots)
+                foreach (var templateId in filter)
                 {
-                    if (slot.Name == "mod_muzzle")
+                    var itemResult = itemHelper.GetItem(templateId);
+                    if (!itemResult.Key || itemResult.Value == null)
+                        continue;
+
+                    var item = itemResult.Value;
+
+                    var slots = item.Properties?.Slots;
+                    if (slots == null)
+                        continue;
+
+                    foreach (var slot in slots)
                     {
-                        result.Add(templateId);
-                        break;
+                        if (slot.Name == "mod_muzzle")
+                        {
+                            result.Add(templateId);
+                            break;
+                        }
                     }
                 }
             }
-        }
 
-        return result;
+            return result;
+        });
     }
 
     private HashSet<MongoId> GetMuzzleModsForSilencer(TemplateItem parentTemplate)
     {
-        var result = new HashSet<MongoId>();
-
-        var modSlot = (parentTemplate.Properties?.Slots ?? []).FirstOrDefault(slot => slot.Name == "mod_muzzle");
-
-        if (modSlot == null)
-            return result;
-
-        foreach (var slotFilter in modSlot.Properties?.Filters ?? [])
+        return _muzzleModsCache.GetOrAdd(parentTemplate.Id, _ =>
         {
-            var filter = slotFilter.Filter;
-            if (filter == null)
-                continue;
+            var result = new HashSet<MongoId>();
 
-            foreach (var tpl in filter)
+            var modSlot = (parentTemplate.Properties?.Slots ?? []).FirstOrDefault(slot => slot.Name == "mod_muzzle");
+
+            if (modSlot == null)
+                return result;
+
+            foreach (var slotFilter in modSlot.Properties?.Filters ?? [])
             {
-                var itemResult = itemHelper.GetItem(tpl);
-                if (!itemResult.Key || itemResult.Value == null)
+                var filter = slotFilter.Filter;
+                if (filter == null)
                     continue;
 
-                var itemData = itemResult.Value;
-
-                if (!itemHelper.IsOfBaseclass(tpl, BaseClasses.MUZZLE))
-                    continue;
-
-                var id = itemData.Id;
-
-                if (itemHelper.IsOfBaseclass(id, BaseClasses.SILENCER))
+                foreach (var tpl in filter)
                 {
-                    result.Add(id);
-                    continue;
-                }
+                    var itemResult = itemHelper.GetItem(tpl);
+                    if (!itemResult.Key || itemResult.Value == null)
+                        continue;
 
-                if (CanHoldSilencer(itemData))
-                {
-                    result.Add(id);
+                    var itemData = itemResult.Value;
+
+                    if (!itemHelper.IsOfBaseclass(tpl, BaseClasses.MUZZLE))
+                        continue;
+
+                    var id = itemData.Id;
+
+                    if (itemHelper.IsOfBaseclass(id, BaseClasses.SILENCER))
+                    {
+                        result.Add(id);
+                        continue;
+                    }
+
+                    if (CanHoldSilencer(itemData))
+                    {
+                        result.Add(id);
+                    }
                 }
             }
-        }
 
-        return result;
+            return result;
+        });
     }
 
     private bool CanHoldSilencer(TemplateItem parentTemplate)
     {
-        var muzzleSlot = parentTemplate.Properties?.Slots?.FirstOrDefault(slot => slot?.Name == "mod_muzzle");
-
-        if (muzzleSlot == null) 
-            return false;
-        
-        foreach (var slotFilter in muzzleSlot.Properties?.Filters ?? [])
+        return _canHoldSilencerCache.GetOrAdd(parentTemplate.Id, _ =>
         {
-            var filter = slotFilter.Filter;
-            if (filter == null)
-                continue;
+            var muzzleSlot = parentTemplate.Properties?.Slots?.FirstOrDefault(slot => slot?.Name == "mod_muzzle");
 
-            foreach (var tpl in filter)
+            if (muzzleSlot == null) 
+                return false;
+            
+            foreach (var slotFilter in muzzleSlot.Properties?.Filters ?? [])
             {
-                if (itemHelper.IsOfBaseclasses(tpl, [BaseClasses.SILENCER, BaseClasses.MUZZLE_COMBO]))
-                    return true;
-
-                var itemResult = itemHelper.GetItem(tpl);
-                if (!itemResult.Key || itemResult.Value == null)
+                var filter = slotFilter.Filter;
+                if (filter == null)
                     continue;
 
-                var childItem = itemResult.Value;
-                if (CanHoldSilencer(childItem))
-                    return true;
-            }
-        }
+                foreach (var tpl in filter)
+                {
+                    if (itemHelper.IsOfBaseclasses(tpl, [BaseClasses.SILENCER, BaseClasses.MUZZLE_COMBO]))
+                        return true;
 
-        return false;
+                    var itemResult = itemHelper.GetItem(tpl);
+                    if (!itemResult.Key || itemResult.Value == null)
+                        continue;
+
+                    var childItem = itemResult.Value;
+                    if (CanHoldSilencer(childItem))
+                        return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     private HashSet<MongoId> GetModPoolForSpecificSlots(TemplateItem requestParentTemplate, QuestData questData, string requestModSlot)
@@ -1995,12 +2011,7 @@ public class CustomBotEquipmentModGenerator(
             blacklist.UnionWith(equipmentBlacklistValues);
         }
 
-        var result = cloner.Clone(modTplPool);
-
-        // Filter out blacklisted tpls
-        result.ExceptWith(blacklist);
-
-        return result;
+        return modTplPool.Where(tpl => !blacklist.Contains(tpl)).ToHashSet();
     }
 
     /// <summary>

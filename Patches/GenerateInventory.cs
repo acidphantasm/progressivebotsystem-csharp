@@ -74,7 +74,23 @@ public class GenerateInventory_Patch : AbstractPatch
         }
         
         // Pull chances and generation by the tier number - this follows poverty to ensure you get the right data
-        var chances = botEquipmentHelper.GetChancesByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
+        var chancesData = botEquipmentHelper.GetChancesByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
+        var chances = new ApbsChances
+        {
+            EquipmentChances = new Dictionary<string, double>(chancesData.EquipmentChances),
+            EquipmentModsChances = new Dictionary<string, double>(chancesData.EquipmentModsChances),
+            WeaponModsChances = new Dictionary<string, double>(chancesData.WeaponModsChances),
+            AssaultCarbineChances = new Dictionary<string, double>(chancesData.AssaultCarbineChances),
+            SniperRifleChances = new Dictionary<string, double>(chancesData.SniperRifleChances),
+            MarksmanRifleChances = new Dictionary<string, double>(chancesData.MarksmanRifleChances),
+            AssaultRifleChances = new Dictionary<string, double>(chancesData.AssaultRifleChances),
+            MachineGunChances = new Dictionary<string, double>(chancesData.MachineGunChances),
+            SubmachineGunChances = new Dictionary<string, double>(chancesData.SubmachineGunChances),
+            HandgunChances = new Dictionary<string, double>(chancesData.HandgunChances),
+            RevolverChances = new Dictionary<string, double>(chancesData.RevolverChances),
+            ShotgunChances = new Dictionary<string, double>(chancesData.ShotgunChances),
+            Generation = chancesData.Generation // shared reference
+        };
         var generation = chances.Generation;
 
         // Finally check if they are questing, and if that quest is Fishing Gear. That quest requires a second weapon.

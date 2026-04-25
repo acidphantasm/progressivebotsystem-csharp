@@ -43,14 +43,10 @@ public class CustomBotLootGenerator(
     private ItemSpawnLimitSettings GetItemSpawnLimitsForBot(string botRole)
     {
         // Clone limits and set all values to 0 to use as a running total
-        var limitsForBotDictClone = cloner.Clone(GetItemSpawnLimitsForBotType(botRole));
-        // Init current count of items we want to limit
-        foreach (var limit in limitsForBotDictClone)
-        {
-            limitsForBotDictClone[limit.Key] = 0;
-        }
-
-        return new ItemSpawnLimitSettings { CurrentLimits = limitsForBotDictClone, GlobalLimits = GetItemSpawnLimitsForBotType(botRole) };
+        var globalLimits = GetItemSpawnLimitsForBotType(botRole);
+        var currentLimits = globalLimits.ToDictionary(kvp => kvp.Key, _ => 0.0);
+        
+        return new ItemSpawnLimitSettings { CurrentLimits = currentLimits, GlobalLimits = globalLimits };
     }
 
     /// <summary>

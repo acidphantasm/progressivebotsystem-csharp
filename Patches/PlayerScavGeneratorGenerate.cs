@@ -2,6 +2,7 @@
 using SPTarkov.Server.Core.DI;
 using System.Reflection;
 using _progressiveBotSystem.Globals;
+using _progressiveBotSystem.Services;
 using HarmonyLib;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
@@ -16,6 +17,7 @@ public class PlayerScavGeneratorGeneratePatch : AbstractPatch
     
     private static readonly ICloner Cloner = ServiceLocator.ServiceProvider.GetRequiredService<ICloner>();
     private static readonly SaveServer SaveServer = ServiceLocator.ServiceProvider.GetRequiredService<SaveServer>();
+    private static readonly CustomBotLootCacheService CustomBotLootCacheService = ServiceLocator.ServiceProvider.GetRequiredService<CustomBotLootCacheService>();
     
     protected override MethodBase GetTargetMethod()
     {
@@ -25,6 +27,8 @@ public class PlayerScavGeneratorGeneratePatch : AbstractPatch
     [PatchPostfix]
     public static void Postfix(MongoId sessionID, ref PmcData __result)
     {
+        CustomBotLootCacheService.ClearApbsCache();
+        
         if (!ModConfig.Config.PlayerScavConfig.Enable)
             return;
         

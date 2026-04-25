@@ -469,8 +469,10 @@ public class CustomBotLootCacheService(
     /// <returns>Dictionary and should pool be hydrated by items in combined loot pool</returns>
     private static (Dictionary<MongoId, double>, bool populateFromCombinedPool) GetGenerationWeights(Dictionary<MongoId, double>? weights)
     {
-        var result = weights ?? [];
-        return (result, !result.Any()); // empty dict = should be populated from combined pool
+        if (weights is null || !weights.Any())
+            return (new Dictionary<MongoId, double>(), true);
+    
+        return (new Dictionary<MongoId, double>(weights), false);
     }
 
     /// <summary>

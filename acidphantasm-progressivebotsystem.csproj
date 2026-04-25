@@ -87,4 +87,22 @@
     <Folder Include="Utils\Logger\" />
   </ItemGroup>
 
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <Content Include="acidphantasm-progressivebotsystem.csproj.user" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <None Include="$(MSBuildProjectFullPath).user" Condition="Exists('$(MSBuildProjectFullPath).user')" />
+    </ItemGroup>
+
+    <Target Name="CopyToSPT" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug' AND '$(SPTPath)' != ''">
+        <Message Importance="high" Text="Copying mods to $(ModOutputDir)" />
+        <ItemGroup>
+            <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)" />
+            <FilesToCopy Include="$(OutputPath)$(TargetName).pdb" />
+        </ItemGroup>
+        <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ModOutputDir)" ContinueOnError="false" />
+        <Message Text="Files copied" />
+    </Target>
+
 </Project>

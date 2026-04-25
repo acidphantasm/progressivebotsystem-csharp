@@ -72,6 +72,14 @@ public class ItemImportService(
         _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
         _bearClothingCounter = LogAndClear("Bear bodies and legs", _bearClothingCounter);
         _usecClothingCounter = LogAndClear("Usec bodies and legs", _usecClothingCounter);
+        
+        var totalCombos = _processedModCombos.Count;
+        var combosPerTier = _processedModCombos.Keys
+            .GroupBy(k => k.Tier)
+            .OrderBy(g => g.Key)
+            .Select(g => $"Tier{g.Key}: {g.Count()}");
+        apbsLogger.Success($"[IMPORT] Total mod attachment combinations: {totalCombos} ({string.Join(", ", combosPerTier)})");
+        
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
 

@@ -42,13 +42,10 @@ public class BotEquipmentHelper(
     private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
-
         if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-            return cloner.Clone(tierData.ModsData) ?? throw new InvalidOperationException();
-        
+            return new Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>(tierData.ModsData);
         apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
-        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ModsData) ?? throw new InvalidOperationException(); // fallback to tier 1
-
+        return new Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>(dataLoader.AllTierDataDirty.Tiers[1].ModsData) ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
     private ChancesTierData GetTierChances(int tierNumber, bool ignoreCheck = false)
@@ -56,11 +53,10 @@ public class BotEquipmentHelper(
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
         if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-            return cloner.Clone(tierData.ChancesData) ?? throw new InvalidOperationException();
+            return tierData.ChancesData ?? throw new InvalidOperationException();
         
         apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
-        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].ChancesData) ?? throw new InvalidOperationException(); // fallback to tier 1
-
+        return dataLoader.AllTierDataDirty.Tiers[1].ChancesData ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
     private AmmoTierData GetTierAmmo(int tierNumber, bool ignoreCheck = false)
@@ -68,10 +64,10 @@ public class BotEquipmentHelper(
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
         if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-            return cloner.Clone(tierData.AmmoData) ?? throw new InvalidOperationException();
+            return tierData.AmmoData ?? throw new InvalidOperationException();
         
         apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
-        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AmmoData) ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].AmmoData ?? throw new InvalidOperationException(); // fallback to tier 1
 
     }
 
@@ -80,10 +76,10 @@ public class BotEquipmentHelper(
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
         if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-            return cloner.Clone(tierData.EquipmentData) ?? throw new InvalidOperationException();
+            return tierData.EquipmentData ?? throw new InvalidOperationException();
         
         apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
-        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].EquipmentData) ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].EquipmentData ?? throw new InvalidOperationException(); // fallback to tier 1
 
     }
 
@@ -92,16 +88,15 @@ public class BotEquipmentHelper(
         if (!ignoreCheck) tierNumber = CheckChadOrChill(tierNumber);
 
         if (dataLoader.AllTierDataDirty.Tiers.TryGetValue(tierNumber, out var tierData))
-            return cloner.Clone(tierData.AppearanceData) ?? throw new InvalidOperationException();
+            return tierData.AppearanceData ?? throw new InvalidOperationException();
         
         apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
-        return cloner.Clone(dataLoader.AllTierDataDirty.Tiers[1].AppearanceData) ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].AppearanceData ?? throw new InvalidOperationException(); // fallback to tier 1
 
     }
 
     public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetModsByBotRole(string botRole, int tierNumber)
     {
-        var tieredModsData = GetTierMods(tierNumber);
         switch (botRole)
         {
             case "bossboar":
@@ -125,195 +120,85 @@ public class BotEquipmentHelper(
             case "arenafighterevent":
             case "arenafighter":
             case "pmcbot":
-                return tierNumber < 4 ? GetTierMods(4) : tieredModsData;
+                return tierNumber < 4 ? GetTierMods(4) : GetTierMods(tierNumber);
             case "marksman":
             case "cursedassault":
             case "assault":
-                if (ModConfig.Config.GeneralConfig.BlickyMode || ModConfig.Config.GeneralConfig.OnlyChads || ModConfig.Config.ScavBots.AdditionalOptions.EnableScavAttachmentTiering) return tieredModsData;
+                if (ModConfig.Config.GeneralConfig.BlickyMode || ModConfig.Config.GeneralConfig.OnlyChads || ModConfig.Config.ScavBots.AdditionalOptions.EnableScavAttachmentTiering) 
+                    return GetTierMods(tierNumber);
                 return GetTierMods(1);
             default:
-                return tieredModsData;
+                return GetTierMods(tierNumber);
         }
     }
 
     public Dictionary<ApbsEquipmentSlots, Dictionary<MongoId, double>> GetEquipmentByBotRole(string botRole, int tierNumber)
     {
         var tieredEquipmentData = GetTierEquipment(tierNumber);
-        switch (botRole)
+        return botRole switch
         {
-            case "pmcusec":
-                return tieredEquipmentData.PmcUsec.Equipment;
-            case "pmcbear":
-                return tieredEquipmentData.PmcBear.Equipment;
-            case "marksman":
-            case "cursedassault":
-            case "assault":
-                return tieredEquipmentData.Scav.Equipment;
-            case "bossboar":
-                return tieredEquipmentData.BossBoar.Equipment;
-            case "bossboarsniper":
-                return tieredEquipmentData.BossBoarSniper.Equipment;
-            case "bossbully":
-                return tieredEquipmentData.BossBully.Equipment;
-            case "bossgluhar":
-                return tieredEquipmentData.BossGluhar.Equipment;
-            case "bosskilla":
-                return tieredEquipmentData.BossKilla.Equipment;
-            case "bosskillaagro":
-                return tieredEquipmentData.BossKillaAgro.Equipment;
-            case "bosskojaniy":
-                return tieredEquipmentData.BossKojaniy.Equipment;
-            case "bosskolontay":
-                return tieredEquipmentData.BossKolontay.Equipment;
-            case "bosssanitar":
-                return tieredEquipmentData.BossSanitar.Equipment;
-            case "bosstagilla":
-                return tieredEquipmentData.BossTagilla.Equipment;
-            case "bosstagillaagro":
-                return tieredEquipmentData.BossTagillaAgro.Equipment;
-            case "bosspartisan":
-                return tieredEquipmentData.BossPartisan.Equipment;
-            case "bosszryachiy":
-                return tieredEquipmentData.BossZryachiy.Equipment;
-            case "bossknight":
-                return tieredEquipmentData.BossKnight.Equipment;
-            case "followerbigpipe":
-                return tieredEquipmentData.FollowerBigPipe.Equipment;
-            case "followerbirdeye":
-                return tieredEquipmentData.FollowerBirdeye.Equipment;
-            case "sectantpriest":
-                return tieredEquipmentData.SectantPriest.Equipment;
-            case "sectantwarrior":
-                return tieredEquipmentData.SectantWarrior.Equipment;
-            case "exusec":
-            case "arenafighterevent":
-            case "arenafighter":
-                return tieredEquipmentData.ExUsec.Equipment;
-            case "pmcbot":
-                return tieredEquipmentData.PmcBot.Equipment;
-            default:
-                return tieredEquipmentData.Default.Equipment;
-        }
+            "pmcusec" => tieredEquipmentData.PmcUsec.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "pmcbear" => tieredEquipmentData.PmcBear.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "marksman" or "cursedassault" or "assault" => tieredEquipmentData.Scav.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bossboar" => tieredEquipmentData.BossBoar.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bossboarsniper" => tieredEquipmentData.BossBoarSniper.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bossbully" => tieredEquipmentData.BossBully.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bossgluhar" => tieredEquipmentData.BossGluhar.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosskilla" => tieredEquipmentData.BossKilla.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosskillaagro" => tieredEquipmentData.BossKillaAgro.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosskojaniy" => tieredEquipmentData.BossKojaniy.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosskolontay" => tieredEquipmentData.BossKolontay.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosssanitar" => tieredEquipmentData.BossSanitar.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosstagilla" => tieredEquipmentData.BossTagilla.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosstagillaagro" => tieredEquipmentData.BossTagillaAgro.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosspartisan" => tieredEquipmentData.BossPartisan.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bosszryachiy" => tieredEquipmentData.BossZryachiy.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "bossknight" => tieredEquipmentData.BossKnight.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "followerbigpipe" => tieredEquipmentData.FollowerBigPipe.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "followerbirdeye" => tieredEquipmentData.FollowerBirdeye.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "sectantpriest" => tieredEquipmentData.SectantPriest.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "sectantwarrior" => tieredEquipmentData.SectantWarrior.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            "exusec" or "arenafighterevent" or "arenafighter" => tieredEquipmentData.ExUsec.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)), 
+            "pmcbot" => tieredEquipmentData.PmcBot.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
+            _ => tieredEquipmentData.Default.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value))
+        };
     }
 
     public Dictionary<MongoId, double> GetEquipmentByBotRoleAndSlot(string botRole, int tierNumber, ApbsEquipmentSlots slot)
     {
-        var tieredEquipmentData = GetTierEquipment(tierNumber);
-        switch (botRole)
-        {
-            case "pmcusec":
-                return tieredEquipmentData.PmcUsec.Equipment[slot];
-            case "pmcbear":
-                return tieredEquipmentData.PmcBear.Equipment[slot];
-            case "marksman":
-            case "cursedassault":
-            case "assault":
-                return tieredEquipmentData.Scav.Equipment[slot];
-            case "bossboar":
-                return tieredEquipmentData.BossBoar.Equipment[slot];
-            case "bossboarsniper":
-                return tieredEquipmentData.BossBoarSniper.Equipment[slot];
-            case "bossbully":
-                return tieredEquipmentData.BossBully.Equipment[slot];
-            case "bossgluhar":
-                return tieredEquipmentData.BossGluhar.Equipment[slot];
-            case "bosskilla":
-                return tieredEquipmentData.BossKilla.Equipment[slot];
-            case "bosskillaagro":
-                return tieredEquipmentData.BossKillaAgro.Equipment[slot];
-            case "bosskojaniy":
-                return tieredEquipmentData.BossKojaniy.Equipment[slot];
-            case "bosskolontay":
-                return tieredEquipmentData.BossKolontay.Equipment[slot];
-            case "bosssanitar":
-                return tieredEquipmentData.BossSanitar.Equipment[slot];
-            case "bosstagilla":
-                return tieredEquipmentData.BossTagilla.Equipment[slot];
-            case "bosstagillaagro":
-                return tieredEquipmentData.BossTagillaAgro.Equipment[slot];
-            case "bosspartisan":
-                return tieredEquipmentData.BossPartisan.Equipment[slot];
-            case "bosszryachiy":
-                return tieredEquipmentData.BossZryachiy.Equipment[slot];
-            case "bossknight":
-                return tieredEquipmentData.BossKnight.Equipment[slot];
-            case "followerbigpipe":
-                return tieredEquipmentData.FollowerBigPipe.Equipment[slot];
-            case "followerbirdeye":
-                return tieredEquipmentData.FollowerBirdeye.Equipment[slot];
-            case "sectantpriest":
-                return tieredEquipmentData.SectantPriest.Equipment[slot];
-            case "sectantwarrior":
-                return tieredEquipmentData.SectantWarrior.Equipment[slot];
-            case "exusec":
-            case "arenafighterevent":
-            case "arenafighter":
-                return tieredEquipmentData.ExUsec.Equipment[slot];
-            case "pmcbot":
-                return tieredEquipmentData.PmcBot.Equipment[slot];
-            default:
-                return tieredEquipmentData.Default.Equipment[slot];
-        }
+        return GetEquipmentByBotRole(botRole, tierNumber)[slot];
     }
     
     public ApbsChances GetChancesByBotRole(string botRole, int tierNumber)
     {
         var tieredChancesData = GetTierChances(tierNumber);
-        switch (botRole)
+        return botRole switch
         {
-            case "pmcusec":
-                return tieredChancesData.PmcUsec.Chances;
-            case "pmcbear":
-                return tieredChancesData.PmcBear.Chances;
-            case "marksman":
-            case "cursedassault":
-            case "assault":
-                return tieredChancesData.Scav.Chances;
-            case "bossboar":
-                return tieredChancesData.BossBoar.Chances;
-            case "bossboarsniper":
-                return tieredChancesData.BossBoarSniper.Chances;
-            case "bossbully":
-                return tieredChancesData.BossBully.Chances;
-            case "bossgluhar":
-                return tieredChancesData.BossGluhar.Chances;
-            case "bosskilla":
-                return tieredChancesData.BossKilla.Chances;
-            case "bosskillaagro":
-                return tieredChancesData.BossKillaAgro.Chances;
-            case "bosskojaniy":
-                return tieredChancesData.BossKojaniy.Chances;
-            case "bosskolontay":
-                return tieredChancesData.BossKolontay.Chances;
-            case "bosssanitar":
-                return tieredChancesData.BossSanitar.Chances;
-            case "bosstagilla":
-                return tieredChancesData.BossTagilla.Chances;
-            case "bosstagillaagro":
-                return tieredChancesData.BossTagillaAgro.Chances;
-            case "bosspartisan":
-                return tieredChancesData.BossPartisan.Chances;
-            case "bosszryachiy":
-                return tieredChancesData.BossZryachiy.Chances;
-            case "bossknight":
-                return tieredChancesData.BossKnight.Chances;
-            case "followerbigpipe":
-                return tieredChancesData.FollowerBigPipe.Chances;
-            case "followerbirdeye":
-                return tieredChancesData.FollowerBirdeye.Chances;
-            case "sectantpriest":
-                return tieredChancesData.SectantPriest.Chances;
-            case "sectantwarrior":
-                return tieredChancesData.SectantWarrior.Chances;
-            case "exusec":
-            case "arenafighterevent":
-            case "arenafighter":
-                return tieredChancesData.ExUsec.Chances;
-            case "pmcbot":
-                return tieredChancesData.PmcBot.Chances;
-            default:
-                return tieredChancesData.Default.Chances;
-        }
+            "pmcusec" => tieredChancesData.PmcUsec.Chances,
+            "pmcbear" => tieredChancesData.PmcBear.Chances,
+            "marksman" or "cursedassault" or "assault" => tieredChancesData.Scav.Chances,
+            "bossboar" => tieredChancesData.BossBoar.Chances,
+            "bossboarsniper" => tieredChancesData.BossBoarSniper.Chances,
+            "bossbully" => tieredChancesData.BossBully.Chances,
+            "bossgluhar" => tieredChancesData.BossGluhar.Chances,
+            "bosskilla" => tieredChancesData.BossKilla.Chances,
+            "bosskillaagro" => tieredChancesData.BossKillaAgro.Chances,
+            "bosskojaniy" => tieredChancesData.BossKojaniy.Chances,
+            "bosskolontay" => tieredChancesData.BossKolontay.Chances,
+            "bosssanitar" => tieredChancesData.BossSanitar.Chances,
+            "bosstagilla" => tieredChancesData.BossTagilla.Chances,
+            "bosstagillaagro" => tieredChancesData.BossTagillaAgro.Chances,
+            "bosspartisan" => tieredChancesData.BossPartisan.Chances,
+            "bosszryachiy" => tieredChancesData.BossZryachiy.Chances,
+            "bossknight" => tieredChancesData.BossKnight.Chances,
+            "followerbigpipe" => tieredChancesData.FollowerBigPipe.Chances,
+            "followerbirdeye" => tieredChancesData.FollowerBirdeye.Chances,
+            "sectantpriest" => tieredChancesData.SectantPriest.Chances,
+            "sectantwarrior" => tieredChancesData.SectantWarrior.Chances,
+            "exusec" or "arenafighterevent" or "arenafighter" => tieredChancesData.ExUsec.Chances,
+            "pmcbot" => tieredChancesData.PmcBot.Chances,
+            _ => tieredChancesData.Default.Chances
+        };
     }
 
     public Dictionary<string, Dictionary<MongoId, double>> GetAmmoByBotRole(string botRole, int tierNumber)

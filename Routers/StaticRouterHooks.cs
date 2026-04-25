@@ -125,7 +125,11 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
+                    
+                    var customBotLootCacheService = ServiceLocator.ServiceProvider.GetService<CustomBotLootCacheService>();
+                    
                     RaidInformation.IsInRaid = false;
+                    customBotLootCacheService.ClearApbsCache();
                     
                     _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     return output;
