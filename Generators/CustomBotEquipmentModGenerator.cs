@@ -46,35 +46,24 @@ public class CustomBotEquipmentModGenerator(
     ApbsLogger apbsLogger
 )
 {
+    
+    // FrontSight/Rear Sight
     private static readonly FrozenSet<string> ModSightIds = ["mod_sight_front", "mod_sight_rear"];
 
     // Slots that hold scopes
-    private static readonly FrozenSet<string> ScopeIds =
-    [
-        "mod_scope",
-        "mod_mount",
-        "mod_mount_000",
-        "mod_scope_000",
-        "mod_scope_001",
-        "mod_scope_002",
-        "mod_scope_003",
-    ];
+    private static readonly FrozenSet<string> ScopeIds = ["mod_scope", "mod_mount", "mod_mount_000", "mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
+    
+    // Scope slots
+    private static readonly FrozenSet<string> ModScopeSlots = ["mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
 
     // Slots that hold muzzles
-    private static readonly FrozenSet<string> MuzzleIds = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
+    private static readonly FrozenSet<string> ModMuzzleSlots = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
 
     // Slots a weapon can store its stock in
     private static readonly FrozenSet<string> StockSlots = ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms"];
 
     // Slots that hold cartridges
-    private static readonly FrozenSet<string> CartridgeHolderSlots =
-    [
-        "mod_magazine",
-        "patron_in_weapon",
-        "patron_in_weapon_000",
-        "patron_in_weapon_001",
-        "cartridges",
-    ];
+    private static readonly FrozenSet<string> CartridgeHolderSlots = ["mod_magazine", "patron_in_weapon", "patron_in_weapon_000", "patron_in_weapon_001", "cartridges"];
 
     const string modRecieverKey = "mod_reciever";
     const string modMount001Key = "mod_mount_001";
@@ -624,8 +613,7 @@ public class CustomBotEquipmentModGenerator(
             if (ModSlotCanHoldScope(modSlot, modToAddTemplate.Parent))
             {
                 // mod_mount was picked to be added to weapon, force scope chance to ensure its filled
-                List<string> scopeSlots = ["mod_scope", "mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
-                AdjustSlotSpawnChances(request.ModSpawnChances, scopeSlots, 100);
+                AdjustSlotSpawnChances(request.ModSpawnChances, ModScopeSlots, 100);
 
                 // Hydrate pool of mods that fit into mount as its a randomisable slot
                 if (isRandomisableSlot)
@@ -640,9 +628,8 @@ public class CustomBotEquipmentModGenerator(
             {
                 if (ModSlotCanHoldMuzzleDevices(modSlot, modToAddTemplate.Parent))
                 {
-                    List<string> muzzleSlots = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
                     // Make chance of muzzle devices 95%, nearly certain but not guaranteed
-                    AdjustSlotSpawnChances(request.ModSpawnChances, muzzleSlots, 95);
+                    AdjustSlotSpawnChances(request.ModSpawnChances, ModMuzzleSlots, 95);
                 }
             }
 
@@ -670,8 +657,7 @@ public class CustomBotEquipmentModGenerator(
             if (ShouldForceSubStockSlots(modSlot, botEquipConfig, modToAddTemplate))
             {
                 // Stock mod can take additional stocks, could be a locking device, force 100% chance
-                List<string> subStockSlots = ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms"];
-                AdjustSlotSpawnChances(request.ModSpawnChances, subStockSlots, 100);
+                AdjustSlotSpawnChances(request.ModSpawnChances, StockSlots, 100);
             }
 
             // Gather stats on mods being added to weapon
@@ -824,7 +810,7 @@ public class CustomBotEquipmentModGenerator(
     /// <param name="modSpawnChances">Chance dictionary to update</param>
     /// <param name="modSlotsToAdjust"></param>
     /// <param name="newChancePercent"></param>
-    public void AdjustSlotSpawnChances(Dictionary<string, double>? modSpawnChances, List<string>? modSlotsToAdjust, double newChancePercent)
+    public void AdjustSlotSpawnChances(Dictionary<string, double>? modSpawnChances, FrozenSet<string>? modSlotsToAdjust, double newChancePercent)
     {
         if (modSpawnChances is null)
         {
@@ -854,7 +840,7 @@ public class CustomBotEquipmentModGenerator(
     /// <returns>True if modSlot can have muzzle-related items</returns>
     public bool ModSlotCanHoldMuzzleDevices(string modSlot, string? modsParentId)
     {
-        return MuzzleIds.Contains(modSlot.ToLowerInvariant());
+        return ModMuzzleSlots.Contains(modSlot.ToLowerInvariant());
     }
 
     /// <summary>

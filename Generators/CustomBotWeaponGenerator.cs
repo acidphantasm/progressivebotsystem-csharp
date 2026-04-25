@@ -368,10 +368,7 @@ public class CustomBotWeaponGenerator(
         }
 
         // Add cartridge(s) to gun chamber(s)
-        if (
-            (weaponItemTemplate.Properties?.Chambers).Any()
-            && weaponItemTemplate.Properties.Chambers.FirstOrDefault().Properties.Filters.FirstOrDefault().Filter.Contains(ammoTpl)
-        )
+        if ((weaponItemTemplate.Properties?.Chambers).Any() && weaponItemTemplate.Properties.Chambers.FirstOrDefault().Properties.Filters.FirstOrDefault().Filter.Contains(ammoTpl))
         {
             // Guns have variety of possible Chamber ids, patron_in_weapon/patron_in_weapon_000/patron_in_weapon_001
             var chamberSlotNames = weaponItemTemplate.Properties.Chambers.Select(chamberSlot => chamberSlot.Name);

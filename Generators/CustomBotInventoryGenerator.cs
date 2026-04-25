@@ -170,6 +170,15 @@ public class CustomBotInventoryGenerator
         // Iterate over all equipment slots of bot, do it in specific order to reduce conflicts
         // e.g. ArmorVest should be generated after TacticalVest
         // or FACE_COVER before HEADWEAR
+        
+        var botData = new ApbsBotData
+        {
+            Role = botGenerationDetails.RoleLowercase,
+            Level = botGenerationDetails.BotLevel,
+            EquipmentRole = botEquipmentRole,
+            Tier = tierNumber,
+        };
+        
         foreach (var (equipmentSlot, itemsWithWeightPool) in equipmentPool)
         {
             // Skip some slots as they need to be done in a specific order + with specific parameter values
@@ -187,13 +196,7 @@ public class CustomBotInventoryGenerator
                     RootEquipmentPool = itemsWithWeightPool,
                     ModPool = modPool,
                     SpawnChances = wornItemChances,
-                    BotData = new ApbsBotData
-                    {
-                        Role = botGenerationDetails.RoleLowercase,
-                        Level = botGenerationDetails.BotLevel,
-                        EquipmentRole = botEquipmentRole,
-                        Tier = tierNumber,
-                    },
+                    BotData = botData,
                     Inventory = botInventory,
                     BotEquipmentConfig = botEquipConfig,
                     RandomisationDetails = randomisationDetails,
@@ -216,13 +219,7 @@ public class CustomBotInventoryGenerator
                 ),
                 ModPool = modPool,
                 SpawnChances = wornItemChances,
-                BotData = new ApbsBotData
-                {
-                    Role = botGenerationDetails.RoleLowercase,
-                    Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
-                    Tier = tierNumber,
-                },
+                BotData = botData,
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
@@ -239,13 +236,7 @@ public class CustomBotInventoryGenerator
                 RootEquipmentPool = equipmentPool[ApbsEquipmentSlots.FaceCover],
                 ModPool = modPool,
                 SpawnChances = wornItemChances,
-                BotData = new ApbsBotData
-                {
-                    Role = botGenerationDetails.RoleLowercase,
-                    Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
-                    Tier = tierNumber,
-                },
+                BotData = botData,
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
@@ -261,13 +252,7 @@ public class CustomBotInventoryGenerator
                 RootEquipmentPool = equipmentPool[ApbsEquipmentSlots.Headwear],
                 ModPool = modPool,
                 SpawnChances = wornItemChances,
-                BotData = new ApbsBotData
-                {
-                    Role = botGenerationDetails.RoleLowercase,
-                    Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
-                    Tier = tierNumber,
-                },
+                BotData = botData,
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
@@ -283,13 +268,7 @@ public class CustomBotInventoryGenerator
                 RootEquipmentPool = equipmentPool[ApbsEquipmentSlots.Earpiece],
                 ModPool = modPool,
                 SpawnChances = wornItemChances,
-                BotData = new ApbsBotData
-                {
-                    Role = botGenerationDetails.RoleLowercase,
-                    Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
-                    Tier = tierNumber,
-                },
+                BotData = botData,
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
@@ -313,13 +292,7 @@ public class CustomBotInventoryGenerator
                 RootEquipmentPool = equipmentPool[ApbsEquipmentSlots.ArmorVest],
                 ModPool = modPool,
                 SpawnChances = wornItemChances,
-                BotData = new ApbsBotData
-                {
-                    Role = botGenerationDetails.RoleLowercase,
-                    Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
-                    Tier = tierNumber,
-                },
+                BotData = botData,
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
@@ -341,13 +314,7 @@ public class CustomBotInventoryGenerator
                 RootEquipmentPool = equipmentPool[ApbsEquipmentSlots.TacticalVest],
                 ModPool = modPool,
                 SpawnChances = wornItemChances,
-                BotData = new ApbsBotData
-                {
-                    Role = botGenerationDetails.RoleLowercase,
-                    Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
-                    Tier = tierNumber,
-                },
+                BotData = botData,
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
