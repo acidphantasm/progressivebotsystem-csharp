@@ -642,14 +642,14 @@ public class CustomBotEquipmentModGenerator(
 
             // Handguard mod can take a sub handguard mod + weapon has no UBGL (takes same slot)
             // Force spawn chance to be 100% to ensure it gets added
-            if (modSlot == "mod_handguard"
+            if (modSlot == modHandguardKey
                 && modToAddTemplate.Properties?.Slots is not null
-                && modToAddTemplate.Properties.Slots.Any(slot => slot.Name == "mod_handguard")
+                && modToAddTemplate.Properties.Slots.Any(slot => slot.Name == modHandguardKey)
                 && !request.Weapon.Any(item => item.SlotId == "mod_launcher")
             )
             // Needed for handguards with lower
             {
-                request.ModSpawnChances["mod_handguard"] = 100;
+                request.ModSpawnChances[modHandguardKey] = 100;
             }
 
             // If stock mod can take a sub stock mod, force spawn chance to be 100% to ensure sub-stock gets added
@@ -1038,7 +1038,7 @@ public class CustomBotEquipmentModGenerator(
         }
 
         // Filter out non-whitelisted scopes, use the full mod pool if filtered pool would have no elements
-        if (request.ModSlot.Contains("mod_scope") && request.BotWeaponSightWhitelist is not null)
+        if (request.ModSlot.Contains(modScopeKey) && request.BotWeaponSightWhitelist is not null)
         // scope pool has more than one scope
         {
             if (modPool.Count > 1)
@@ -1047,7 +1047,7 @@ public class CustomBotEquipmentModGenerator(
             }
         }
 
-        if (request.ModSlot == "mod_gas_block")
+        if (request.ModSlot == modGasBlockKey)
         {
             if ((request.WeaponStats?.HasOptic ?? false) && modPool.Count > 1)
             {
@@ -1186,7 +1186,7 @@ public class CustomBotEquipmentModGenerator(
         return _barrelModsCache.GetOrAdd(requestParentTemplate.Id, _ =>
         {
             var modSlot =
-                (requestParentTemplate.Properties?.Slots ?? []).FirstOrDefault(slot => slot.Name == "mod_barrel");
+                (requestParentTemplate.Properties?.Slots ?? []).FirstOrDefault(slot => slot.Name == modBarrelKey);
 
             var result = new HashSet<MongoId>();
 

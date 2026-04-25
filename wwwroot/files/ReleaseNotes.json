@@ -7,7 +7,9 @@
     "Changes": [
       "General performance and optimization passes"
     ],
-    "BugFixes": [],
+    "BugFixes": [
+      "Resolved vanilla SPT bug that causes infinite RAM consumption on the server with certain mods installed"
+    ],
     "KnownIssues": []
   },
   {
