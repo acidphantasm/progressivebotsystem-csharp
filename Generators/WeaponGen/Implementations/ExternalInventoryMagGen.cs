@@ -79,8 +79,7 @@ public class ApbsExternalInventoryMagGen(
 
                     if (currentMagazineSize > 35 && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1)
                     {
-                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(
-                            tier, weapon, magazinePool, 25, 40);
+                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 25, 35);
 
                         magazineTpl = randomUtil.GetArrayValue(smallMagazinePool);
                         magTemplate = itemHelper.GetItem(magazineTpl).Value;
@@ -139,10 +138,7 @@ public class ApbsExternalInventoryMagGen(
                 // Prevent infinite loop by only allowing 5 attempts at fitting a magazine into inventory
                 if (fitAttempts > 5)
                 {
-                    if (logger.IsLogEnabled(LogLevel.Debug))
-                    {
-                        logger.Debug($"Failed {fitAttempts} times to add magazine {magazineTpl} to bot inventory, stopping");
-                    }
+                    logger.Debug($"Tier: {tier} - Role: {botRole} - Failed {fitAttempts} times to add magazine {magazineTpl} to bot inventory, stopping");
 
                     break;
                 }

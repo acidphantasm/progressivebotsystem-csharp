@@ -22,6 +22,7 @@ public class ItemImportService(
     DatabaseService databaseService,
     ItemHelper itemHelper): IOnLoad
 {
+    private readonly bool _testMode = false;
     
     private readonly ConcurrentDictionary<(MongoId ParentId, string Slot, MongoId ChildId, int Tier), byte> _processedModCombos = new();
     private readonly ConcurrentDictionary<(MongoId ParentId, string Slot, MongoId ChildId, int Tier), byte> _processedVanillaWeaponModCombos = new();
@@ -417,9 +418,8 @@ public class ItemImportService(
 
     private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
     {
-        var testMode = false;
         var testId = "67f425638b8cbfdc0cd1b5f2";
-        var isTestItem = testMode && itemId == testId;
+        var isTestItem = _testMode && itemId == testId;
 
         var pmcWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
         var scavWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "scav");
@@ -578,10 +578,13 @@ public class ItemImportService(
             var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
             lock (_equipmentLock)
             {
-                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
-                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
-                equipmentData.Scav.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem, true);
-                equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem);
+                var testId = "694706dd0144198d74a266ff";
+                var isTestItem = _testMode && templateItem.Id == testId;
+                
+                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem);
+                equipmentData.Scav.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem, true);
+                equipmentData.Default.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem);
             }
             
             if (_uniqueEquipment.TryAdd(templateItem.Id, 0))

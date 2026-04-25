@@ -20,6 +20,7 @@ public class VanillaItemConstants
 
     public static readonly List<MongoId> WeaponsWithNoSmallMagazines = new List<MongoId>
     {
+        "661cec09b2c6356b4d0c7a36",
         "5cc82d76e24e8d00134b4b83",
         "64ca3d3954fc657e230529cc",
         "64637076203536ad5600c990",
