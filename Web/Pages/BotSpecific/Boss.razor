@@ -8,7 +8,7 @@
             <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Boss Specific Configuration" Expanded="true">
                 <MudGrid>
 
-                    <MudSwitchExtraTooltip
+                    <MudSwitchTTWarning
                         Label="Boss Bot Generation"
                         TooltipText="Grants APBS control over Bosses (including Goons). You will have vanilla versions of these bots if disabled."
                         WarningTooltip1="All settings on this page, and any other setting that may impact these bots are controlled by this toggle."
@@ -26,7 +26,7 @@
                 <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Boss Specific Options" Expanded="true">
                     <MudGrid>
 
-                        <MudSwitchNoExtraTooltip
+                        <MudSwitchTT
                             Label="Loot"
                             TooltipText="Allows Boss Bots to spawn with additional loot."
                             @bind-Value="BossLootEnabled"
@@ -37,14 +37,14 @@
                             OnUndo="UndoLoot"
                             OnDefault="DefaultLoot" />
 
-                        <MudTextFieldBlacklistExtraTooltip
+                        <LootBlacklistValues
                             Blacklist="BossLootBlacklist"
                             OriginalBlacklist="ModConfig.OriginalConfig.BossBots.LootConfig.Blacklist"
                             ChangeKey="_bossLootBlacklist" />
 
                         <MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
 
-                        <MudSwitchNoExtraTooltip
+                        <MudSwitchTT
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows Bosses to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="BossWeaponAmmunitionRollEnabled"
@@ -55,7 +55,7 @@
                             OnUndo="UndoRollAmmunitionEnabled"
                             OnDefault="DefaultRollAmmunitionEnabled" />
                         
-                        <MudSliderNoExtraTooltip
+                        <MudSliderTT
                             Label="Roll Again Chance"
                             TooltipText="This is the chance that Bosses will roll for a different round from the same caliber, max one time per each magazine."
                             @bind-Value="BossWeaponAmmunitionRollChance"
@@ -63,7 +63,7 @@
                             Max="100"
                             Disabled="@(!BossWeaponAmmunitionRollEnabled)" />
 
-                        <MudSwitchNoExtraTooltip
+                        <MudSwitchTT
                             Label="Toploading"
                             TooltipText="Allows Bosses to top load their extra magazines."
                             @bind-Value="BossWeaponToploadEnabled"
@@ -76,7 +76,7 @@
                             OnUndo="UndoToploadEnabled"
                             OnDefault="DefaultToploadEnabled" />
 
-                        <MudSliderNoExtraTooltip
+                        <MudSliderTT
                             Label="Top load Chance"
                             TooltipText="This is the chance that Bosses will top load their extra magazines."
                             @bind-Value="BossWeaponToploadChance"
@@ -84,7 +84,7 @@
                             Max="100"
                             Disabled="@(!BossWeaponToploadEnabled)" />
 
-                        <MudSliderNoExtraTooltip
+                        <MudSliderTT
                             Label="Top load Percent"
                             TooltipText="This is the percentage of their extra magazines that Bosses will top load."
                             @bind-Value="BossWeaponToploadPercent"
@@ -92,7 +92,7 @@
                             Max="50"
                             Disabled="@(!BossWeaponToploadEnabled)" />
 
-                        <MudSwitchNoExtraTooltip
+                        <MudSwitchTT
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="BossResourceRandomizationEnabled"
@@ -116,7 +116,7 @@
                             @bind-FoodUsagePercent="BossFoodRateUsagePercent"
                             Disabled="@(!BossResourceRandomizationEnabled)" />
 
-                        <MudSwitchNoExtraTooltip
+                        <MudSwitchTT
                             Label="Weapon Durability Changes"
                             TooltipText="Allows configurable weapon durability."
                             @bind-Value="BossWeaponDurabilityEnabled"
@@ -146,7 +146,7 @@
                             Validation="ValidateWeaponDelta"
                             Disabled="@(!BossWeaponDurabilityEnabled)" />
 
-                        <MudSliderNoExtraTooltip
+                        <MudSliderTT
                             Label="Enhancement Chance"
                             TooltipText="This is the chance that bot weapons have an enhancement applied to them."
                             @bind-Value="BossWeaponDurabilityEnhancementChance"
@@ -154,7 +154,7 @@
                             Max="100"
                             Disabled="@(!BossWeaponDurabilityEnabled)" />
 
-                        <MudSwitchNoExtraTooltip
+                        <MudSwitchTT
                             Label="Armour Durability Changes"
                             TooltipText="Allows configurable armour durability."
                             @bind-Value="BossArmourDurabilityEnabled"
