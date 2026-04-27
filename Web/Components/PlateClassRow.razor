@@ -1,0 +1,50 @@
+﻿<MudItem xs="2" />
+<MudItem xs="3" Style="margin-top: 20px;">
+    <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+        <MudText>@Label</MudText>
+    </MudTooltip>
+</MudItem>
+<MudItem xs="6">
+    <MudPaper Class="d-flex align-start mud-width-full" Elevation="0">
+        @for (var i = 2; i <= 6; i++)
+        {
+            var classNum = i.ToString();
+            <MudNumericField Margin="Margin.Dense"
+                             HideSpinButtons="true"
+                             Value="@Values[classNum]"
+                             ValueChanged="@((double v) => OnValueChanged(classNum, v))"
+                             Label="Weight"
+                             HelperText="@($"Class {classNum}")"
+                             Variant="Variant.Filled"
+                             Min="0"
+                             Max="100" />
+        }
+    </MudPaper>
+</MudItem>
+<MudItem xs="1">
+    @if (HasPendingChanges && MainLayout._appUndoButtonToggle)
+    {
+        <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+    }
+    else if (IsNonDefault && MainLayout._appDefaultButtonToggle)
+    {
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    }
+</MudItem>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public Dictionary<string, double> Values { get; set; } = new();
+    [Parameter] public EventCallback<(string classNum, double value)> ValuesChanged { get; set; }
+    [Parameter] public bool HasPendingChanges { get; set; }
+    [Parameter] public bool IsNonDefault { get; set; }
+    [Parameter] public EventCallback OnUndo { get; set; }
+    [Parameter] public EventCallback OnDefault { get; set; }
+
+    private async Task OnValueChanged(string classNum, double value)
+    {
+        Values[classNum] = value;
+        await ValuesChanged.InvokeAsync((classNum, value));
+    }
+}

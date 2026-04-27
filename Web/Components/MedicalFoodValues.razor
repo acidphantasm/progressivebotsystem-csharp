@@ -1,0 +1,40 @@
+﻿<MudItem xs="2" />
+<MudItem xs="3">
+    <MudTooltip Text="Medical & Food full chances and minimum usage percent." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+        <MudText>Medical & Food Values</MudText>
+    </MudTooltip>
+</MudItem>
+<MudItem xs="3">
+    <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+        <MudTooltip Text="Chance for medical items to be full resource usage." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MedMaxChance" ValueChanged="@MedMaxChanceChanged" Label="Full Chance" HelperText="Medical" Variant="Variant.Filled" Min="1" Max="100" Disabled="@Disabled" />
+        </MudTooltip>
+        <MudTooltip Text="Lowest percent possible for a medical item's remaining usage to be." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MedUsagePercent" ValueChanged="@MedUsagePercentChanged" Label="Minimum %" HelperText="Medical" Variant="Variant.Filled" Min="1" Max="100" Disabled="@Disabled" />
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="3">
+    <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+        <MudTooltip Text="Chance for food/drink items to be full resource usage." Color="Color.Primary" Placement="Placement.Left" Arrow="true">
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@FoodMaxChance" ValueChanged="@FoodMaxChanceChanged" Label="Full Chance" HelperText="Food/Drink" Variant="Variant.Filled" Min="1" Max="100" Disabled="@Disabled" />
+        </MudTooltip>
+        <MudTooltip Text="Lowest percent possible for a food/drink item's remaining usage to be." Color="Color.Primary" Placement="Placement.Left" Arrow="true">
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@FoodUsagePercent" ValueChanged="@FoodUsagePercentChanged" Label="Minimum %" HelperText="Food/Drink" Variant="Variant.Filled" Min="1" Max="100" Disabled="@Disabled" />
+        </MudTooltip>
+        <MudSpacer />
+    </MudPaper>
+</MudItem>
+<MudItem xs="1" />
+
+@code {
+    [Parameter] public int MedMaxChance { get; set; }
+    [Parameter] public EventCallback<int> MedMaxChanceChanged { get; set; }
+    [Parameter] public int MedUsagePercent { get; set; }
+    [Parameter] public EventCallback<int> MedUsagePercentChanged { get; set; }
+    [Parameter] public int FoodMaxChance { get; set; }
+    [Parameter] public EventCallback<int> FoodMaxChanceChanged { get; set; }
+    [Parameter] public int FoodUsagePercent { get; set; }
+    [Parameter] public EventCallback<int> FoodUsagePercentChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; } = false;
+}

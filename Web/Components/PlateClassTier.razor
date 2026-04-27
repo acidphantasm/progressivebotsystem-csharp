@@ -1,0 +1,38 @@
+﻿<MudItem xs="1" />
+<MudItem xs="11" Style="margin-top: 20px;">
+    <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+        <MudText>@TierLabel</MudText>
+    </MudTooltip>
+</MudItem>
+
+<PlateClassRow Label="Front Plate" TooltipText="@TooltipText" Values="@FrontValues" ValuesChanged="@((e) => OnChanged("front_plate", e))" HasPendingChanges="@HasPendingChanges("front_plate")" IsNonDefault="@IsNonDefault(FrontValues)" OnUndo="@(() => OnUndo.InvokeAsync("front_plate"))" OnDefault="@(() => OnDefault.InvokeAsync("front_plate"))" />
+<PlateClassRow Label="Back Plate" TooltipText="@TooltipText" Values="@BackValues" ValuesChanged="@((e) => OnChanged("back_plate", e))" HasPendingChanges="@HasPendingChanges("back_plate")" IsNonDefault="@IsNonDefault(BackValues)" OnUndo="@(() => OnUndo.InvokeAsync("back_plate"))" OnDefault="@(() => OnDefault.InvokeAsync("back_plate"))" />
+<PlateClassRow Label="Left Side Plate" TooltipText="@TooltipText" Values="@LeftValues" ValuesChanged="@((e) => OnChanged("left_side_plate", e))" HasPendingChanges="@HasPendingChanges("left_side_plate")" IsNonDefault="@IsNonDefault(LeftValues)" OnUndo="@(() => OnUndo.InvokeAsync("left_side_plate"))" OnDefault="@(() => OnDefault.InvokeAsync("left_side_plate"))" />
+<PlateClassRow Label="Right Side Plate" TooltipText="@TooltipText" Values="@RightValues" ValuesChanged="@((e) => OnChanged("right_side_plate", e))" HasPendingChanges="@HasPendingChanges("right_side_plate")" IsNonDefault="@IsNonDefault(RightValues)" OnUndo="@(() => OnUndo.InvokeAsync("right_side_plate"))" OnDefault="@(() => OnDefault.InvokeAsync("right_side_plate"))" />
+
+@code {
+    [Parameter] public string TierLabel { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public string ChangeKeyPrefix { get; set; } = "";
+    [Parameter] public Dictionary<string, double> FrontValues { get; set; } = new();
+    [Parameter] public Dictionary<string, double> BackValues { get; set; } = new();
+    [Parameter] public Dictionary<string, double> LeftValues { get; set; } = new();
+    [Parameter] public Dictionary<string, double> RightValues { get; set; } = new();
+    [Parameter] public EventCallback<(string position, string classNum, double value)> ValuesChanged { get; set; }
+    [Parameter] public EventCallback<string> OnUndo { get; set; }
+    [Parameter] public EventCallback<string> OnDefault { get; set; }
+
+    private bool HasPendingChanges(string position) => Enumerable.Range(2, 5).Any(c => MainLayout.pendingChanges.Contains($"{ChangeKeyPrefix}_{position}_Class{c}"));
+
+    private bool IsNonDefault(Dictionary<string, double> values) =>
+        values["2"] != 0 || 
+        values["3"] != 10 || 
+        values["4"] != 50 ||
+        values["5"] != 35 || 
+        values["6"] != 5;
+
+    private async Task OnChanged(string position, (string classNum, double value) e)
+    {
+        await ValuesChanged.InvokeAsync((position, e.classNum, e.value));
+    }
+}

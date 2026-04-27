@@ -1,0 +1,34 @@
+﻿<MudItem xs="1" />
+<MudItem xs="4">
+    <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+        <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <MudText>@Label</MudText>
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="6">
+    <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+        <MudSwitch T="bool" Value="@Value" ValueChanged="@ValueChanged" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@Value</MudSwitch>
+    </MudPaper>
+</MudItem>
+<MudItem xs="1">
+    @if (HasPendingChanges && MainLayout._appUndoButtonToggle)
+    {
+        <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+    }
+    else if (IsNonDefault && MainLayout._appDefaultButtonToggle)
+    {
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    }
+</MudItem>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public bool HasPendingChanges { get; set; }
+    [Parameter] public bool IsNonDefault { get; set; }
+    [Parameter] public EventCallback OnUndo { get; set; }
+    [Parameter] public EventCallback OnDefault { get; set; }
+}

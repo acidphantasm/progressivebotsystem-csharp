@@ -1,0 +1,71 @@
+﻿@inject ISnackbar Snackbar
+
+<MudItem xs="1">
+    <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
+        <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="4" Class="align-center">
+    <MudTextField T="string" @bind-Value="@_entryHolder"
+        Typo="Typo.body2" HelperText="Enter valid MongoID"
+        Placeholder="ItemID"
+        Variant="Variant.Text"
+        OnKeyDown="@((e) => { if (HandleKeyDown(e)) TryAddEntry(); })"
+        Validation="@(new Func<string, IEnumerable<string>>(Utils.StringObjectIDValidation))"
+        Immediate="true"
+        Adornment="Adornment.End"
+        AdornmentIcon="@Icons.Material.Filled.ArrowRight"
+        OnAdornmentClick="TryAddEntry" />
+</MudItem>
+<MudItem xs="6">
+    @foreach (var item in Blacklist)
+    {
+        <MudChip Value="@item" T="string" Color="Color.Default" OnClose="@(() => RemoveEntry(item))">@item</MudChip>
+    }
+</MudItem>
+
+@code {
+    [Parameter] public string TooltipText { get; set; } = "Only valid MongoIDs are accepted. Enter the ID you want blacklisted, then click the arrow (or press enter) to add it.";
+    [Parameter] public List<string> Blacklist { get; set; } = new();
+    [Parameter] public List<string> OriginalBlacklist { get; set; } = new();
+    [Parameter] public string ChangeKey { get; set; } = "";
+
+    private string _entryHolder = "";
+
+    private void TryAddEntry()
+    {
+        if (CanAdd(_entryHolder))
+        {
+            Blacklist.Add(_entryHolder);
+            _entryHolder = "";
+        }
+        Utils.UpdateView(Blacklist, OriginalBlacklist, ChangeKey);
+    }
+
+    private void RemoveEntry(string item)
+    {
+        Blacklist.Remove(item);
+        Utils.UpdateView(Blacklist, OriginalBlacklist, ChangeKey);
+    }
+
+    private bool CanAdd(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+
+        if (Blacklist.Contains(value))
+        {
+            Snackbar.Add("Already blacklisted.", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return false;
+        }
+        if (!Utils.IsHexAndValidLength(value))
+        {
+            Snackbar.Add("Invalid MongoID.", Severity.Error, config => { config.ShowCloseIcon = false; });
+            return false;
+        }
+        return true;
+    }
+
+    private bool HandleKeyDown(KeyboardEventArgs e) => e.Key == "Enter" && !e.ShiftKey;
+}
