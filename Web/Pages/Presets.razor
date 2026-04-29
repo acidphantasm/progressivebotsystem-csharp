@@ -39,24 +39,24 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="_presetEnable" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_presetEnable</MudSwitch>
+                            <MudSwitch T="bool" @bind-Value="PresetEnable" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@PresetEnable</MudSwitch>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (MainLayout.pendingChanges.Contains("_presetEnable") || MainLayout.pendingChanges.Contains("_presetName")))
+                        @if (MainLayout.AppUndoButtonToggle && (MainLayout.pendingChanges.Contains("_presetEnable") || MainLayout.pendingChanges.Contains("_presetName")))
                         {
-                            <MudButton @onclick="undoPresetDetails" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoPresetDetails" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (_presetEnable != false || _presetName != ""))
+                        else if (MainLayout.AppDefaultButtonToggle && (PresetEnable != false || PresetName != ""))
                         {
-                            <MudButton @onclick="defaultPresetDetails" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultPresetDetails" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
                 </MudGrid>
             </MudCardContent>
         </MudCard>
 
-        @if (_presetEnable)
+        @if (PresetEnable)
         {
             <MudCard Class="ma-3 pa-5" Elevation="6">
                 <MudCardContent>
@@ -71,15 +71,15 @@
                         </MudItem>
                         <MudItem xs="5">
                             <MudPaper Class="d-flex align-center mud-width-full" Style="margin-top: -15px;" Elevation="0">
-                                <MudSelect @bind-Value="_presetName"
+                                <MudSelect @bind-Value="PresetName"
                                            Label="Folder Name"
                                            Placeholder="Select a Preset or make a new one..."
                                            Variant="Variant.Text"
                                            Class="mud-width-full">
 
-                                    @if (folderNames != null)
+                                    @if (_folderNames != null)
                                     {
-                                        @foreach (var folder in folderNames)
+                                        @foreach (var folder in _folderNames)
                                         {
                                             <MudSelectItem Value="@folder">@folder</MudSelectItem>
                                         }
@@ -101,41 +101,41 @@
 </MudMainContent>
 
 @code {
-    private bool _presetEnable
+    private bool PresetEnable
     {
         get => ModConfig.Config.UsePreset;
         set
         {
             if (!value)
             {
-                _presetName = string.Empty;
+                PresetName = string.Empty;
             }
             ModConfig.Config.UsePreset = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.UsePreset);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.UsePreset, nameof(PresetEnable));
         }
     }
-    private string _presetName
+    private string PresetName
     {
         get => ModConfig.Config.PresetName;
         set
         {
             ModConfig.Config.PresetName = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.PresetName);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PresetName, nameof(PresetName));
         }
     }
 
-    private void undoPresetDetails()
+    private void UndoPresetDetails()
     {
-        _presetEnable = ModConfig.OriginalConfig.UsePreset;
-        _presetName = ModConfig.OriginalConfig.PresetName;
+        PresetEnable = ModConfig.OriginalConfig.UsePreset;
+        PresetName = ModConfig.OriginalConfig.PresetName;
     }
-    private void defaultPresetDetails()
+    private void DefaultPresetDetails()
     {
-        _presetEnable = false;
-        _presetName = "";
+        PresetEnable = false;
+        PresetName = "";
     }
     
-    private List<string?> folderNames = new();
+    private List<string?> _folderNames = new();
     
     protected override void OnInitialized()
     {
@@ -148,7 +148,7 @@
         {
             if (Directory.Exists(ModConfig._modPath))
             {
-                folderNames = Directory.GetDirectories(Path.Combine(ModConfig._modPath, "Presets"))
+                _folderNames = Directory.GetDirectories(Path.Combine(ModConfig._modPath, "Presets"))
                     .Select(Path.GetFileName)
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .ToList();
@@ -180,7 +180,7 @@
         CopyPresetBaseFiles(path);
         
         LoadFolderNames();
-        _presetName = name;
+        PresetName = name;
         await DataLoader.AssignJsonDataFromPreset(ModConfig._modPath);
         
         StateHasChanged();

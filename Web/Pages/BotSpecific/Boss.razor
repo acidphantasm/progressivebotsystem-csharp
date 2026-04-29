@@ -14,7 +14,7 @@
                         WarningTooltip1="All settings on this page, and any other setting that may impact these bots are controlled by this toggle."
                         WarningTooltip2="EXCEPTION: Normalize Health is always applied if enabled but not excluded."
                         @bind-Value="BossEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossEnabled"))"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossEnabled"))"
                         IsNonDefault="@(!BossEnabled)"
                         OnUndo="UndoBossBots"
                         OnDefault="DefaultBossBots" />
@@ -30,8 +30,8 @@
                             Label="Loot"
                             TooltipText="Allows Boss Bots to spawn with additional loot."
                             @bind-Value="BossLootEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossLootEnabled") || 
-                                                MainLayout.pendingChanges.Contains("_bossLootBlacklist"))"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossLootEnabled") || 
+                                                MainLayout.pendingChanges.Contains("BossLootBlacklist"))"
                             IsNonDefault="@(!BossLootEnabled || 
                                             BossLootBlacklist.Count > 0)"
                             OnUndo="UndoLoot"
@@ -40,7 +40,7 @@
                         <LootBlacklistValues
                             Blacklist="BossLootBlacklist"
                             OriginalBlacklist="ModConfig.OriginalConfig.BossBots.LootConfig.Blacklist"
-                            ChangeKey="_bossLootBlacklist" />
+                            ChangeKey="BossLootBlacklist" />
 
                         <MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
 
@@ -48,8 +48,8 @@
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows Bosses to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="BossWeaponAmmunitionRollEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossWeaponAmmunitionRollEnabled") || 
-                                                MainLayout.pendingChanges.Contains("_bossWeaponAmmunitionRollChance"))"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossWeaponAmmunitionRollEnabled") || 
+                                                MainLayout.pendingChanges.Contains("BossWeaponAmmunitionRollChance"))"
                             IsNonDefault="@(!BossWeaponAmmunitionRollEnabled || 
                                             BossWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
@@ -67,9 +67,9 @@
                             Label="Toploading"
                             TooltipText="Allows Bosses to top load their extra magazines."
                             @bind-Value="BossWeaponToploadEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossWeaponToploadEnabled") || 
-                                                MainLayout.pendingChanges.Contains("_bossWeaponToploadChance") || 
-                                                MainLayout.pendingChanges.Contains("_bossWeaponToploadPercent"))"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossWeaponToploadEnabled") || 
+                                                MainLayout.pendingChanges.Contains("BossWeaponToploadChance") || 
+                                                MainLayout.pendingChanges.Contains("BossWeaponToploadPercent"))"
                             IsNonDefault="@(BossWeaponToploadEnabled || 
                                             BossWeaponToploadChance != 30 || 
                                             BossWeaponToploadPercent != 30)"
@@ -96,11 +96,11 @@
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="BossResourceRandomizationEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossResourceRandomizationEnabled") || 
-                                                MainLayout.pendingChanges.Contains("_bossMedRateMaxChance") || 
-                                                MainLayout.pendingChanges.Contains("_bossMedRateUsagePercent") || 
-                                                MainLayout.pendingChanges.Contains("_bossFoodRateMaxChance") || 
-                                                MainLayout.pendingChanges.Contains("_bossFoodRateUsagePercent"))"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossResourceRandomizationEnabled") || 
+                                                MainLayout.pendingChanges.Contains("BossMedRateMaxChance") || 
+                                                MainLayout.pendingChanges.Contains("BossMedRateUsagePercent") || 
+                                                MainLayout.pendingChanges.Contains("BossFoodRateMaxChance") || 
+                                                MainLayout.pendingChanges.Contains("BossFoodRateUsagePercent"))"
                             IsNonDefault="@(!BossResourceRandomizationEnabled || 
                                             BossMedRateMaxChance != 50 || 
                                             BossMedRateUsagePercent != 50 || 
@@ -120,12 +120,12 @@
                             Label="Weapon Durability Changes"
                             TooltipText="Allows configurable weapon durability."
                             @bind-Value="BossWeaponDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossWeaponDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("_bossWeaponDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("_bossWeaponDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("_bossWeaponDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("_bossWeaponDurabilityMaxDelta") ||
-                                               MainLayout.pendingChanges.Contains("_bossWeaponDurabilityEnhancementChance"))"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossWeaponDurabilityEnabled") ||
+                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMin") ||
+                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMax") ||
+                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMinDelta") ||
+                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMaxDelta") ||
+                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityEnhancementChance"))"
                             IsNonDefault="@(!BossWeaponDurabilityEnabled ||
                                           BossWeaponDurabilityMin != 90 ||
                                           BossWeaponDurabilityMax != 100 ||
@@ -158,11 +158,11 @@
                             Label="Armour Durability Changes"
                             TooltipText="Allows configurable armour durability."
                             @bind-Value="BossArmourDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("_bossArmourDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("_bossArmourDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("_bossArmourDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("_bossArmourDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("_bossArmourDurabilityMaxDelta"))"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossArmourDurabilityEnabled") ||
+                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMin") ||
+                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMax") ||
+                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMinDelta") ||
+                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMaxDelta"))"
                             IsNonDefault="@(!BossArmourDurabilityEnabled ||
                                           BossArmourDurabilityMin != 90 ||
                                           BossArmourDurabilityMax != 100 ||
@@ -187,16 +187,17 @@
                 <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Plate Class Selection" Expanded="true">
                     <MudGrid>
                         @foreach (var tier in new[] {
-                            ("Tier 1 (Lv1-10)",  "_boss_PlateClass_Tier1", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier1),
-                            ("Tier 2 (Lv11-20)", "_boss_PlateClass_Tier2", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier2),
-                            ("Tier 3 (Lv21-30)", "_boss_PlateClass_Tier3", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier3),
-                            ("Tier 4 (Lv31-40)", "_boss_PlateClass_Tier4", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier4),
-                            ("Tier 5 (Lv41-50)", "_boss_PlateClass_Tier5", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier5),
-                            ("Tier 6 (Lv51-60)", "_boss_PlateClass_Tier6", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier6),
-                            ("Tier 7 (Lv61-79)", "_boss_PlateClass_Tier7", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier7),
+                            ("Tier 1 (Lv1-10)",  "Boss_PlateClass_Tier1", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier1, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier1),
+                            ("Tier 2 (Lv11-20)", "Boss_PlateClass_Tier2", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier2, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier2),
+                            ("Tier 3 (Lv21-30)", "Boss_PlateClass_Tier3", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier3, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier3),
+                            ("Tier 4 (Lv31-40)", "Boss_PlateClass_Tier4", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier4, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier4),
+                            ("Tier 5 (Lv41-50)", "Boss_PlateClass_Tier5", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier5, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier5),
+                            ("Tier 6 (Lv51-60)", "Boss_PlateClass_Tier6", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier6, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier6),
+                            ("Tier 7 (Lv61-79)", "Boss_PlateClass_Tier7", ModConfig.Config.GeneralConfig.PlateClasses.BossAndSpecial.Tier7, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.BossAndSpecial.Tier7),
                         })
                         {
                             var tierTooltip = $"Adjust the plate class levels for {tier.Item1}. If a plate is selected that cannot fit in the armour, APBS will upgrade the plate level by 1 until it is valid.";
+                            var tierDefaults = BossTierDefaults[tier.Item1];
 
                             <PlateClassTier
                                 TierLabel="@tier.Item1"
@@ -206,11 +207,11 @@
                                 BackValues="@ToDict(tier.Item3["back_plate"])"
                                 LeftValues="@ToDict(tier.Item3["left_side_plate"])"
                                 RightValues="@ToDict(tier.Item3["right_side_plate"])"
+                                Defaults="@tierDefaults"
                                 ValuesChanged="@((e) => HandlePlateChanged(tier.Item2, tier.Item3, tier.Item4, e))"
                                 OnUndo="@((pos) => HandlePlateUndo(tier.Item2, tier.Item3, tier.Item4, pos))"
-                                OnDefault="@((pos) => HandlePlateDefault(tier.Item2, tier.Item3, pos))" />
+                                OnDefault="@((pos) => HandlePlateDefault(tier.Item2, tier.Item3, pos, tierDefaults))" />
                         }
-
                     </MudGrid>
                 </MudExpansionPanel>
             }
@@ -225,7 +226,7 @@
         get => ModConfig.Config.BossBots.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.Enable, nameof(BossEnabled));
             ModConfig.Config.BossBots.Enable = value;
         }
     }
@@ -239,7 +240,7 @@
         set
         {
             ModConfig.Config.BossBots.LootConfig.Enable = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.LootConfig.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.LootConfig.Enable, nameof(BossLootEnabled));
         }
     }
     
@@ -252,14 +253,14 @@
         {
             BossLootBlacklist.Add(item);
         }
-        MainLayout.pendingChanges.Remove("_bossLootBlacklist");
+        MainLayout.pendingChanges.Remove("BossLootBlacklist");
     }
 
     private void DefaultLoot()
     {
         BossLootEnabled = true;
         BossLootBlacklist.Clear();
-        MainLayout.pendingChanges.Add("_bossLootBlacklist");
+        MainLayout.pendingChanges.Add("BossLootBlacklist");
     }
     #endregion
     #region REROLL
@@ -268,7 +269,7 @@
         get => ModConfig.Config.BossBots.RerollConfig.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.RerollConfig.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.RerollConfig.Enable, nameof(BossWeaponAmmunitionRollEnabled));
             ModConfig.Config.BossBots.RerollConfig.Enable = value;
             ModConfig.Config.BossBots.ToploadConfig.Enable = !value;
         }
@@ -278,7 +279,7 @@
         get => ModConfig.Config.BossBots.RerollConfig.Chance;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.RerollConfig.Chance);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.RerollConfig.Chance, nameof(BossWeaponAmmunitionRollChance));
             ModConfig.Config.BossBots.RerollConfig.Chance = value;
         }
     }
@@ -305,7 +306,7 @@
         get => ModConfig.Config.BossBots.ToploadConfig.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ToploadConfig.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ToploadConfig.Enable, nameof(BossWeaponToploadEnabled));
             ModConfig.Config.BossBots.ToploadConfig.Enable = value;
             ModConfig.Config.BossBots.RerollConfig.Enable = !value;
         }
@@ -315,7 +316,7 @@
         get => ModConfig.Config.BossBots.ToploadConfig.Chance;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ToploadConfig.Chance);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ToploadConfig.Chance, nameof(BossWeaponToploadChance));
             ModConfig.Config.BossBots.ToploadConfig.Chance = value;
         }
     }
@@ -324,7 +325,7 @@
         get => ModConfig.Config.BossBots.ToploadConfig.Percent;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ToploadConfig.Percent);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ToploadConfig.Percent, nameof(BossWeaponToploadPercent));
             ModConfig.Config.BossBots.ToploadConfig.Percent = value;
         }
     }
@@ -352,7 +353,7 @@
         set
         {
             ModConfig.Config.BossBots.ResourceRandomization.Enable = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.Enable, nameof(BossResourceRandomizationEnabled));
         }
     }
     private int BossFoodRateMaxChance
@@ -361,7 +362,7 @@
         set
         {
             ModConfig.Config.BossBots.ResourceRandomization.FoodRateMaxChance = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.FoodRateMaxChance);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.FoodRateMaxChance, nameof(BossFoodRateMaxChance));
         }
     }
     private int BossFoodRateUsagePercent
@@ -370,7 +371,7 @@
         set
         {
             ModConfig.Config.BossBots.ResourceRandomization.FoodRateUsagePercent = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.FoodRateUsagePercent);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.FoodRateUsagePercent, nameof(BossFoodRateUsagePercent));
         }
     }
     private int BossMedRateMaxChance
@@ -379,7 +380,7 @@
         set
         {
             ModConfig.Config.BossBots.ResourceRandomization.MedRateMaxChance = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.MedRateMaxChance);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.MedRateMaxChance, nameof(BossMedRateMaxChance));
         }
     }
     private int BossMedRateUsagePercent
@@ -388,7 +389,7 @@
         set
         {
             ModConfig.Config.BossBots.ResourceRandomization.MedRateUsagePercent = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.MedRateUsagePercent);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ResourceRandomization.MedRateUsagePercent, nameof(BossMedRateUsagePercent));
         }
     }
     private void UndoResourceRandomization()
@@ -415,7 +416,7 @@
         set
         {
             ModConfig.Config.BossBots.WeaponDurability.Enable = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.Enable, nameof(BossWeaponDurabilityEnabled));
         }
     }
     private int BossWeaponDurabilityMin
@@ -425,7 +426,7 @@
         {
             ModConfig.Config.BossBots.WeaponDurability.MinLimitPercent = value - ModConfig.Config.BossBots.WeaponDurability.MaxDelta;
             ModConfig.Config.BossBots.WeaponDurability.Min = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.Min, nameof(BossWeaponDurabilityMin));
         }
     }
     private int BossWeaponDurabilityMax
@@ -434,7 +435,7 @@
         set
         {
             ModConfig.Config.BossBots.WeaponDurability.Max = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.Max, nameof(BossWeaponDurabilityMax));
         }
     }
     private int BossWeaponDurabilityMinDelta
@@ -443,7 +444,7 @@
         set
         {
             ModConfig.Config.BossBots.WeaponDurability.MinDelta = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.MinDelta);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.MinDelta, nameof(BossWeaponDurabilityMinDelta));
         }
     }
     private int BossWeaponDurabilityMaxDelta
@@ -453,7 +454,7 @@
         {
             ModConfig.Config.BossBots.WeaponDurability.MinLimitPercent = ModConfig.Config.BossBots.WeaponDurability.Min - value;
             ModConfig.Config.BossBots.WeaponDurability.MaxDelta = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.MaxDelta);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.MaxDelta, nameof(BossWeaponDurabilityMaxDelta));
         }
     }
     private int BossWeaponDurabilityMinLimitPercent => ModConfig.Config.BossBots.WeaponDurability.MinLimitPercent;
@@ -464,7 +465,7 @@
         set
         {
             ModConfig.Config.BossBots.WeaponDurability.EnhancementChance = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.EnhancementChance);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.WeaponDurability.EnhancementChance, nameof(BossWeaponDurabilityEnhancementChance));
         }
     }
     private void UndoWeaponDurability()
@@ -491,7 +492,7 @@
         set
         {
             ModConfig.Config.BossBots.ArmourDurability.Enable = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.Enable, nameof(BossArmourDurabilityEnabled));
         }
     }
     private int BossArmourDurabilityMin
@@ -501,7 +502,7 @@
         {
             ModConfig.Config.BossBots.ArmourDurability.MinLimitPercent = value - ModConfig.Config.BossBots.ArmourDurability.MaxDelta;
             ModConfig.Config.BossBots.ArmourDurability.Min = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.Min, nameof(BossArmourDurabilityMin));
         }
     }
     private int BossArmourDurabilityMax
@@ -510,7 +511,7 @@
         set
         {
             ModConfig.Config.BossBots.ArmourDurability.Max = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.Max, nameof(BossArmourDurabilityMax));
         }
     }
     private int BossArmourDurabilityMinDelta
@@ -519,7 +520,7 @@
         set
         {
             ModConfig.Config.BossBots.ArmourDurability.MinDelta = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.MinDelta);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.MinDelta, nameof(BossArmourDurabilityMinDelta));
         }
     }
     private int BossArmourDurabilityMaxDelta
@@ -529,7 +530,7 @@
         {
             ModConfig.Config.BossBots.ArmourDurability.MinLimitPercent = ModConfig.Config.BossBots.ArmourDurability.Min - value;
             ModConfig.Config.BossBots.ArmourDurability.MaxDelta = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.MaxDelta);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.ArmourDurability.MaxDelta, nameof(BossArmourDurabilityMaxDelta));
         }
     }
     private int BossArmourDurabilityMinLimitPercent => ModConfig.Config.BossBots.ArmourDurability.MinLimitPercent;
@@ -552,6 +553,17 @@
     }
     #endregion
     #region PlateClasses
+    private static readonly Dictionary<string, Dictionary<string, double>> BossTierDefaults = new()
+    {
+        ["Tier 1 (Lv1-10)"]  = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+        ["Tier 2 (Lv11-20)"] = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+        ["Tier 3 (Lv21-30)"] = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+        ["Tier 4 (Lv31-40)"] = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+        ["Tier 5 (Lv41-50)"] = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+        ["Tier 6 (Lv51-60)"] = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+        ["Tier 7 (Lv61-79)"] = new() { {"2",0}, {"3",10}, {"4",50}, {"5",35}, {"6",5} },
+    };
+    
     private Dictionary<string, double> ToDict(Dictionary<string, double> source) => new(source);
 
     private void HandlePlateChanged(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, Dictionary<string, Dictionary<string, double>> original, (string position, string classNum, double value) e) 
@@ -570,11 +582,8 @@
         MainLayout.TriggerUIRefresh();
     }
 
-    private void HandlePlateDefault(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, string position)
+    private void HandlePlateDefault(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, string position, Dictionary<string, double> defaults)
     {
-        var defaults = new Dictionary<string, double>
-            { {"2", 0}, {"3", 10}, {"4", 50}, {"5", 35}, {"6", 5} };
-
         foreach (var (classNum, value) in defaults)
         {
             config[position][classNum] = value;

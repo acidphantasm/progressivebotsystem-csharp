@@ -31,17 +31,17 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="_tierDeltaCustomEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_tierDeltaCustomEnabled</MudSwitch>
+                            <MudSwitch T="bool" @bind-Value="TierDeltaCustomEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@TierDeltaCustomEnabled</MudSwitch>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_tierDeltaCustomEnabled"))
+                        @if (MainLayout.AppUndoButtonToggle && MainLayout.pendingChanges.Contains("_tierDeltaCustomEnabled"))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomEnabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomEnabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && _tierDeltaCustomEnabled != false)
+                        else if (MainLayout.AppDefaultButtonToggle && TierDeltaCustomEnabled != false)
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -53,23 +53,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier1Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier1Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier1Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier1Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier1Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier1Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier1" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier1" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier1Min != 10 ||
-                        _tierDeltaCustomTier1Max != 5))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier1Min != 10 ||
+                        TierDeltaCustomTier1Max != 5))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier1" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier1" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -81,23 +81,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier2Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier2Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier2Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier2Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier2Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier2Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier2" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier2" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier2Min != 10 ||
-                        _tierDeltaCustomTier2Max != 5))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier2Min != 10 ||
+                        TierDeltaCustomTier2Max != 5))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier2" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier2" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -109,23 +109,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier3Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier3Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier3Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier3Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier3Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier3Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier3" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier3" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier3Min != 15 ||
-                        _tierDeltaCustomTier3Max != 7))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier3Min != 15 ||
+                        TierDeltaCustomTier3Max != 7))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier3" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier3" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -137,23 +137,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier4Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier4Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier4Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier4Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier4Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier4Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier4" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier4" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier4Min != 20 ||
-                        _tierDeltaCustomTier4Max != 10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier4Min != 20 ||
+                        TierDeltaCustomTier4Max != 10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier4" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier4" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -165,23 +165,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier5Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier5Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier5Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier5Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier5Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier5Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier5" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier5" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier5Min != 30 ||
-                        _tierDeltaCustomTier5Max != 15))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier5Min != 30 ||
+                        TierDeltaCustomTier5Max != 15))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier5" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier5" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -193,23 +193,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier6Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier6Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier6Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier6Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier6Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier6Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier6" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier6" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier6Min != 40 ||
-                        _tierDeltaCustomTier6Max != 20))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier6Min != 40 ||
+                        TierDeltaCustomTier6Max != 20))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier6" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier6" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -221,23 +221,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier7Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier7Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomTier7Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier7Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier7Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomTier7Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomTier7" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomTier7" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomTier7Min != 50 ||
-                        _tierDeltaCustomTier7Max != 20))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomTier7Min != 50 ||
+                        TierDeltaCustomTier7Max != 20))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomTier7" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomTier7" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -269,17 +269,17 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="_tierDeltaCustomScavEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_tierDeltaCustomScavEnabled</MudSwitch>
+                            <MudSwitch T="bool" @bind-Value="TierDeltaCustomScavEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@TierDeltaCustomScavEnabled</MudSwitch>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && MainLayout.pendingChanges.Contains("_tierDeltaCustomScavEnabled"))
+                        @if (MainLayout.AppUndoButtonToggle && MainLayout.pendingChanges.Contains("_tierDeltaCustomScavEnabled"))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavEnabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavEnabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && _tierDeltaCustomScavEnabled != false)
+                        else if (MainLayout.AppDefaultButtonToggle && TierDeltaCustomScavEnabled != false)
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -291,23 +291,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier1Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="10" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier1Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="10" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier1Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier1Max" Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier1Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier1Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier1" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier1" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier1Min != 10 ||
-                        _tierDeltaCustomScavTier1Max != 0))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier1Min != 10 ||
+                        TierDeltaCustomScavTier1Max != 0))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier1" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier1" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -319,23 +319,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier2Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="20" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier2Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="20" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier2Max" Label="Levels Above You" Variant="Variant.Filled" Min="-_tierDeltaCustomScavTier2Min" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier2Max" Label="Levels Above You" Variant="Variant.Filled" Min="-TierDeltaCustomScavTier2Min" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier2Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier2Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier2" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier2" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier2Min != 10 ||
-                        _tierDeltaCustomScavTier2Max != -10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier2Min != 10 ||
+                        TierDeltaCustomScavTier2Max != -10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier2" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier2" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -347,23 +347,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier3Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="30" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier3Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="30" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier3Max" Label="Levels Above You" Variant="Variant.Filled" Min="-_tierDeltaCustomScavTier3Min" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier3Max" Label="Levels Above You" Variant="Variant.Filled" Min="-TierDeltaCustomScavTier3Min" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier3Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier3Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier3" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier3" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier3Min != 15 ||
-                        _tierDeltaCustomScavTier3Max != -10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier3Min != 15 ||
+                        TierDeltaCustomScavTier3Max != -10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier3" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier3" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -375,23 +375,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier4Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="40" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier4Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="40" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier4Max" Label="Levels Above You" Variant="Variant.Filled" Min="-_tierDeltaCustomScavTier4Min" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier4Max" Label="Levels Above You" Variant="Variant.Filled" Min="-TierDeltaCustomScavTier4Min" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier4Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier4Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier4" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier4" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier4Min != 20 ||
-                        _tierDeltaCustomScavTier4Max != -10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier4Min != 20 ||
+                        TierDeltaCustomScavTier4Max != -10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier4" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier4" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -403,23 +403,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier5Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="50" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier5Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="50" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier5Max" Label="Levels Above You" Variant="Variant.Filled" Min="-_tierDeltaCustomScavTier5Min" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier5Max" Label="Levels Above You" Variant="Variant.Filled" Min="-TierDeltaCustomScavTier5Min" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier5Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier5Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier5" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier5" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier5Min != 30 ||
-                        _tierDeltaCustomScavTier5Max != -10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier5Min != 30 ||
+                        TierDeltaCustomScavTier5Max != -10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier5" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier5" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -431,23 +431,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier6Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="60" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier6Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="60" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier6Max" Label="Levels Above You" Variant="Variant.Filled" Min="-_tierDeltaCustomScavTier6Min" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier6Max" Label="Levels Above You" Variant="Variant.Filled" Min="-TierDeltaCustomScavTier6Min" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier6Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier6Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier6" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier6" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier6Min != 40 ||
-                        _tierDeltaCustomScavTier6Max != -10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier6Min != 40 ||
+                        TierDeltaCustomScavTier6Max != -10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier6" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier6" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -459,23 +459,23 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier7Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier7Min" Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                             <MudSpacer />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="_tierDeltaCustomScavTier7Max" Label="Levels Above You" Variant="Variant.Filled" Min="-_tierDeltaCustomScavTier7Min" Max="79" Disabled="!_tierDeltaCustomScavEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomScavTier7Max" Label="Levels Above You" Variant="Variant.Filled" Min="-TierDeltaCustomScavTier7Min" Max="79" Disabled="!TierDeltaCustomScavEnabled" />
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout._appUndoButtonToggle && (
+                        @if (MainLayout.AppUndoButtonToggle && (
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier7Min") ||
                         MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier7Max")))
                         {
-                            <MudButton @onclick="undoTierDeltaCustomScavTier7" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="UndoTierDeltaCustomScavTier7" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
-                        else if (MainLayout._appDefaultButtonToggle && (
-                        _tierDeltaCustomScavTier7Min != 50 ||
-                        _tierDeltaCustomScavTier7Max != -10))
+                        else if (MainLayout.AppDefaultButtonToggle && (
+                        TierDeltaCustomScavTier7Min != 50 ||
+                        TierDeltaCustomScavTier7Max != -10))
                         {
-                            <MudButton @onclick="defaultTierDeltaCustomScavTier7" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="DefaultTierDeltaCustomScavTier7" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -488,436 +488,436 @@
 @code
 {
     #region CUSTOM LEVEL DELTA
-    private bool _tierDeltaCustomEnabled
+    private bool TierDeltaCustomEnabled
     {
         get => ModConfig.Config.CustomLevelDeltas.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Enable, nameof(TierDeltaCustomEnabled));
             ModConfig.Config.CustomLevelDeltas.Enable = value;
         }
     }
-    private void undoTierDeltaCustomEnabled() => _tierDeltaCustomEnabled = ModConfig.OriginalConfig.CustomLevelDeltas.Enable;
-    private void defaultTierDeltaCustomEnabled() => _tierDeltaCustomEnabled = false;
+    private void UndoTierDeltaCustomEnabled() => TierDeltaCustomEnabled = ModConfig.OriginalConfig.CustomLevelDeltas.Enable;
+    private void DefaultTierDeltaCustomEnabled() => TierDeltaCustomEnabled = false;
 
-    private int _tierDeltaCustomTier1Min
+    private int TierDeltaCustomTier1Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier1.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Min, nameof(TierDeltaCustomTier1Min));
             ModConfig.Config.CustomLevelDeltas.Tier1.Min = value;
         }
     }
-    private int _tierDeltaCustomTier1Max
+    private int TierDeltaCustomTier1Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier1.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Max, nameof(TierDeltaCustomTier1Max));
             ModConfig.Config.CustomLevelDeltas.Tier1.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier1()
+    private void UndoTierDeltaCustomTier1()
     {
-        _tierDeltaCustomTier1Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Min;
-        _tierDeltaCustomTier1Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Max;
+        TierDeltaCustomTier1Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Min;
+        TierDeltaCustomTier1Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Max;
     }
-    private void defaultTierDeltaCustomTier1()
+    private void DefaultTierDeltaCustomTier1()
     {
-        _tierDeltaCustomTier1Min = 10;
-        _tierDeltaCustomTier1Max = 5;
+        TierDeltaCustomTier1Min = 10;
+        TierDeltaCustomTier1Max = 5;
     }
 
-    private int _tierDeltaCustomTier2Min
+    private int TierDeltaCustomTier2Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier2.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Min, nameof(TierDeltaCustomTier2Min));
             ModConfig.Config.CustomLevelDeltas.Tier2.Min = value;
         }
     }
-    private int _tierDeltaCustomTier2Max
+    private int TierDeltaCustomTier2Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier2.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Max, nameof(TierDeltaCustomTier2Max));
             ModConfig.Config.CustomLevelDeltas.Tier2.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier2()
+    private void UndoTierDeltaCustomTier2()
     {
-        _tierDeltaCustomTier2Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Min;
-        _tierDeltaCustomTier2Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Max;
+        TierDeltaCustomTier2Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Min;
+        TierDeltaCustomTier2Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Max;
     }
-    private void defaultTierDeltaCustomTier2()
+    private void DefaultTierDeltaCustomTier2()
     {
-        _tierDeltaCustomTier2Min = 10;
-        _tierDeltaCustomTier2Max = 5;
+        TierDeltaCustomTier2Min = 10;
+        TierDeltaCustomTier2Max = 5;
     }
 
-    private int _tierDeltaCustomTier3Min
+    private int TierDeltaCustomTier3Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier3.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Min, nameof(TierDeltaCustomTier3Min));
             ModConfig.Config.CustomLevelDeltas.Tier3.Min = value;
         }
     }
-    private int _tierDeltaCustomTier3Max
+    private int TierDeltaCustomTier3Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier3.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Max, nameof(TierDeltaCustomTier3Max));
             ModConfig.Config.CustomLevelDeltas.Tier3.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier3()
+    private void UndoTierDeltaCustomTier3()
     {
-        _tierDeltaCustomTier3Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Min;
-        _tierDeltaCustomTier3Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Max;
+        TierDeltaCustomTier3Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Min;
+        TierDeltaCustomTier3Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Max;
     }
-    private void defaultTierDeltaCustomTier3()
+    private void DefaultTierDeltaCustomTier3()
     {
-        _tierDeltaCustomTier3Min = 15;
-        _tierDeltaCustomTier3Max = 7;
+        TierDeltaCustomTier3Min = 15;
+        TierDeltaCustomTier3Max = 7;
     }
 
-    private int _tierDeltaCustomTier4Min
+    private int TierDeltaCustomTier4Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier4.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Min, nameof(TierDeltaCustomTier4Min));
             ModConfig.Config.CustomLevelDeltas.Tier4.Min = value;
         }
     }
-    private int _tierDeltaCustomTier4Max
+    private int TierDeltaCustomTier4Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier4.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Max, nameof(TierDeltaCustomTier4Max));
             ModConfig.Config.CustomLevelDeltas.Tier4.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier4()
+    private void UndoTierDeltaCustomTier4()
     {
-        _tierDeltaCustomTier4Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Min;
-        _tierDeltaCustomTier4Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Max;
+        TierDeltaCustomTier4Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Min;
+        TierDeltaCustomTier4Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Max;
     }
-    private void defaultTierDeltaCustomTier4()
+    private void DefaultTierDeltaCustomTier4()
     {
-        _tierDeltaCustomTier4Min = 20;
-        _tierDeltaCustomTier4Max = 10;
+        TierDeltaCustomTier4Min = 20;
+        TierDeltaCustomTier4Max = 10;
     }
 
-    private int _tierDeltaCustomTier5Min
+    private int TierDeltaCustomTier5Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier5.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Min, nameof(TierDeltaCustomTier5Min));
             ModConfig.Config.CustomLevelDeltas.Tier5.Min = value;
         }
     }
-    private int _tierDeltaCustomTier5Max
+    private int TierDeltaCustomTier5Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier5.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Max, nameof(TierDeltaCustomTier5Max));
             ModConfig.Config.CustomLevelDeltas.Tier5.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier5()
+    private void UndoTierDeltaCustomTier5()
     {
-        _tierDeltaCustomTier5Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Min;
-        _tierDeltaCustomTier5Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Max;
+        TierDeltaCustomTier5Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Min;
+        TierDeltaCustomTier5Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Max;
     }
-    private void defaultTierDeltaCustomTier5()
+    private void DefaultTierDeltaCustomTier5()
     {
-        _tierDeltaCustomTier5Min = 30;
-        _tierDeltaCustomTier5Max = 15;
+        TierDeltaCustomTier5Min = 30;
+        TierDeltaCustomTier5Max = 15;
     }
 
-    private int _tierDeltaCustomTier6Min
+    private int TierDeltaCustomTier6Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier6.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Min, nameof(TierDeltaCustomTier6Min));
             ModConfig.Config.CustomLevelDeltas.Tier6.Min = value;
         }
     }
-    private int _tierDeltaCustomTier6Max
+    private int TierDeltaCustomTier6Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier6.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Max, nameof(TierDeltaCustomTier6Max));
             ModConfig.Config.CustomLevelDeltas.Tier6.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier6()
+    private void UndoTierDeltaCustomTier6()
     {
-        _tierDeltaCustomTier6Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Min;
-        _tierDeltaCustomTier6Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Max;
+        TierDeltaCustomTier6Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Min;
+        TierDeltaCustomTier6Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Max;
     }
-    private void defaultTierDeltaCustomTier6()
+    private void DefaultTierDeltaCustomTier6()
     {
-        _tierDeltaCustomTier6Min = 40;
-        _tierDeltaCustomTier6Max = 20;
+        TierDeltaCustomTier6Min = 40;
+        TierDeltaCustomTier6Max = 20;
     }
 
-    private int _tierDeltaCustomTier7Min
+    private int TierDeltaCustomTier7Min
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier7.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Min, nameof(TierDeltaCustomTier7Min));
             ModConfig.Config.CustomLevelDeltas.Tier7.Min = value;
         }
     }
-    private int _tierDeltaCustomTier7Max
+    private int TierDeltaCustomTier7Max
     {
         get => ModConfig.Config.CustomLevelDeltas.Tier7.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Max, nameof(TierDeltaCustomTier7Max));
             ModConfig.Config.CustomLevelDeltas.Tier7.Max = value;
         }
     }
-    private void undoTierDeltaCustomTier7()
+    private void UndoTierDeltaCustomTier7()
     {
-        _tierDeltaCustomTier7Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Min;
-        _tierDeltaCustomTier7Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Max;
+        TierDeltaCustomTier7Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Min;
+        TierDeltaCustomTier7Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Max;
     }
-    private void defaultTierDeltaCustomTier7()
+    private void DefaultTierDeltaCustomTier7()
     {
-        _tierDeltaCustomTier7Min = 50;
-        _tierDeltaCustomTier7Max = 20;
+        TierDeltaCustomTier7Min = 50;
+        TierDeltaCustomTier7Max = 20;
     }
     #endregion
 
     #region CUSTOM SCAV LEVEL DELTA
-    private bool _tierDeltaCustomScavEnabled
+    private bool TierDeltaCustomScavEnabled
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Enable);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Enable, nameof(TierDeltaCustomScavEnabled));
             ModConfig.Config.CustomScavLevelDeltas.Enable = value;
         }
     }
-    private void undoTierDeltaCustomScavEnabled() => _tierDeltaCustomScavEnabled = ModConfig.OriginalConfig.CustomScavLevelDeltas.Enable;
-    private void defaultTierDeltaCustomScavEnabled() => _tierDeltaCustomScavEnabled = false;
+    private void UndoTierDeltaCustomScavEnabled() => TierDeltaCustomScavEnabled = ModConfig.OriginalConfig.CustomScavLevelDeltas.Enable;
+    private void DefaultTierDeltaCustomScavEnabled() => TierDeltaCustomScavEnabled = false;
 
-    private int _tierDeltaCustomScavTier1Min
+    private int TierDeltaCustomScavTier1Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier1.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Min, nameof(TierDeltaCustomScavTier1Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier1.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier1Max
+    private int TierDeltaCustomScavTier1Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier1.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Max, nameof(TierDeltaCustomScavTier1Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier1.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier1()
+    private void UndoTierDeltaCustomScavTier1()
     {
-        _tierDeltaCustomScavTier1Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Min;
-        _tierDeltaCustomScavTier1Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Max;
+        TierDeltaCustomScavTier1Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Min;
+        TierDeltaCustomScavTier1Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Max;
     }
-    private void defaultTierDeltaCustomScavTier1()
+    private void DefaultTierDeltaCustomScavTier1()
     {
-        _tierDeltaCustomScavTier1Min = 10;
-        _tierDeltaCustomScavTier1Max = 0;
+        TierDeltaCustomScavTier1Min = 10;
+        TierDeltaCustomScavTier1Max = 0;
     }
 
-    private int _tierDeltaCustomScavTier2Min
+    private int TierDeltaCustomScavTier2Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier2.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Min, nameof(TierDeltaCustomScavTier2Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier2.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier2Max
+    private int TierDeltaCustomScavTier2Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier2.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Max, nameof(TierDeltaCustomScavTier2Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier2.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier2()
+    private void UndoTierDeltaCustomScavTier2()
     {
-        _tierDeltaCustomScavTier2Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Min;
-        _tierDeltaCustomScavTier2Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Max;
+        TierDeltaCustomScavTier2Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Min;
+        TierDeltaCustomScavTier2Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Max;
     }
-    private void defaultTierDeltaCustomScavTier2()
+    private void DefaultTierDeltaCustomScavTier2()
     {
-        _tierDeltaCustomScavTier2Min = 10;
-        _tierDeltaCustomScavTier2Max = -10;
+        TierDeltaCustomScavTier2Min = 10;
+        TierDeltaCustomScavTier2Max = -10;
     }
 
-    private int _tierDeltaCustomScavTier3Min
+    private int TierDeltaCustomScavTier3Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier3.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Min, nameof(TierDeltaCustomScavTier3Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier3.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier3Max
+    private int TierDeltaCustomScavTier3Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier3.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Max, nameof(TierDeltaCustomScavTier3Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier3.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier3()
+    private void UndoTierDeltaCustomScavTier3()
     {
-        _tierDeltaCustomScavTier3Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Min;
-        _tierDeltaCustomScavTier3Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Max;
+        TierDeltaCustomScavTier3Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Min;
+        TierDeltaCustomScavTier3Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Max;
     }
-    private void defaultTierDeltaCustomScavTier3()
+    private void DefaultTierDeltaCustomScavTier3()
     {
-        _tierDeltaCustomScavTier3Min = 15;
-        _tierDeltaCustomScavTier3Max = -10;
+        TierDeltaCustomScavTier3Min = 15;
+        TierDeltaCustomScavTier3Max = -10;
     }
 
-    private int _tierDeltaCustomScavTier4Min
+    private int TierDeltaCustomScavTier4Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier4.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Min, nameof(TierDeltaCustomScavTier4Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier4.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier4Max
+    private int TierDeltaCustomScavTier4Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier4.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Max, nameof(TierDeltaCustomScavTier4Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier4.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier4()
+    private void UndoTierDeltaCustomScavTier4()
     {
-        _tierDeltaCustomScavTier4Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Min;
-        _tierDeltaCustomScavTier4Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Max;
+        TierDeltaCustomScavTier4Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Min;
+        TierDeltaCustomScavTier4Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Max;
     }
-    private void defaultTierDeltaCustomScavTier4()
+    private void DefaultTierDeltaCustomScavTier4()
     {
-        _tierDeltaCustomScavTier4Min = 20;
-        _tierDeltaCustomScavTier4Max = -10;
+        TierDeltaCustomScavTier4Min = 20;
+        TierDeltaCustomScavTier4Max = -10;
     }
 
-    private int _tierDeltaCustomScavTier5Min
+    private int TierDeltaCustomScavTier5Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier5.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Min, nameof(TierDeltaCustomScavTier5Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier5.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier5Max
+    private int TierDeltaCustomScavTier5Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier5.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Max, nameof(TierDeltaCustomScavTier5Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier5.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier5()
+    private void UndoTierDeltaCustomScavTier5()
     {
-        _tierDeltaCustomScavTier5Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Min;
-        _tierDeltaCustomScavTier5Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Max;
+        TierDeltaCustomScavTier5Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Min;
+        TierDeltaCustomScavTier5Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Max;
     }
-    private void defaultTierDeltaCustomScavTier5()
+    private void DefaultTierDeltaCustomScavTier5()
     {
-        _tierDeltaCustomScavTier5Min = 30;
-        _tierDeltaCustomScavTier5Max = -10;
+        TierDeltaCustomScavTier5Min = 30;
+        TierDeltaCustomScavTier5Max = -10;
     }
 
-    private int _tierDeltaCustomScavTier6Min
+    private int TierDeltaCustomScavTier6Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier6.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Min, nameof(TierDeltaCustomScavTier6Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier6.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier6Max
+    private int TierDeltaCustomScavTier6Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier6.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Max, nameof(TierDeltaCustomScavTier6Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier6.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier6()
+    private void UndoTierDeltaCustomScavTier6()
     {
-        _tierDeltaCustomScavTier6Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Min;
-        _tierDeltaCustomScavTier6Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Max;
+        TierDeltaCustomScavTier6Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Min;
+        TierDeltaCustomScavTier6Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Max;
     }
-    private void defaultTierDeltaCustomScavTier6()
+    private void DefaultTierDeltaCustomScavTier6()
     {
-        _tierDeltaCustomScavTier6Min = 40;
-        _tierDeltaCustomScavTier6Max = -10;
+        TierDeltaCustomScavTier6Min = 40;
+        TierDeltaCustomScavTier6Max = -10;
     }
 
-    private int _tierDeltaCustomScavTier7Min
+    private int TierDeltaCustomScavTier7Min
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier7.Min;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Min);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Min, nameof(TierDeltaCustomScavTier7Min));
             ModConfig.Config.CustomScavLevelDeltas.Tier7.Min = value;
         }
     }
-    private int _tierDeltaCustomScavTier7Max
+    private int TierDeltaCustomScavTier7Max
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Tier7.Max;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Max);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Max, nameof(TierDeltaCustomScavTier7Max));
             ModConfig.Config.CustomScavLevelDeltas.Tier7.Max = value;
         }
     }
-    private void undoTierDeltaCustomScavTier7()
+    private void UndoTierDeltaCustomScavTier7()
     {
-        _tierDeltaCustomScavTier7Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Min;
-        _tierDeltaCustomScavTier7Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Max;
+        TierDeltaCustomScavTier7Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Min;
+        TierDeltaCustomScavTier7Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Max;
     }
-    private void defaultTierDeltaCustomScavTier7()
+    private void DefaultTierDeltaCustomScavTier7()
     {
-        _tierDeltaCustomScavTier7Min = 50;
-        _tierDeltaCustomScavTier7Max = -10;
+        TierDeltaCustomScavTier7Min = 50;
+        TierDeltaCustomScavTier7Max = -10;
     }
     #endregion
 

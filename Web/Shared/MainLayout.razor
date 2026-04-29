@@ -26,7 +26,7 @@
 <MudSnackbarProvider />
 <MudDialogProvider />
 
-@if (!_appRequireAuthCode || _isAuthenticated)
+@if (!AppRequireAuthCode || _isAuthenticated)
 {
     <div class="no-highlight">
         <MudLayout>
@@ -51,7 +51,7 @@
             <MudMainContent Class="pt-3">
                 <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true"/>
                 <CascadingValue Value="this">
-                    @if (_appDisableAnimations)
+                    @if (AppDisableAnimations)
                     {
                         <div class="no-animation-content">
                             @Body
@@ -66,11 +66,11 @@
                 </CascadingValue>
             </MudMainContent>
             <MudAppBar Dense Elevation="1" Bottom>
-                <MudCheckBox @bind-Value="_appUndoButtonToggle" Label="Show Undo Button"/>
-                <MudCheckBox @bind-Value="_appDefaultButtonToggle" Label="Show Default Button"/>
-                <MudCheckBox @bind-Value="_appDisableAnimations" Label="Disable Animations"/>
-                <MudCheckBox @bind-Value="_appAllowUpdateChecks" Label="Enable Update Checks"/>
-                <MudCheckBox @bind-Value="_appRequireAuthCode" Label="Enable Authorization Code Access" Disabled="@( !_appRequireAuthCode )"/>
+                <MudCheckBox @bind-Value="AppUndoButtonToggle" Label="Show Undo Button"/>
+                <MudCheckBox @bind-Value="AppDefaultButtonToggle" Label="Show Default Button"/>
+                <MudCheckBox @bind-Value="AppDisableAnimations" Label="Disable Animations"/>
+                <MudCheckBox @bind-Value="AppAllowUpdateChecks" Label="Enable Update Checks"/>
+                <MudCheckBox @bind-Value="AppRequireAuthCode" Label="Enable Authorization Code Access" Disabled="@( !AppRequireAuthCode )"/>
                 <MudSpacer/>
                 @if (pendingChanges.Count > 0)
                 {
@@ -235,48 +235,48 @@ else
     public static HashSet<string> AppearanceRemovedItems = new();
     public static HashSet<string> AppearanceAddedItems = new();
     
-    public static bool _appRequireAuthCode
+    public static bool AppRequireAuthCode
     {
         get => ModConfig.Config.ConfigAppSettings.RequireAuthCode; 
         set {
             ModConfig.Config.ConfigAppSettings.RequireAuthCode = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.RequireAuthCode);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.RequireAuthCode, nameof(AppRequireAuthCode));
         }
     }
     
-    public static bool _appUndoButtonToggle
+    public static bool AppUndoButtonToggle
     {
         get => ModConfig.Config.ConfigAppSettings.ShowUndo; 
         set { 
             ModConfig.Config.ConfigAppSettings.ShowUndo = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowUndo);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowUndo, nameof(AppUndoButtonToggle));
         }
     }
-    public static bool _appDefaultButtonToggle
+    public static bool AppDefaultButtonToggle
     {
         get => ModConfig.Config.ConfigAppSettings.ShowDefault;
         set
         {
             ModConfig.Config.ConfigAppSettings.ShowDefault = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowDefault);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowDefault, nameof(AppDefaultButtonToggle));
         }
     }
-    public static bool _appDisableAnimations
+    public static bool AppDisableAnimations
     {
         get => ModConfig.Config.ConfigAppSettings.DisableAnimations;
         set
         {
             ModConfig.Config.ConfigAppSettings.DisableAnimations = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.DisableAnimations);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.DisableAnimations, nameof(AppDisableAnimations));
         }
     }
-    public static bool _appAllowUpdateChecks
+    public static bool AppAllowUpdateChecks
     {
         get => ModConfig.Config.ConfigAppSettings.AllowUpdateChecks;
         set
         {
             ModConfig.Config.ConfigAppSettings.AllowUpdateChecks = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.AllowUpdateChecks);
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.AllowUpdateChecks, nameof(AppAllowUpdateChecks));
         }
     }
     

@@ -12,11 +12,11 @@
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    @if (HasPendingChanges && MainLayout._appUndoButtonToggle)
+    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)
     {
         <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
     }
-    else if (IsNonDefault && MainLayout._appDefaultButtonToggle)
+    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle)
     {
         <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
     }
