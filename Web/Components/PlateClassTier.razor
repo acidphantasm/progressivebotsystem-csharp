@@ -21,15 +21,16 @@
     [Parameter] public EventCallback<(string position, string classNum, double value)> ValuesChanged { get; set; }
     [Parameter] public EventCallback<string> OnUndo { get; set; }
     [Parameter] public EventCallback<string> OnDefault { get; set; }
-
+    [Parameter] public Dictionary<string, double> Defaults { get; set; } = new();
+    
     private bool HasPendingChanges(string position) => Enumerable.Range(2, 5).Any(c => MainLayout.pendingChanges.Contains($"{ChangeKeyPrefix}_{position}_Class{c}"));
 
-    private bool IsNonDefault(Dictionary<string, double> values) =>
-        values["2"] != 0 || 
-        values["3"] != 10 || 
-        values["4"] != 50 ||
-        values["5"] != 35 || 
-        values["6"] != 5;
+    private bool IsNonDefault(Dictionary<string, double> values)
+    {
+        return values.Any(kvp =>
+            Defaults.TryGetValue(kvp.Key, out var defaults) &&
+            Math.Abs(kvp.Value - defaults) > 0.0001);
+    }
 
     private async Task OnChanged(string position, (string classNum, double value) e)
     {
