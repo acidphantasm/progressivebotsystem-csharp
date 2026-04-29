@@ -95,6 +95,11 @@
         <None Include="$(MSBuildProjectFullPath).user" Condition="Exists('$(MSBuildProjectFullPath).user')" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="DefaultConfigs\blacklists.default.json" />
+      <_ContentIncludedByDefault Remove="DefaultConfigs\config.default.json" />
+    </ItemGroup>
+
     <Target Name="CopyToSPT" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug' AND '$(SPTPath)' != ''">
         <Message Importance="high" Text="Copying mods to $(ModOutputDir)" />
         <ItemGroup>

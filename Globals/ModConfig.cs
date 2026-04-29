@@ -63,15 +63,51 @@ public class ModConfig : IOnLoad
 
     public async Task OnLoad()
     {
-        Config = await _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
+        var configPath = Path.Combine(_modPath, "config.json");
+        var blacklistPath = Path.Combine(_modPath, "blacklists.json");
+        var defaultConfigPath = Path.Combine(_modPath, "Data", "DefaultConfigs", "config.default.json");
+        var defaultBlacklistPath = Path.Combine(_modPath, "Data", "DefaultConfigs", "blacklists.default.json");
+
+        if (!File.Exists(configPath))
+        {
+            File.Copy(defaultConfigPath, configPath);
+        }
+        
+        if (!File.Exists(blacklistPath))
+        {
+            File.Copy(defaultBlacklistPath, blacklistPath);
+        }
+
+        var rawConfig = await _fileUtil.ReadFileAsync(configPath);
+        var rawBlacklist = await _fileUtil.ReadFileAsync(blacklistPath);
+        var rawDefaultConfig = await _fileUtil.ReadFileAsync(defaultConfigPath);
+        var rawDefaultBlacklist = await _fileUtil.ReadFileAsync(defaultBlacklistPath);
+
+        Config = _jsonUtil.Deserialize<ApbsServerConfig>(rawConfig) ?? throw new ArgumentNullException();
+
+        if (ConfigHelper.IsJsonOutdated(rawConfig, rawDefaultConfig, Config))
+        {
+            _apbsLogger.Warning("Config is missing new properties or has incorrect array sizes, updating...");
+            await _fileUtil.WriteFileAsync(configPath, _jsonUtil.Serialize(Config, true)!);
+            _apbsLogger.Success("Config updated and/or repaired.");
+        }
+
         OriginalConfig = DeepClone(Config);
-        
-        Blacklist = await _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(_modPath + "/blacklists.json") ?? throw new ArgumentNullException();
+
+        Blacklist = _jsonUtil.Deserialize<ApbsBlacklistConfig>(rawBlacklist) ?? throw new ArgumentNullException();
+
+        if (ConfigHelper.IsJsonOutdated(rawBlacklist, rawDefaultBlacklist))
+        {
+            _apbsLogger.Warning("Blacklist is missing new properties, updating...");
+            await _fileUtil.WriteFileAsync(blacklistPath, _jsonUtil.Serialize(Blacklist, true)!);
+            _apbsLogger.Success("Blacklist updated with new default values for missing properties.");
+        }
+
         OriginalBlacklist = DeepClone(Blacklist);
-        
-#if DEBUG
+
+    #if DEBUG
         Config.EnableDebugLog = true;
-#endif
+    #endif
         if (Config.EnableDebugLog) _apbsLogger.Debug("ModConfig.OnLoad()");
     }
 
