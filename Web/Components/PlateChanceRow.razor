@@ -1,0 +1,26 @@
+﻿<MudItem xs="2" />
+<MudItem xs="3">
+    <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+        <MudText>@Label</MudText>
+    </MudTooltip>
+</MudItem>
+<MudItem xs="7">
+    <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
+        @for (int i = 0; i < Values.Count; i++)
+        {
+            var index = i;
+            <MudNumericField T="int" Margin="Margin.Dense" HideSpinButtons="true"
+                             Value="@Values[index]" ValueChanged="@(v => { Values[index] = v; ValuesChanged.InvokeAsync((index, v)); })"
+                             Label="Chance" HelperText="@($"Tier {index + 1}")" Variant="Variant.Filled"
+                             Min="0" Max="100" Disabled="@Disabled" />
+        }
+    </MudPaper>
+</MudItem>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public List<int> Values { get; set; } = new();
+    [Parameter] public EventCallback<(int Index, int Value)> ValuesChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+}
