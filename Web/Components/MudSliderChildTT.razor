@@ -1,0 +1,25 @@
+﻿<MudItem xs="2" />
+<MudItem xs="3">
+    <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+        <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <MudText>@Label</MudText>
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="1">
+    <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="@Disabled">@Value</MudButton>
+</MudItem>
+<MudItem xs="5">
+    <MudSlider Value="@Value" ValueChanged="@ValueChanged" ValueLabel="true" Min="@Min" Max="@Max" Color="Color.Info" Size="Size.Medium" Disabled="@Disabled" />
+</MudItem>
+<MudItem xs="1" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public int Min { get; set; } = 1;
+    [Parameter] public int Max { get; set; } = 100;
+    [Parameter] public bool Disabled { get; set; } = false;
+}

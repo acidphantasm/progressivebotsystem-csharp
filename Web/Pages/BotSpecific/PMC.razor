@@ -75,7 +75,7 @@
                             OnUndo="UndoRollAmmunitionEnabled"
                             OnDefault="DefaultRollAmmunitionEnabled" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Roll Again Chance"
                             TooltipText="This is the chance that PMCs will roll for a different round from the same caliber, max one time per each magazine."
                             @bind-Value="PmcWeaponAmmunitionRollChance"
@@ -96,7 +96,7 @@
                             OnUndo="UndoToploadEnabled"
                             OnDefault="DefaultToploadEnabled" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Topload Chance"
                             TooltipText="This is the chance that PMCs will topload their extra magazines."
                             @bind-Value="PmcWeaponToploadChance"
@@ -104,7 +104,7 @@
                             Max="100"
                             Disabled="@(!PmcWeaponToploadEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Topload Percent"
                             TooltipText="This is the percentage of their extra magazine that PMCs will topload."
                             @bind-Value="PmcWeaponToploadPercent"
@@ -166,7 +166,7 @@
                             Validation="ValidateWeaponDelta"
                             Disabled="@(!PmcWeaponDurabilityEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Enhancement Chance"
                             TooltipText="This is the chance that bot weapons have an enhancement applied to them."
                             @bind-Value="PmcWeaponDurabilityEnhancementChance"
@@ -222,7 +222,7 @@
                             OnUndo="UndoPmcQuestLoadouts"
                             OnDefault="DefaultPmcQuestLoadouts" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Quest Chance"
                             TooltipText="Chance of them using quest loadouts."
                             @bind-Value="PmcQuestLoadoutChance"
@@ -243,7 +243,7 @@
                             OnUndo="UndoPmcPoverty"
                             OnDefault="DefaultPmcPoverty" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Poverty Chance"
                             TooltipText="Chance of PMC being poor for their level, this is not rolled if they are assigned a quest."
                             @bind-Value="PmcPovertyChance"
@@ -264,7 +264,7 @@
                             OnUndo="UndoPmcAmmoTierSliding"
                             OnDefault="DefaultPmcAmmoTierSliding" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Slide Amount"
                             TooltipText="How many tiers they can slide downward."
                             @bind-Value="PmcAmmoTierSlideAmount"
@@ -272,7 +272,7 @@
                             Max="7"
                             Disabled="@(!PmcAmmoTierSlideEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Slide Chance"
                             TooltipText="Chance they slide down tiers."
                             @bind-Value="PmcAmmoTierSlideChance"
@@ -280,7 +280,7 @@
                             Max="100"
                             Disabled="@(!PmcAmmoTierSlideEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="TUE/EOD Specific Dogtag Chance"
                             TooltipText="If the bot is Unheard or EOD, how often they should have that dogtag."
                             @bind-Value="PmcVersionDogtagChance"
@@ -306,7 +306,7 @@
                             OnUndo="UndoPmcVersionWeighting"
                             OnDefault="DefaultPmcVersionWeighting" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Standard"
                             TooltipText="Higher number is more common. Lower number is more rare. Compare this to the weights of other game versions."
                             @bind-Value="PmcStandardVersionWeight"
@@ -314,7 +314,7 @@
                             Max="100"
                             Disabled="@(!PmcVersionWeightingEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Left Behind"
                             TooltipText="Higher number is more common. Lower number is more rare. Compare this to the weights of other game versions."
                             @bind-Value="PmcLeftBehindVersionWeight"
@@ -322,7 +322,7 @@
                             Max="100"
                             Disabled="@(!PmcVersionWeightingEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Prepare for Escape"
                             TooltipText="Higher number is more common. Lower number is more rare. Compare this to the weights of other game versions."
                             @bind-Value="PmcPrepareForEscapeVersionWeight"
@@ -330,7 +330,7 @@
                             Max="100"
                             Disabled="@(!PmcVersionWeightingEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Edge of Darkness"
                             TooltipText="Higher number is more common. Lower number is more rare. Compare this to the weights of other game versions."
                             @bind-Value="PmcEdgeOfDarknessVersionWeight"
@@ -338,7 +338,7 @@
                             Max="100"
                             Disabled="@(!PmcVersionWeightingEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Unheard Edition"
                             TooltipText="Higher number is more common. Lower number is more rare. Compare this to the weights of other game versions."
                             @bind-Value="PmcUnheardVersionWeight"

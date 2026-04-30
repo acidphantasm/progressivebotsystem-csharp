@@ -55,7 +55,7 @@
                             OnUndo="UndoRollAmmunitionEnabled"
                             OnDefault="DefaultRollAmmunitionEnabled" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Roll Again Chance"
                             TooltipText="This is the chance that Scavs will roll for a different round from the same caliber, max one time per each magazine."
                             @bind-Value="ScavWeaponAmmunitionRollChance"
@@ -76,7 +76,7 @@
                             OnUndo="UndoToploadEnabled"
                             OnDefault="DefaultToploadEnabled" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Topload Chance"
                             TooltipText="This is the chance that Scavs will topload their extra magazines."
                             @bind-Value="ScavWeaponToploadChance"
@@ -84,7 +84,7 @@
                             Max="100"
                             Disabled="@(!ScavWeaponToploadEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Topload Percent"
                             TooltipText="This is the percentage of their extra magazine that Scavs will topload."
                             @bind-Value="ScavWeaponToploadPercent"
@@ -146,7 +146,7 @@
                             Validation="ValidateWeaponDelta"
                             Disabled="@(!ScavWeaponDurabilityEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Enhancement Chance"
                             TooltipText="This is the chance that bot weapons have an enhancement applied to them."
                             @bind-Value="ScavWeaponDurabilityEnhancementChance"

@@ -55,7 +55,7 @@
                             OnUndo="UndoRollAmmunitionEnabled"
                             OnDefault="DefaultRollAmmunitionEnabled" />
                         
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Roll Again Chance"
                             TooltipText="This is the chance that Bosses will roll for a different round from the same caliber, max one time per each magazine."
                             @bind-Value="BossWeaponAmmunitionRollChance"
@@ -76,7 +76,7 @@
                             OnUndo="UndoToploadEnabled"
                             OnDefault="DefaultToploadEnabled" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Top load Chance"
                             TooltipText="This is the chance that Bosses will top load their extra magazines."
                             @bind-Value="BossWeaponToploadChance"
@@ -84,7 +84,7 @@
                             Max="100"
                             Disabled="@(!BossWeaponToploadEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Top load Percent"
                             TooltipText="This is the percentage of their extra magazines that Bosses will top load."
                             @bind-Value="BossWeaponToploadPercent"
@@ -146,7 +146,7 @@
                             Validation="ValidateWeaponDelta"
                             Disabled="@(!BossWeaponDurabilityEnabled)" />
 
-                        <MudSliderTT
+                        <MudSliderChildTT
                             Label="Enhancement Chance"
                             TooltipText="This is the chance that bot weapons have an enhancement applied to them."
                             @bind-Value="BossWeaponDurabilityEnhancementChance"
