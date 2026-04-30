@@ -202,7 +202,7 @@ else
     public bool _isInRaid = false;
     
     static bool _unsavedChanges = false;
-    public static List<string> pendingChanges = new();
+    public static HashSet<string> pendingChanges = new();
     private static bool _isSaving = false;
     private static bool _isReloading = false;
     public static bool AlreadyCheckedForUpdate = false;
@@ -527,7 +527,7 @@ else
 
             var parameters = new DialogParameters<RefreshWarningDialog>
             {
-                { x => x.ChangeList, pendingChanges },
+                { x => x.ChangeHashSet, pendingChanges },
                 { x => x.ButtonText, "Reload Anyway" },
                 { x => x.Color, Color.Secondary }
             };
@@ -593,7 +593,7 @@ else
         };
         var parameters = new DialogParameters<RefreshWarningDialog>
             {
-                { x => x.ChangeList, pendingChanges },
+                { x => x.ChangeHashSet, pendingChanges },
                 { x => x.ButtonText, "OK" },
                 { x => x.showCancel, false },
                 { x => x.Color, Color.Default }
