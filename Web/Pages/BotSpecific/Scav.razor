@@ -143,7 +143,6 @@
                             @bind-MaxDelta="ScavWeaponDurabilityMaxDelta"
                             MinLimitPercent="ScavWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="ScavWeaponDurabilityMaxLimitPercent"
-                            Validation="ValidateWeaponDelta"
                             Disabled="@(!ScavWeaponDurabilityEnabled)" />
 
                         <MudSliderChildTT
@@ -179,7 +178,6 @@
                             @bind-MaxDelta="ScavArmourDurabilityMaxDelta"
                             MinLimitPercent="ScavArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="ScavArmourDurabilityMaxLimitPercent"
-                            Validation="ValidateArmourDelta"
                             Disabled="@(!ScavArmourDurabilityEnabled)" />
 
                         <MudSwitchTT
@@ -741,10 +739,6 @@
     }
     private void UndoScavSecretJackpotRoubles() => ScavSecretJackpotRoublesEnabled = ModConfig.OriginalConfig.ScavBots.Secrets.JackpotScavRoubleStack;
     private void DefaultScavSecretJackpotRoubles() => ScavSecretJackpotRoublesEnabled = true;
-    #endregion
-    #region INPUT HANDLING
-    public bool ValidateWeaponDelta(int value) => ScavWeaponDurabilityMinLimitPercent < ScavWeaponDurabilityMaxLimitPercent;
-    public bool ValidateArmourDelta(int value) => ScavArmourDurabilityMinLimitPercent < ScavArmourDurabilityMaxLimitPercent;
     #endregion
     #region CASCADING PARAMETERS
     [CascadingParameter] public MainLayout? Layout { get; set; }

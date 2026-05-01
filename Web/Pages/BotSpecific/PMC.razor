@@ -163,7 +163,6 @@
                             @bind-MaxDelta="PmcWeaponDurabilityMaxDelta"
                             MinLimitPercent="PmcWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="PmcWeaponDurabilityMaxLimitPercent"
-                            Validation="ValidateWeaponDelta"
                             Disabled="@(!PmcWeaponDurabilityEnabled)" />
 
                         <MudSliderChildTT
@@ -199,7 +198,6 @@
                             @bind-MaxDelta="PmcArmourDurabilityMaxDelta"
                             MinLimitPercent="PmcArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="PmcArmourDurabilityMaxLimitPercent"
-                            Validation="ValidateArmourDelta"
                             Disabled="@(!PmcArmourDurabilityEnabled)" />
 
                         <MudSwitchTT
@@ -1173,10 +1171,6 @@
     #endregion
     #region INPUT HANDLING
     private bool HandleKeyDown(KeyboardEventArgs e) => e.Key == "Enter" && !e.ShiftKey;
-
-    public bool ValidateWeaponDelta(int value) => PmcWeaponDurabilityMinLimitPercent < PmcWeaponDurabilityMaxLimitPercent;
-
-    public bool ValidateArmourDelta(int value) => PmcArmourDurabilityMinLimitPercent < PmcArmourDurabilityMaxLimitPercent;
     #endregion
     #region CASCADING PARAMETERS
     [CascadingParameter] public MainLayout? Layout { get; set; }

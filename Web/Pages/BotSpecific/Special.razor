@@ -143,7 +143,6 @@
                             @bind-MaxDelta="SpecialWeaponDurabilityMaxDelta"
                             MinLimitPercent="SpecialWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="SpecialWeaponDurabilityMaxLimitPercent"
-                            Validation="ValidateWeaponDelta"
                             Disabled="@(!SpecialWeaponDurabilityEnabled)" />
 
                         <MudSliderChildTT
@@ -179,7 +178,6 @@
                             @bind-MaxDelta="SpecialArmourDurabilityMaxDelta"
                             MinLimitPercent="SpecialArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="SpecialArmourDurabilityMaxLimitPercent"
-                            Validation="ValidateArmourDelta"
                             Disabled="@(!SpecialArmourDurabilityEnabled)" />
 
                     </MudGrid>
@@ -523,10 +521,6 @@
         SpecialArmourDurabilityMinDelta = 0;
         SpecialArmourDurabilityMaxDelta = 10;
     }
-    #endregion
-    #region INPUT HANDLING
-    public bool ValidateWeaponDelta(int value) => SpecialWeaponDurabilityMinLimitPercent < SpecialWeaponDurabilityMaxLimitPercent;
-    public bool ValidateArmourDelta(int value)        => SpecialArmourDurabilityMinLimitPercent < SpecialArmourDurabilityMaxLimitPercent;
     #endregion
     #region CASCADING PARAMETERS
     [CascadingParameter] public MainLayout? Layout { get; set; }

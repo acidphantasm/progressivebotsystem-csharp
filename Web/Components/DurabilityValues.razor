@@ -7,28 +7,32 @@
 <MudItem xs="2">
     <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
         <MudTooltip Text="@($"Lowest a {Label}'s 'non-repairable' durability can be.")" Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
-            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@Min" ValueChanged="@MinChanged"
-                Label="Min" HelperText="Durability" Variant="Variant.Filled"
-                Min="0" Max="@Max" Validation="@Validation" Disabled="@Disabled" />
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@Min"
+                             ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMinChanged))"
+                             Label="Min" HelperText="Durability" Variant="Variant.Filled"
+                             Min="0" Max="@(Max - MinDelta + MaxDelta - 1)" Disabled="@Disabled" />
         </MudTooltip>
         <MudTooltip Text="@($"Highest a {Label}'s 'non-repairable' durability can be.")" Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
-            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@Max" ValueChanged="@MaxChanged"
-                Label="Max" HelperText="Durability" Variant="Variant.Filled"
-                Min="@Min" Max="100" Validation="@Validation" Disabled="@Disabled" />
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@Max"
+                             ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMaxChanged))"
+                             Label="Max" HelperText="Durability" Variant="Variant.Filled"
+                             Min="@(Min - MaxDelta + MinDelta + 1)" Max="100" Disabled="@Disabled" />
         </MudTooltip>
     </MudPaper>
 </MudItem>
 <MudItem xs="2">
     <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
         <MudTooltip Text="Lowest possible difference from the rolled 'non-repairable' durability to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
-            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MinDelta" ValueChanged="@MinDeltaChanged"
-                Label="Min" HelperText="Delta" Variant="Variant.Filled"
-                Min="0" Max="100" Validation="@Validation" Disabled="@Disabled" />
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MinDelta"
+                             ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMinDeltaChanged))"
+                             Label="Min" HelperText="Delta" Variant="Variant.Filled"
+                             Min="0" Max="@(Max - Min + MaxDelta - 1)" Disabled="@Disabled" />
         </MudTooltip>
         <MudTooltip Text="Highest possible difference from the rolled 'non-repairable' durability to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
-            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MaxDelta" ValueChanged="@MaxDeltaChanged"
-                Label="Max" HelperText="Delta" Variant="Variant.Filled"
-                Min="0" Max="100" Validation="@Validation" Disabled="@Disabled" />
+            <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MaxDelta"
+                             ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMaxDeltaChanged))"
+                             Label="Max" HelperText="Delta" Variant="Variant.Filled"
+                             Min="@(Math.Max(0, Min - Max + MinDelta + 1))" Max="@Min" Disabled="@Disabled" />
         </MudTooltip>
     </MudPaper>
 </MudItem>
@@ -58,6 +62,34 @@
     [Parameter] public EventCallback<int> MaxDeltaChanged { get; set; }
     [Parameter] public int MinLimitPercent { get; set; }
     [Parameter] public int MaxLimitPercent { get; set; }
-    [Parameter] public Func<int, bool> Validation { get; set; } = _ => true;
-    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; }
+
+    private async Task OnMinChanged(int value)
+    {
+        var maxAllowed = Max - MinDelta + MaxDelta - 1;
+        value = Math.Min(value, maxAllowed);
+        await MinChanged.InvokeAsync(value);
+    }
+
+    private async Task OnMaxChanged(int value)
+    {
+        var minAllowed = Min - MaxDelta + MinDelta + 1;
+        value = Math.Max(value, minAllowed);
+        await MaxChanged.InvokeAsync(value);
+    }
+
+    private async Task OnMinDeltaChanged(int value)
+    {
+        var maxAllowed = Max - Min + MaxDelta - 1;
+        value = Math.Min(value, maxAllowed);
+        await MinDeltaChanged.InvokeAsync(value);
+    }
+
+    private async Task OnMaxDeltaChanged(int value)
+    {
+        var floor = Min - Max + MinDelta + 1;
+        var ceiling = Min;
+        value = Math.Clamp(value, Math.Max(0, floor), ceiling);
+        await MaxDeltaChanged.InvokeAsync(value);
+    }
 }

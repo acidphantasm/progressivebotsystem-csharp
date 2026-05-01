@@ -143,7 +143,6 @@
                             @bind-MaxDelta="BossWeaponDurabilityMaxDelta"
                             MinLimitPercent="BossWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="BossWeaponDurabilityMaxLimitPercent"
-                            Validation="ValidateWeaponDelta"
                             Disabled="@(!BossWeaponDurabilityEnabled)" />
 
                         <MudSliderChildTT
@@ -179,7 +178,6 @@
                             @bind-MaxDelta="BossArmourDurabilityMaxDelta"
                             MinLimitPercent="BossArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="BossArmourDurabilityMaxLimitPercent"
-                            Validation="ValidateArmourDelta"
                             Disabled="@(!BossArmourDurabilityEnabled)" />
 
                     </MudGrid>
@@ -590,18 +588,6 @@
             Utils.UpdateView(value, value, $"{keyPrefix}_{position}_Class{classNum}");
         }
         MainLayout.TriggerUIRefresh();
-    }
-    #endregion
-
-    #region INPUT HANDLING
-    public bool ValidateWeaponDelta(int value)
-    {
-        return BossWeaponDurabilityMinLimitPercent < BossWeaponDurabilityMaxLimitPercent;
-    }
-
-    public bool ValidateArmourDelta(int value)
-    {
-        return BossArmourDurabilityMinLimitPercent < BossArmourDurabilityMaxLimitPercent;
     }
     #endregion
 

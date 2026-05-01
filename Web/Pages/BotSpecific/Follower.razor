@@ -143,7 +143,6 @@
                             @bind-MaxDelta="FollowerWeaponDurabilityMaxDelta"
                             MinLimitPercent="FollowerWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="FollowerWeaponDurabilityMaxLimitPercent"
-                            Validation="ValidateWeaponDelta"
                             Disabled="@(!FollowerWeaponDurabilityEnabled)" />
 
                         <MudSliderChildTT
@@ -179,7 +178,6 @@
                             @bind-MaxDelta="FollowerArmourDurabilityMaxDelta"
                             MinLimitPercent="FollowerArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="FollowerArmourDurabilityMaxLimitPercent"
-                            Validation="ValidateArmourDelta"
                             Disabled="@(!FollowerArmourDurabilityEnabled)" />
 
                     </MudGrid>
@@ -519,14 +517,6 @@
         FollowerArmourDurabilityMinDelta = 0;
         FollowerArmourDurabilityMaxDelta = 15;
     }
-    #endregion
-
-    #region INPUT HANDLING
-    public bool ValidateWeaponDelta(int value)
-        => FollowerWeaponDurabilityMinLimitPercent < FollowerWeaponDurabilityMaxLimitPercent;
-
-    public bool ValidateArmourDelta(int value)
-        => FollowerArmourDurabilityMinLimitPercent < FollowerArmourDurabilityMaxLimitPercent;
     #endregion
 
     #region CASCADING PARAMETERS
