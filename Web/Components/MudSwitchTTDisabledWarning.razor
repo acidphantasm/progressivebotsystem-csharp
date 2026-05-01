@@ -1,0 +1,54 @@
+﻿<MudItem xs="1">
+    <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+        <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <ChildContent>
+                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+            </ChildContent>
+            <TooltipContent>
+                <MudText Typo="Typo.caption">@WarningTooltip1</MudText>
+                <MudSpacer />
+                @if (!string.IsNullOrEmpty(WarningTooltip2))
+                {
+                    <MudSpacer />
+                    <MudText Typo="Typo.caption">@WarningTooltip2</MudText>
+                }
+            </TooltipContent>
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="4">
+    <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+        <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+            <MudText>@Label</MudText>
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="6">
+    <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+        <MudSwitch T="bool" Value="@Value" ValueChanged="@ValueChanged" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="@Disabled">@Value</MudSwitch>
+    </MudPaper>
+</MudItem>
+<MudItem xs="1">
+    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)
+    {
+        <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+    }
+    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle)
+    {
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    }
+</MudItem>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public string WarningTooltip1 { get; set; } = "";
+    [Parameter] public string WarningTooltip2 { get; set; } = "";
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool HasPendingChanges { get; set; }
+    [Parameter] public bool IsNonDefault { get; set; }
+    [Parameter] public EventCallback OnUndo { get; set; }
+    [Parameter] public EventCallback OnDefault { get; set; }
+}
