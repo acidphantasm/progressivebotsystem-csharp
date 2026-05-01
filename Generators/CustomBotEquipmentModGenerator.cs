@@ -46,6 +46,11 @@ public class CustomBotEquipmentModGenerator(
     ApbsLogger apbsLogger
 )
 {
+    private readonly IEnumerable<string> Bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> Specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
     
     // FrontSight/Rear Sight
     private static readonly FrozenSet<string> ModSightIds = ["mod_sight_front", "mod_sight_rear"];
@@ -105,11 +110,18 @@ public class CustomBotEquipmentModGenerator(
         }
 
         // Ensure the front_plate is before the back_plate
-        var orderedCompatibleModsPool = (compatibleModsPool ?? [])
-            .OrderBy(pair =>
+        var orderedCompatibleModsPool = (compatibleModsPool ?? []).OrderBy(pair =>
             {
-                if (pair.Key.Equals("front_plate", StringComparison.OrdinalIgnoreCase)) return 0;
-                if (pair.Key.Equals("back_plate", StringComparison.OrdinalIgnoreCase)) return 1;
+                if (pair.Key.Equals("front_plate", StringComparison.OrdinalIgnoreCase))
+                {
+                    return 0;
+                }
+
+                if (pair.Key.Equals("back_plate", StringComparison.OrdinalIgnoreCase))
+                {
+                    return 1;
+                }
+
                 return 2;
             })
             .ToList();
@@ -119,8 +131,10 @@ public class CustomBotEquipmentModGenerator(
         // Iterate over mod pool and choose mods to add to item
         foreach (var (modSlotName, modPool) in orderedCompatibleModsPool)
         {
-            if (modSlotName.Equals("back_plate", StringComparison.OrdinalIgnoreCase) && settings.BotData.EquipmentRole.Equals("pmc", StringComparison.OrdinalIgnoreCase) && !frontPlateSpawned)
+            if (modSlotName.Equals("back_plate", StringComparison.OrdinalIgnoreCase) && !frontPlateSpawned && ShouldSkipBackPlate(settings.BotData.Role))
+            {
                 continue;
+            }
             
             // Get the templates slot object from db
             var itemSlotTemplate = GetModItemSlotFromDbTemplate(modSlotName, parentTemplate);
@@ -179,15 +193,14 @@ public class CustomBotEquipmentModGenerator(
             // Slot can hold armor plates + we are filtering possible items by bot level, handle
             if (settings.BotEquipmentConfig.FilterPlatesByLevel.GetValueOrDefault(false) && itemHelper.IsRemovablePlateSlot(modSlotName.ToLowerInvariant()))
             {
-                int? frontArmorLevel = null;
-                if (modSlotName.Equals("back_plate", StringComparison.OrdinalIgnoreCase))
+                int? frontPlateArmorClass = null;
+                if (modSlotName.Equals("back_plate", StringComparison.OrdinalIgnoreCase) && ShouldCapPlateClass(settings.BotData.Role))
                 {
                     var frontPlate = equipment.FirstOrDefault(item => item.SlotId.Equals("front_plate", StringComparison.OrdinalIgnoreCase));
 
                     if (frontPlate != null)
                     {
-                        var frontPlateTemplate = itemHelper.GetItem(frontPlate.Template).Value;
-                        frontArmorLevel = frontPlateTemplate?.Properties?.ArmorClass;
+                        frontPlateArmorClass = itemHelper.GetItem(frontPlate.Template).Value?.Properties?.ArmorClass;
                     }
                 }
 
@@ -197,7 +210,7 @@ public class CustomBotEquipmentModGenerator(
                     modSlotName.ToLowerInvariant(),
                     compatibleModsPool.GetValueOrDefault(modSlotName),
                     parentTemplate,
-                    frontArmorLevel
+                    frontPlateArmorClass
                 );
                 switch (plateSlotFilteringOutcome.Result)
                 {
@@ -216,11 +229,6 @@ public class CustomBotEquipmentModGenerator(
                             $"Plate slot: {modSlotName} lacks weights for armor: {parentTemplate.Id}, unable to adjust plate choice, using existing data"
                         );
                         break;
-                }
-                
-                if (modSlotName.Equals("front_plate", StringComparison.OrdinalIgnoreCase))
-                {
-                    frontPlateSpawned = true;
                 }
 
                 // Replace mod pool with pool of chosen plate items
@@ -269,7 +277,12 @@ public class CustomBotEquipmentModGenerator(
             // Generate new id to ensure all items are unique on bot
             var modId = new MongoId();
             equipment.Add(CreateModItem(modId, modTpl.Value, parentId, modSlotName, modTemplate.Value, settings.BotData.Role));
-
+            
+            if (modSlotName.Equals("front_plate", StringComparison.OrdinalIgnoreCase))
+            {
+                frontPlateSpawned = true;
+            }
+            
             // Does item being added exist in mod pool - has its own mod pool
             if (settings.ModPool.ContainsKey(modTpl.Value))
             // Call self again with mod being added as item to add child mods to
@@ -279,6 +292,34 @@ public class CustomBotEquipmentModGenerator(
         }
         
         return equipment;
+    }
+
+    private bool ShouldSkipBackPlate(string? role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+            return false;
+
+        var botRole = role.ToLowerInvariant();
+
+        return (Pmcs.Contains(botRole) && ModConfig.Config.PmcBots.SkipBackPlateIfMissingFrontPlate) || 
+               (Scavs.Contains(botRole) && ModConfig.Config.ScavBots.SkipBackPlateIfMissingFrontPlate) || 
+               (Bosses.Contains(botRole) && ModConfig.Config.BossBots.SkipBackPlateIfMissingFrontPlate) || 
+               (Followers.Contains(botRole) && ModConfig.Config.FollowerBots.SkipBackPlateIfMissingFrontPlate) || 
+               (Specials.Contains(botRole) && ModConfig.Config.SpecialBots.SkipBackPlateIfMissingFrontPlate);
+    }
+
+    private bool ShouldCapPlateClass(string? role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+            return false;
+
+        var botRole = role.ToLowerInvariant();
+
+        return (Pmcs.Contains(botRole) && ModConfig.Config.PmcBots.LimitPlateClassToFrontPlateClass) || 
+               (Scavs.Contains(botRole) && ModConfig.Config.ScavBots.LimitPlateClassToFrontPlateClass) || 
+               (Bosses.Contains(botRole) && ModConfig.Config.BossBots.LimitPlateClassToFrontPlateClass) || 
+               (Followers.Contains(botRole) && ModConfig.Config.FollowerBots.LimitPlateClassToFrontPlateClass) || 
+               (Specials.Contains(botRole) && ModConfig.Config.SpecialBots.LimitPlateClassToFrontPlateClass);
     }
 
     /// <summary>

@@ -77,7 +77,7 @@
                             OnDefault="DefaultToploadEnabled" />
 
                         <MudSliderChildTT
-                            Label="Top load Chance"
+                            Label="Topload Chance"
                             TooltipText="This is the chance that Bosses will top load their extra magazines."
                             @bind-Value="BossWeaponToploadChance"
                             Min="1"
@@ -85,12 +85,30 @@
                             Disabled="@(!BossWeaponToploadEnabled)" />
 
                         <MudSliderChildTT
-                            Label="Top load Percent"
+                            Label="Topload Percent"
                             TooltipText="This is the percentage of their extra magazines that Bosses will top load."
                             @bind-Value="BossWeaponToploadPercent"
                             Min="10"
                             Max="50"
                             Disabled="@(!BossWeaponToploadEnabled)" />
+
+                        <MudSwitchTT
+                            Label="Skip Backplate When Missing Front Plate"
+                            TooltipText="Will skip backplates when the front plate is missing, if they had one it would be in the front right?"
+                            @bind-Value="SkipBackPlateIfMissingFrontPlate"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
+                            IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
+                            OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
+                            OnDefault="DefaultSkipBackPlateIfMissingFrontPlate" />
+
+                        <MudSwitchTT
+                            Label="Limit Plate Class to Front Plate"
+                            TooltipText="Tries to limit the plate class of all plates to the class of the front plate, if possible."
+                            @bind-Value="LimitPlateClassToFrontPlateClass"
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
+                            IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
+                            OnUndo="UndoLimitPlateClassToFrontPlateClass"
+                            OnDefault="DefaultLimitPlateClassToFrontPlateClass" />
 
                         <MudSwitchTT
                             Label="Resource Randomization"
@@ -343,6 +361,30 @@
         BossWeaponToploadChance = 30;
         BossWeaponToploadPercent = 30;
     }
+    #endregion
+    #region PLATE CLASS SELECTION LIMITER
+    private bool SkipBackPlateIfMissingFrontPlate
+    {
+        get => ModConfig.Config.BossBots.SkipBackPlateIfMissingFrontPlate;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.SkipBackPlateIfMissingFrontPlate, nameof(SkipBackPlateIfMissingFrontPlate));
+            ModConfig.Config.BossBots.SkipBackPlateIfMissingFrontPlate = value;
+        }
+    }
+    private void UndoSkipBackPlateIfMissingFrontPlate() => SkipBackPlateIfMissingFrontPlate = ModConfig.OriginalConfig.BossBots.SkipBackPlateIfMissingFrontPlate;
+    private void DefaultSkipBackPlateIfMissingFrontPlate() => SkipBackPlateIfMissingFrontPlate = false;
+    private bool LimitPlateClassToFrontPlateClass
+    {
+        get => ModConfig.Config.BossBots.LimitPlateClassToFrontPlateClass;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossBots.LimitPlateClassToFrontPlateClass, nameof(LimitPlateClassToFrontPlateClass));
+            ModConfig.Config.BossBots.LimitPlateClassToFrontPlateClass = value;
+        }
+    }
+    private void UndoLimitPlateClassToFrontPlateClass() => LimitPlateClassToFrontPlateClass = ModConfig.OriginalConfig.BossBots.LimitPlateClassToFrontPlateClass;
+    private void DefaultLimitPlateClassToFrontPlateClass() => LimitPlateClassToFrontPlateClass = false;
     #endregion
     #region RESOURCE RANDOMIZATION
     private bool BossResourceRandomizationEnabled

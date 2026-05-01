@@ -904,6 +904,8 @@
       "chance": 30,
       "percent": 30
     },
+    "skipBackPlateIfMissingFrontPlate": true,
+    "limitPlateClassToFrontPlateClass": true,
     "questConfig": {
       "enable": true,
       "chance": 5
@@ -995,6 +997,8 @@
       "chance": 30,
       "percent": 30
     },
+    "skipBackPlateIfMissingFrontPlate": false,
+    "limitPlateClassToFrontPlateClass": false,
     "keyConfig": {
       "addAllKeysToScavs": false,
       "addOnlyMechanicalKeysToScavs": false,
@@ -1047,7 +1051,9 @@
       "enable": false,
       "chance": 30,
       "percent": 30
-    }
+    },
+    "skipBackPlateIfMissingFrontPlate": false,
+    "limitPlateClassToFrontPlateClass": false
   },
   "followerBots": {
     "enable": true,
@@ -1087,7 +1093,9 @@
       "enable": false,
       "chance": 30,
       "percent": 30
-    }
+    },
+    "skipBackPlateIfMissingFrontPlate": false,
+    "limitPlateClassToFrontPlateClass": false
   },
   "specialBots": {
     "enable": true,
@@ -1127,7 +1135,9 @@
       "enable": false,
       "chance": 30,
       "percent": 30
-    }
+    },
+    "skipBackPlateIfMissingFrontPlate": false,
+    "limitPlateClassToFrontPlateClass": false
   },
   "customLevelDeltas": {
     "enable": false,

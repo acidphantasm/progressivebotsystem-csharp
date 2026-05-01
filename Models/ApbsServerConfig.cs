@@ -100,6 +100,12 @@ public class GeneralBotData
 
     [JsonPropertyName("toploadConfig")]
     public ToploadConfig ToploadConfig { get; set; } = new();
+    
+    [JsonPropertyName("skipBackPlateIfMissingFrontPlate")]
+    public bool SkipBackPlateIfMissingFrontPlate { get; set; } = false;
+    
+    [JsonPropertyName("limitPlateClassToFrontPlateClass")]
+    public bool LimitPlateClassToFrontPlateClass { get; set; } = false;
 }
 
 public class PmcBotData
@@ -161,7 +167,13 @@ public class PmcBotData
         Chance = 30,
         Percent = 30
     };
-
+    
+    [JsonPropertyName("skipBackPlateIfMissingFrontPlate")]
+    public bool SkipBackPlateIfMissingFrontPlate { get; set; } = true;
+    
+    [JsonPropertyName("limitPlateClassToFrontPlateClass")]
+    public bool LimitPlateClassToFrontPlateClass { get; set; } = true;
+    
     [JsonPropertyName("questConfig")]
     public EnableChance QuestConfig { get; set; } = new()
     {
@@ -242,7 +254,13 @@ public class ScavBotData
         Chance = 30,
         Percent = 30
     };
-
+    
+    [JsonPropertyName("skipBackPlateIfMissingFrontPlate")]
+    public bool SkipBackPlateIfMissingFrontPlate { get; set; } = false;
+    
+    [JsonPropertyName("limitPlateClassToFrontPlateClass")]
+    public bool LimitPlateClassToFrontPlateClass { get; set; } = false;
+    
     [JsonPropertyName("keyConfig")]
     public KeyConfig KeyConfig { get; set; } = new();
 
@@ -657,11 +675,8 @@ public class PlateClasses
             ["right_side_plate"] = weights,
         };
 
-    private static Dictionary<string, Dictionary<string, double>> DefaultScavTier()
-        => DefaultPmcTier(new() { ["2"] = 0, ["3"] = 85, ["4"] = 9, ["5"] = 5, ["6"] = 1 });
-
-    private static Dictionary<string, Dictionary<string, double>> DefaultBossTier()
-        => DefaultPmcTier(new() { ["2"] = 0, ["3"] = 10, ["4"] = 50, ["5"] = 35, ["6"] = 5 });
+    private static Dictionary<string, Dictionary<string, double>> DefaultScavTier() => DefaultPmcTier(new() { ["2"] = 0, ["3"] = 85, ["4"] = 9, ["5"] = 5, ["6"] = 1 });
+    private static Dictionary<string, Dictionary<string, double>> DefaultBossTier() => DefaultPmcTier(new() { ["2"] = 0, ["3"] = 10, ["4"] = 50, ["5"] = 35, ["6"] = 5 });
 }
 
 public class PlateClassList
