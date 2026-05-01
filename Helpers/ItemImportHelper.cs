@@ -1071,19 +1071,19 @@ public class ItemImportHelper(
         var armorClass = templateItem.Properties?.ArmorClass ?? 0;
         return slot switch
         {
-            ApbsEquipmentSlots.ArmBand => 4,
-            ApbsEquipmentSlots.ArmorVest => 10,
-            ApbsEquipmentSlots.ArmouredRig => 7,
-            ApbsEquipmentSlots.Backpack => 5,
-            ApbsEquipmentSlots.Eyewear => 1,
-            ApbsEquipmentSlots.Earpiece => 5,
-            ApbsEquipmentSlots.FaceCover when armorClass > 2 => 1,
-            ApbsEquipmentSlots.FaceCover when armorClass > 0 => 2,
-            ApbsEquipmentSlots.FaceCover => 4,
-            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => 6,
-            ApbsEquipmentSlots.Headwear => 1,
-            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => 10,
-            ApbsEquipmentSlots.TacticalVest => 1,
+            ApbsEquipmentSlots.ArmBand => ModConfig.Config.CompatibilityConfig.ArmBandWeight,
+            ApbsEquipmentSlots.ArmorVest => ModConfig.Config.CompatibilityConfig.ArmourVestWeight,
+            ApbsEquipmentSlots.ArmouredRig => ModConfig.Config.CompatibilityConfig.ArmouredRigWeight,
+            ApbsEquipmentSlots.Backpack => ModConfig.Config.CompatibilityConfig.BackpackWeight,
+            ApbsEquipmentSlots.Eyewear => ModConfig.Config.CompatibilityConfig.EyewearWeight,
+            ApbsEquipmentSlots.Earpiece => ModConfig.Config.CompatibilityConfig.EarpieceWeight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight,
+            ApbsEquipmentSlots.FaceCover => ModConfig.Config.CompatibilityConfig.FaceCoverWeight,
+            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight,
+            ApbsEquipmentSlots.Headwear => ModConfig.Config.CompatibilityConfig.HeadwearWeight,
+            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight,
+            ApbsEquipmentSlots.TacticalVest => ModConfig.Config.CompatibilityConfig.TacticalVestWeight,
             _ => 15
         };
     }

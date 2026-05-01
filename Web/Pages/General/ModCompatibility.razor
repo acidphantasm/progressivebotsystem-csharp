@@ -62,6 +62,162 @@
                         OnUndo="UndoCustomEquipment"
                         OnDefault="DefaultCustomEquipment" />
 
+                    <MudSliderChildUndoDefaultTT
+                        Label="Armband Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="ArmBandWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)" 
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ArmBandWeight"))"
+                        IsNonDefault="@(ArmBandWeight != 4)"
+                        OnUndo="UndoArmBandWeight"
+                        OnDefault="DefaultArmBandWeight" />
+                    
+                    <MudSliderChildUndoDefaultTT
+                        Label="Armour Vest Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="ArmourVestWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ArmorVestWeight"))"
+                        IsNonDefault="@(ArmourVestWeight != 10)"
+                        OnUndo="UndoArmourVestWeight"
+                        OnDefault="DefaultArmourVestWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Armoured Rig Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="ArmouredRigWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ArmouredRigWeight"))"
+                        IsNonDefault="@(ArmouredRigWeight != 7)"
+                        OnUndo="UndoArmouredRigWeight"
+                        OnDefault="DefaultArmouredRigWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Backpack Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="BackpackWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("BackpackWeight"))"
+                        IsNonDefault="@(BackpackWeight != 5)"
+                        OnUndo="UndoBackpackWeight"
+                        OnDefault="DefaultBackpackWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Eyewear Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="EyewearWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("EyewearWeight"))"
+                        IsNonDefault="@(EyewearWeight != 1)"
+                        OnUndo="UndoEyewearWeight"
+                        OnDefault="DefaultEyewearWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Earpiece Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="EarpieceWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("EarpieceWeight"))"
+                        IsNonDefault="@(EarpieceWeight != 5)"
+                        OnUndo="UndoEarpieceWeight"
+                        OnDefault="DefaultEarpieceWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Face Cover Armour Class 2+ Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="FaceCoverAc2Weight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("FaceCoverAc2Weight"))"
+                        IsNonDefault="@(FaceCoverAc2Weight != 1)"
+                        OnUndo="UndoFaceCoverAc2Weight"
+                        OnDefault="DefaultFaceCoverAc2Weight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Face Cover Armour Class 0-2 Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="FaceCoverAc0Weight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("FaceCoverAc0Weight"))"
+                        IsNonDefault="@(FaceCoverAc0Weight != 2)"
+                        OnUndo="UndoFaceCoverAc0Weight"
+                        OnDefault="DefaultFaceCoverAc0Weight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Face Cover Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="FaceCoverWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("FaceCoverWeight"))"
+                        IsNonDefault="@(FaceCoverWeight != 4)"
+                        OnUndo="UndoFaceCoverWeight"
+                        OnDefault="DefaultFaceCoverWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Headwear (Has Slots) Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="HeadwearESlotWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("HeadwearESlotWeight"))"
+                        IsNonDefault="@(HeadwearESlotWeight != 6)"
+                        OnUndo="UndoHeadwearESlotWeight"
+                        OnDefault="DefaultHeadwearESlotWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Headwear (No Slots) Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="HeadwearWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("HeadwearWeight"))"
+                        IsNonDefault="@(HeadwearWeight != 1)"
+                        OnUndo="UndoHeadwearWeight"
+                        OnDefault="DefaultHeadwearWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Tactical Vest Large Grid Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="TacticalVestGLengthWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("TacticalVestGLengthWeight"))"
+                        IsNonDefault="@(TacticalVestGLengthWeight != 10)"
+                        OnUndo="UndoTacticalVestGLengthWeight"
+                        OnDefault="DefaultTacticalVestGLengthWeight" />
+        
+                    <MudSliderChildUndoDefaultTT
+                        Label="Tactical Vest Weights"
+                        TooltipText="Higher number is more common. If you import a lot of custom equipment, and see them often - try a lower number."
+                        @bind-Value="TacticalVestWeight"
+                        Min="1"
+                        Max="25"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("TacticalVestWeight"))"
+                        IsNonDefault="@(TacticalVestWeight != 1)"
+                        OnUndo="UndoTacticalVestWeight"
+                        OnDefault="DefaultTacticalVestWeight" />
+
                     <MudSwitchTTDisabledWarning
                         Label="Modded Clothing"
                         TooltipText="Allows bots to use custom modded clothing."
@@ -371,6 +527,162 @@
     }
     private void UndoFollowerWeaponWeights() => ModFollowerWeaponWeights = ModConfig.OriginalConfig.CompatibilityConfig.FollowerWeaponWeights;
     private void DefaultFollowerWeaponWeights() => ModFollowerWeaponWeights = 6;
+
+    private int ArmBandWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.ArmBandWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.ArmBandWeight, nameof(ArmBandWeight));
+            ModConfig.Config.CompatibilityConfig.ArmBandWeight = value;
+        }
+    }
+    private void UndoArmBandWeight() => ModFollowerWeaponWeights = ModConfig.OriginalConfig.CompatibilityConfig.ArmBandWeight;
+    private void DefaultArmBandWeight() => ModFollowerWeaponWeights = 4;
+    
+    private int ArmourVestWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.ArmourVestWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.ArmourVestWeight, nameof(ArmourVestWeight));
+            ModConfig.Config.CompatibilityConfig.ArmourVestWeight = value;
+        }
+    }
+    private void UndoArmourVestWeight() => ArmourVestWeight = ModConfig.OriginalConfig.CompatibilityConfig.ArmourVestWeight;
+    private void DefaultArmourVestWeight() => ArmourVestWeight = 10;
+
+    private int ArmouredRigWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.ArmouredRigWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.ArmouredRigWeight, nameof(ArmouredRigWeight));
+            ModConfig.Config.CompatibilityConfig.ArmouredRigWeight = value;
+        }
+    }
+    private void UndoArmouredRigWeight() => ArmouredRigWeight = ModConfig.OriginalConfig.CompatibilityConfig.ArmouredRigWeight;
+    private void DefaultArmouredRigWeight() => ArmouredRigWeight = 7;
+
+    private int BackpackWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.BackpackWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.BackpackWeight, nameof(BackpackWeight));
+            ModConfig.Config.CompatibilityConfig.BackpackWeight = value;
+        }
+    }
+    private void UndoBackpackWeight() => BackpackWeight = ModConfig.OriginalConfig.CompatibilityConfig.BackpackWeight;
+    private void DefaultBackpackWeight() => BackpackWeight = 5;
+
+    private int EyewearWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.EyewearWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.EyewearWeight, nameof(EyewearWeight));
+            ModConfig.Config.CompatibilityConfig.EyewearWeight = value;
+        }
+    }
+    private void UndoEyewearWeight() => EyewearWeight = ModConfig.OriginalConfig.CompatibilityConfig.EyewearWeight;
+    private void DefaultEyewearWeight() => EyewearWeight = 1;
+
+    private int EarpieceWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.EarpieceWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.EarpieceWeight, nameof(EarpieceWeight));
+            ModConfig.Config.CompatibilityConfig.EarpieceWeight = value;
+        }
+    }
+    private void UndoEarpieceWeight() => EarpieceWeight = ModConfig.OriginalConfig.CompatibilityConfig.EarpieceWeight;
+    private void DefaultEarpieceWeight() => EarpieceWeight = 5;
+
+    private int FaceCoverAc2Weight
+    {
+        get => ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.FaceCoverAc2Weight, nameof(FaceCoverAc2Weight));
+            ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight = value;
+        }
+    }
+    private void UndoFaceCoverAc2Weight() => FaceCoverAc2Weight = ModConfig.OriginalConfig.CompatibilityConfig.FaceCoverAc2Weight;
+    private void DefaultFaceCoverAc2Weight() => FaceCoverAc2Weight = 1;
+
+    private int FaceCoverAc0Weight
+    {
+        get => ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.FaceCoverAc0Weight, nameof(FaceCoverAc0Weight));
+            ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight = value;
+        }
+    }
+    private void UndoFaceCoverAc0Weight() => FaceCoverAc0Weight = ModConfig.OriginalConfig.CompatibilityConfig.FaceCoverAc0Weight;
+    private void DefaultFaceCoverAc0Weight() => FaceCoverAc0Weight = 2;
+
+    private int FaceCoverWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.FaceCoverWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.FaceCoverWeight, nameof(FaceCoverWeight));
+            ModConfig.Config.CompatibilityConfig.FaceCoverWeight = value;
+        }
+    }
+    private void UndoFaceCoverWeight() => FaceCoverWeight = ModConfig.OriginalConfig.CompatibilityConfig.FaceCoverWeight;
+    private void DefaultFaceCoverWeight() => FaceCoverWeight = 4;
+
+    private int HeadwearESlotWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.HeadwearESlotWeight, nameof(HeadwearESlotWeight));
+            ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight = value;
+        }
+    }
+    private void UndoHeadwearESlotWeight() => HeadwearESlotWeight = ModConfig.OriginalConfig.CompatibilityConfig.HeadwearESlotWeight;
+    private void DefaultHeadwearESlotWeight() => HeadwearESlotWeight = 6;
+
+    private int HeadwearWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.HeadwearWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.HeadwearWeight, nameof(HeadwearWeight));
+            ModConfig.Config.CompatibilityConfig.HeadwearWeight = value;
+        }
+    }
+    private void UndoHeadwearWeight() => HeadwearWeight = ModConfig.OriginalConfig.CompatibilityConfig.HeadwearWeight;
+    private void DefaultHeadwearWeight() => HeadwearWeight = 1;
+
+    private int TacticalVestGLengthWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.TacticalVestGLengthWeight, nameof(TacticalVestGLengthWeight));
+            ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight = value;
+        }
+    }
+    private void UndoTacticalVestGLengthWeight() => TacticalVestGLengthWeight = ModConfig.OriginalConfig.CompatibilityConfig.TacticalVestGLengthWeight;
+    private void DefaultTacticalVestGLengthWeight() => TacticalVestGLengthWeight = 10;
+
+    private int TacticalVestWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.TacticalVestWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.TacticalVestWeight, nameof(TacticalVestWeight));
+            ModConfig.Config.CompatibilityConfig.TacticalVestWeight = value;
+        }
+    }
+    private void UndoTacticalVestWeight() => TacticalVestWeight = ModConfig.OriginalConfig.CompatibilityConfig.TacticalVestWeight;
+    private void DefaultTacticalVestWeight() => TacticalVestWeight = 1;
 
     private int ModInitialTierAppearance
     {

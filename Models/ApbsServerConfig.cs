@@ -855,8 +855,56 @@ public class ModCompatibilityConfig
     [JsonPropertyName("enableModdedWeapons")]
     public bool EnableModdedWeapons { get; set; } = false;
 
+    [JsonPropertyName("pmcWeaponWeights")]
+    public int PmcWeaponWeights { get; set; } = 8;
+
+    [JsonPropertyName("scavWeaponWeights")]
+    public int ScavWeaponWeights { get; set; } = 1;
+
+    [JsonPropertyName("followerWeaponWeights")]
+    public int FollowerWeaponWeights { get; set; } = 6;
+
     [JsonPropertyName("enableModdedEquipment")]
     public bool EnableModdedEquipment { get; set; } = false;
+
+    [JsonPropertyName("armBandWeight")]
+    public int ArmBandWeight { get; set; } = 4;
+
+    [JsonPropertyName("armourVestWeight")]
+    public int ArmourVestWeight { get; set; } = 10;
+
+    [JsonPropertyName("armouredRigWeight")]
+    public int ArmouredRigWeight { get; set; } = 7;
+
+    [JsonPropertyName("backpackWeight")]
+    public int BackpackWeight { get; set; } = 5;
+
+    [JsonPropertyName("eyewearWeight")]
+    public int EyewearWeight { get; set; } = 1;
+
+    [JsonPropertyName("earpieceWeight")]
+    public int EarpieceWeight { get; set; } = 5;
+
+    [JsonPropertyName("faceCoverAc2Weight")]
+    public int FaceCoverAc2Weight { get; set; } = 1;
+
+    [JsonPropertyName("faceCoverAc0Weight")]
+    public int FaceCoverAc0Weight { get; set; } = 2;
+
+    [JsonPropertyName("faceCoverWeight")]
+    public int FaceCoverWeight { get; set; } = 4;
+
+    [JsonPropertyName("headwearESlotWeight")]
+    public int HeadwearESlotWeight { get; set; } = 6;
+
+    [JsonPropertyName("headwearWeight")]
+    public int HeadwearWeight { get; set; } = 1;
+
+    [JsonPropertyName("tacticalVestGLengthWeight")]
+    public int TacticalVestGLengthWeight { get; set; } = 10;
+
+    [JsonPropertyName("tacticalVestWeight")]
+    public int TacticalVestWeight { get; set; } = 1;
 
     [JsonPropertyName("enableModdedClothing")]
     public bool EnableModdedClothing { get; set; } = false;
@@ -866,15 +914,6 @@ public class ModCompatibilityConfig
 
     [JsonPropertyName("initalTierAppearance")]
     public int InitalTierAppearance { get; set; } = 3;
-
-    [JsonPropertyName("pmcWeaponWeights")]
-    public int PmcWeaponWeights { get; set; } = 8;
-
-    [JsonPropertyName("scavWeaponWeights")]
-    public int ScavWeaponWeights { get; set; } = 1;
-
-    [JsonPropertyName("followerWeaponWeights")]
-    public int FollowerWeaponWeights { get; set; } = 6;
 
     [JsonPropertyName("enableSafeGuard")]
     public bool EnableSafeGuard { get; set; } = true;
