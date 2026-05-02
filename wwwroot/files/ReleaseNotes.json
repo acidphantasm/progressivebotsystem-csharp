@@ -1,8 +1,25 @@
 ﻿[
   {
+    "Version": "2.2.0",
+    "ReleaseDate": "May 2, 2026",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Configs are now forward compatible - APBS no longer ships with a config.json",
+      "The server will notify you if your config needs the new features added and will do so without impacting your existing settings",
+      "WebConfig toggle for skipping generation of a backplate if the bot is missing the front plate",
+      "WebConfig toggle for limiting the plate classes selected to the class of the front plate when possible",
+      "WebConfig fields for equipment import weights"
+    ],
+    "Changes": [
+      "The entire WebConfig backend was overhauled. You won't notice it but it's 10x easier for me to add new features now."
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.1.13",
     "ReleaseDate": "April 25, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "General performance and optimization passes"
@@ -63,17 +80,17 @@
     "ReleaseDate": "April 3, 2026",
     "IsLatest": false,
     "NewFeatures": [
-      "Webconfig toggles for secret stuff"
+      "WebConfig toggles for secret stuff"
     ],
     "Changes": [
       "Removed excess LINQ in weapon gen for questing",
       "Adjusted T1-7 Scav scabbard weights",
       "Adjusted T1-3 Pmc weapon weights slightly",
       "Adjusted T1-3 Pmc to have 100% front plate chance",
-      "Adjusted webconfig default T3 Pmc Plate Class weighting slightly",
+      "Adjusted WebConfig default T3 Pmc Plate Class weighting slightly",
       "Adjusted mod slot equipment selection to always process front plate slot first",
       "Added logic to cap back plate armour class to front plate armour class on Pmcs when possible",
-      "Adjusted webconfig max weight limit for importing weapons for some reason",
+      "Adjusted WebConfig max weight limit for importing weapons for some reason",
       "Adjusted `Armband` mod import weight from 3 to 4",
       "Adjusted `Scabbard` mod import weight for scavs from 3 to 1"
     ],
@@ -98,9 +115,9 @@
     "ReleaseDate": "March 19, 2026",
     "IsLatest": false,
     "NewFeatures": [
-      "Webconfig toggle to allow using or disable all player scav options at once",
-      "Webconfig toggle to allow the Scav to use Pmc skill values",
-      "Webconfig toggle to allow the Pmc to acquire skill gains from Player Scav raids"
+      "WebConfig toggle to allow using or disable all player scav options at once",
+      "WebConfig toggle to allow the Scav to use Pmc skill values",
+      "WebConfig toggle to allow the Pmc to acquire skill gains from Player Scav raids"
     ],
     "Changes": [
       "Altered config values for Scav as Boss. Now has its own enable toggle"
@@ -113,7 +130,7 @@
     "ReleaseDate": "February 28, 2026",
     "IsLatest": false,
     "NewFeatures": [
-      "Webconfig toggle to allow the scav boss generation feature to also use their health values"
+      "WebConfig toggle to allow the scav boss generation feature to also use their health values"
     ],
     "Changes": [],
     "BugFixes": [
@@ -126,9 +143,9 @@
     "ReleaseDate": "February 16, 2026",
     "IsLatest": false,
     "NewFeatures": [
-      "Webconfig toggle to allow your scav to generate as a boss",
-      "Webconfig slider to adjust the chance your scav will generate as a boss",
-      "Webconfig selection to allow/disallow specific bosses from being selected"
+      "WebConfig toggle to allow your scav to generate as a boss",
+      "WebConfig slider to adjust the chance your scav will generate as a boss",
+      "WebConfig selection to allow/disallow specific bosses from being selected"
     ],
     "Changes": [],
     "BugFixes": [],
@@ -152,8 +169,8 @@
     "ReleaseDate": "February 14, 2026",
     "IsLatest": false,
     "NewFeatures": [
-      "Webconfig toggle to allow bosses to have WTT Armoury weapons intended by the authors",
-      "Webconfig toggle to disallow other bots to have WTT Armoury weapons intended by the authors to be on bosses"
+      "WebConfig toggle to allow bosses to have WTT Armoury weapons intended by the authors",
+      "WebConfig toggle to disallow other bots to have WTT Armoury weapons intended by the authors to be on bosses"
     ],
     "Changes": [
       "Various logging changes",
@@ -186,12 +203,12 @@
       "Mod Compatibility Configuration has returned",
       "Allow bots to prestige past 4 if using Content Backport - Prestiges",
       "Allow bots to spawn with magazines in Pack n Strap belts if available",
-      "Webconfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
-      "Webconfig slider to set chance of TUE/EOD bots having version specific dogtags",
-      "Webconfig toggles for individual body part health normalization",
-      "Webconfig toggle for Bot Equipment logging",
-      "Webconfig toggle for Scavs to very rarely have a 1m stack of Roubles",
-      "Webconfig slider for Scav Key Loot Probability",
+      "WebConfig toggle to allow Pmcs to spawn with WTT Backport Dogtags",
+      "WebConfig slider to set chance of TUE/EOD bots having version specific dogtags",
+      "WebConfig toggles for individual body part health normalization",
+      "WebConfig toggle for Bot Equipment logging",
+      "WebConfig toggle for Scavs to very rarely have a 1m stack of Roubles",
+      "WebConfig slider for Scav Key Loot Probability",
       "Preset Version validation"
     ],
     "Changes": [
@@ -204,7 +221,7 @@
       "Added Labyrinth Tagilla, Killa, and Helpers to be handled by APBS",
       "Adjusted logic when creating a new preset - it will autoselect your newly made preset",
       "Adjusted APBS database handling for sanitization purposes.",
-      "Adjusted webconfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"
+      "Adjusted WebConfig mod save/reload to also rerun mod import if enabled, then run blacklisting if enabled"
     ],
     "BugFixes": [
       "Resolved severe lack of zoom zoom on mod importing vs 3.11",
@@ -221,7 +238,7 @@
       "Resolved Non-mountable Headphones going into a helmets mod slot on bots",
       "Resolved normalize health not skipping usec/bear properly",
       "Resolved normalize health applying head value to chest (apply directly to forehead)",
-      "Resolved webconfig Pmc Ammo Tier Sliding Undo button not undoing properly"
+      "Resolved WebConfig Pmc Ammo Tier Sliding Undo button not undoing properly"
     ],
     "KnownIssues": []
   },
