@@ -63,7 +63,7 @@ public class GenerateBotLevel : AbstractPatch
         
         bot.Info.PrestigeLevel = SetBotPrestigeInfo(level, botGenerationDetails);
         bot.Info.AddToExtensionData("Tier", tierHelper.GetTierByLevel(level));
-        bot.Info.AddToExtensionData("PrestigeLevel", bot.Info.PrestigeLevel);
+        bot.Info.AddToExtensionData("PrestigeLevelData", bot.Info.PrestigeLevel);
         botGenerationDetails.AddToExtensionData("Tier", tierHelper.GetTierByLevel(level));
         
         var baseExp = expTable.Take(level).Sum(entry => entry.Experience);
