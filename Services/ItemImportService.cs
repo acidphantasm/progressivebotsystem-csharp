@@ -65,25 +65,74 @@ public class ItemImportService(
         await itemImportHelper.BuildVanillaDictionaries();
         
         ImportEquipmentBySlot();
-        
+
         stopwatch.Stop();
-        apbsLogger.Success($"[IMPORT] Completed in {stopwatch.ElapsedMilliseconds} ms");
-        _caliberCounter = LogAndClear("calibers", _caliberCounter, _uniqueCalibers);
-        _weaponCounter = LogAndClear("weapons", _weaponCounter, _uniqueWeapons);
-        _weaponAttachmentCounter = LogAndClear("unique weapon attachments", _weaponAttachmentCounter, _uniqueWeaponAttachments);
-        _vanillaWeaponModAttachmentCounter = LogAndClear("unique weapon attachments added to vanilla items", _vanillaWeaponModAttachmentCounter, _uniqueVanillaWeaponModAttachment);
-        _equipmentCounter = LogAndClear("equipment items", _equipmentCounter, _uniqueEquipment);
-        _equipmentAttachmentCounter = LogAndClear("unique equipment attachments", _equipmentAttachmentCounter, _uniqueEquipmentAttachments);
-        _bearClothingCounter = LogAndClear("Bear bodies and legs", _bearClothingCounter);
-        _usecClothingCounter = LogAndClear("Usec bodies and legs", _usecClothingCounter);
-        
-        var totalCombos = _processedModCombos.Count;
-        var combosPerTier = _processedModCombos.Keys
-            .GroupBy(k => k.Tier)
-            .OrderBy(g => g.Key)
-            .Select(g => $"Tier{g.Key}: {g.Count()}");
-        apbsLogger.Success($"[IMPORT] Total mod attachment combinations: {totalCombos} ({string.Join(", ", combosPerTier)})");
-        
+        LogImportSummary(stopwatch.ElapsedMilliseconds);
+        ClearImportData();
+    }
+    
+    private void LogImportSummary(long elapsedMs)
+    {
+        var rows = new List<(string Name, int Count)>
+            {
+                ("Calibers", _caliberCounter),
+                ("Weapons", _weaponCounter),
+                ("Weapon Attachments", _weaponAttachmentCounter),
+                ("Vanilla Attachments", _vanillaWeaponModAttachmentCounter),
+                ("Equipment", _equipmentCounter),
+                ("Equipment Attachments", _equipmentAttachmentCounter),
+                ("Bear Clothing", _bearClothingCounter),
+                ("USEC Clothing", _usecClothingCounter)
+            }
+            .Where(x => x.Count > 0)
+            .ToList();
+
+        apbsLogger.Success($"[IMPORT] Completed in {elapsedMs:N0}ms");
+
+        if (rows.Count > 0)
+        {
+            apbsLogger.Success("[IMPORT] --------------------------------");
+
+            foreach (var row in rows)
+            {
+                apbsLogger.Success($"[IMPORT] {row.Name,-22} {row.Count,8:N0}");
+            }
+
+            apbsLogger.Success("[IMPORT] --------------------------------");
+        }
+
+        if (_processedModCombos.Count > 0)
+        {
+            apbsLogger.Success($"[IMPORT] {"Attachment Combos",-22} {_processedModCombos.Count,8:N0}");
+
+            var tierSummary = string.Join(" | ",
+                _processedModCombos.Keys
+                    .GroupBy(x => x.Tier)
+                    .OrderBy(x => x.Key)
+                    .Select(g => $"T{g.Key}:{g.Count():N0}"));
+
+            apbsLogger.Success($"[IMPORT] {tierSummary}");
+        }
+    }
+    
+    private void ClearImportData()
+    {
+        _caliberCounter = 0;
+        _weaponCounter = 0;
+        _weaponAttachmentCounter = 0;
+        _vanillaWeaponModAttachmentCounter = 0;
+        _equipmentCounter = 0;
+        _equipmentAttachmentCounter = 0;
+        _bearClothingCounter = 0;
+        _usecClothingCounter = 0;
+
+        _uniqueCalibers.Clear();
+        _uniqueWeapons.Clear();
+        _uniqueWeaponAttachments.Clear();
+        _uniqueVanillaWeaponModAttachment.Clear();
+        _uniqueEquipment.Clear();
+        _uniqueEquipmentAttachments.Clear();
+
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
     }
