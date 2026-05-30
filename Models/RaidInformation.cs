@@ -1,4 +1,4 @@
-﻿namespace _progressiveBotSystem.Globals;
+﻿namespace ProgressiveBotSystem.Models;
 
 public class RaidInformation
 {
