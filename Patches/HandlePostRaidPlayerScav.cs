@@ -13,7 +13,7 @@ using SPTarkov.Server.Core.Utils.Cloners;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class HandlePostRaidPlayerScav_Patch : AbstractPatch
+public class HandlePostRaidPlayerScavPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {

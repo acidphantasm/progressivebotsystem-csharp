@@ -19,7 +19,7 @@ using SPTarkov.Common.Extensions;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class GenerateInventory_Patch : AbstractPatch
+public class GenerateInventoryPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {

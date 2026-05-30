@@ -12,7 +12,7 @@ using SPTarkov.Server.Core.Services;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class GeneratePlayerScav_Patch : AbstractPatch
+public class GeneratePlayerScavPatch : AbstractPatch
 {
     
     private static readonly RandomUtil RandomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();

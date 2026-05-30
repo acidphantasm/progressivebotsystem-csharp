@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using _progressiveBotSystem.Globals;
 using HarmonyLib;
+using ProgressiveBotSystem.Globals;
 using SPTarkov.Common.Extensions;
 using SPTarkov.Server.Core.Constants;
 using SPTarkov.Server.Core.Generators;
@@ -15,7 +16,7 @@ using SPTarkov.Server.Core.Models.Enums;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class AddDogTagToBot_Patch : AbstractPatch
+public class AddDogTagToBotPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {

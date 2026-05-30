@@ -21,7 +21,7 @@ using SPTarkov.Server.Core.Servers;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class GenerateBot_Patch : AbstractPatch
+public class GenerateBotPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
