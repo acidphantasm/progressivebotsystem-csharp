@@ -4,13 +4,15 @@ using System.Reflection;
 using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Services;
 using HarmonyLib;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Services;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _progressiveBotSystem.Patches;
+namespace ProgressiveBotSystem.Patches;
 
 public class PlayerScavGeneratorGeneratePatch : AbstractPatch
 {

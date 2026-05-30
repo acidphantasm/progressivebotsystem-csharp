@@ -19,7 +19,7 @@ using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Servers;
 
-namespace _progressiveBotSystem.Patches;
+namespace ProgressiveBotSystem.Patches;
 
 public class GenerateBot_Patch : AbstractPatch
 {

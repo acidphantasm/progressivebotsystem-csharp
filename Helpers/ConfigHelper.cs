@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Text.Json;
-using _progressiveBotSystem.Models;
+using ProgressiveBotSystem.Models;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 public static class ConfigHelper
 {

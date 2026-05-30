@@ -1,12 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Logging;
 using SPTarkov.Server.Core.Models.Utils;
 
-namespace _progressiveBotSystem.Utils;
+namespace ProgressiveBotSystem.Utils;
 
 [Injectable(InjectionType.Singleton)]
 public class ApbsLogger

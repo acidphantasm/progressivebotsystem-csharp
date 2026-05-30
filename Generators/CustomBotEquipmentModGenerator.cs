@@ -1,10 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Globalization;
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;

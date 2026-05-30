@@ -1,12 +1,9 @@
 ﻿using System.Reflection;
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Generators;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Models;
 using HarmonyLib;
-using SPTarkov.Common.Extensions;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Exceptions.Helpers;
@@ -21,9 +18,9 @@ using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Patches;
+namespace ProgressiveBotSystem.Patches;
 
-public class GetRandomizedMaxArmorDurability_Patch : AbstractPatch
+public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
 {
     private static readonly HashSet<string> ScavRoles = typeof(ScavBots).GetFields().Select(x => (string)x.GetValue(null)).ToHashSet(StringComparer.Ordinal);
     private static readonly HashSet<string> BossRoles = typeof(BossBots).GetFields().Select(x => (string)x.GetValue(null)).ToHashSet(StringComparer.Ordinal);

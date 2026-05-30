@@ -1,9 +1,9 @@
-﻿using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Generators.WeaponGen;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Models.Enums;
+﻿using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Generators.WeaponGen;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;

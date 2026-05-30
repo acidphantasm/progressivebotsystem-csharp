@@ -1,10 +1,10 @@
-﻿using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Utils;
+﻿using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 
-namespace _progressiveBotSystem.Services;
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton)]
 public class BotLogService(

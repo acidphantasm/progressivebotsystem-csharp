@@ -10,7 +10,8 @@ using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Utils;
 using HarmonyLib;
-using SPTarkov.Server.Core.Constants;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
 using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
@@ -19,7 +20,7 @@ using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Services;
 
-namespace _progressiveBotSystem.Patches;
+namespace ProgressiveBotSystem.Patches;
 
 public class SetBotAppearance_Patch : AbstractPatch
 {

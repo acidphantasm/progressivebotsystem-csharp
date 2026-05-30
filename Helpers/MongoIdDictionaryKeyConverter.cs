@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using SPTarkov.Server.Core.Models.Common;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 public class MongoIdDictionaryKeyConverter : JsonConverter<MongoId>
 {

@@ -1,15 +1,15 @@
 ﻿using System.Reflection;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Models.Enums;
-using _progressiveBotSystem.Services;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Services;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Globals;
+namespace ProgressiveBotSystem.Globals;
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public class ModConfig : IOnLoad

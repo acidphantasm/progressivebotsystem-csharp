@@ -1,6 +1,6 @@
 ﻿using System.Collections.Frozen;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
@@ -10,7 +10,7 @@ using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Generators.WeaponGen;
+namespace ProgressiveBotSystem.Generators.WeaponGen;
 
 [Injectable]
 public class ApbsInventoryMagGen()

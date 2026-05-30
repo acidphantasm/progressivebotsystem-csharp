@@ -10,12 +10,14 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Services;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Generators;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.Common.Extensions;
 
-namespace _progressiveBotSystem.Patches;
+namespace ProgressiveBotSystem.Patches;
 
 public class GenerateInventory_Patch : AbstractPatch
 {

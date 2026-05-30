@@ -1,10 +1,10 @@
-using _progressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Helpers;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Generators.WeaponGen.Implementations;
+namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
 
 [Injectable]
 public class ApbsInternalMagazineInventoryMagGen(

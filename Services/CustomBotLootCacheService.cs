@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Generators;
@@ -11,7 +11,7 @@ using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _progressiveBotSystem.Services;
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton)]
 public class CustomBotLootCacheService(

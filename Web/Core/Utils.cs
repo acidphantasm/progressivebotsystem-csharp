@@ -1,7 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using _progressiveBotSystem.Web.Shared;
+﻿using ProgressiveBotSystem.Web.Shared;
 
-namespace _progressiveBotSystem.Web.Core
+namespace ProgressiveBotSystem.Web.Core
 {
     internal class Utils
     {

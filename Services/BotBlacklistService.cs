@@ -1,13 +1,13 @@
-﻿using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Models.Enums;
-using _progressiveBotSystem.Utils;
+﻿using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 
-namespace _progressiveBotSystem.Services;
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostSptModLoader + 70)]
 public class BotBlacklistService(

@@ -10,6 +10,8 @@ using _progressiveBotSystem.Globals;
 using _progressiveBotSystem.Helpers;
 using _progressiveBotSystem.Utils;
 using HarmonyLib;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
 using SPTarkov.Common.Extensions;
 using SPTarkov.Server.Core.Constants;
 using SPTarkov.Server.Core.Generators;
@@ -19,7 +21,7 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 
-namespace _progressiveBotSystem.Patches;
+namespace ProgressiveBotSystem.Patches;
 
 public class SetRandomisedGameVersionAndCategory_Patch : AbstractPatch
 {

@@ -1,8 +1,8 @@
-﻿using _progressiveBotSystem.Models;
+﻿using ProgressiveBotSystem.Models;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class ItemImportTierHelper(

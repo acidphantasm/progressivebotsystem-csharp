@@ -2,16 +2,16 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader + 10)]
 public class DataLoader(

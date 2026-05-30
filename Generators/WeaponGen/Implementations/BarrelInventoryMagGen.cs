@@ -3,7 +3,7 @@ using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Generators.WeaponGen.Implementations;
+namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
 
 [Injectable]
 public class ApbsBarrelInventoryMagGen(RandomUtil randomUtil, BotWeaponGeneratorHelper botWeaponGeneratorHelper)

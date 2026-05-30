@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace _progressiveBotSystem.Models;
+namespace ProgressiveBotSystem.Models;
 
 public class ReleaseInformation
 {

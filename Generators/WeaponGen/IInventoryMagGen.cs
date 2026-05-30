@@ -1,6 +1,4 @@
-﻿using SPTarkov.Server.Core.Generators.WeaponGen;
-
-namespace _progressiveBotSystem.Generators.WeaponGen;
+﻿namespace ProgressiveBotSystem.Generators.WeaponGen;
 
 public interface IApbsInventoryMagGen
 {

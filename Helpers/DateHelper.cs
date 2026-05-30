@@ -1,8 +1,8 @@
-﻿using _progressiveBotSystem.Globals;
+﻿using ProgressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class DateHelper(): IOnLoad

@@ -1,10 +1,10 @@
 ﻿using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Models.Enums;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
@@ -12,7 +12,7 @@ using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostDBModLoader + 90010)]
 public class BotConfigHelper(

@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
-using _progressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Models.Enums;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 
-namespace _progressiveBotSystem.Models;
+namespace ProgressiveBotSystem.Models;
 
 public class BotChancesData
 {

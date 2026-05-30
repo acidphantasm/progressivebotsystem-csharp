@@ -1,6 +1,6 @@
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers;
@@ -12,7 +12,7 @@ using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
-namespace _progressiveBotSystem.Generators.WeaponGen.Implementations;
+namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
 
 [Injectable]
 public class ApbsExternalInventoryMagGen(

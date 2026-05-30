@@ -1,4 +1,4 @@
-﻿namespace _progressiveBotSystem.Constants;
+﻿namespace ProgressiveBotSystem.Constants;
 
 public class Logging
 {

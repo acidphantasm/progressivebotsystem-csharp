@@ -1,7 +1,7 @@
-﻿using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models;
-using _progressiveBotSystem.Models.Enums;
-using _progressiveBotSystem.Utils;
+﻿using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
@@ -10,7 +10,7 @@ using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class BotEquipmentHelper(

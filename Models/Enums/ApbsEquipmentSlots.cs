@@ -1,4 +1,4 @@
-﻿namespace _progressiveBotSystem.Models.Enums;
+﻿namespace ProgressiveBotSystem.Models.Enums;
 
 public enum ApbsEquipmentSlots
 {

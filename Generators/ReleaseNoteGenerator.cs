@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using _progressiveBotSystem.Models;
+using ProgressiveBotSystem.Models;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Generators;
+namespace ProgressiveBotSystem.Generators;
 
 public class ReleaseNoteGenerator
 {

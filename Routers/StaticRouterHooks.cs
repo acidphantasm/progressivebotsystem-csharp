@@ -1,9 +1,7 @@
-﻿using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Services;
-using _progressiveBotSystem.Utils;
-using _progressiveBotSystem.Web.Shared;
+﻿using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Services;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.DI;
@@ -19,7 +17,7 @@ using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 
-namespace _progressiveBotSystem.Routers;
+namespace ProgressiveBotSystem.Routers;
 
 [Injectable]
 public class StaticRouterHooks : StaticRouter

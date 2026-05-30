@@ -1,7 +1,7 @@
-﻿using _progressiveBotSystem.Globals;
+﻿using ProgressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class BotBlacklistHelper

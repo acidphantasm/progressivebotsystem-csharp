@@ -1,6 +1,6 @@
 ﻿using SPTarkov.Server.Core.Models.Common;
 
-namespace _progressiveBotSystem.Constants;
+namespace ProgressiveBotSystem.Constants;
 
 public class VanillaItemConstants
 {

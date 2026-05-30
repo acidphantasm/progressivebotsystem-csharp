@@ -1,7 +1,7 @@
 ﻿using System.Collections.Frozen;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Models.Enums;
-using _progressiveBotSystem.Utils;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
@@ -11,7 +11,7 @@ using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using Path = System.IO.Path;
 
-namespace _progressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class ItemImportHelper(

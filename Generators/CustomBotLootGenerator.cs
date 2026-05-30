@@ -1,5 +1,5 @@
-﻿using _progressiveBotSystem.Helpers;
-using _progressiveBotSystem.Services;
+﻿using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Services;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;
@@ -18,7 +18,7 @@ using SPTarkov.Server.Core.Utils.Cloners;
 using SPTarkov.Server.Core.Models.Spt.Logging;
 using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
-namespace _progressiveBotSystem.Generators;
+namespace ProgressiveBotSystem.Generators;
 
 [Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
 public class CustomBotLootGenerator(
