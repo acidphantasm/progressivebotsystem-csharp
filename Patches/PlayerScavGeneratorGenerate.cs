@@ -1,8 +1,6 @@
 ﻿using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.DI;
 using System.Reflection;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Services;
 using HarmonyLib;
 using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Services;

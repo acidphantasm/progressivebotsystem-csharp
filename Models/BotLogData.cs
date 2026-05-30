@@ -1,5 +1,4 @@
-﻿using SPTarkov.Server.Core.Models.Common;
-
+﻿
 namespace ProgressiveBotSystem.Models;
 
 public class BotLogData

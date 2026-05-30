@@ -3,17 +3,13 @@ using ProgressiveBotSystem.Models;
 using ProgressiveBotSystem.Services;
 using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Callbacks;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
-using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.HttpResponse;
 using SPTarkov.Server.Core.Models.Eft.Match;
-using SPTarkov.Server.Core.Models.Logging;
-using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 
@@ -53,7 +49,7 @@ public class StaticRouterHooks : StaticRouter
                     output
                 ) =>
                 {
-                    if (ModConfig.Config.EnableBotEquipmentLog)
+                    if (ModConfig.Config.Debug.EnableBotEquipmentLog)
                     {
                         try
                         {

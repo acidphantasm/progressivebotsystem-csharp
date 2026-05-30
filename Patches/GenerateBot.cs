@@ -1,23 +1,9 @@
-﻿using SPTarkov.DI.Annotations;
-using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Models.Spt.Mod;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Utils;
+﻿using SPTarkov.Reflection.Patching;
 using System.Reflection;
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Globals;
-using _progressiveBotSystem.Utils;
 using HarmonyLib;
-using SPTarkov.Server.Core.Constants;
 using SPTarkov.Server.Core.Generators;
-using SPTarkov.Server.Core.Helpers;
-using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
-using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Servers;
 
 namespace ProgressiveBotSystem.Patches;
 
