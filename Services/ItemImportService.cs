@@ -136,21 +136,6 @@ public class ItemImportService(
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
     }
-
-    /// <summary>
-    ///     Fancy helper methods to log the import counts and then reset the variables to 0
-    /// </summary>
-    private int LogAndClear(string name, int counter)
-    {
-        if (counter != 0) apbsLogger.Success($"[IMPORT] Imported {counter} {name}.");
-        return 0;
-    }
-    private int LogAndClear<TKey, TValue>(string name, int counter, ConcurrentDictionary<TKey, TValue> dictToClear) where TKey : notnull
-    {
-        if (counter != 0) apbsLogger.Success($"[IMPORT] Imported {counter} {name}.");
-        dictToClear.Clear();
-        return 0;
-    }
     
     /// <summary>
     ///     Start of the import process, all you're doing is validating if the item should be imported

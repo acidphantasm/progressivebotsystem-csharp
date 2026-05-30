@@ -999,15 +999,6 @@ public class ItemImportHelper(
     }
 
     /// <summary>
-    ///     Is the item supposed to go in the Headwear slot and is armoured?
-    /// </summary>
-    public bool IsArmouredHelmet(TemplateItem itemDetails)
-    {
-        // Armoured helmets have slots, shit helmets do not
-        return itemDetails.Properties?.Slots != null && itemDetails.Properties.Slots.Any();
-    }
-
-    /// <summary>
     ///     Is the item supposed to go in the Knife slot?
     /// </summary>
     public bool IsScabbard(MongoId itemId)
@@ -1184,7 +1175,6 @@ public class ItemImportHelper(
         };
     }
     
-    private readonly FrozenSet<MongoId> _armourSlots = [BaseClasses.HEADWEAR, BaseClasses.VEST, BaseClasses.ARMOR];
     /// <summary>
     ///     Check if the item has an armour class or armour plate slots
     ///     If it isn't armoured, bail out and don't skip it
@@ -1319,11 +1309,13 @@ public class ItemImportHelper(
         if (slot.StartsWith("mod_charge"))
         {
             var ergo = itemToAdd.Properties?.Ergonomics ?? 0;
+    
+            if (!ChargeHandlePoolCoversAllTiers(parentItem, slot))
+                return true;
 
             return tier switch
             {
-                1 => ergo == 0,
-                2 => ergo == 0,
+                1 or 2 => ergo == 0,
                 3 => ergo <= 1,
                 _ => ergo >= 1
             };
@@ -1342,6 +1334,29 @@ public class ItemImportHelper(
 
         var percentile = GetPercentile(sortedValues, stat.Value);
         return IsInPercentileBandForTier(percentile, tier);
+    }
+    
+    private bool ChargeHandlePoolCoversAllTiers(TemplateItem parentItem, string slot)
+    {
+        var hasZeroErgo = false;
+        var hasPositiveErgo = false;
+
+        foreach (var itemId in GetItemFilters(parentItem, slot))
+        {
+            var itemData = itemHelper.GetItem(itemId).Value;
+            if (itemData == null || _bannedAttachments.Contains(itemData.Id))
+                continue;
+
+            var ergo = itemData.Properties?.Ergonomics ?? 0;
+            if (ergo <= 0) hasZeroErgo = true;
+            if (ergo >= 1) hasPositiveErgo = true;
+
+            if (hasZeroErgo && hasPositiveErgo) break;
+        }
+
+        // T1-2 need ergo == 0, T4+ need ergo >= 1
+        // If either side is missing, tiering would leave some tiers empty
+        return hasZeroErgo && hasPositiveErgo;
     }
 
     private bool MagazinePoolCoversAllTiers(TemplateItem parentItem, string slot)
@@ -1366,7 +1381,7 @@ public class ItemImportHelper(
             bracketItems[bracket] = bracketItems.GetValueOrDefault(bracket) + 1;
         }
 
-        if (bracketItems.Count < 1)
+        if (bracketItems.Count < 2)
         {
             return false;
         }
@@ -1385,6 +1400,9 @@ public class ItemImportHelper(
 
     private List<double> GetSortedErgoValues(TemplateItem parentItem, string slot)
     {
+        
+        if (VssValCheck(parentItem, slot) || Ar15Mod1Check(parentItem, slot) || IsFrontOrRearSightAndVanillaItem(parentItem, slot)) return [];
+
         var values = new List<double>();
         foreach (var itemId in GetItemFilters(parentItem, slot))
         {
@@ -1392,9 +1410,6 @@ public class ItemImportHelper(
             if (itemData == null || _bannedAttachments.Contains(itemData.Id))
                 continue;
 
-            if (VssValCheck(parentItem, slot)) continue;
-            if (Ar15Mod1Check(parentItem, slot)) continue;
-            if (IsFrontOrRearSightAndVanillaItem(parentItem, slot)) continue;
             if (IsBannedModScope000(itemData, slot)) continue;
             if (IsFrontOrRearSightAndDoesntFold(parentItem, itemData, slot)) continue;
 
@@ -1444,9 +1459,9 @@ public class ItemImportHelper(
 
     private bool IsInPercentileBandForTier(double percentile, int tier) => tier switch
     {
-        1 => percentile <= 0.35,    // bottom 65%
+        1 => percentile <= 0.35,    // bottom 35%
         2 => percentile <= 0.50,    // bottom 50%
-        3 => percentile <= 0.65,    // bottom 35%
+        3 => percentile <= 0.65,    // bottom 65%
         4 => percentile >= 0.35,    // top 65% (overlap t3)
         5 => percentile >= 0.45,    // top 55%
         6 => percentile >= 0.55,    // top 45%
