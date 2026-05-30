@@ -27,7 +27,7 @@ public class ApbsLogger
     public void Debug(string message1, string message2 = "", string message3 = "", string message4 = "",
     string message5 = "", string message6 = "", string message7 = "", string message8 = "")
     {
-        if (!ModConfig.Config.EnableDebugLog) return;
+        if (!ModConfig.Config.Debug.EnableDebugLog) return;
 
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Debug + ".txt");
 
@@ -156,7 +156,7 @@ public class ApbsLogger
                 switch (logType)
                 {
                     case Logging.Debug:
-                        showInConsole = ModConfig.Config.EnableDebugLog;
+                        showInConsole = ModConfig.Config.Debug.EnableDebugLog;
                         break;
                     case Logging.Warning:
                         showInConsole = true;

@@ -107,7 +107,7 @@ public class ModConfig : IOnLoad
     #if DEBUG
         Config.EnableDebugLog = true;
     #endif
-        if (Config.EnableDebugLog) _apbsLogger.Debug("ModConfig.OnLoad()");
+        _apbsLogger.Debug("ModConfig.OnLoad()");
     }
 
     public static async Task<ConfigOperationResult> ReloadConfig()
