@@ -3,10 +3,32 @@
   "presetName": "",
   "compatibilityConfig": {
     "enableModdedWeapons": false,
+    "useDynamicWeaponWeights": true,
+    "dynamicWeaponWeightMultipliers": {
+      "pmc": 1,
+      "scav": 1,
+      "follower": 1
+    },
     "pmcWeaponWeights": 8,
     "scavWeaponWeights": 1,
     "followerWeaponWeights": 6,
     "enableModdedEquipment": false,
+    "useDynamicEquipmentWeights": true,
+    "dynamicEquipmentWeightMultipliers": {
+      "headwear": 1,
+      "headwearWithSlots": 1,
+      "armorVest": 1,
+      "armouredRig": 1,
+      "tacticalVest": 1,
+      "tacticalVestLargeGrid": 1,
+      "backpack": 1,
+      "faceCover": 1,
+      "faceCoverAc0": 1,
+      "faceCoverAc2": 1,
+      "eyewear": 1,
+      "earpiece": 1,
+      "armBand": 1
+    },
     "armBandWeight": 4,
     "armourVestWeight": 10,
     "armouredRigWeight": 7,
@@ -40,18 +62,18 @@
   "normalizedHealthPool": {
     "enable": false,
     "setHead": true,
-    "setChest": true,
-    "setStomach": true,
-    "setLeftArm": true,
-    "setRightArm": true,
-    "setLeftLeg": true,
-    "setRightLeg": true,
     "healthHead": 35,
+    "setChest": true,
     "healthChest": 85,
+    "setStomach": true,
     "healthStomach": 70,
+    "setLeftArm": true,
     "healthLeftArm": 60,
+    "setRightArm": true,
     "healthRightArm": 60,
+    "setLeftLeg": true,
     "healthLeftLeg": 65,
+    "setRightLeg": true,
     "healthRightLeg": 65,
     "excludedBots": [],
     "normalizeSkills": false
@@ -61,8 +83,8 @@
     "usePmcSkills": false,
     "writebackSkillsToPmc": false,
     "allowBossRegeneration": false,
-    "useBossHealth": false,
     "chance": 5,
+    "useBossHealth": false,
     "allowedBosses": []
   },
   "generalConfig": {
@@ -936,7 +958,7 @@
         "slideAmount": 1,
         "slideChance": 33
       },
-      "gameVersionDogtagChance" : 50,
+      "gameVersionDogtagChance": 50,
       "gameVersionWeighting": {
         "enable": false,
         "standard": 20,
@@ -1214,8 +1236,15 @@
       "max": -10
     }
   },
-  "enableBotEquipmentLog": true,
-  "enableDebugLog": false,
+  "debug": {
+    "enableBotEquipmentLog": true,
+    "enableDebugLog": false,
+    "modImportTuning": {
+      "enableModImportTuningSuccessLogs": false,
+      "botTypeToCheck": "pmc",
+      "tierToCheck": 3
+    }
+  },
   "configAppSettings": {
     "showUndo": true,
     "showDefault": false,

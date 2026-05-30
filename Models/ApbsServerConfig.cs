@@ -44,14 +44,35 @@ public class ApbsServerConfig
     [JsonPropertyName("customScavLevelDeltas")]
     public CustomLevelDelta CustomScavLevelDeltas { get; set; } = new();
 
+    [JsonPropertyName("debug")]
+    public DebugSettings Debug { get; set; } = new();
+
+    [JsonPropertyName("configAppSettings")]
+    public ConfigAppSettings ConfigAppSettings { get; set; } = new();
+}
+
+public class DebugSettings
+{
     [JsonPropertyName("enableBotEquipmentLog")]
     public bool EnableBotEquipmentLog { get; set; } = true;
 
     [JsonPropertyName("enableDebugLog")]
     public bool EnableDebugLog { get; set; } = false;
 
-    [JsonPropertyName("configAppSettings")]
-    public ConfigAppSettings ConfigAppSettings { get; set; } = new();
+    [JsonPropertyName("modImportTuning")]
+    public ModImportTuning ModImportTuning { get; set; } = new();
+}
+
+public class ModImportTuning
+{
+    [JsonPropertyName("enableModImportTuningSuccessLogs")]
+    public bool EnableModImportTuningSuccessLogs { get; set; } = false;
+
+    [JsonPropertyName("botTypeToCheck")]
+    public string BotTypeToCheck { get; set; } = "pmc";
+
+    [JsonPropertyName("tierToCheck")]
+    public int TierToCheck { get; set; } = 3;
 }
 
 public class PlayerScavConfig
@@ -854,6 +875,12 @@ public class ModCompatibilityConfig
 {
     [JsonPropertyName("enableModdedWeapons")]
     public bool EnableModdedWeapons { get; set; } = false;
+    
+    [JsonPropertyName("useDynamicWeaponWeights")]
+    public bool UseDynamicWeaponWeights { get; set; } = false;
+
+    [JsonPropertyName("dynamicWeaponWeightMultipliers")]
+    public DynamicWeaponWeightConfig DynamicWeaponWeightMultipliers { get; set; } = new();
 
     [JsonPropertyName("pmcWeaponWeights")]
     public int PmcWeaponWeights { get; set; } = 8;
@@ -866,6 +893,12 @@ public class ModCompatibilityConfig
 
     [JsonPropertyName("enableModdedEquipment")]
     public bool EnableModdedEquipment { get; set; } = false;
+    
+    [JsonPropertyName("useDynamicEquipmentWeights")]
+    public bool UseDynamicEquipmentWeights { get; set; } = false;
+
+    [JsonPropertyName("dynamicEquipmentWeightMultipliers")]
+    public DynamicEquipmentWeightConfig DynamicEquipmentWeightMultipliers { get; set; } = new();
 
     [JsonPropertyName("armBandWeight")]
     public int ArmBandWeight { get; set; } = 4;
@@ -941,6 +974,60 @@ public class ModCompatibilityConfig
 
     [JsonPropertyName("secrets")]
     public ModSecrets Secrets { get; set; } = new();
+}
+
+public class DynamicWeaponWeightConfig
+{
+    [JsonPropertyName("pmc")]
+    public double Pmc { get; set; } = 1.0;
+
+    [JsonPropertyName("scav")]
+    public double Scav { get; set; } = 1.0;
+
+    [JsonPropertyName("follower")]
+    public double Follower { get; set; } = 1.0;
+}
+
+public class DynamicEquipmentWeightConfig
+{
+    [JsonPropertyName("headwear")]
+    public double Headwear { get; set; } = 1.0;
+
+    [JsonPropertyName("headwearWithSlots")]
+    public double HeadwearWithSlots { get; set; } = 1.0;
+
+    [JsonPropertyName("armorVest")]
+    public double ArmorVest { get; set; } = 1.0;
+
+    [JsonPropertyName("armouredRig")]
+    public double ArmouredRig { get; set; } = 1.0;
+
+    [JsonPropertyName("tacticalVest")]
+    public double TacticalVest { get; set; } = 1.0;
+
+    [JsonPropertyName("tacticalVestLargeGrid")]
+    public double TacticalVestLargeGrid { get; set; } = 1.0;
+
+    [JsonPropertyName("backpack")]
+    public double Backpack { get; set; } = 1.0;
+
+    [JsonPropertyName("faceCover")]
+    public double FaceCover { get; set; } = 1.0;
+
+    [JsonPropertyName("faceCoverAc0")]
+    public double FaceCoverAc0 { get; set; } = 1.0;
+
+    [JsonPropertyName("faceCoverAc2")]
+    public double FaceCoverAc2 { get; set; } = 1.0;
+
+    [JsonPropertyName("eyewear")]
+    public double Eyewear { get; set; } = 1.0;
+
+    [JsonPropertyName("earpiece")]
+    public double Earpiece { get; set; } = 1.0;
+
+    [JsonPropertyName("armBand")]
+    public double ArmBand { get; set; } = 1.0;
 }
 
 public class ModSecrets
