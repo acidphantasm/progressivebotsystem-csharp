@@ -24,6 +24,9 @@ public class ItemImportService(
 {
     private readonly bool _testMode = false;
     
+    private readonly ConcurrentDictionary<ApbsEquipmentSlots, int> _slotImportCounts = new();
+    private Dictionary<(ApbsEquipmentSlots Slot, int Tier, string BotType), (double WeightSum, int ItemCount)> _baselineSlotData = new();
+        
     private readonly ConcurrentDictionary<(MongoId ParentId, string Slot, MongoId ChildId, int Tier), byte> _processedModCombos = new();
     private readonly ConcurrentDictionary<(MongoId ParentId, string Slot, MongoId ChildId, int Tier), byte> _processedVanillaWeaponModCombos = new();
 
@@ -83,53 +86,6 @@ public class ItemImportService(
         
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
-
-        /*
-        // Debug Validation logging
-        var parentId = new MongoId("6895bb82c4519957df062f82");
-        var maxTier = 7;
-
-        for (var tier = 1; tier <= maxTier; tier++)
-        {
-            var modsData = itemImportTierHelper.GetModsTierData(tier);
-            var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
-
-            // Log modsData
-            if (modsData.TryGetValue(parentId, out var knownItemData))
-            {
-                apbsLogger.Warning($"[TEST][Tier{tier}] Parent {parentId}: {knownItemData.Count} slots");
-
-                foreach (var slot in knownItemData)
-                {
-                    var slotName = slot.Key;
-                    var attachments = slot.Value;
-                    apbsLogger.Warning($"[TEST][Tier{tier}] Slot '{slotName}': {attachments.Count} attachments");
-                }
-            }
-            else
-            {
-                apbsLogger.Warning($"[TEST][Tier{tier}] Parent {parentId} not found in modsData");
-            }
-
-            // Log equipmentData
-            var scavEquip = equipmentData.Scav.Equipment;
-            bool foundInAnySlot = false;
-
-            foreach (var slotKey in scavEquip.Keys)
-            {
-                if (scavEquip[slotKey].ContainsKey(parentId))
-                {
-                    apbsLogger.Warning($"[TEST][Tier{tier}] Scav has {parentId} in slot '{slotKey}'");
-                    foundInAnySlot = true;
-                }
-            }
-
-            if (!foundInAnySlot)
-            {
-                apbsLogger.Warning($"[TEST][Tier{tier}] Parent {parentId} not found in any Scav equipment slot");
-            }
-        }
-        */
     }
 
     /// <summary>
@@ -158,6 +114,25 @@ public class ItemImportService(
             .Where(item => itemImportHelper.EquipmentNeedsImporting(item.Id))
             .ToList();
         
+        foreach (var item in itemsToImport)
+        {
+            if (itemImportHelper.WeaponOrEquipmentIsVanilla(item.Id))
+                continue;
+
+            var slot = itemImportHelper.ClassifyEquipmentSlot(item, _mountedHeadphones);
+            if (slot is null)
+            {
+                continue;
+            }
+
+            _slotImportCounts.AddOrUpdate(slot.Value, 1, (_, count) => count + 1);
+        }
+        
+        if (ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights || ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights)
+        {
+            BuildBaselineWeights();
+        }
+        
         Parallel.ForEach(itemsToImport, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, SortAndStartEquipmentImport);
         
         var customizationItems = databaseService.GetCustomization();
@@ -169,6 +144,118 @@ public class ItemImportService(
         {
             SortAndStartCustomizationImport(item);
         }
+        
+        LogPoolComposition();
+    }
+    
+    private void LogPoolComposition()
+    {
+        if (!ModConfig.Config.Debug.ModImportTuning.EnableModImportTuningSuccessLogs)
+        {
+            return;
+        }
+        var dynamicWeapons = ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights;
+        var dynamicEquipment = ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights;
+
+        if (!dynamicWeapons && !dynamicEquipment)
+            return;
+
+        var weaponMultiplier = ModConfig.Config.Debug.ModImportTuning.BotTypeToCheck switch
+        {
+            var value when value.Equals("pmc", StringComparison.OrdinalIgnoreCase)
+                => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Pmc,
+
+            var value when value.Equals("scav", StringComparison.OrdinalIgnoreCase)
+                => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Scav,
+
+            var value when value.Equals("default", StringComparison.OrdinalIgnoreCase)
+                => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Follower,
+
+            _ => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Pmc
+        };
+
+        var botToCheck = ModConfig.Config.Debug.ModImportTuning.BotTypeToCheck;
+        var tierToCheck = ModConfig.Config.Debug.ModImportTuning.TierToCheck;
+
+        apbsLogger.Success($"[IMPORT][POOL] Dynamic weighting summary | Bot: {botToCheck} | Tier: {tierToCheck}");
+        apbsLogger.Success($"[IMPORT][POOL] At 1.0 each modded item matches the average vanilla item weight for that slot.");
+
+        var weaponSlots = new HashSet<ApbsEquipmentSlots>
+        {
+            ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange,
+            ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange,
+            ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange,
+            ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange,
+            ApbsEquipmentSlots.Holster,
+            ApbsEquipmentSlots.Scabbard
+        };
+
+        foreach (var slot in _slotImportCounts.Keys.OrderBy(s => s.ToString()))
+        {
+            var moddedCount = _slotImportCounts[slot];
+            if (moddedCount == 0)
+            {
+                continue;
+            }
+
+            var isWeaponSlot = weaponSlots.Contains(slot);
+            var dynamicEnabled = isWeaponSlot ? dynamicWeapons : dynamicEquipment;
+            if (!dynamicEnabled)
+            {
+                continue;
+            }
+
+            var (vanillaWeightSum, vanillaCount) = _baselineSlotData.GetValueOrDefault((slot, tierToCheck, botToCheck));
+            if (vanillaCount == 0)
+            {
+                continue;
+            }
+
+            var multiplier = isWeaponSlot ? weaponMultiplier : itemImportHelper.GetEquipmentSlotMultiplierPublic(slot);
+
+            var averageVanillaWeight = Math.Round(vanillaWeightSum / vanillaCount, 2);
+            var moddedWeightEach = Math.Round(averageVanillaWeight * multiplier, 2);
+            var totalWeight = vanillaWeightSum + (moddedCount * moddedWeightEach);
+            var vanillaShare = Math.Round(vanillaWeightSum / totalWeight * 100, 1);
+            var moddedShare = Math.Round(100 - vanillaShare, 1);
+
+            apbsLogger.Success($"[IMPORT][POOL] {slot} | multiplier: {multiplier}");
+            apbsLogger.Success($"[IMPORT][POOL]   Vanilla: {vanillaCount} items | Avg weight: {averageVanillaWeight}");
+            apbsLogger.Success($"[IMPORT][POOL]   Modded:  {moddedCount} items | Weight each: {moddedWeightEach}");
+            apbsLogger.Success($"[IMPORT][POOL]   Split: {vanillaShare}% vanilla / {moddedShare}% modded");
+        }
+
+        _slotImportCounts.Clear();
+    }
+    
+    private void BuildBaselineWeights()
+    {
+        var baseline = new Dictionary<(ApbsEquipmentSlots, int, string), (double, int)>();
+
+        foreach (var slot in Enum.GetValues<ApbsEquipmentSlots>())
+        {
+            for (var tier = 1; tier <= 7; tier++)
+            {
+                var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
+                baseline[(slot, tier, "pmc")]     = GetSlotData(equipmentData.PmcUsec.Equipment, slot);
+                baseline[(slot, tier, "scav")]    = GetSlotData(equipmentData.Scav.Equipment, slot);
+                baseline[(slot, tier, "default")] = GetSlotData(equipmentData.Default.Equipment, slot);
+            }
+        }
+
+        lock (_equipmentLock)
+        {
+            _baselineSlotData = baseline;
+        }
+    }
+    
+    private static (double WeightSum, int ItemCount) GetSlotData(Dictionary<ApbsEquipmentSlots, Dictionary<MongoId, double>> equipment, ApbsEquipmentSlots slot)
+    {
+        if (!equipment.TryGetValue(slot, out var slotDict) || slotDict.Count == 0)
+        {
+            return (0, 0);
+        }
+        return (slotDict.Values.Sum(), slotDict.Count);
     }
     
     /// <summary>
@@ -345,11 +432,11 @@ public class ItemImportService(
             {
                 if (itemImportHelper.IsWttBossWeapon(templateItem.Id))
                 {
-                    AssignBossWeapon(slot, templateItem.Id, equipmentData);
+                    AssignBossWeapon(slot, templateItem.Id, equipmentData, tier);
                 }
                 else
                 {
-                    AssignDefaultWeapon(slot, templateItem.Id, equipmentData);
+                    AssignDefaultWeapon(slot, templateItem.Id, equipmentData, tier);
                 }
             }
             
@@ -378,7 +465,7 @@ public class ItemImportService(
         }
     }
     
-    private void AssignBossWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
+    private void AssignBossWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData, int tier)
     {
         var assignedBosses = itemImportHelper.BossAssignmentPerWtt(itemId);
         foreach (var boss in assignedBosses)
@@ -412,23 +499,32 @@ public class ItemImportService(
         
         if (ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToOthers)
         {
-            AssignDefaultWeapon(slot, itemId, equipmentData);
+            AssignDefaultWeapon(slot, itemId, equipmentData, tier);
         }
     }
 
-    private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData)
+    private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData, int tier)
     {
         var testId = "67f425638b8cbfdc0cd1b5f2";
         var isTestItem = _testMode && itemId == testId;
 
-        var pmcWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "pmc");
-        var scavWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "scav");
-        var defaultWeight = isTestItem ? 50000 : itemImportHelper.GetWeaponSlotWeight(slot, "default");
+        if (isTestItem)
+        {
+            equipmentData.PmcUsec.Equipment[slot][itemId] = 50000;
+            equipmentData.PmcBear.Equipment[slot][itemId] = 50000;
+            equipmentData.Scav.Equipment[slot][itemId] = 50000;
+            equipmentData.Default.Equipment[slot][itemId] = 50000;
+            return;
+        }
 
-        equipmentData.PmcUsec.Equipment[slot][itemId] = pmcWeight;
-        equipmentData.PmcBear.Equipment[slot][itemId] = pmcWeight;
-        equipmentData.Scav.Equipment[slot][itemId] = scavWeight;
-        equipmentData.Default.Equipment[slot][itemId] = defaultWeight;
+        var (pmcWeightSum, pmcCount) = _baselineSlotData.GetValueOrDefault((slot, tier, "pmc"));
+        var (scavWeightSum, scavCount) = _baselineSlotData.GetValueOrDefault((slot, tier, "scav"));
+        var (defaultWeightSum, defaultCount) = _baselineSlotData.GetValueOrDefault((slot, tier, "default"));
+        
+        equipmentData.PmcUsec.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc", pmcWeightSum, pmcCount);
+        equipmentData.PmcBear.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "pmc", pmcWeightSum, pmcCount);
+        equipmentData.Scav.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "scav", scavWeightSum, scavCount);
+        equipmentData.Default.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "default", defaultWeightSum, defaultCount);
     }
     
     private void ProcessAmmoForWeapon(TemplateItem templateItem, string ammoCaliber, int tier)
@@ -561,7 +657,7 @@ public class ItemImportService(
     {
         var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
         var equipmentSlotsLength = templateItem.Properties?.Slots?.Count() ?? 0;
-        
+
         for (var tier = startTier; tier <= 7; tier++)
         {
             if (itemImportHelper.IsBlacklistedViaModConfig(templateItem.Id, tier))
@@ -571,40 +667,50 @@ public class ItemImportService(
             }
             if (itemImportHelper.IfArmouredHelmetAndShouldSkip(templateItem, tier))
             {
-                apbsLogger.Debug($"[IMPORT][{slot.ToString()}][T${tier}] Skipping item in tier: {templateItem.Id} due to armour class 4 or higher");
+                apbsLogger.Debug($"[IMPORT][{slot}][T{tier}] Skipping item in tier: {templateItem.Id} due to armour class 4 or higher");
                 continue;
             }
-            
+
             var equipmentData = itemImportTierHelper.GetEquipmentTierData(tier);
             lock (_equipmentLock)
             {
                 var testId = "694706dd0144198d74a266ff";
                 var isTestItem = _testMode && templateItem.Id == testId;
-                
-                equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem);
-                equipmentData.PmcBear.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem);
-                equipmentData.Scav.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem, true);
-                equipmentData.Default.Equipment[slot][templateItem.Id] = isTestItem ? 50000 : itemImportHelper.GetGearSlotWeight(slot, templateItem);
+
+                if (isTestItem)
+                {
+                    equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = 50000;
+                    equipmentData.PmcBear.Equipment[slot][templateItem.Id] = 50000;
+                    equipmentData.Scav.Equipment[slot][templateItem.Id]    = 50000;
+                    equipmentData.Default.Equipment[slot][templateItem.Id] = 50000;
+                }
+                else
+                {
+                    var (pmcWeightSum, pmcCount) = _baselineSlotData.GetValueOrDefault((slot, tier, "pmc"));
+                    var (scavWeightSum, scavCount) = _baselineSlotData.GetValueOrDefault((slot, tier, "scav"));
+                    var (defaultWeightSum, defaultCount) = _baselineSlotData.GetValueOrDefault((slot, tier, "default"));
+
+                    equipmentData.PmcUsec.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem, false,   pmcWeightSum,     pmcCount);
+                    equipmentData.PmcBear.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem, false,   pmcWeightSum,     pmcCount);
+                    equipmentData.Scav.Equipment[slot][templateItem.Id]    = itemImportHelper.GetGearSlotWeight(slot, templateItem, true,    scavWeightSum,    scavCount);
+                    equipmentData.Default.Equipment[slot][templateItem.Id] = itemImportHelper.GetGearSlotWeight(slot, templateItem, false,   defaultWeightSum, defaultCount);
+                }
             }
-            
+
             if (_uniqueEquipment.TryAdd(templateItem.Id, 0))
                 Interlocked.Increment(ref _equipmentCounter);
         }
-        
+
         if (equipmentSlotsLength > 0)
         {
             var context = new ImportContext { RootItemId = templateItem.Id };
             context.Ancestors.Add(context.RootItemId);
             for (var tier = 1; tier <= 7; tier++)
-            {
                 StartEquipmentFilterItemImport(templateItem, context, false, tier);
-            }
         }
 
         if (_uniqueEquipment.ContainsKey(templateItem.Id))
-        {
             apbsLogger.Debug($"[IMPORT][{slot}] Completed mod import: {templateItem.Id}");
-        }
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Frozen;
+﻿using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Models.Enums;
 using ProgressiveBotSystem.Utils;
@@ -381,7 +382,7 @@ public class ItemImportHelper(
         return result;
     }
 
-    private static void Add(HashSet<MongoId> set, List<string>? list)
+    private void Add(HashSet<MongoId> set, List<string>? list)
     {
         if (list is null) return;
 
@@ -592,7 +593,10 @@ public class ItemImportHelper(
         foreach (var itemId in items.Keys)
         {
             var item = itemHelper.GetItem(itemId);
-            if (item.Value is null) continue;
+            if (item.Value is null)
+            {
+                continue;
+            }
             
             hashSet.Add(itemId);
         }
@@ -661,6 +665,78 @@ public class ItemImportHelper(
             
             items.Add(itemId);
         }
+    }
+    
+    /// <summary>
+    ///     Dry-run classification of which slot an item would be routed to during import.
+    ///     Returns null if the item would be skipped (mountable headphones, unrecognized, etc.)
+    /// </summary>
+    public ApbsEquipmentSlots? ClassifyEquipmentSlot(TemplateItem templateItem, ConcurrentDictionary<MongoId, byte> mountedHeadphones)
+    {
+        var itemId = templateItem.Id;
+
+        if (IsHolster(itemId))
+        {
+            return ApbsEquipmentSlots.Holster;
+        }
+        if (IsScabbard(itemId))
+        {
+            return ApbsEquipmentSlots.Scabbard;
+        }
+        if (IsHeadwear(itemId))
+        {
+            return ApbsEquipmentSlots.Headwear;
+        }
+        if (IsArmourVest(itemId))
+        {
+            return ApbsEquipmentSlots.ArmorVest;
+        }
+        if (IsBackpack(itemId))
+        {
+            return ApbsEquipmentSlots.Backpack;
+        }
+        if (IsFacecover(itemId))
+        {
+            return ApbsEquipmentSlots.FaceCover;
+        }
+        if (IsEyeglasses(itemId))
+        {
+            return ApbsEquipmentSlots.Eyewear;
+        }
+
+        if (IsPackNStrapBelt(itemId) || IsArmband(itemId))
+        {
+            return ApbsEquipmentSlots.ArmBand;
+        }
+
+        if (IsPrimaryWeapon(itemId))
+        {
+            return IsLongRangePrimaryWeapon(itemId)
+                ? ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange
+                : ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange;
+        }
+
+        if (IsRigSlot(itemId))
+        {
+            return IsArmouredRig(templateItem)
+                ? ApbsEquipmentSlots.ArmouredRig
+                : ApbsEquipmentSlots.TacticalVest;
+        }
+
+        if (IsHeadphones(itemId))
+        {
+            if (mountedHeadphones.ContainsKey(itemId))
+            {
+                return null;
+            }
+            if (AreHeadphonesMountable(templateItem))
+            {
+                return null;
+            }
+            return ApbsEquipmentSlots.Earpiece;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -970,16 +1046,32 @@ public class ItemImportHelper(
     }
     
     /// <summary>
-    ///     Check if the item is a primary, if it is, send it to a different helper method
-    ///     If it's not a primary weapon, go ahead and return the proper weights for each bot type
+    ///     Returns the weight for an imported weapon in the given slot.
+    ///     If using DynamicWeighting return the following:
+    ///     At multiplier 1.0 each modded weapon has the same individual selection chance as the average vanilla weapon.
+    ///     Below 1.0 = modded less likely than average vanilla, above 1.0 = modded more likely than average vanilla.
     /// </summary>
-    public int GetWeaponSlotWeight(ApbsEquipmentSlots slot, string botType)
+    public double GetWeaponSlotWeight(ApbsEquipmentSlots slot, string botType, double vanillaWeightSum = 0, int vanillaCount = 0)
     {
-        if (IsPrimary(slot))
+        var staticWeight = IsPrimary(slot) ? GetPrimaryWeaponWeight(botType) : GetStaticNonPrimaryWeight(slot, botType);
+
+        if (!ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights || vanillaCount == 0 || vanillaWeightSum == 0)
         {
-            return GetPrimaryWeaponWeight(botType);
+            return staticWeight;
         }
-        
+
+        var averageVanillaWeight = vanillaWeightSum / vanillaCount;
+        var multiplier = botType.ToLowerInvariant() switch
+        {
+            "pmc"   => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Pmc,
+            "scav"  => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Scav,
+            _ => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Follower,
+        };
+        return Math.Max(1, Math.Round(averageVanillaWeight * multiplier, 2));
+    }
+    
+    private double GetStaticNonPrimaryWeight(ApbsEquipmentSlots slot, string botType)
+    {
         return botType switch
         {
             "pmc" => slot switch
@@ -988,14 +1080,10 @@ public class ItemImportHelper(
                 ApbsEquipmentSlots.Scabbard => 6,
                 _ => 1
             },
-
             "scav" => slot switch
             {
-                ApbsEquipmentSlots.Holster  => 1,
-                ApbsEquipmentSlots.Scabbard => 1,
                 _ => 1
             },
-
             _ => slot switch
             {
                 ApbsEquipmentSlots.Holster  => 3,
@@ -1031,6 +1119,71 @@ public class ItemImportHelper(
         };
     }
     
+    /// <summary>
+    ///     Returns the weight for an imported equipment item in the given slot.
+    ///     Follows the same individual parity logic as weapons — at 1.0 each modded item matches the average vanilla item weight for that slot.
+    /// </summary>
+    public double GetGearSlotWeight(ApbsEquipmentSlots slot, TemplateItem templateItem, bool isScav = false, double vanillaWeightSum = 0, int vanillaCount = 0)
+    {
+        var staticWeight = isScav ? 1 : GetStaticGearSlotWeight(slot, templateItem);
+
+        if (!ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights || vanillaCount == 0 || vanillaWeightSum == 0)
+            return staticWeight;
+
+        var multiplier = GetEquipmentSlotMultiplier(slot, templateItem);
+        var averageVanillaWeight = vanillaWeightSum / vanillaCount;
+        return Math.Max(1, Math.Round(averageVanillaWeight * multiplier, 2));
+    }
+    
+    private int GetStaticGearSlotWeight(ApbsEquipmentSlots slot, TemplateItem templateItem)
+    {
+        var gridLength = templateItem.Properties?.Grids?.Count() ?? 0;
+        var equipmentSlotsLength = templateItem.Properties?.Slots?.Count() ?? 0;
+        var armorClass = templateItem.Properties?.ArmorClass ?? 0;
+        return slot switch
+        {
+            ApbsEquipmentSlots.ArmBand => ModConfig.Config.CompatibilityConfig.ArmBandWeight,
+            ApbsEquipmentSlots.ArmorVest => ModConfig.Config.CompatibilityConfig.ArmourVestWeight,
+            ApbsEquipmentSlots.ArmouredRig => ModConfig.Config.CompatibilityConfig.ArmouredRigWeight,
+            ApbsEquipmentSlots.Backpack => ModConfig.Config.CompatibilityConfig.BackpackWeight,
+            ApbsEquipmentSlots.Eyewear => ModConfig.Config.CompatibilityConfig.EyewearWeight,
+            ApbsEquipmentSlots.Earpiece => ModConfig.Config.CompatibilityConfig.EarpieceWeight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight,
+            ApbsEquipmentSlots.FaceCover => ModConfig.Config.CompatibilityConfig.FaceCoverWeight,
+            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight,
+            ApbsEquipmentSlots.Headwear => ModConfig.Config.CompatibilityConfig.HeadwearWeight,
+            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight,
+            ApbsEquipmentSlots.TacticalVest => ModConfig.Config.CompatibilityConfig.TacticalVestWeight,
+            _ => 15
+        };
+    }
+    
+    public double GetEquipmentSlotMultiplierPublic(ApbsEquipmentSlots slot, TemplateItem? templateItem = null) => GetEquipmentSlotMultiplier(slot, templateItem);
+    private double GetEquipmentSlotMultiplier(ApbsEquipmentSlots slot, TemplateItem? templateItem = null)
+    {
+        var config = ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers;
+
+        return slot switch
+        {
+            ApbsEquipmentSlots.Headwear => templateItem?.Properties?.Slots?.Any() == true ? config.HeadwearWithSlots : config.Headwear,
+            ApbsEquipmentSlots.FaceCover => (templateItem?.Properties?.ArmorClass ?? 0) switch
+            {
+                > 2 => config.FaceCoverAc2,
+                > 0 => config.FaceCoverAc0,
+                _   => config.FaceCover
+            },
+            ApbsEquipmentSlots.TacticalVest => (templateItem?.Properties?.Grids?.Count() ?? 0) > 10 ? config.TacticalVestLargeGrid : config.TacticalVest,
+            ApbsEquipmentSlots.ArmorVest    => config.ArmorVest,
+            ApbsEquipmentSlots.ArmouredRig  => config.ArmouredRig,
+            ApbsEquipmentSlots.Backpack     => config.Backpack,
+            ApbsEquipmentSlots.Eyewear      => config.Eyewear,
+            ApbsEquipmentSlots.Earpiece     => config.Earpiece,
+            ApbsEquipmentSlots.ArmBand      => config.ArmBand,
+            _                               => 1.0
+        };
+    }
+    
     private readonly FrozenSet<MongoId> _armourSlots = [BaseClasses.HEADWEAR, BaseClasses.VEST, BaseClasses.ARMOR];
     /// <summary>
     ///     Check if the item has an armour class or armour plate slots
@@ -1055,37 +1208,6 @@ public class ItemImportHelper(
         }
 
         return false;
-    }
-    
-    /// <summary>
-    ///     Checks various item properties, such as grid length, slot length, etc.
-    ///     If the gear is for a scav, go ahead and return 1 to make it less likely
-    ///     If the gear isn't for a scav, go ahead and get and return the correct weight for the slot based on the aforementioned properties if needed
-    /// </summary>
-    public int GetGearSlotWeight(ApbsEquipmentSlots slot, TemplateItem templateItem, bool isScav = false)
-    {
-        if (isScav) return 1;
-        
-        var gridLength = templateItem.Properties?.Grids?.Count() ?? 0;
-        var equipmentSlotsLength = templateItem.Properties?.Slots?.Count() ?? 0;
-        var armorClass = templateItem.Properties?.ArmorClass ?? 0;
-        return slot switch
-        {
-            ApbsEquipmentSlots.ArmBand => ModConfig.Config.CompatibilityConfig.ArmBandWeight,
-            ApbsEquipmentSlots.ArmorVest => ModConfig.Config.CompatibilityConfig.ArmourVestWeight,
-            ApbsEquipmentSlots.ArmouredRig => ModConfig.Config.CompatibilityConfig.ArmouredRigWeight,
-            ApbsEquipmentSlots.Backpack => ModConfig.Config.CompatibilityConfig.BackpackWeight,
-            ApbsEquipmentSlots.Eyewear => ModConfig.Config.CompatibilityConfig.EyewearWeight,
-            ApbsEquipmentSlots.Earpiece => ModConfig.Config.CompatibilityConfig.EarpieceWeight,
-            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight,
-            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight,
-            ApbsEquipmentSlots.FaceCover => ModConfig.Config.CompatibilityConfig.FaceCoverWeight,
-            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight,
-            ApbsEquipmentSlots.Headwear => ModConfig.Config.CompatibilityConfig.HeadwearWeight,
-            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight,
-            ApbsEquipmentSlots.TacticalVest => ModConfig.Config.CompatibilityConfig.TacticalVestWeight,
-            _ => 15
-        };
     }
 
     public bool AreHeadphonesMountable(TemplateItem headphoneTemplateItem)
