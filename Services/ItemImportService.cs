@@ -821,6 +821,10 @@ public class ItemImportService(
                         context.Ancestors.Remove(childItemId);
                     }
                 }
+                
+                // This is behind debug log but is logging in warning so I can isolate those logs to the warning logs
+                if (ModConfig.Config.Debug.EnableDebugLog)
+                    itemImportHelper.LogErgoSlotSummary(parentItem, slotName);
             }
         }
         finally

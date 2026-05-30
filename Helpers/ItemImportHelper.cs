@@ -1299,88 +1299,188 @@ public class ItemImportHelper(
 
     public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd, string slot, int tier)
     {
-        var isHighTier = tier >= 4;
-        var hasDualOptions = HasLowerAndUpperOptionsAvailable(parentItem, slot, slot.StartsWith("mod_magazine") ? 30 : 8);
-
-        // Slot is marked required
-        if (parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false)
-        {
+        var isRequired = parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false;
+        if (isRequired)
             return true;
-        }
-        
-        // MAGAZINES
+
         if (slot.StartsWith("mod_magazine"))
         {
-            if (!hasDualOptions)
-                return true;
-
             var maxCount = itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount;
-            if (!maxCount.HasValue)
-                return true;
-            
-            return isHighTier ? maxCount.Value >= 30 : maxCount.Value <= 30;
+            if (!maxCount.HasValue) return true;
+            if (!MagazinePoolCoversAllTiers(parentItem, slot)) return true;
+
+            var magTier = GetMagazineTierForCount((int)maxCount.Value);
+            return tier >= magTier;
         }
 
-        // STOCKS / HANDGUARDS / RECEIVERS / PISTOLGRIP
-        if (slot.StartsWith("mod_stock") || slot.StartsWith("mod_handguard") || slot.StartsWith("mod_reciever") || slot.StartsWith("mod_pistol_grip"))
-        {
-            if (!hasDualOptions)
-                return true;
-
-            var ergo = itemToAdd.Properties?.Ergonomics;
-            if (!ergo.HasValue)
-                return true;
-
-            return isHighTier ? ergo.Value >= 8 : ergo.Value <= 8;
-        }
-
-        // SCOPES
         if (slot.StartsWith("mod_scope"))
+            return tier >= 4 && _tier4Optics.Contains(itemToAdd.Id);
+
+        if (slot.StartsWith("mod_charge"))
         {
-            return isHighTier && _tier4Optics.Contains(itemToAdd.Id);
+            var ergo = itemToAdd.Properties?.Ergonomics ?? 0;
+
+            return tier switch
+            {
+                1 => ergo == 0,
+                2 => ergo == 0,
+                3 => ergo <= 1,
+                _ => ergo >= 1
+            };
+        }
+        
+        if (!slot.StartsWith("mod_stock") && !slot.StartsWith("mod_handguard") && !slot.StartsWith("mod_reciever") && !slot.StartsWith("mod_pistol_grip"))
+            return true;
+
+        var stat = GetStatForSlot(itemToAdd, slot);
+        if (!stat.HasValue || stat.Value <= 0)
+            return true;
+
+        var sortedValues = GetSortedErgoValues(parentItem, slot);
+        if (!ErgoPoolCoversAllTiers(sortedValues))
+            return true;
+
+        var percentile = GetPercentile(sortedValues, stat.Value);
+        return IsInPercentileBandForTier(percentile, tier);
+    }
+
+    private bool MagazinePoolCoversAllTiers(TemplateItem parentItem, string slot)
+    {
+        var bracketItems = new Dictionary<int, int>();
+
+        foreach (var itemId in GetItemFilters(parentItem, slot))
+        {
+            var itemData = itemHelper.GetItem(itemId).Value;
+            if (itemData == null || _bannedAttachments.Contains(itemData.Id))
+            {
+                continue;
+            }
+
+            var count = itemData.Properties?.Cartridges?.FirstOrDefault()?.MaxCount;
+            if (!count.HasValue)
+            {
+                continue;
+            }
+
+            var bracket = GetMagazineTierForCount((int)count.Value);
+            bracketItems[bracket] = bracketItems.GetValueOrDefault(bracket) + 1;
+        }
+
+        if (bracketItems.Count < 1)
+        {
+            return false;
+        }
+
+        for (var tier = 1; tier <= 7; tier++)
+        {
+            var itemsAvailable = bracketItems.Where(kv => kv.Key <= tier).Sum(kv => kv.Value);
+            if (itemsAvailable < 1)
+            {
+                return false;
+            }
         }
 
         return true;
     }
 
-
-
-    private bool HasLowerAndUpperOptionsAvailable(TemplateItem parentItem, string slot, int thresholdValue)
+    private List<double> GetSortedErgoValues(TemplateItem parentItem, string slot)
     {
-        var slotData = parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot);
-        if (slotData == null) return false;
-        
-        var itemFilters = slotData.Properties?.Filters?.FirstOrDefault()?.Filter;
-        var hasUpperOptions = false;
-        var hasLowerOptions = false;
-
-        foreach (var item in itemFilters ?? [])
+        var values = new List<double>();
+        foreach (var itemId in GetItemFilters(parentItem, slot))
         {
-            var itemData = itemHelper.GetItem(item).Value;
+            var itemData = itemHelper.GetItem(itemId).Value;
             if (itemData == null || _bannedAttachments.Contains(itemData.Id))
                 continue;
 
-            var value = slot switch
-            {
-                "mod_magazine" => (int?)itemData.Properties?.Cartridges?.FirstOrDefault()?.MaxCount,
-                
-                "mod_handguard" or "mod_reciever" or "mod_stock"
-                    or "mod_stock_000" or "mod_stock_001" or "mod_stock_002"
-                    or "mod_stock_akms" or "mod_stock_axis"
-                    => (int?)itemData.Properties?.Ergonomics,
-                _ => null
-            };
+            if (VssValCheck(parentItem, slot)) continue;
+            if (Ar15Mod1Check(parentItem, slot)) continue;
+            if (IsFrontOrRearSightAndVanillaItem(parentItem, slot)) continue;
+            if (IsBannedModScope000(itemData, slot)) continue;
+            if (IsFrontOrRearSightAndDoesntFold(parentItem, itemData, slot)) continue;
 
-            if (!value.HasValue) continue;
-
-            if (value >= thresholdValue) hasUpperOptions = true;
-            if (value <= thresholdValue) hasLowerOptions = true;
-
-            if (hasUpperOptions && hasLowerOptions)
-                return true;
-        }
+            var stat = GetStatForSlot(itemData, slot);
+        
+            if (!stat.HasValue || stat.Value <= 0)
+                continue;
             
-        return false;
+            values.Add(stat.Value);
+        }
+
+        values.Sort();
+        return values;
+    }
+
+    private bool ErgoPoolCoversAllTiers(List<double> sortedValues)
+    {
+        if (sortedValues.Count < 8)
+            return false;
+
+        var range = sortedValues.Last() - sortedValues.First();
+        var uniqueValues = sortedValues.Distinct().Count();
+
+        return range >= 6 && uniqueValues >= 5;
+    }
+
+    private HashSet<MongoId> GetItemFilters(TemplateItem parentItem, string slot)
+    {
+        return parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Properties?.Filters?.FirstOrDefault()?.Filter ?? [];
+    }
+
+    private double GetPercentile(List<double> sortedValues, double stat)
+    {
+        var rank = sortedValues.Count(v => v <= stat);
+        return (double)rank / sortedValues.Count;
+    }
+
+    private double? GetStatForSlot(TemplateItem item, string slot)
+    {
+        if (slot.StartsWith("mod_stock") || slot.StartsWith("mod_handguard") || slot.StartsWith("mod_reciever") || slot.StartsWith("mod_pistol_grip"))
+        {
+            return item.Properties?.Ergonomics;
+        }
+
+        return null;
+    }
+
+    private bool IsInPercentileBandForTier(double percentile, int tier) => tier switch
+    {
+        1 => percentile <= 0.35,    // bottom 65%
+        2 => percentile <= 0.50,    // bottom 50%
+        3 => percentile <= 0.65,    // bottom 35%
+        4 => percentile >= 0.35,    // top 65% (overlap t3)
+        5 => percentile >= 0.45,    // top 55%
+        6 => percentile >= 0.55,    // top 45%
+        7 => percentile >= 0.70,    // top 30%
+        _ => true
+    };
+
+    private int GetMagazineTierForCount(int count) => count switch
+    {
+        <= 10 => 1,
+        <= 20 => 2,
+        <= 30 => 4,
+        <= 45 => 5,
+        _     => 7
+    };
+    
+    public void LogErgoSlotSummary(TemplateItem parentItem, string slot)
+    {
+        var sortedValues = GetSortedErgoValues(parentItem, slot);
+        if (!ErgoPoolCoversAllTiers(sortedValues))
+            return;
+
+        var tierBands = new Dictionary<int, List<double>>();
+        for (var tier = 1; tier <= 7; tier++)
+        {
+            var t = tier;
+            tierBands[tier] = sortedValues
+                .Where(v => IsInPercentileBandForTier(GetPercentile(sortedValues, v), t))
+                .ToList();
+        }
+
+        var bandSummary = string.Join(" | ", tierBands.Select(kv => $"T{kv.Key}:{kv.Value.Count}({(kv.Value.Count > 0 ? $"{kv.Value.Min()}-{kv.Value.Max()}" : "empty")})"));
+
+        apbsLogger.Warning($"[TIER][ERGO] POOL | parent: {parentItem.Id} | slot: {slot} | range: {sortedValues.First()}-{sortedValues.Last()} | {bandSummary}");
     }
     
     /// <summary>
