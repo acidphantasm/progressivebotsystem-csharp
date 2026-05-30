@@ -13,7 +13,7 @@ using SPTarkov.Server.Core.Models.Enums;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class SetRandomisedGameVersionAndCategory_Patch : AbstractPatch
+public class SetRandomisedGameVersionAndCategoryPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {

@@ -12,7 +12,7 @@ using SPTarkov.Server.Core.Services;
 
 namespace ProgressiveBotSystem.Patches;
 
-public class SetBotAppearance_Patch : AbstractPatch
+public class SetBotAppearancePatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
