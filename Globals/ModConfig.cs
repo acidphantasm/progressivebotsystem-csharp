@@ -87,7 +87,6 @@ public class ModConfig : IOnLoad
 
         if (ConfigHelper.IsJsonOutdated(rawConfig, rawDefaultConfig, Config))
         {
-            _apbsLogger.Warning("Config is missing new properties or has incorrect array sizes, updating...");
             await _fileUtil.WriteFileAsync(configPath, _jsonUtil.Serialize(Config, true)!);
             _apbsLogger.Success("Config updated and/or repaired.");
         }
