@@ -54,6 +54,7 @@ public static class ConfigHelper
         var defaultKeys = ParseDefaultJson(rawDefaultJson);
 
         var hasMissingKeys = defaultKeys.Any(k => !diskKeys.Contains(k));
+        var hasExtraKeys = diskKeys.Any(k => !defaultKeys.Contains(k));
         var hasInvalidArrays = RequiredArrayLengths.Any(kvp => diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value);
 
         if (config != null && hasInvalidArrays)
@@ -61,7 +62,7 @@ public static class ConfigHelper
             RepairArrays(config, diskArrayLengths);
         }
 
-        return hasMissingKeys || hasInvalidArrays;
+        return hasMissingKeys || hasInvalidArrays || hasExtraKeys;
     }
 
     /// <summary>
