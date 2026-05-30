@@ -1,13 +1,13 @@
 using System.Reflection;
-using _progressiveBotSystem.Constants;
-using _progressiveBotSystem.Generators;
-using _progressiveBotSystem.Globals;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Generators;
+using ProgressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Utils;
-using SPTarkov.Server.Web;
 using Path = System.IO.Path;
 
 namespace _progressiveBotSystem;
@@ -28,7 +28,7 @@ public record ModMetadata : AbstractModMetadata, IModWebMetadata
 }
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
-public class ProgressiveBotSystem(
+public class StartUpService(
     IReadOnlyList<SptMod> installedMods,
     ModHelper modHelper,
     JsonUtil jsonUtil)
@@ -41,6 +41,14 @@ public class ProgressiveBotSystem(
         
         var releaseNoteGenerator = new ReleaseNoteGenerator(modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly()), new ModMetadata().SptVersion, jsonUtil);
         _ = releaseNoteGenerator.GenerateIfFirstBuildAsync();
+
+        var patchManager = new PatchManager
+        {
+            PatcherName = "com.acidphantasm.progressivebotsystem",
+            AutoPatch = true
+        };
+        
+        patchManager.EnablePatches();
         
         return Task.CompletedTask;
     }
@@ -63,10 +71,11 @@ public class ProgressiveBotSystem(
     private void CreateLogFile(string logType, string logData)
     {
         var filePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/logs/{logType}.txt";
-
-        if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+        var directoryName = Path.GetDirectoryName(filePath);
+        
+        if (!Directory.Exists(directoryName))
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            Directory.CreateDirectory(directoryName);
         }
 
         if (!File.Exists(filePath))
