@@ -1,7 +1,7 @@
 ﻿[
   {
-    "Version": "2.2.0",
-    "ReleaseDate": "May 30, 2026",
+    "Version": "2.2.1",
+    "ReleaseDate": "June 1, 2026",
     "IsLatest": true,
     "NewFeatures": [
       "WebConfig toggle to use dynamic mod weapon importing",
