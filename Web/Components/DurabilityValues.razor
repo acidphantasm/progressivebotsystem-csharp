@@ -1,18 +1,18 @@
 ﻿<MudItem xs="2" />
 <MudItem xs="3">
-    <MudTooltip Text="@($"Adjust {Label} durability values.")" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+    <MudTooltip Text="@($"Adjust {Label} durability values.")" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
         <MudText>@($"{Label} Durability Values")</MudText>
     </MudTooltip>
 </MudItem>
 <MudItem xs="2">
     <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-        <MudTooltip Text="@($"Lowest a {Label}'s 'non-repairable' durability can be.")" Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="@($"Lowest a {Label}'s 'non-repairable' durability can be.")" Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@Min"
                              ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMinChanged))"
                              Label="Min" HelperText="Durability" Variant="Variant.Filled"
                              Min="0" Max="@(Max - MinDelta + MaxDelta - 1)" Disabled="@Disabled" />
         </MudTooltip>
-        <MudTooltip Text="@($"Highest a {Label}'s 'non-repairable' durability can be.")" Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="@($"Highest a {Label}'s 'non-repairable' durability can be.")" Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@Max"
                              ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMaxChanged))"
                              Label="Max" HelperText="Durability" Variant="Variant.Filled"
@@ -22,13 +22,13 @@
 </MudItem>
 <MudItem xs="2">
     <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-        <MudTooltip Text="Lowest possible difference from the rolled 'non-repairable' durability to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="Lowest possible difference from the rolled 'non-repairable' durability to the 'current' durability." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MinDelta"
                              ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMinDeltaChanged))"
                              Label="Min" HelperText="Delta" Variant="Variant.Filled"
                              Min="0" Max="@(Max - Min + MaxDelta - 1)" Disabled="@Disabled" />
         </MudTooltip>
-        <MudTooltip Text="Highest possible difference from the rolled 'non-repairable' durability to the 'current' durability." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="Highest possible difference from the rolled 'non-repairable' durability to the 'current' durability." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" Value="@MaxDelta"
                              ValueChanged="@(EventCallback.Factory.Create<int>(this, OnMaxDeltaChanged))"
                              Label="Max" HelperText="Delta" Variant="Variant.Filled"
@@ -38,11 +38,11 @@
 </MudItem>
 <MudItem xs="2">
     <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-        <MudTooltip Text="Lowest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="Lowest Possible Current Durability Roll." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" Value="@MinLimitPercent"
                 Label="Min" HelperText="Actual" Variant="Variant.Filled" Min="0" Max="100" />
         </MudTooltip>
-        <MudTooltip Text="Highest Possible Current Durability Roll." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="Highest Possible Current Durability Roll." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField Disabled Margin="Margin.Dense" HideSpinButtons="true" Value="@MaxLimitPercent"
                 Label="Max" HelperText="Actual" Variant="Variant.Filled" Min="0" Max="100" />
         </MudTooltip>

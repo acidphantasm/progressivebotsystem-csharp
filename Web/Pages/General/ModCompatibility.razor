@@ -576,7 +576,7 @@
 
                     <MudItem xs="1">
                         <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Color="Color.Dark" Placement="Placement.Right" Arrow="true">
                                 <ChildContent>
                                     <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
                                 </ChildContent>
@@ -591,16 +591,16 @@
                     </MudItem>
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Changes the amount of ammo stacks that get added to bot secure containers." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Changes the amount of ammo stacks that get added to bot secure containers." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
                                 <MudText>Bot Secure Container Ammo Stack Count</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@ModAmmoStackCount</MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Size="Size.Small">@ModAmmoStackCount</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="ModAmmoStackCount" ValueLabel="true" Min="1" Max="30" Color="Color.Info" Size="Size.Medium" />
+                        <MudSlider @bind-Value="ModAmmoStackCount" ValueLabel="true" Min="1" Max="30" Color="Color.Tertiary" Size="Size.Medium" />
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && MainLayout.pendingChanges.Contains("ModAmmoStackCount"))

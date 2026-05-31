@@ -1,8 +1,31 @@
 ﻿[
   {
     "Version": "2.2.0",
-    "ReleaseDate": "May 2, 2026",
+    "ReleaseDate": "May 30, 2026",
     "IsLatest": true,
+    "NewFeatures": [
+      "WebConfig toggle to use dynamic mod weapon importing",
+      "WebConfig toggle to use dynamic mod equipment importing",
+      "WebConfig sliders for dynamic importing",
+      "WebConfig debug toggle to log import tuning details when using dynamic (also a bot to check against and tier)"
+    ],
+    "Changes": [
+      "Updated the WebConfig theme",
+      "Updated ItemImportService logic adjusted to handle using static or dynamic importing",
+      "Updated forward compatible config loading to remove unused keys",
+      "Updated default config values",
+      "Changed tiering logic for attachments to be stat band based instead of hard thresholds",
+      "Added charging handles to mod import tiering logic"
+    ],
+    "BugFixes": [
+      "Resolved namespace naming because someone was complaining about it"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.2.0",
+    "ReleaseDate": "May 2, 2026",
+    "IsLatest": false,
     "NewFeatures": [
       "Configs are now forward compatible - APBS no longer ships with a config.json",
       "The server will notify you if your config needs the new features added and will do so without impacting your existing settings",

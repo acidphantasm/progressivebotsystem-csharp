@@ -1,18 +1,18 @@
 ﻿<MudItem xs="1" />
 <MudItem xs="4" Style="margin-top: 20px;">
-    <MudTooltip Text="Adjust weapon range selection weights. Higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+    <MudTooltip Text="Adjust weapon range selection weights. Higher is more common." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
         <MudText>@Label</MudText>
     </MudTooltip>
 </MudItem>
 <MudItem xs="6">
     <MudPaper Class="d-flex align-start mud-width-full" Elevation="0">
-        <MudTooltip Text="Long range weapon selection weight." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="Long range weapon selection weight." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField T="double" Margin="Margin.Dense" HideSpinButtons="true"
                              Value="LongWeight"
                              ValueChanged="@(v => { LongWeightChanged.InvokeAsync(v); StateHasChanged(); })"
                              Label="Weight" HelperText="Long Range" Variant="Variant.Filled" Min="0" Max="100" />
         </MudTooltip>
-        <MudTooltip Text="Short range weapon selection weight." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+        <MudTooltip Text="Short range weapon selection weight." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
             <MudNumericField T="double" Margin="Margin.Dense" HideSpinButtons="true"
                              Value="ShortWeight"
                              ValueChanged="@(v => { ShortWeightChanged.InvokeAsync(v); StateHasChanged(); })"

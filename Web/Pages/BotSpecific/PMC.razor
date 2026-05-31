@@ -422,7 +422,7 @@
 
                         <MudItem xs="1">
                             <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                                <MudTooltip Text="Enter the name of the bot you want marked as a developer, then click the arrow (or press enter) to add it." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudTooltip Text="Enter the name of the bot you want marked as a developer, then click the arrow (or press enter) to add it." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
                                     <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
                                 </MudTooltip>
                             </MudPaper>
@@ -464,18 +464,18 @@
 
                         <MudItem xs="2" />
                         <MudItem xs="3">
-                            <MudTooltip Text="Minimum and maximum levels for bots in the Developer Name list, if enabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip Text="Minimum and maximum levels for bots in the Developer Name list, if enabled." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
                                 <MudText>Developer Bot Level Values</MudText>
                             </MudTooltip>
                         </MudItem>
                         <MudItem xs="6">
                             <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                                <MudTooltip Text="Lowest level that above named bots can be." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudTooltip Text="Lowest level that above named bots can be." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
                                     <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="PmcSecretDeveloperLevelsMin" Label="Minimum" HelperText="Level" Variant="Variant.Filled"
                                         Min="1" Max="@(PmcSecretDeveloperLevelsMax - 1)" Disabled="!PmcSecretDeveloperLevelsEnabled" />
                                 </MudTooltip>
                                 <MudSpacer />
-                                <MudTooltip Text="Highest level that above named bots can be." Color="Color.Primary" Placement="Placement.Left" Arrow="true">
+                                <MudTooltip Text="Highest level that above named bots can be." Color="Color.Dark" Placement="Placement.Left" Arrow="true">
                                     <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="PmcSecretDeveloperLevelsMax" Label="Maximum" HelperText="Level" Variant="Variant.Filled"
                                         Min="@(PmcSecretDeveloperLevelsMin + 1)" Max="79" Disabled="!PmcSecretDeveloperLevelsEnabled" />
                                 </MudTooltip>

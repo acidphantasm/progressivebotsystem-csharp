@@ -1,16 +1,16 @@
 ﻿<MudItem xs="1" />
 <MudItem xs="4">
     <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-        <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+        <MudTooltip Text="@TooltipText" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
             <MudText>@Label</MudText>
         </MudTooltip>
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="@Disabled">@Value</MudButton>
+    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Size="Size.Small" Disabled="@Disabled">@Value</MudButton>
 </MudItem>
 <MudItem xs="5">
-    <MudSlider Value="@Value" ValueChanged="@ValueChanged" ValueLabel="true" Min="@Min" Max="@Max" Color="Color.Info" Size="Size.Medium" Disabled="@Disabled"/>
+    <MudSlider Value="@Value" ValueChanged="@ValueChanged" ValueLabel="true" Min="@Min" Max="@Max" Color="Color.Tertiary" Variant="Variant.Outlined" Size="Size.Medium" Disabled="@Disabled"/>
 </MudItem>
 <MudItem xs="1">
     @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)

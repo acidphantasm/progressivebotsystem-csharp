@@ -1,22 +1,22 @@
 ﻿<MudItem xs="2" />
 <MudItem xs="3">
     <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-        <MudTooltip Text="@TooltipText" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+        <MudTooltip Text="@TooltipText" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
             <MudText>@Label</MudText>
         </MudTooltip>
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
     <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-        <MudSwitch T="bool" Value="@ValueBool" ValueChanged="@ValueBoolChanged" Color="Color.Success" UncheckedColor="Color.Default" Disabled="@DisabledSwitch" />
+        <MudSwitch T="bool" Value="@ValueBool" ValueChanged="@ValueBoolChanged" Color="Color.Tertiary" UncheckedColor="Color.Default" Disabled="@DisabledSwitch" />
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="@DisabledSlider">@ValueInt</MudButton>
+    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Size="Size.Small" Disabled="@DisabledSlider">@ValueInt</MudButton>
 </MudItem>
 <MudItem xs="4">
     <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-        <MudSlider T="int" Value="@ValueInt" ValueChanged="@ValueIntChanged" Min="@Min" Max="@Max" Color="Color.Info" Size="Size.Medium" Disabled="@DisabledSlider" />
+        <MudSlider T="int" Value="@ValueInt" ValueChanged="@ValueIntChanged" Min="@Min" Max="@Max" Color="Color.Tertiary" Variant="Variant.Outlined" Size="Size.Medium" Disabled="@DisabledSlider" />
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
