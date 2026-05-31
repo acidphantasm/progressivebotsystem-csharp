@@ -71,6 +71,11 @@ public class ItemImportService(
         ClearImportData();
     }
     
+    /// <summary>
+    ///     Log a summary of all imported content, including counts for weapons,
+    ///     equipment, calibers, clothing and attachment combinations.
+    /// </summary>
+    /// <param name="elapsedMs">Total import duration in milliseconds.</param>
     private void LogImportSummary(long elapsedMs)
     {
         var rows = new List<(string Name, int Count)>
@@ -115,6 +120,10 @@ public class ItemImportService(
         }
     }
     
+    /// <summary>
+    ///     Reset all import tracking counters and cached import state after the
+    ///     import process has completed.
+    /// </summary>
     private void ClearImportData()
     {
         _caliberCounter = 0;
@@ -138,8 +147,8 @@ public class ItemImportService(
     }
     
     /// <summary>
-    ///     Start of the import process, all you're doing is validating if the item should be imported
-    ///     If it should be imported, it's passed over to the sorting import process
+    ///     Discover all importable equipment and customization items, build
+    ///     baseline weighting data when enabled, and begin the import process.
     /// </summary>
     private void ImportEquipmentBySlot()
     {
@@ -182,6 +191,10 @@ public class ItemImportService(
         LogPoolComposition();
     }
     
+    /// <summary>
+    ///     Log a dynamic weighting summary showing the expected vanilla versus
+    ///     modded item distribution for each slot.
+    /// </summary>
     private void LogPoolComposition()
     {
         if (!ModConfig.Config.Debug.ModImportTuning.EnableModImportTuningSuccessLogs)
@@ -262,6 +275,10 @@ public class ItemImportService(
         _slotImportCounts.Clear();
     }
     
+    /// <summary>
+    ///     Build baseline slot weight statistics from existing vanilla equipment
+    ///     pools for use by dynamic weighting calculations.
+    /// </summary>
     private void BuildBaselineWeights()
     {
         var baseline = new Dictionary<(ApbsEquipmentSlots, int, string), (double, int)>();
@@ -283,6 +300,14 @@ public class ItemImportService(
         }
     }
     
+    /// <summary>
+    ///     Calculate the total weight and item count for a specific equipment slot.
+    /// </summary>
+    /// <param name="equipment">Equipment pool data to inspect.</param>
+    /// <param name="slot">Slot to calculate statistics for.</param>
+    /// <returns>
+    ///     A tuple containing the total weight sum and item count for the slot.
+    /// </returns>
     private static (double WeightSum, int ItemCount) GetSlotData(Dictionary<ApbsEquipmentSlots, Dictionary<MongoId, double>> equipment, ApbsEquipmentSlots slot)
     {
         if (!equipment.TryGetValue(slot, out var slotDict) || slotDict.Count == 0)
@@ -293,10 +318,10 @@ public class ItemImportService(
     }
     
     /// <summary>
-    ///     The actual start of the equipment import process
-    ///     This method is big, ugly, but very explicit in the order of operations
-    ///     If you come here and try to change this without understanding WHY this is ordered the way it is, and is massive - you might just break the entire thing
+    ///     Classify an importable item into its appropriate APBS equipment slot
+    ///     and start the corresponding weapon or equipment import process.
     /// </summary>
+    /// <param name="templateItem">Item being evaluated for import.</param>
     private void SortAndStartEquipmentImport(TemplateItem templateItem)
     {
         var itemId = templateItem.Id;
@@ -396,6 +421,11 @@ public class ItemImportService(
         apbsLogger.Error($"[IMPORT][EQUIP][FAIL] No Classification Handling. Report This. ItemId: {itemId} | Name: {itemHelper.GetItemName(itemId)}");
     }
 
+    /// <summary>
+    ///     Import a clothing customization item into all eligible appearance tiers
+    ///     for pmc bots.
+    /// </summary>
+    /// <param name="templateItem">Customization item to import.</param>
     private void SortAndStartCustomizationImport(CustomizationItem templateItem)
     {
         if (templateItem.Properties.Side.Contains("Bear"))
@@ -436,9 +466,12 @@ public class ItemImportService(
     }
 
     /// <summary>
-    ///     Add Weapon to the actual bot data, will use helper methods to get the proper weight for the slot
-    ///     After importing to bot data, will kick off checking for children item filters and importing those to the proper bot data locations as well
+    ///     Add a weapon to the appropriate bot equipment pools across all eligible
+    ///     tiers, import compatible ammunition, and recursively process supported
+    ///     weapon attachments.
     /// </summary>
+    /// <param name="slot">Equipment slot the weapon belongs to.</param>
+    /// <param name="templateItem">Weapon being imported.</param>
     private void AddWeaponToBotData(ApbsEquipmentSlots slot, TemplateItem templateItem)
     {
         var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
@@ -499,6 +532,14 @@ public class ItemImportService(
         }
     }
     
+    /// <summary>
+    ///     Assign a WTT boss weapon to the equipment pools of all configured boss
+    ///     types and optionally add it to standard equipment pools.
+    /// </summary>
+    /// <param name="slot">Equipment slot the weapon belongs to.</param>
+    /// <param name="itemId">Weapon template id.</param>
+    /// <param name="equipmentData">Tier data receiving the weapon.</param>
+    /// <param name="tier">Tier currently being processed.</param>
     private void AssignBossWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData, int tier)
     {
         var assignedBosses = itemImportHelper.BossAssignmentPerWtt(itemId);
@@ -537,6 +578,14 @@ public class ItemImportService(
         }
     }
 
+    /// <summary>
+    ///     Assign a weapon to the default PMC, Scav and default equipment pools
+    ///     using slot weights.
+    /// </summary>
+    /// <param name="slot">Equipment slot the weapon belongs to.</param>
+    /// <param name="itemId">Weapon template id.</param>
+    /// <param name="equipmentData">Tier data receiving the weapon.</param>
+    /// <param name="tier">Tier currently being processed.</param>
     private void AssignDefaultWeapon(ApbsEquipmentSlots slot, MongoId itemId, EquipmentTierData equipmentData, int tier)
     {
         var testId = "67f425638b8cbfdc0cd1b5f2";
@@ -561,6 +610,13 @@ public class ItemImportService(
         equipmentData.Default.Equipment[slot][itemId] = itemImportHelper.GetWeaponSlotWeight(slot, "default", defaultWeightSum, defaultCount);
     }
     
+    /// <summary>
+    ///     Discover and import compatible ammunition for a weapon into the
+    ///     appropriate ammunition pools.
+    /// </summary>
+    /// <param name="templateItem">Weapon being evaluated.</param>
+    /// <param name="ammoCaliber">Caliber used by the weapon.</param>
+    /// <param name="tier">Tier currently being processed.</param>
     private void ProcessAmmoForWeapon(TemplateItem templateItem, string ammoCaliber, int tier)
     {
         var chambers = templateItem.Properties?.Chambers ?? [];
@@ -584,6 +640,13 @@ public class ItemImportService(
         }
     }
 
+    /// <summary>
+    ///     Recursively import modded attachments that can be mounted to a vanilla
+    ///     weapon while preventing duplicate processing and recursive loops.
+    /// </summary>
+    /// <param name="parentItem">Current parent item being evaluated.</param>
+    /// <param name="tier">Tier currently being processed.</param>
+    /// <param name="context">Recursive import state and ancestry tracking.</param>
     private void StartVanillaWeaponModAttachmentImport(TemplateItem parentItem, int tier, ImportContext context)
     {
         var weaponSlots = parentItem.Properties?.Slots?.ToList();
@@ -661,6 +724,13 @@ public class ItemImportService(
         }
     }
 
+    /// <summary>
+    ///     Add an ammunition item to all supported bot ammunition pools for the
+    ///     specified caliber and tier.
+    /// </summary>
+    /// <param name="itemId">Ammunition template id.</param>
+    /// <param name="caliber">Caliber the ammunition belongs to.</param>
+    /// <param name="tier">Tier currently being processed.</param>
     private void AddAmmoToBotData(MongoId itemId, string caliber, int tier)
     {
         var ammoData = itemImportTierHelper.GetAmmoTierData(tier);
@@ -672,6 +742,12 @@ public class ItemImportService(
         }
     }
 
+    /// <summary>
+    ///     Add an ammunition item to a caliber-specific pool.
+    /// </summary>
+    /// <param name="dictionary">Ammunition pool to update.</param>
+    /// <param name="caliber">Caliber key to add the item under.</param>
+    /// <param name="itemId">Ammunition template id.</param>
     private static void AddAmmo(Dictionary<string, Dictionary<MongoId, double>> dictionary, string caliber, MongoId itemId)
     {
         if (!dictionary.TryGetValue(caliber, out var ammoDict))
@@ -684,9 +760,11 @@ public class ItemImportService(
     }
     
     /// <summary>
-    ///     Add Equipment to the actual bot data, will use helper methods to get the proper weight for the slot
-    ///     After importing to bot data, will kick off checking for children item filters and importing those to the proper bot data locations as well
+    ///     Add an equipment item to the appropriate bot equipment pools across all
+    ///     eligible tiers and recursively process compatible attachments.
     /// </summary>
+    /// <param name="slot">Equipment slot the item belongs to.</param>
+    /// <param name="templateItem">Equipment item being imported.</param>
     private void AddEquipmentToBotData(ApbsEquipmentSlots slot, TemplateItem templateItem)
     {
         var startTier = Math.Clamp(ModConfig.Config.CompatibilityConfig.InitalTierAppearance, 1, 7);
@@ -748,10 +826,13 @@ public class ItemImportService(
     }
 
     /// <summary>
-    ///     Start the child item import process, this will kick off adding any relevant information to the APBS Data for Mods
-    ///     This is a recursive lookup, it starts here and then actually calls adding the item to the data
-    ///     If the item has children, it will then process those and also call adding the item to the data and itself recursively
+    ///     Recursively process slot filters for an item and import all compatible
+    ///     child attachments into APBS mod pools while preventing recursive loops.
     /// </summary>
+    /// <param name="parentItem">Current parent item being processed.</param>
+    /// <param name="context">Recursive import state and ancestry tracking.</param>
+    /// <param name="weaponImport">True when processing weapon attachments; otherwise equipment attachments.</param>
+    /// <param name="tier">Tier currently being processed.</param>
     private void StartEquipmentFilterItemImport(TemplateItem parentItem, ImportContext context, bool weaponImport, int tier)
     {
         var parentItemSlots = parentItem.Properties?.Slots?.ToList();
@@ -819,10 +900,19 @@ public class ItemImportService(
     }
 
     /// <summary>
-    ///     Adds a child item to the bot data for a specific parent item and slot across all tiers
-    ///     Checks if the item should be imported first
-    ///     Should safely add the item to the bot data, because if it fails at any point it adds the relevant data
+    ///     Add a compatible attachment to the APBS mod pool for a parent item and
+    ///     slot after validating import rules and tier restrictions.
     /// </summary>
+    /// <param name="parentItem">Item attachment slots into.</param>
+    /// <param name="itemToAdd">Attachment being imported.</param>
+    /// <param name="slot">Parent slot the attachment belongs to.</param>
+    /// <param name="weaponImport">True when importing weapon attachments; otherwise equipment attachments.</param>
+    /// <param name="tier">Tier currently being processed.</param>
+    /// <param name="isFromVanilla">True when the attachment originates from a vanilla weapon import path.</param>
+    /// <returns>
+    ///     True if the attachment was successfully added and may be processed
+    ///     recursively; otherwise false.
+    /// </returns>
     private bool AddModsToBotData(TemplateItem parentItem, TemplateItem itemToAdd, string slot, bool weaponImport, int tier, bool isFromVanilla = false)
     {
         if (!itemImportHelper.AttachmentNeedsImporting(parentItem, itemToAdd, slot))
@@ -882,7 +972,8 @@ public class ItemImportService(
     }
     
     /// <summary>
-    ///     Holds context information for a single recursive import of mods for a root item
+    ///     Holds state information for a recursive attachment import operation,
+    ///     including ancestry tracking, parent stack history and recursion depth.
     /// </summary>
     private sealed class ImportContext
     {
