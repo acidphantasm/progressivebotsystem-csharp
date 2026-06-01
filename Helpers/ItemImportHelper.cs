@@ -1116,7 +1116,11 @@ public class ItemImportHelper(
     /// </summary>
     public double GetGearSlotWeight(ApbsEquipmentSlots slot, TemplateItem templateItem, bool isScav = false, double vanillaWeightSum = 0, int vanillaCount = 0)
     {
-        var staticWeight = isScav ? 1 : GetStaticGearSlotWeight(slot, templateItem);
+        if (isScav && ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeight)
+        {
+            return ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeightValue;
+        }
+        var staticWeight = GetStaticGearSlotWeight(slot, templateItem);
 
         if (!ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights || vanillaCount == 0 || vanillaWeightSum == 0)
             return staticWeight;

@@ -894,6 +894,12 @@ public class ModCompatibilityConfig
     [JsonPropertyName("enableModdedEquipment")]
     public bool EnableModdedEquipment { get; set; } = false;
     
+    [JsonPropertyName("forceScavEquipmentWeight")]
+    public bool ForceScavEquipmentWeight { get; set; } = false;
+    
+    [JsonPropertyName("forceScavEquipmentWeightValue")]
+    public int ForceScavEquipmentWeightValue { get; set; } = 1;
+    
     [JsonPropertyName("useDynamicEquipmentWeights")]
     public bool UseDynamicEquipmentWeights { get; set; } = false;
 

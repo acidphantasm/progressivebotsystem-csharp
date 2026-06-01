@@ -118,6 +118,29 @@
                         OnDefault="DefaultCustomEquipment" />
                     
                     <MudSwitchTTDisabledWarning
+                        Label="Force Scav Equipment Weight"
+                        TooltipText="Whether or not you want to use the existing value for scav equipment weights or a force value."
+                        WarningTooltip1="If this is not enabled, scavs will get equipment at the defined slot values below."
+                        @bind-Value="ForceScavEquipmentWeight"
+                        Disabled="@(!ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ForceScavEquipmentWeight"))"
+                        IsNonDefault="@(!ForceScavEquipmentWeight)"
+                        OnUndo="UndoForceScavEquipmentWeights"
+                        OnDefault="DefaultForceScavEquipmentWeights" />
+                    
+                    <MudSliderChildUndoDefaultTT
+                        Label="Force Scav Equipment Weight Value"
+                        TooltipText="Sets the equipment import weight to the specified value for scavs. Most people want this at 1."
+                        @bind-Value="ForceScavEquipmentWeightValue"
+                        Min="0" 
+                        Max="25"
+                        Disabled="@(!ForceScavEquipmentWeight || !ModCustomEquipmentEnabled)"
+                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ForceScavEquipmentWeightValue"))"
+                        IsNonDefault="@(ForceScavEquipmentWeightValue != 1)"
+                        OnUndo="UndoForceScavEquipmentWeightValue"
+                        OnDefault="DefaultForceScavEquipmentWeightValue" />
+                    
+                    <MudSwitchTTDisabledWarning
                         Label="Dynamic Equipment Weighting"
                         TooltipText="Automatically balances modded equipment weights against the vanilla pool per slot. At 1.0 each modded item is equally likely as the average vanilla item in that slot."
                         WarningTooltip1="This is completely dynamic based on the existing mod pool, so test the values and see how you like it."
@@ -133,28 +156,28 @@
                         <MudSliderChildUndoDefaultTTDouble
                             Label="Headwear Multiplier"
                             TooltipText="Controls how likely modded headwear is relative to vanilla (no armour slots). 1.0 = equal chance, 0.5 = half as likely, 2.0 = twice as likely."
-                            @bind-Value="DynHeadwear"
+                            @bind-Value="DynamicHeadwearValue"
                             Min="0.1" 
                             Max="3.0" 
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynHeadwear"))"
-                            IsNonDefault="@(Math.Abs(DynHeadwear - 1.0) > 0.001)"
-                            OnUndo="UndoDynHeadwear"
-                            OnDefault="DefaultDynHeadwear" />
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicHeadwearValue"))"
+                            IsNonDefault="@(Math.Abs(DynamicHeadwearValue - 1.0) > 0.001)"
+                            OnUndo="UndoDynamicHeadwear"
+                            OnDefault="DefaultDynamicHeadwear" />
                 
                         <MudSliderChildUndoDefaultTTDouble
                             Label="Headwear (With Slots) Multiplier"
                             TooltipText="Controls how likely modded headwear is relative to vanilla (armour slots). 1.0 = equal chance, 0.5 = half as likely, 2.0 = twice as likely."
-                            @bind-Value="DynHeadwearWithSlots"
+                            @bind-Value="DynamicHeadwearWithSlotsValue"
                             Min="0.1" 
                             Max="3.0" 
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynHeadwearWithSlots"))"
-                            IsNonDefault="@(Math.Abs(DynHeadwearWithSlots - 1.0) > 0.001)"
-                            OnUndo="UndoDynHeadwearWithSlots"
-                            OnDefault="DefaultDynHeadwearWithSlots" />
+                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicHeadwearWithSlotsValue"))"
+                            IsNonDefault="@(Math.Abs(DynamicHeadwearWithSlotsValue - 1.0) > 0.001)"
+                            OnUndo="UndoDynamicHeadwearWithSlots"
+                            OnDefault="DefaultDynamicHeadwearWithSlots" />
                 
                         <MudSliderChildUndoDefaultTTDouble
                             Label="Armour Vest Multiplier"
@@ -827,21 +850,45 @@
     private void UndoUseDynamicEquipmentWeights() => UseDynamicEquipmentWeights = ModConfig.OriginalConfig.CompatibilityConfig.UseDynamicEquipmentWeights;
     private void DefaultUseDynamicEquipmentWeights() => UseDynamicEquipmentWeights = true;
 
-    private double DynHeadwear
+    private bool ForceScavEquipmentWeight
+    {
+        get => ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeight;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.ForceScavEquipmentWeight, nameof(ForceScavEquipmentWeight));
+            ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeight = value;
+        }
+    }
+    private void UndoForceScavEquipmentWeights() => ForceScavEquipmentWeight = ModConfig.OriginalConfig.CompatibilityConfig.ForceScavEquipmentWeight;
+    private void DefaultForceScavEquipmentWeights() => ForceScavEquipmentWeight = true;
+
+    private int ForceScavEquipmentWeightValue
+    {
+        get => ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeightValue;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.ForceScavEquipmentWeightValue, nameof(ForceScavEquipmentWeightValue));
+            ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeightValue = value;
+        }
+    }
+    private void UndoForceScavEquipmentWeightValue() => ForceScavEquipmentWeightValue = ModConfig.OriginalConfig.CompatibilityConfig.ForceScavEquipmentWeightValue;
+    private void DefaultForceScavEquipmentWeightValue() => ForceScavEquipmentWeightValue = 1;
+
+    private double DynamicHeadwearValue
     {
         get => ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear;
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear, nameof(DynHeadwear)); ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear = value; }
+        set { Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear, nameof(DynamicHeadwearValue)); ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear = value; }
     }
-    private void UndoDynHeadwear() => DynHeadwear = ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear;
-    private void DefaultDynHeadwear() => DynHeadwear = 1.0;
+    private void UndoDynamicHeadwear() => DynamicHeadwearValue = ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.Headwear;
+    private void DefaultDynamicHeadwear() => DynamicHeadwearValue = 1.0;
 
-    private double DynHeadwearWithSlots
+    private double DynamicHeadwearWithSlotsValue
     {
         get => ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots;
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots, nameof(DynHeadwearWithSlots)); ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots = value; }
+        set { Utils.UpdateView(value, ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots, nameof(DynamicHeadwearWithSlotsValue)); ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots = value; }
     }
-    private void UndoDynHeadwearWithSlots() => DynHeadwearWithSlots = ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots;
-    private void DefaultDynHeadwearWithSlots() => DynHeadwearWithSlots = 1.0;
+    private void UndoDynamicHeadwearWithSlots() => DynamicHeadwearWithSlotsValue = ModConfig.OriginalConfig.CompatibilityConfig.DynamicEquipmentWeightMultipliers.HeadwearWithSlots;
+    private void DefaultDynamicHeadwearWithSlots() => DynamicHeadwearWithSlotsValue = 1.0;
 
     private double DynamicArmourVestValue
     {

@@ -3,7 +3,7 @@
   "presetName": "",
   "compatibilityConfig": {
     "enableModdedWeapons": false,
-    "useDynamicWeaponWeights": true,
+    "useDynamicWeaponWeights": false,
     "dynamicWeaponWeightMultipliers": {
       "pmc": 1,
       "scav": 1,
@@ -13,7 +13,9 @@
     "scavWeaponWeights": 1,
     "followerWeaponWeights": 6,
     "enableModdedEquipment": false,
-    "useDynamicEquipmentWeights": true,
+    "forceScavEquipmentWeight": false,
+    "forceScavEquipmentWeightValue": 1,
+    "useDynamicEquipmentWeights": false,
     "dynamicEquipmentWeightMultipliers": {
       "headwear": 1,
       "headwearWithSlots": 1,

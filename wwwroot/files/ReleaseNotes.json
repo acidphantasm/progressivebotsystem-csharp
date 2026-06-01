@@ -6,6 +6,7 @@
     "NewFeatures": [
       "WebConfig toggle to use dynamic mod weapon importing",
       "WebConfig toggle to use dynamic mod equipment importing",
+      "WebConfig toggle & slider to control mod equipment import values for Scavs",
       "WebConfig sliders for dynamic importing",
       "WebConfig debug toggle to log import tuning details when using dynamic (also a bot to check against and tier)"
     ],
