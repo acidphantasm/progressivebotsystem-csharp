@@ -194,15 +194,11 @@
             {
                 Version latestVersion = new(release.Version);
                 Version currentVersion = new ModMetadata().Version;
-                Range currentVersionRange = new($"~{currentVersion.Major}.0.0");
-
-                // First make sure the latest release is in our range, this stops "4.1.0" from being detected as a valid upgrade for "4.0.1"
-                if (!currentVersionRange.IsSatisfied(latestVersion))
+                if (latestVersion.Major != currentVersion.Major)
                 {
                     return;
                 }
 
-                // Notify the user if an upgrade is available
                 if (latestVersion > currentVersion)
                 {
                     MainLayout.UpdateAvailable = true;
