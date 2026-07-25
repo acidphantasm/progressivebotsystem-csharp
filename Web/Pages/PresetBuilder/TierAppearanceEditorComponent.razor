@@ -18,7 +18,7 @@
 }
 else
 {
-    <MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#2E2E38;">
+    <MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#101316;">
         <MudTabs>
             @foreach (var botType in _botTypes.Keys)
             {
@@ -32,7 +32,7 @@ else
                                 <!-- Used Items -->
                                 <div style="flex:1 1 0; display:flex; flex-direction:column;">
                                     <MudText Typo="Typo.subtitle2" Style="height:28px;">@category</MudText>
-                                    <div class="rounded mud-background-gray pa-2 flex-grow-1" style="height:300px; overflow-y:auto;">
+                                    <div class="rounded pa-2 flex-grow-1" style="height:300px; overflow-y:auto; background-color:#0a0c0e;">
                                         @foreach (var item in _botTypes[botType].Where(i => i.Category.Equals(category, StringComparison.OrdinalIgnoreCase)))
                                         {
                                             <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center" Style="gap:0.5rem;">
@@ -71,7 +71,7 @@ else
                                                       Style="width:200px; height:20px; font-size:0.875rem;"/>
                                     </div>
 
-                                    <div class="rounded mud-background-gray pa-2 flex-grow-1" style="height:280px; overflow-y:auto;">
+                                    <div class="rounded pa-2 flex-grow-1" style="height:280px; overflow-y:auto; background-color:#0a0c0e;">
                                         @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, "")))
                                         {
                                             <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center" Style="gap:0.5rem;">
