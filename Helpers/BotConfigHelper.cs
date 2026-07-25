@@ -248,62 +248,62 @@ public class BotConfigHelper(
             return;
 
         var bots = databaseService.GetBots().Types;
-        if (!bots.TryGetValue("assault", out var assaultBot))
+        if (!bots.TryGetValue("assault", out var assaultBot) || assaultBot is null)
         {
             apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. Key assignment aborted.");
             return;
         }
 
-        if (assaultBot is null) 
-            return;
-
-        var itemValueCollection = databaseService.GetItems().Values;
-        var filteredKeyItems = itemValueCollection
+        var filteredKeyItems = databaseService.GetItems().Values
             .Where(item => itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()) && !VanillaItemConstants.LabyrinthKeys.Contains(item.Id))
             .ToList();
 
-        var assaultBotCount = 0;
-        var assaultBotTotalWeight = 0;
+        if (filteredKeyItems.Count == 0)
+        {
+            apbsLogger.Warning("[ScavKeyConfig] No matching key items found. Key assignment aborted.");
+            return;
+        }
+
+        var filteredKeyIds = filteredKeyItems.Select(k => k.Id).ToHashSet();
+
         var keyProbability = keyConfig.KeyProbability;
         if (keyProbability > 0.5)
         {
             apbsLogger.Warning($"[ScavKeyConfig] KeyProbability of {keyProbability} exceeds max of 0.5. Capping to 0.5.");
             keyProbability = 0.5;
         }
-        
-        double GetNonKeyBackpackWeight(BotType bot)
-        {
-            return bot.BotInventory.Items.Backpack.Where(kvp => filteredKeyItems.All(f => f.Id != kvp.Key)).Sum(kvp => kvp.Value);
-        }
 
-        void ApplyKeys(BotType bot, ref int counter, ref int totalWeight)
-        {
-            var nonKeyWeight = GetNonKeyBackpackWeight(bot);
-            var totalKeyWeight = (int)Math.Ceiling(nonKeyWeight * keyProbability);
-            if (totalKeyWeight <= 0) return;
+        var nonKeyWeight = assaultBot.BotInventory.Items.Backpack
+            .Where(kvp => !filteredKeyIds.Contains(kvp.Key))
+            .Sum(kvp => kvp.Value);
 
+        var totalKeyWeight = (int)Math.Ceiling(nonKeyWeight * keyProbability / (1 - keyProbability));
+
+        var assaultBotCount = 0;
+        var assaultBotTotalWeight = 0;
+
+        if (totalKeyWeight > 0)
+        {
             var weightPerKey = Math.Max(1, totalKeyWeight / filteredKeyItems.Count);
             foreach (var keyItem in filteredKeyItems)
             {
-                bot.BotInventory.Items.Backpack[keyItem.Id] = weightPerKey;
-                counter++;
-                totalWeight += weightPerKey;
+                assaultBot.BotInventory.Items.Backpack[keyItem.Id] = weightPerKey;
+                assaultBotCount++;
+                assaultBotTotalWeight += weightPerKey;
             }
         }
 
-        var assaultBotNonKeyWeight = GetNonKeyBackpackWeight(assaultBot);
-        var totalBackpackWeight = assaultBotNonKeyWeight + assaultBotTotalWeight;
-        var perKeyWeight = filteredKeyItems.Count > 0 ? (double)assaultBotTotalWeight / filteredKeyItems.Count : 0;
-        var perKeyChance = totalBackpackWeight > 0 ? perKeyWeight / totalBackpackWeight : 0;
+        var totalBackpackWeight = nonKeyWeight + assaultBotTotalWeight;
+        var actualKeyChance = totalBackpackWeight > 0 ? assaultBotTotalWeight / totalBackpackWeight : 0;
 
-        ApplyKeys(assaultBot, ref assaultBotCount, ref assaultBotTotalWeight);
-
-        apbsLogger.Debug($"Added {assaultBotCount} key types to Scavs, Key Class Config: {GetKeyConfig()}, Key Probability: {keyProbability} - Total Key Chance (per item roll): {perKeyChance:P2}");
+        apbsLogger.Debug($"Added {assaultBotCount} key types to Scavs, Key Class Config: {GetKeyConfig()}, Target Key Probability: {keyProbability:P2} - Actual Key Chance (per item roll): {actualKeyChance:P2}");
     }
+    
     private MongoId GetKeyConfig()
     {
         return ModConfig.Config.ScavBots.KeyConfig.AddAllKeysToScavs ? BaseClasses.KEY : ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs ? BaseClasses.KEY_MECHANICAL : BaseClasses.KEYCARD;
     }
+    
     private void ScavLoot()
     {
         if (!ModConfig.Config.ScavBots.LootConfig.Enable)
