@@ -1,8 +1,20 @@
 ﻿[
   {
+    "Version": "2.2.2",
+    "ReleaseDate": "July 24, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved Scav key configs not weighting correctly",
+      "Resolved Preset builder not using the new theme properly"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.2.1",
     "ReleaseDate": "June 1, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "WebConfig toggle to use dynamic mod weapon importing",
       "WebConfig toggle to use dynamic mod equipment importing",
