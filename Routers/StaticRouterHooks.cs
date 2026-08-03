@@ -17,7 +17,7 @@ using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Routers;
 
-[Injectable]
+[Injectable(TypePriority = OnLoadOrder.Routers + 1)]
 public class StaticRouterHooks : StaticRouter
 {
     public StaticRouterHooks(

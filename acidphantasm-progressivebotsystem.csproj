@@ -42,7 +42,7 @@
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <PropertyGroup>
             <ModOutputDir>$(TarkovDir)SPT_Runtime\user\mods\$(ProjectName)\</ModOutputDir>
-            <ReleaseOutputDir>$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\</ReleaseOutputDir>
+            <ReleaseOutputDir>$(ProjectDir)release\$(ProjectName)\SPT_Runtime\user\mods\$(ProjectName)\</ReleaseOutputDir>
             <ZipFile>$(ProjectDir)release\$(ProjectName).7z</ZipFile>
             <SevenZipExe>"C:\Program Files\7-Zip\7z.exe"</SevenZipExe>
         </PropertyGroup>
