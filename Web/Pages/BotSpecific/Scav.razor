@@ -672,6 +672,11 @@
         get => ModConfig.Config.ScavBots.KeyConfig.AddAllKeysToScavs;
         set
         {
+            if (value)
+            {
+                ScavAddMechanicalKeys = false;
+                ScavAddKeycards = false;
+            }
             ModConfig.Config.ScavBots.KeyConfig.AddAllKeysToScavs = value;
             Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.KeyConfig.AddAllKeysToScavs, nameof(ScavAddAllKeys));
         }
@@ -684,6 +689,11 @@
         get => ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs;
         set
         {
+            if (value)
+            {
+                ScavAddAllKeys = false;
+                ScavAddKeycards = false;
+            }
             ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs = value;
             Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs, nameof(ScavAddMechanicalKeys));
         }
@@ -696,6 +706,11 @@
         get => ModConfig.Config.ScavBots.KeyConfig.AddOnlyKeyCardsToScavs;
         set
         {
+            if (value)
+            {
+                ScavAddAllKeys = false;
+                ScavAddMechanicalKeys = false;
+            }
             ModConfig.Config.ScavBots.KeyConfig.AddOnlyKeyCardsToScavs = value;
             Utils.UpdateView(value, ModConfig.OriginalConfig.ScavBots.KeyConfig.AddOnlyKeyCardsToScavs, nameof(ScavAddKeycards));
         }

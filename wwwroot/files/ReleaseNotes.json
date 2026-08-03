@@ -9,6 +9,7 @@
     "Changes": [],
     "BugFixes": [
       "Resolved Scav key configs not weighting correctly",
+      "Resolved Scav Key configuration allowing multiple toggle types",
       "Resolved Preset builder not using the new theme properly"
     ],
     "KnownIssues": []
