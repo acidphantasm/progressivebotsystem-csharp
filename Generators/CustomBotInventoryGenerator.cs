@@ -97,7 +97,7 @@ public class CustomBotInventoryGenerator
     private readonly PmcConfig _pmcConfig;
     
     
-    private readonly FrozenSet<ApbsEquipmentSlots> _equipmentSlotsWithInventory =
+    private readonly HashSet<ApbsEquipmentSlots> _equipmentSlotsWithInventory =
     [
         ApbsEquipmentSlots.Pockets,
         ApbsEquipmentSlots.TacticalVest,
@@ -106,7 +106,7 @@ public class CustomBotInventoryGenerator
         ApbsEquipmentSlots.ArmouredRig
     ];
     
-    private readonly FrozenSet<ApbsEquipmentSlots> _excludedEquipmentSlots =
+    private readonly HashSet<ApbsEquipmentSlots> _excludedEquipmentSlots =
     [
         ApbsEquipmentSlots.Pockets,
         ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange,
@@ -122,7 +122,7 @@ public class CustomBotInventoryGenerator
         ApbsEquipmentSlots.ArmouredRig
     ];
     
-    private readonly FrozenSet<string> _slotsToCheck = [nameof(EquipmentSlots.Pockets), nameof(EquipmentSlots.SecuredContainer)];
+    private readonly HashSet<string> _slotsToCheck = [nameof(EquipmentSlots.Pockets), nameof(EquipmentSlots.SecuredContainer)];
     
     public void GenerateAndAddEquipmentToBot(
         MongoId botId,

@@ -1,9 +1,11 @@
 ﻿[
   {
-    "Version": "2.2.2",
-    "ReleaseDate": "July 24, 2026",
+    "Version": "2.3.0",
+    "ReleaseDate": "August 3, 2026",
     "IsLatest": true,
-    "NewFeatures": [],
+    "NewFeatures": [
+      "Updated to 4.1"
+    ],
     "Changes": [],
     "BugFixes": [
       "Resolved Scav key configs not weighting correctly",

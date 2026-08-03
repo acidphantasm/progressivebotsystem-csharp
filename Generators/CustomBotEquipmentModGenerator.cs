@@ -60,22 +60,22 @@ public class CustomBotEquipmentModGenerator(
     private readonly IEnumerable<string> Specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
     
     // FrontSight/Rear Sight
-    private static readonly FrozenSet<string> ModSightIds = ["mod_sight_front", "mod_sight_rear"];
+    private static readonly HashSet<string> ModSightIds = ["mod_sight_front", "mod_sight_rear"];
 
     // Slots that hold scopes
-    private static readonly FrozenSet<string> ScopeIds = ["mod_scope", "mod_mount", "mod_mount_000", "mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
+    private static readonly HashSet<string> ScopeIds = ["mod_scope", "mod_mount", "mod_mount_000", "mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
     
     // Scope slots
-    private static readonly FrozenSet<string> ModScopeSlots = ["mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
+    private static readonly HashSet<string> ModScopeSlots = ["mod_scope_000", "mod_scope_001", "mod_scope_002", "mod_scope_003"];
 
     // Slots that hold muzzles
-    private static readonly FrozenSet<string> ModMuzzleSlots = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
+    private static readonly HashSet<string> ModMuzzleSlots = ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"];
 
     // Slots a weapon can store its stock in
-    private static readonly FrozenSet<string> StockSlots = ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms"];
+    private static readonly HashSet<string> StockSlots = ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms"];
 
     // Slots that hold cartridges
-    private static readonly FrozenSet<string> CartridgeHolderSlots = ["mod_magazine", "patron_in_weapon", "patron_in_weapon_000", "patron_in_weapon_001", "cartridges"];
+    private static readonly HashSet<string> CartridgeHolderSlots = ["mod_magazine", "patron_in_weapon", "patron_in_weapon_000", "patron_in_weapon_001", "cartridges"];
 
     const string modRecieverKey = "mod_reciever";
     const string modMount001Key = "mod_mount_001";
@@ -856,7 +856,7 @@ public class CustomBotEquipmentModGenerator(
     /// <param name="modSpawnChances">Chance dictionary to update</param>
     /// <param name="modSlotsToAdjust"></param>
     /// <param name="newChancePercent"></param>
-    public void AdjustSlotSpawnChances(Dictionary<string, double>? modSpawnChances, FrozenSet<string>? modSlotsToAdjust, double newChancePercent)
+    public void AdjustSlotSpawnChances(Dictionary<string, double>? modSpawnChances, HashSet<string>? modSlotsToAdjust, double newChancePercent)
     {
         if (modSpawnChances is null)
         {
@@ -1853,7 +1853,7 @@ public class CustomBotEquipmentModGenerator(
     ///     e.g. mod_magazine / patron_in_weapon_000
     /// </summary>
     /// <returns>string array</returns>
-    public static FrozenSet<string> GetAmmoContainers()
+    public static HashSet<string> GetAmmoContainers()
     {
         return CartridgeHolderSlots;
     }

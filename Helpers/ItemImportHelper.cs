@@ -874,7 +874,7 @@ public class ItemImportHelper(
             return [];
         }
 
-        var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId());
+        var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty());
         if (magazineTemplate.Value?.Properties == null) return new HashSet<MongoId>();
 
 

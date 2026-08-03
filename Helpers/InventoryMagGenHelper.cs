@@ -57,7 +57,7 @@ public class InventoryMagGenHelper
         {
             var firstSlotAmmoTpl =
                 magTemplate.Properties?.Cartridges?.FirstOrDefault()?.Properties?.Filters?.First().Filter?.FirstOrDefault()
-                ?? new MongoId();
+                ?? MongoId.Empty();
             var ammoMaxStackSize = _itemHelper.GetItem(firstSlotAmmoTpl).Value?.Properties?.StackMaxSize ?? 1;
             chamberBulletCount =
                 ammoMaxStackSize == 1
@@ -391,7 +391,7 @@ public class InventoryMagGenHelper
         }
 
         var magazineTemplate = _itemHelper.GetItem(
-            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId()
+            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty()
         );
         if (!magazineTemplate.Key)
         {

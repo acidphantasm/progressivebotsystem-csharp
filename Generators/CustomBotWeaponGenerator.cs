@@ -873,7 +873,7 @@ public class CustomBotWeaponGenerator(
         }
 
         var magazineTemplate = itemHelper.GetItem(
-            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId()
+            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty()
         );
         if (!magazineTemplate.Key)
         {
