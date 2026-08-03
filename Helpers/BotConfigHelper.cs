@@ -6,18 +6,23 @@ using ProgressiveBotSystem.Models;
 using ProgressiveBotSystem.Models.Enums;
 using ProgressiveBotSystem.Utils;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Config;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services;
 
 namespace ProgressiveBotSystem.Helpers;
 
-[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostDBModLoader + 90010)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad + 90010)]
 public class BotConfigHelper(
-    DatabaseService databaseService,
-    ConfigServer configServer,
+    BotTable botTable,
+    TemplateTable templateTable,
+    PmcConfig pmcConfig,
+    BotConfig botConfig,
     ApbsLogger apbsLogger,
     BotActivityHelper botActivityHelper,
     ItemHelper itemHelper,
@@ -26,8 +31,6 @@ public class BotConfigHelper(
     DateHelper dateHelper)
     : IOnLoad
 {
-    private readonly BotConfig _botConfig = configServer.GetConfig<BotConfig>();
-    private readonly PmcConfig _pmcConfig = configServer.GetConfig<PmcConfig>();
     
     
     private static readonly HashSet<string> ScavRoles = typeof(ScavBots).GetFields().Select(x => (string)x.GetValue(null)!).ToHashSet(StringComparer.Ordinal);
@@ -64,7 +67,7 @@ public class BotConfigHelper(
         ["543be6564bdc2df4348b4568"] = 4
     };
     
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         apbsLogger.Debug("BotConfigHelper.OnLoad()");
         PmcConfigs();
@@ -109,42 +112,42 @@ public class BotConfigHelper(
     private void PmcItemLimits()
     {
         apbsLogger.Debug("Setting Pmc Item Limits");
-        _botConfig.ItemSpawnLimits["pmc"] = _pmcItemLimits;
+        botConfig.ItemSpawnLimits["pmc"] = _pmcItemLimits;
     }
     private void PmcLoot()
     {
-        _pmcConfig.LooseWeaponInBackpackLootMinMax.Min = 0;
-        _pmcConfig.LooseWeaponInBackpackLootMinMax.Max = 0;
+        pmcConfig.LooseWeaponInBackpackLootMinMax.Min = 0;
+        pmcConfig.LooseWeaponInBackpackLootMinMax.Max = 0;
 
         if (ModConfig.Config.PmcBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Setting Pmc Loot");
             foreach (var item in ModConfig.Config.PmcBots.LootConfig.Blacklist)
             {
-                _pmcConfig.BackpackLoot.Blacklist.Add(item);
-                _pmcConfig.VestLoot.Blacklist.Add(item);
-                _pmcConfig.PocketLoot.Blacklist.Add(item);
+                pmcConfig.BackpackLoot.Blacklist.Add(item);
+                pmcConfig.VestLoot.Blacklist.Add(item);
+                pmcConfig.PocketLoot.Blacklist.Add(item);
             }
         }
         else
         {
             apbsLogger.Debug("Disabling Pmc Loot");
-            _botConfig.DisableLootOnBotTypes.Add("pmcusec");
-            _botConfig.DisableLootOnBotTypes.Add("pmcbear");
+            botConfig.DisableLootOnBotTypes.Add("pmcusec");
+            botConfig.DisableLootOnBotTypes.Add("pmcbear");
         }
 
         foreach (var bot in (List<string>)["pmcbear", "pmcusec"])
         {
-            databaseService.GetBots().Types[bot]!.BotInventory.Items.Backpack.Clear();
-            databaseService.GetBots().Types[bot]!.BotInventory.Items.Pockets.Clear();
-            databaseService.GetBots().Types[bot]!.BotInventory.Items.TacticalVest.Clear();
-            databaseService.GetBots().Types[bot]!.BotInventory.Items.SpecialLoot.Clear();
+            botTable.Types[bot]!.BotInventory.Items.Backpack.Clear();
+            botTable.Types[bot]!.BotInventory.Items.Pockets.Clear();
+            botTable.Types[bot]!.BotInventory.Items.TacticalVest.Clear();
+            botTable.Types[bot]!.BotInventory.Items.SpecialLoot.Clear();
         }
     }
     private void PmcScopeWhitelist()
     {
         apbsLogger.Debug("Setting Pmc Scope Whitelist");
-        if (!_botConfig.Equipment.TryGetValue("pmc", out var pmcEquipment)) return;
+        if (!botConfig.Equipment.TryGetValue("pmc", out var pmcEquipment)) return;
         if (pmcEquipment is null) return;
         
         pmcEquipment.WeaponSightWhitelist = new Dictionary<MongoId, HashSet<MongoId>>();
@@ -172,7 +175,7 @@ public class BotConfigHelper(
     private void PmcRequiredSlots()
     {
         apbsLogger.Debug("Setting Pmc Required Slots");
-        if (!_botConfig.Equipment.TryGetValue("pmc", out var pmcEquipment)) return;
+        if (!botConfig.Equipment.TryGetValue("pmc", out var pmcEquipment)) return;
         if (pmcEquipment is null) return;
         
         pmcEquipment.WeaponSlotIdsToMakeRequired = new HashSet<string>();
@@ -183,16 +186,16 @@ public class BotConfigHelper(
     {
         if (!ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Enable) return;
         apbsLogger.Debug("Setting Pmc Game Version Weights");
-        _pmcConfig.GameVersionWeight["standard"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Standard;
-        _pmcConfig.GameVersionWeight["left_behind"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.LeftBehind;
-        _pmcConfig.GameVersionWeight["prepare_for_escape"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.PrepareForEscape;
-        _pmcConfig.GameVersionWeight["edge_of_darkness"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.EdgeOfDarkness;
-        _pmcConfig.GameVersionWeight["unheard_edition"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.UnheardEdition;
+        pmcConfig.GameVersionWeight["standard"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Standard;
+        pmcConfig.GameVersionWeight["left_behind"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.LeftBehind;
+        pmcConfig.GameVersionWeight["prepare_for_escape"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.PrepareForEscape;
+        pmcConfig.GameVersionWeight["edge_of_darkness"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.EdgeOfDarkness;
+        pmcConfig.GameVersionWeight["unheard_edition"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.UnheardEdition;
     }
     private void PmcPlateClasses()
     {
         apbsLogger.Debug("Setting Pmc Plate Classes");
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) 
@@ -247,14 +250,14 @@ public class BotConfigHelper(
             !keyConfig.AddOnlyMechanicalKeysToScavs) 
             return;
 
-        var bots = databaseService.GetBots().Types;
+        var bots = botTable.Types;
         if (!bots.TryGetValue("assault", out var assaultBot) || assaultBot is null)
         {
             apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. Key assignment aborted.");
             return;
         }
 
-        var filteredKeyItems = databaseService.GetItems().Values
+        var filteredKeyItems = templateTable.Items.Values
             .Where(item => itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()) && !VanillaItemConstants.LabyrinthKeys.Contains(item.Id))
             .ToList();
 
@@ -311,12 +314,12 @@ public class BotConfigHelper(
             apbsLogger.Debug("Disabling Scav Loot");
             foreach (var bot in ScavRoles)
             {
-                _botConfig.DisableLootOnBotTypes.Add(bot);
+                botConfig.DisableLootOnBotTypes.Add(bot);
             }
         }
         else
         {
-            var bots = databaseService.GetBots().Types;
+            var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
                 if (!ScavRoles.Contains(botType)) continue;
@@ -375,7 +378,7 @@ public class BotConfigHelper(
     }
     private void ScavPlateClasses()
     {
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         apbsLogger.Debug("Setting Scav Plate Classes");
         foreach (var (botType, _) in botConfigEquipment)
         {
@@ -412,9 +415,9 @@ public class BotConfigHelper(
         if (!ModConfig.Config.ScavBots.Secrets.JackpotScavRoubleStack) 
             return;
         
-        var currencyStackSize = _botConfig.CurrencyStackSize;
+        var currencyStackSize = botConfig.CurrencyStackSize;
         var roubleTpl = ItemTpl.MONEY_ROUBLES;
-        var roubleMaxStack = databaseService.GetItems()[roubleTpl].Properties?.StackMaxSize ?? 1000000;
+        var roubleMaxStack = templateTable.Items[roubleTpl].Properties?.StackMaxSize ?? 1000000;
         roubleMaxStack = Math.Min(roubleMaxStack, 1000000);
         
         var defaultAssaultRoubleStacks = new Dictionary<string, double>
@@ -465,12 +468,12 @@ public class BotConfigHelper(
             apbsLogger.Debug("Disabling Boss Loot");
             foreach (var botType in BossRoles)
             {
-                _botConfig.DisableLootOnBotTypes.Add(botType);
+                botConfig.DisableLootOnBotTypes.Add(botType);
             }
         }
         else
         {
-            var bots = databaseService.GetBots().Types;
+            var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
                 if (!BossRoles.Contains(botType)) continue;
@@ -488,7 +491,7 @@ public class BotConfigHelper(
     private void BossPlateClasses()
     {
         apbsLogger.Debug("Setting Boss Plate Classes");
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -534,12 +537,12 @@ public class BotConfigHelper(
             apbsLogger.Debug("Disabling Follower Loot");
             foreach (var botType in FollowerRoles)
             {
-                _botConfig.DisableLootOnBotTypes.Add(botType);
+                botConfig.DisableLootOnBotTypes.Add(botType);
             }
         }
         else
         {
-            var bots = databaseService.GetBots().Types;
+            var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
                 if (!FollowerRoles.Contains(botType)) continue;
@@ -556,7 +559,7 @@ public class BotConfigHelper(
     private void FollowerPlateClasses()
     {
         apbsLogger.Debug("Setting Follower Plate Classes");
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -602,12 +605,12 @@ public class BotConfigHelper(
             apbsLogger.Debug("Disabling Special Bot Loot");
             foreach (var botType in SpecialRoles)
             {
-                _botConfig.DisableLootOnBotTypes.Add(botType);
+                botConfig.DisableLootOnBotTypes.Add(botType);
             }
         }
         else
         {
-            var bots = databaseService.GetBots().Types;
+            var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
                 if (!SpecialRoles.Contains(botType)) continue;
@@ -624,7 +627,7 @@ public class BotConfigHelper(
     private void SpecialPlateClasses()
     {
         apbsLogger.Debug("Setting Special Bot Plate Classes");
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -693,7 +696,7 @@ public class BotConfigHelper(
     private void RemoveRandomization()
     {
         apbsLogger.Debug("Removing Bot Randomisation");
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -704,7 +707,7 @@ public class BotConfigHelper(
     private void SetBotLevels()
     {
         apbsLogger.Debug("Setting Bot Levels");
-        var allBotTypes = databaseService.GetBots().Types;
+        var allBotTypes = botTable.Types;
         foreach (var (bot, _) in allBotTypes)
         {
             allBotTypes[bot]!.BotExperience.Level.Min = 1;
@@ -715,7 +718,7 @@ public class BotConfigHelper(
     private void SetWeaponDurability()
     {
         apbsLogger.Debug("Setting Bot Weapon Durability");
-        var botDurability = _botConfig.Durability;
+        var botDurability = botConfig.Durability;
         foreach (var (botType, _) in botDurability.BotDurabilities)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -765,7 +768,7 @@ public class BotConfigHelper(
     private void SetArmourDurability()
     {
         apbsLogger.Debug("Setting Bot Armour Durability");
-        var botDurability = _botConfig.Durability;
+        var botDurability = botConfig.Durability;
         foreach (var (botType, _) in botDurability.BotDurabilities)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -815,7 +818,7 @@ public class BotConfigHelper(
     private void AdjustNvGs()
     {
         apbsLogger.Debug("Setting Bot Laser, Flashlight, and Nvg Activity Chances");
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, _) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
@@ -832,8 +835,8 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Bot Food and Medical Item Randomisation");
         // Loop the bot types instead of the botconfig, even though the actual values exist in the bot config - I need proper bot names
-        var botTable = databaseService.GetBots().Types;
-        foreach (var (botType, _) in botTable)
+        var botTypes = botTable.Types;
+        foreach (var (botType, _) in botTypes)
         {
             if (!botActivityHelper.IsBotEnabled(botType)) continue;
             
@@ -841,7 +844,7 @@ public class BotConfigHelper(
             if (resourceRandomizationConfig is null)
                 continue;
 
-            _botConfig.LootItemResourceRandomization[botType] = new RandomisedResourceDetails
+            botConfig.LootItemResourceRandomization[botType] = new RandomisedResourceDetails
             {
                 Food = new RandomisedResourceValues
                 {
@@ -882,7 +885,7 @@ public class BotConfigHelper(
         if (!ModConfig.Config.GeneralConfig.ForceWeaponModLimits) return;
         apbsLogger.Debug("Setting Bot Weapon Mod Limits");
 
-        var botConfigEquipment = _botConfig.Equipment;
+        var botConfigEquipment = botConfig.Equipment;
         foreach (var (botType, data) in botConfigEquipment)
         {
             if (!botActivityHelper.IsBotEnabled(botType))
@@ -907,7 +910,7 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("Setting Bot Secure Container Ammo Stack Compatibility");
         
-        _botConfig.SecureContainerAmmoStackCount =
+        botConfig.SecureContainerAmmoStackCount =
             ModConfig.Config.CompatibilityConfig.GeneralSecureContainerAmmoStacks;
     }
 
@@ -992,8 +995,8 @@ public class BotConfigHelper(
         if (!ModConfig.Config.NormalizedHealthPool.Enable) return;
 
         apbsLogger.Debug("Normalising Bot Health");
-        var botTable = databaseService.GetBots().Types;
-        foreach (var (botType, data) in botTable)
+        var botTypes = botTable.Types;
+        foreach (var (botType, data) in botTypes)
         {
             var excluded = ModConfig.Config.NormalizedHealthPool.ExcludedBots;
 
@@ -1085,8 +1088,8 @@ public class BotConfigHelper(
     {
         if (!ModConfig.Config.NormalizedHealthPool.NormalizeSkills) return;
         apbsLogger.Debug("Setting Bot Skills");
-        var botTable = databaseService.GetBots().Types;
-        foreach (var (botType, data) in botTable)
+        var botTypes = botTable.Types;
+        foreach (var (botType, data) in botTypes)
         {
             if (data is null)
             {

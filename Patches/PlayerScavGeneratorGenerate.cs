@@ -4,7 +4,9 @@ using System.Reflection;
 using HarmonyLib;
 using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Services;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Generators;
+using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Servers;
@@ -12,12 +14,22 @@ using SPTarkov.Server.Core.Utils.Cloners;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class PlayerScavGeneratorGeneratePatch : AbstractPatch
 {
-    
-    private static readonly ICloner Cloner = ServiceLocator.ServiceProvider.GetRequiredService<ICloner>();
-    private static readonly SaveServer SaveServer = ServiceLocator.ServiceProvider.GetRequiredService<SaveServer>();
-    private static readonly CustomBotLootCacheService CustomBotLootCacheService = ServiceLocator.ServiceProvider.GetRequiredService<CustomBotLootCacheService>();
+    private static ICloner _cloner = default!;
+    private static SaveServer _saveServer = default!;
+    private static CustomBotLootCacheService _customBotLootCacheService = default!;
+
+    public PlayerScavGeneratorGeneratePatch(
+        ICloner cloner,
+        SaveServer saveServer,
+        CustomBotLootCacheService customBotLootCacheService)
+    {
+        _cloner = cloner;
+        _saveServer = saveServer;
+        _customBotLootCacheService = customBotLootCacheService;
+    }
     
     protected override MethodBase GetTargetMethod()
     {
@@ -27,7 +39,7 @@ public class PlayerScavGeneratorGeneratePatch : AbstractPatch
     [PatchPostfix]
     public static void Postfix(MongoId sessionID, ref PmcData __result)
     {
-        CustomBotLootCacheService.ClearApbsCache();
+        _customBotLootCacheService.ClearApbsCache();
         
         if (!ModConfig.Config.PlayerScavConfig.Enable)
             return;
@@ -35,13 +47,13 @@ public class PlayerScavGeneratorGeneratePatch : AbstractPatch
         if (!ModConfig.Config.PlayerScavConfig.UsePmcSkills)
             return;
         
-        var profile = SaveServer.GetProfile(sessionID);
-        var profileCharactersClone = Cloner.Clone(profile.CharacterData);
+        var profile = _saveServer.GetProfile(sessionID);
+        var profileCharactersClone = _cloner.Clone(profile.CharacterData);
 
         if (profileCharactersClone is null)
             return;
         
-        var pmcDataClone = Cloner.Clone(profileCharactersClone.PmcData);
+        var pmcDataClone = _cloner.Clone(profileCharactersClone.PmcData);
 
         if (pmcDataClone?.Skills is null)
             return;

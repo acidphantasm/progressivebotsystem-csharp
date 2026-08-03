@@ -9,13 +9,13 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 
 namespace ProgressiveBotSystem.Services;
 
-[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostSptModLoader + 70)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad + 70)]
 public class BotBlacklistService(
     ApbsLogger apbsLogger,
     BotBlacklistHelper botBlacklistHelper,
     ItemImportTierHelper itemImportTierHelper): IOnLoad
 {
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         RunBlacklisting();
         return Task.CompletedTask;

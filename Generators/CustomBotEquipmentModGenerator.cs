@@ -5,27 +5,34 @@ using ProgressiveBotSystem.Constants;
 using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Models;
 using ProgressiveBotSystem.Utils;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Bot;
+using SPTarkov.Server.Core.Helpers.Items;
+using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Services.Bot;
+using SPTarkov.Server.Core.Services.Items;
+using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 using SPTarkov.Server.Core.Utils.Collections;
-using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace SPTarkov.Server.Core.Generators;
 
-[Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
+[Injectable(TypePriority = OnLoadOrder.PostLoad)]
 public class CustomBotEquipmentModGenerator(
     ISptLogger<CustomBotEquipmentModGenerator> logger,
     RandomUtil randomUtil,
@@ -41,7 +48,7 @@ public class CustomBotEquipmentModGenerator(
     PresetHelper presetHelper,
     ServerLocalisationService serverLocalisationService,
     BotEquipmentModPoolService botEquipmentModPoolService,
-    ConfigServer configServer,
+    BotConfig botConfig,
     ICloner cloner,
     ApbsLogger apbsLogger
 )
@@ -80,8 +87,6 @@ public class CustomBotEquipmentModGenerator(
     const string modMountKey = "mod_mount";
     const string modScopeKey = "mod_scope";
     const string modScope000Key = "mod_scope_000";
-
-    private readonly BotConfig _botConfig = configServer.GetConfig<BotConfig>();
 
     /// <summary>
     ///     Check mods are compatible and add to array
@@ -538,7 +543,7 @@ public class CustomBotEquipmentModGenerator(
         // Get pool of mods that fit weapon
         request.ModPool.TryGetValue(request.ParentTemplate.Id, out var compatibleModsPool);
 
-        _botConfig.Equipment.TryGetValue(request.BotData.EquipmentRole, out var botEquipConfig);
+        botConfig.Equipment.TryGetValue(request.BotData.EquipmentRole, out var botEquipConfig);
         var botEquipBlacklist = botEquipmentFilterService.GetBotEquipmentBlacklist(
             request.BotData.EquipmentRole,
             RaidInformation.CurrentRaidLevel ?? 1
@@ -1093,7 +1098,7 @@ public class CustomBotEquipmentModGenerator(
             if ((request.WeaponStats?.HasOptic ?? false) && modPool.Count > 1)
             {
                 // Attempt to limit modpool to low profile gas blocks when weapon has an optic
-                var onlyLowProfileGasBlocks = modPool.Where(tpl => _botConfig.LowProfileGasBlockTpls.Contains(tpl));
+                var onlyLowProfileGasBlocks = modPool.Where(tpl => botConfig.LowProfileGasBlockTpls.Contains(tpl));
                 if (onlyLowProfileGasBlocks.Any())
                 {
                     modPool = onlyLowProfileGasBlocks.ToHashSet();
@@ -1102,7 +1107,7 @@ public class CustomBotEquipmentModGenerator(
             else if ((request.WeaponStats?.HasRearIronSight ?? false) && modPool.Count > 1)
             {
                 // Attempt to limit modpool to high profile gas blocks when weapon has rear iron sight + no front iron sight
-                var onlyHighProfileGasBlocks = modPool.Where(tpl => !_botConfig.LowProfileGasBlockTpls.Contains(tpl));
+                var onlyHighProfileGasBlocks = modPool.Where(tpl => !botConfig.LowProfileGasBlockTpls.Contains(tpl));
                 if (onlyHighProfileGasBlocks.Any())
                 {
                     modPool = onlyHighProfileGasBlocks.ToHashSet();

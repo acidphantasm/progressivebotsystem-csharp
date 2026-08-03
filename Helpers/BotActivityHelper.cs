@@ -6,7 +6,7 @@ using SPTarkov.Server.Core.DI;
 
 namespace ProgressiveBotSystem.Helpers;
 
-[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader + 20)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.Preload + 20)]
 public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
 {
     private readonly IEnumerable<string> _alwaysDisabled = typeof(AlwaysDisabledBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
@@ -17,7 +17,7 @@ public class BotActivityHelper(ApbsLogger apbsLogger): IOnLoad
     private readonly IEnumerable<string> _specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
     private readonly IEnumerable<string> _events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
 
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         apbsLogger.Debug("BotActivityHelper.OnLoad()");
         return Task.CompletedTask;

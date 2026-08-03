@@ -4,29 +4,31 @@ using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Helpers;
 using ProgressiveBotSystem.Models;
 using ProgressiveBotSystem.Models.Enums;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Bot;
+using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
-using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Models.Spt.Tables;
+using SPTarkov.Server.Core.Services.Bot;
+using SPTarkov.Server.Core.Services.Commerce;
+using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
-using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace SPTarkov.Server.Core.Generators;
 
-[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostSptModLoader)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad)]
 public class CustomBotWeaponGenerator(
     ISptLogger<CustomBotWeaponGenerator> logger,
-    DatabaseService databaseService,
+    GlobalTable globalTable,
     ItemHelper itemHelper,
     WeightedRandomHelper weightedRandomHelper,
     BotGeneratorHelper botGeneratorHelper,
@@ -36,25 +38,24 @@ public class CustomBotWeaponGenerator(
     ServerLocalisationService serverLocalisationService,
     RepairService repairService,
     ICloner cloner,
-    ConfigServer configServer,
+    BotConfig botConfig,
+    PmcConfig pmcConfig,
+    RepairConfig repairConfig,
     IEnumerable<IApbsInventoryMagGen> inventoryMagGenComponents,
     BotEquipmentHelper botEquipmentHelper,
     CustomBotEquipmentModGenerator customBotEquipmentModGenerator
 )
 {
-    private const string ModMagazineSlotId = "mod_magazine";
-    private readonly BotConfig BotConfig = configServer.GetConfig<BotConfig>();
-    private readonly IEnumerable<IApbsInventoryMagGen> InventoryMagGenComponents = MagGenSetUp(inventoryMagGenComponents);
-    private readonly PmcConfig PMCConfig = configServer.GetConfig<PmcConfig>();
-    private readonly RepairConfig RepairConfig = configServer.GetConfig<RepairConfig>();
+    private const string modMagazineSlotId = "mod_magazine";
+    private readonly IEnumerable<IApbsInventoryMagGen> _inventoryMagGenComponents = MagGenSetUp(inventoryMagGenComponents);
     
-    private readonly IEnumerable<string> AlwaysDisabled = typeof(AlwaysDisabledBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
-    private readonly IEnumerable<string> Events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _alwaysDisabled = typeof(AlwaysDisabledBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
 
     private static List<IApbsInventoryMagGen> MagGenSetUp(IEnumerable<IApbsInventoryMagGen> components)
     {
@@ -306,15 +307,15 @@ public class CustomBotWeaponGenerator(
             .ToList();
 
         var weaponEnhancementChance = 0;
-        if (Pmcs.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.PmcBots.WeaponDurability.EnhancementChance;
-        if (Scavs.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance;
-        if (Bosses.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.BossBots.WeaponDurability.EnhancementChance;
-        if (Followers.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.FollowerBots.WeaponDurability.EnhancementChance;
-        if (Specials.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.SpecialBots.WeaponDurability.EnhancementChance;
+        if (_pmcs.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.PmcBots.WeaponDurability.EnhancementChance;
+        if (_scavs.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.ScavBots.WeaponDurability.EnhancementChance;
+        if (_bosses.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.BossBots.WeaponDurability.EnhancementChance;
+        if (_followers.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.FollowerBots.WeaponDurability.EnhancementChance;
+        if (_specials.Contains(botGenerationDetails.RoleLowercase)) weaponEnhancementChance = ModConfig.Config.SpecialBots.WeaponDurability.EnhancementChance;
 
         if (randomUtil.GetChance100(weaponEnhancementChance))
         {
-            repairService.AddBuff(RepairConfig.RepairKit.Weapon, weaponWithModsArray[0]);
+            repairService.AddBuff(repairConfig.RepairKit.Weapon, weaponWithModsArray[0]);
         }
 
         // Add mods to weapon base
@@ -360,7 +361,7 @@ public class CustomBotWeaponGenerator(
             );
         }
 
-        var tempList = cloner.Clone(weaponWithModsArray.Where(item => item.SlotId == ModMagazineSlotId));
+        var tempList = cloner.Clone(weaponWithModsArray.Where(item => item.SlotId == modMagazineSlotId));
         // Fill existing magazines to full and sync ammo type
         foreach (var magazine in tempList)
         {
@@ -491,7 +492,7 @@ public class CustomBotWeaponGenerator(
 
         // TODO: Preset weapons trigger a lot of warnings regarding missing ammo in magazines & such
         Preset? preset = null;
-        foreach (var (_, itemPreset) in databaseService.GetGlobals().ItemPresets)
+        foreach (var (_, itemPreset) in globalTable.ItemPresets)
         {
             if (itemPreset.Items[0].Template == weaponTemplate)
             {
@@ -620,12 +621,12 @@ public class CustomBotWeaponGenerator(
 
         var inventoryMagGenModel = new ApbsInventoryMagGen(magWeights, magTemplate, weaponTemplate, ammoTemplate.Value, inventory, botId, botRole, botLevel, tier, GetToploadConfig(botRole), GetRerollConfig(botRole));
 
-        InventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(inventoryMagGenModel)).Process(inventoryMagGenModel);
+        _inventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(inventoryMagGenModel)).Process(inventoryMagGenModel);
 
         // Add x stacks of bullets to SecuredContainer (bots use a magic mag packing skill to reload instantly)
         AddAmmoToSecureContainer(
             botId,
-            BotConfig.SecureContainerAmmoStackCount,
+            botConfig.SecureContainerAmmoStackCount,
             generatedWeaponResult.ChosenAmmoTemplate,
             ammoTemplate.Value.Properties.StackMaxSize ?? 0,
             inventory
@@ -665,7 +666,7 @@ public class CustomBotWeaponGenerator(
 
         // Add grenades to bot inventory
         var ubglAmmoGenModel = new ApbsInventoryMagGen(ubglMinMax, ubglDbTemplate, ubglDbTemplate, ubglAmmoDbTemplate, inventory, botId, botRole, botLevel, tier, GetToploadConfig(botRole), GetRerollConfig(botRole));
-        InventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(ubglAmmoGenModel)).Process(ubglAmmoGenModel);
+        _inventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(ubglAmmoGenModel)).Process(ubglAmmoGenModel);
 
         // Store extra grenades in secure container
         AddAmmoToSecureContainer(botId, 5, generatedWeaponResult.ChosenUbglAmmoTemplate.Value, 20, inventory);
@@ -712,7 +713,7 @@ public class CustomBotWeaponGenerator(
     /// <returns>Magazine template string.</returns>
     protected MongoId? GetMagazineTemplateFromWeaponTemplate(IEnumerable<Item> weaponMods, TemplateItem weaponTemplate, string botRole)
     {
-        var magazine = weaponMods.FirstOrDefault(m => m.SlotId == ModMagazineSlotId);
+        var magazine = weaponMods.FirstOrDefault(m => m.SlotId == modMagazineSlotId);
         if (magazine is null)
         {
             // Edge case - magazineless chamber loaded weapons don't have magazines, e.g. mp18
@@ -872,7 +873,7 @@ public class CustomBotWeaponGenerator(
         }
 
         var magazineTemplate = itemHelper.GetItem(
-            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId(null)
+            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId()
         );
         if (!magazineTemplate.Key)
         {
@@ -1046,11 +1047,11 @@ public class CustomBotWeaponGenerator(
 
     private EnableChance GetRerollConfig(string botRole)
     {
-        if (Bosses.Contains(botRole)) return ModConfig.Config.BossBots.RerollConfig;
-        if (Followers.Contains(botRole)) return ModConfig.Config.FollowerBots.RerollConfig;
-        if (Pmcs.Contains(botRole)) return ModConfig.Config.PmcBots.RerollConfig;
-        if (Scavs.Contains(botRole)) return ModConfig.Config.ScavBots.RerollConfig;
-        if (Specials.Contains(botRole)) return ModConfig.Config.SpecialBots.RerollConfig;
+        if (_bosses.Contains(botRole)) return ModConfig.Config.BossBots.RerollConfig;
+        if (_followers.Contains(botRole)) return ModConfig.Config.FollowerBots.RerollConfig;
+        if (_pmcs.Contains(botRole)) return ModConfig.Config.PmcBots.RerollConfig;
+        if (_scavs.Contains(botRole)) return ModConfig.Config.ScavBots.RerollConfig;
+        if (_specials.Contains(botRole)) return ModConfig.Config.SpecialBots.RerollConfig;
         return new EnableChance()
         {
             Enable = false,
@@ -1060,11 +1061,11 @@ public class CustomBotWeaponGenerator(
 
     private ToploadConfig GetToploadConfig(string botRole)
     {
-        if (Bosses.Contains(botRole)) return ModConfig.Config.BossBots.ToploadConfig;
-        if (Followers.Contains(botRole)) return ModConfig.Config.FollowerBots.ToploadConfig;
-        if (Pmcs.Contains(botRole)) return ModConfig.Config.PmcBots.ToploadConfig;
-        if (Scavs.Contains(botRole)) return ModConfig.Config.ScavBots.ToploadConfig;
-        if (Specials.Contains(botRole)) return ModConfig.Config.SpecialBots.ToploadConfig;
+        if (_bosses.Contains(botRole)) return ModConfig.Config.BossBots.ToploadConfig;
+        if (_followers.Contains(botRole)) return ModConfig.Config.FollowerBots.ToploadConfig;
+        if (_pmcs.Contains(botRole)) return ModConfig.Config.PmcBots.ToploadConfig;
+        if (_scavs.Contains(botRole)) return ModConfig.Config.ScavBots.ToploadConfig;
+        if (_specials.Contains(botRole)) return ModConfig.Config.SpecialBots.ToploadConfig;
         
         return new ToploadConfig()
         {

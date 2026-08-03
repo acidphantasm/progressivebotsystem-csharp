@@ -1,16 +1,18 @@
 using ProgressiveBotSystem.Helpers;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
 
+using SPTarkov.Server.Core.Helpers.Bot;
+
 [Injectable]
 public class ApbsInternalMagazineInventoryMagGen(
     BotWeaponGeneratorHelper botWeaponGeneratorHelper,
     RandomUtil randomUtil,
-    BotEquipmentHelper botEquipmentHelper) : ApbsInventoryMagGen, IApbsInventoryMagGen
+    BotEquipmentHelper botEquipmentHelper,
+    InventoryMagGenHelper inventoryMagGenHelper) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
     public int GetPriority()
     {
@@ -24,7 +26,7 @@ public class ApbsInternalMagazineInventoryMagGen(
 
     public void Process(ApbsInventoryMagGen inventoryMagGen)
     {
-        var bulletCount = inventoryMagGen.GetRandomizedBulletCount(
+        var bulletCount = inventoryMagGenHelper.GetRandomizedBulletCount(
             inventoryMagGen.GetMagCount(),
             inventoryMagGen.GetMagazineTemplate()
         );
@@ -34,7 +36,7 @@ public class ApbsInternalMagazineInventoryMagGen(
         {
             var weapon = inventoryMagGen.GetWeaponTemplate();
             var ammoTable = botEquipmentHelper.GetAmmoByBotRole(inventoryMagGen.GetBotRole(), inventoryMagGen.GetTier());
-            var rerolledAmmoTpl = inventoryMagGen.GetWeightedCompatibleAmmo(ammoTable, weapon);
+            var rerolledAmmoTpl = inventoryMagGenHelper.GetWeightedCompatibleAmmo(ammoTable, weapon);
 
             if (bulletCount > 20)
             {

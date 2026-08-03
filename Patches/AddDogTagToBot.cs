@@ -1,12 +1,12 @@
 ﻿using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Utils;
 using System.Reflection;
 using HarmonyLib;
 using ProgressiveBotSystem.Globals;
 using SPTarkov.Common.Extensions;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Constants;
-using SPTarkov.Server.Core.Generators;
+using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
@@ -14,8 +14,18 @@ using SPTarkov.Server.Core.Models.Enums;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class AddDogTagToBotPatch : AbstractPatch
 {
+    private static WeightedRandomHelper _weightedRandomHelper = default!;
+    private static RandomUtil _randomUtil = default!;
+
+    public AddDogTagToBotPatch(WeightedRandomHelper weightedRandomHelper, RandomUtil randomUtil)
+    {
+        _weightedRandomHelper = weightedRandomHelper;
+        _randomUtil = randomUtil;
+    }
+    
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(BotGenerator),"AddDogtagToBot");
@@ -104,13 +114,10 @@ public class AddDogTagToBotPatch : AbstractPatch
 
     private static MongoId GetNonPrestigeDogTag(string side, string gameVersion, bool wttBackportAvailable)
     {
-        var weightedRandomHelper = ServiceLocator.ServiceProvider.GetRequiredService<WeightedRandomHelper>();
-        var randomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();
-
         var hasEditionWithDogtag = gameVersion is GameEditions.UNHEARD or GameEditions.EDGE_OF_DARKNESS;
         var editionChance = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionDogtagChance;
 
-        if (hasEditionWithDogtag && randomUtil.GetChance100(editionChance))
+        if (hasEditionWithDogtag && _randomUtil.GetChance100(editionChance))
         {
             return gameVersion switch
             {
@@ -126,7 +133,7 @@ public class AddDogTagToBotPatch : AbstractPatch
             };
         }
         
-        return wttBackportAvailable ? weightedRandomHelper.GetWeightedValue(BackportDogtagDictionary[side])
+        return wttBackportAvailable ? _weightedRandomHelper.GetWeightedValue(BackportDogtagDictionary[side])
             : side == "usec" ? ItemTpl.BARTER_DOGTAG_USEC : ItemTpl.BARTER_DOGTAG_BEAR;
     }
 }

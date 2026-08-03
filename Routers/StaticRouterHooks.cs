@@ -5,12 +5,14 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Eft.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.HttpResponse;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Services.Profile;
 using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Routers;
@@ -22,7 +24,10 @@ public class StaticRouterHooks : StaticRouter
         JsonUtil jsonUtil,
         HttpResponseUtil httpResponseUtil,
         ApbsLogger apbsLogger,
-        BotLogService botLogService) : base(
+        BotLogService botLogService,
+        ProfileHelper profileHelper,
+        ProfileActivityService profileActivityService,
+        CustomBotLootCacheService customBotLootCacheService) : base(
         jsonUtil,
         GetCustomRoutes()
     )
@@ -30,11 +35,17 @@ public class StaticRouterHooks : StaticRouter
         _jsonUtil = jsonUtil;
         _apbsLogger = apbsLogger;
         _botLogService = botLogService;
+        _profileHelper = profileHelper;
+        _profileActivityService = profileActivityService;
+        _customBotLootCacheService = customBotLootCacheService;
     }
     
     private static ApbsLogger? _apbsLogger;
     private static JsonUtil? _jsonUtil;
     private static BotLogService? _botLogService;
+    private static ProfileHelper? _profileHelper;
+    private static ProfileActivityService? _profileActivityService;
+    private static CustomBotLootCacheService? _customBotLootCacheService;
 
     private static List<RouteAction> GetCustomRoutes()
     {
@@ -46,7 +57,8 @@ public class StaticRouterHooks : StaticRouter
                     url,
                     info,
                     sessionId,
-                    output
+                    output,
+                    token
                 ) =>
                 {
                     if (ModConfig.Config.Debug.EnableBotEquipmentLog)
@@ -75,13 +87,14 @@ public class StaticRouterHooks : StaticRouter
                     url,
                     info,
                     sessionId,
-                    output
+                    output,
+                    token
                 ) =>
                 {
                     try
                     {
-                        var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>()!.GetFullProfile(sessionId);
-                        var profileActivityRaidData = ServiceLocator.ServiceProvider.GetService<ProfileActivityService>()!.GetProfileActivityRaidData(sessionId);
+                        var fullProfile = _profileHelper.GetFullProfile(sessionId);
+                        var profileActivityRaidData = _profileActivityService.GetProfileActivityRaidData(sessionId);
                     
                         RaidInformation.CurrentSessionId = fullProfile.ProfileInfo.ProfileId;
                     
@@ -116,14 +129,12 @@ public class StaticRouterHooks : StaticRouter
                     url,
                     info,
                     sessionId,
-                    output
+                    output,
+                    token
                 ) =>
                 {
-                    
-                    var customBotLootCacheService = ServiceLocator.ServiceProvider.GetService<CustomBotLootCacheService>();
-                    
                     RaidInformation.IsInRaid = false;
-                    customBotLootCacheService.ClearApbsCache();
+                    _customBotLootCacheService.ClearApbsCache();
                     
                     _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     return output;
@@ -135,12 +146,13 @@ public class StaticRouterHooks : StaticRouter
                     url,
                     info,
                     sessionId,
-                    output
+                    output,
+                    token
                 ) =>
                 {
                     try
                     {
-                        var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
+                        var fullProfile = _profileHelper.GetFullProfile(sessionId);
                         RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
                         _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }
@@ -157,13 +169,14 @@ public class StaticRouterHooks : StaticRouter
                     url,
                     info,
                     sessionId,
-                    output
+                    output,
+                    token
                 ) =>
                 {
                     _apbsLogger.Debug("/client/profile/status");
                     try
                     {
-                        var fullProfile = ServiceLocator.ServiceProvider.GetService<ProfileHelper>().GetFullProfile(sessionId);
+                        var fullProfile = _profileHelper.GetFullProfile(sessionId);
                         RaidInformation.FreshProfile = fullProfile.ProfileInfo.IsWiped.Value;
                         _apbsLogger.Debug($"Fresh Profile: {RaidInformation.FreshProfile}");
                     }

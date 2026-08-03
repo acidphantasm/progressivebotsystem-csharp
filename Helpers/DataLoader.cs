@@ -8,12 +8,13 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Helpers;
 
-[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader + 10)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.Preload + 10)]
 public class DataLoader(
     ModHelper modHelper,
     TierInformation tierInformation,
@@ -43,7 +44,7 @@ public class DataLoader(
             },
         };
     
-    public async Task OnLoad()
+    public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
         var pathToMod = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
 

@@ -3,16 +3,17 @@ using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Helpers;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
-using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
+
+using SPTarkov.Common.Models.Logging;
+using SPTarkov.Server.Core.Helpers.Bot;
+using SPTarkov.Server.Core.Helpers.Items;
+using SPTarkov.Server.Core.Services.Locales;
 
 [Injectable]
 public class ApbsExternalInventoryMagGen(
@@ -22,7 +23,8 @@ public class ApbsExternalInventoryMagGen(
     BotWeaponGeneratorHelper botWeaponGeneratorHelper,
     BotGeneratorHelper botGeneratorHelper,
     RandomUtil randomUtil,
-    BotEquipmentHelper botEquipmentHelper
+    BotEquipmentHelper botEquipmentHelper,
+    InventoryMagGenHelper inventoryMagGenHelper
 ) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
     public int GetPriority()
@@ -62,7 +64,7 @@ public class ApbsExternalInventoryMagGen(
         var shouldBotRerollAmmo = rerollConfig.Enable && !toploadConfig.Enable && randomUtil.GetChance100(rerollConfig.Chance);
         var shouldBotTopload = toploadConfig.Enable && !rerollConfig.Enable && randomUtil.GetChance100(toploadConfig.Chance);
         
-        var randomizedMagazineCount = inventoryMagGen.GetRandomizedMagazineCount(inventoryMagGen.GetMagCount());
+        var randomizedMagazineCount = inventoryMagGenHelper.GetRandomizedMagazineCount(inventoryMagGen.GetMagCount());
         if (itemHelper.IsOfBaseclass(weapon.Id, BaseClasses.PISTOL)) randomizedMagazineCount = randomUtil.GetInt(1, 2);
         
         for (var i = 0; i < randomizedMagazineCount; i++)
@@ -79,7 +81,7 @@ public class ApbsExternalInventoryMagGen(
 
                     if (currentMagazineSize > 35 && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1)
                     {
-                        var smallMagazinePool = inventoryMagGen.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 25, 35);
+                        var smallMagazinePool = inventoryMagGenHelper.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 25, 35);
 
                         magazineTpl = randomUtil.GetArrayValue(smallMagazinePool);
                         magTemplate = itemHelper.GetItem(magazineTpl).Value;
@@ -90,13 +92,13 @@ public class ApbsExternalInventoryMagGen(
             var selectedAmmoForMag = selectedAmmoId;
             if (shouldBotRerollAmmo)
             {
-                selectedAmmoForMag = inventoryMagGen.GetWeightedCompatibleAmmo(ammoTable, weapon);
+                selectedAmmoForMag = inventoryMagGenHelper.GetWeightedCompatibleAmmo(ammoTable, weapon);
             }
             
             List<Item> magazineWithAmmo = new List<Item>();
             if (shouldBotTopload)
             {
-                magazineWithAmmo = inventoryMagGen.CreateMagazineWithAmmo(
+                magazineWithAmmo = inventoryMagGenHelper.CreateMagazineWithAmmo(
                     magazineTpl, 
                     selectedAmmoForMag, 
                     ammoTable, 
@@ -180,9 +182,9 @@ public class ApbsExternalInventoryMagGen(
                 }
                 
                 // This fix is for when the default mag doesn't fit the parent weapon. This primarily happens with modded weapons.
-                if (!DoesMagazineFitWeapon(weapon, magTemplate))
+                if (!inventoryMagGenHelper.DoesMagazineFitWeapon(weapon, magTemplate))
                 {
-                    magTemplate = inventoryMagGen.GetFallbackFittingMagazine(modPool, weapon, magTemplate, tier);
+                    magTemplate = inventoryMagGenHelper.GetFallbackFittingMagazine(modPool, weapon, magTemplate, tier);
                     magazineTpl = magTemplate.Id;
                 }
 

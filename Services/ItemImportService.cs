@@ -8,18 +8,21 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Services;
 
 namespace ProgressiveBotSystem.Services;
 
-[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostSptModLoader + 69)]
+[Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad + 69)]
 public class ItemImportService(
     ApbsLogger apbsLogger,
     ItemImportHelper itemImportHelper,
     ItemImportTierHelper itemImportTierHelper,
-    DatabaseService databaseService,
+    TemplateTable templateTable,
     ItemHelper itemHelper): IOnLoad
 {
     private readonly bool _testMode = false;
@@ -54,7 +57,7 @@ public class ItemImportService(
     private readonly Lock _modsLock = new();
     private readonly Lock _ammoLock = new();
     
-    public async Task OnLoad()
+    public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
         if (itemImportHelper.ShouldSkipImport())
             return;
@@ -152,7 +155,7 @@ public class ItemImportService(
     /// </summary>
     private void ImportEquipmentBySlot()
     {
-        var allItems = databaseService.GetItems();
+        var allItems = templateTable.Items;
         var itemsToImport = allItems.Values
             .Where(item => itemImportHelper.EquipmentNeedsImporting(item.Id))
             .ToList();
@@ -178,7 +181,7 @@ public class ItemImportService(
         
         Parallel.ForEach(itemsToImport, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, SortAndStartEquipmentImport);
         
-        var customizationItems = databaseService.GetCustomization();
+        var customizationItems = templateTable.Customization;
         var customizationToImport = customizationItems.Values
             .Where(itemImportHelper.CustomizationNeedsImporting)
             .ToList();

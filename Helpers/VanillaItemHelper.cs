@@ -5,18 +5,22 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Items;
+using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using Path = System.IO.Path;
 
 namespace ProgressiveBotSystem.Helpers;
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader)]
+[Injectable(TypePriority = OnLoadOrder.PostLoad)]
 public class VanillaItemHelper(
     ModHelper modHelper,
-    DatabaseService databaseService,
+    TemplateTable templateTable,
     ItemHelper itemHelper,
     JsonUtil jsonUtil,
     ApbsLogger apbsLogger): IOnLoad
@@ -171,7 +175,7 @@ public class VanillaItemHelper(
         BaseClasses.REVOLVER
     ];
     
-    public async Task OnLoad()
+    public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
         var pathToMod = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         
@@ -205,7 +209,7 @@ public class VanillaItemHelper(
 
     private Task LoadVanillaItemsMapping()
     {
-        var allItems = databaseService.GetItems();
+        var allItems = templateTable.Items;
 
         var mapRules = new Dictionary<Func<MongoId, TemplateItem, bool>, Dictionary<MongoId, string>>
         {
@@ -281,7 +285,7 @@ public class VanillaItemHelper(
     
     private Task LoadVanillaAppearanceMapping()
     {
-        var allItems = databaseService.GetCustomization();
+        var allItems = templateTable.Customization;
 
         var mapRules = new Dictionary<Func<MongoId, CustomizationItem, bool>, Dictionary<MongoId, string>>
         {

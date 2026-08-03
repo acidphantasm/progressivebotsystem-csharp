@@ -4,16 +4,44 @@ using System.Reflection;
 using HarmonyLib;
 using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Helpers;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Generators;
+using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Bots;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Services.Server;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class SetBotAppearancePatch : AbstractPatch
 {
+    private static WeightedRandomHelper _weightedRandomHelper = default!;
+    private static GlobalTable _globalTable = default!;
+    private static TemplateTable _templateTable = default!;
+    private static SeasonalEventService _seasonalEventService = default!;
+    private static BotEquipmentHelper _botEquipmentHelper = default!;
+    private static TierHelper _tierHelper = default!;
+
+    public SetBotAppearancePatch(
+        WeightedRandomHelper weightedRandomHelper,
+        GlobalTable globalTable,
+        TemplateTable templateTable,
+        SeasonalEventService seasonalEventService,
+        BotEquipmentHelper botEquipmentHelper,
+        TierHelper tierHelper)
+    {
+        _weightedRandomHelper = weightedRandomHelper;
+        _globalTable = globalTable;
+        _templateTable = templateTable;
+        _seasonalEventService = seasonalEventService;
+        _botEquipmentHelper = botEquipmentHelper;
+        _tierHelper = tierHelper;
+    }
+    
     protected override MethodBase GetTargetMethod()
     {
         return AccessTools.Method(typeof(BotGenerator),"SetBotAppearance");
@@ -22,35 +50,28 @@ public class SetBotAppearancePatch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(BotBase bot, Appearance appearance, BotGenerationDetails botGenerationDetails)
     {
-        var weightedRandomHelper = ServiceLocator.ServiceProvider.GetService<WeightedRandomHelper>();
-        var databaseService = ServiceLocator.ServiceProvider.GetService<DatabaseService>();
-        var seasonalEventService = ServiceLocator.ServiceProvider.GetService<SeasonalEventService>();
-        var botEquipmentHelper = ServiceLocator.ServiceProvider.GetService<BotEquipmentHelper>();
-        var tierHelper = ServiceLocator.ServiceProvider.GetService<TierHelper>();
-        
-        if (weightedRandomHelper is null || databaseService is null || botEquipmentHelper is null || seasonalEventService is null) return true;
         if (!botGenerationDetails.IsPmc) return true;
 
         var botLevel = bot.Info.Level ?? 0;
-        var tier = ModConfig.Config.GeneralConfig.BlickyMode ? 0 : tierHelper.GetTierByLevel(botLevel);
-        var weatherSeason = seasonalEventService.GetActiveWeatherSeason();
+        var tier = ModConfig.Config.GeneralConfig.BlickyMode ? 0 : _tierHelper.GetTierByLevel(botLevel);
+        var weatherSeason = _seasonalEventService.GetActiveWeatherSeason();
         var getSeasonalData = ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance;
-        var appearanceData = botEquipmentHelper.GetAppearanceByBotRole(botGenerationDetails.Role, tier, weatherSeason, getSeasonalData);
+        var appearanceData = _botEquipmentHelper.GetAppearanceByBotRole(botGenerationDetails.Role, tier, weatherSeason, getSeasonalData);
 
-        bot.Customization.Head = weightedRandomHelper.GetWeightedValue(appearanceData.Head);
-        bot.Customization.Feet = weightedRandomHelper.GetWeightedValue(appearanceData.Feet);
-        bot.Customization.Body = weightedRandomHelper.GetWeightedValue(appearanceData.Body);
+        bot.Customization.Head = _weightedRandomHelper.GetWeightedValue(appearanceData.Head);
+        bot.Customization.Feet = _weightedRandomHelper.GetWeightedValue(appearanceData.Feet);
+        bot.Customization.Body = _weightedRandomHelper.GetWeightedValue(appearanceData.Body);
 
-        var bodyGlobalDictDb = databaseService.GetGlobals().Configuration.Customization.Body;
-        var chosenBodyTemplate = databaseService.GetCustomization()[bot.Customization.Body.Value];
+        var bodyGlobalDictDb = _globalTable.Configuration.Customization.Body;
+        var chosenBodyTemplate = _templateTable.Customization[bot.Customization.Body.Value];
 
         // Some bodies have matching hands, look up body to see if this is the case
         var chosenBody = bodyGlobalDictDb.FirstOrDefault(c => c.Key == chosenBodyTemplate?.Name.Trim());
         bot.Customization.Hands =
             chosenBody.Value?.IsNotRandom ?? false
                 ? chosenBody.Value.Hands // Has fixed hands for chosen body, update to match
-                : weightedRandomHelper.GetWeightedValue(appearanceData.Hands); // Hands can be random, choose any from weighted dict
-        
+                : _weightedRandomHelper.GetWeightedValue(appearanceData.Hands); // Hands can be random, choose any from weighted dict
+
         return false;
     }
 }

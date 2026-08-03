@@ -5,21 +5,22 @@ using ProgressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Utils;
 using Path = System.IO.Path;
 
 namespace ProgressiveBotSystem.Services;
 
-[Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
+[Injectable(TypePriority = OnLoadOrder.Preload + 1)]
 public class StartUpService(
     IReadOnlyList<SptMod> installedMods,
     ModHelper modHelper,
-    JsonUtil jsonUtil)
+    JsonUtil jsonUtil,
+    IEnumerable<IRuntimePatch> patches)
     : IOnLoad
 {
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken token)
     {
         CreateLogFiles();
         CheckForMods();
@@ -27,13 +28,10 @@ public class StartUpService(
         var releaseNoteGenerator = new ReleaseNoteGenerator(modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly()), new ModMetadata().SptVersion, jsonUtil);
         _ = releaseNoteGenerator.GenerateIfFirstBuildAsync();
 
-        var patchManager = new PatchManager
+        foreach (var patch in patches)
         {
-            PatcherName = "com.acidphantasm.progressivebotsystem",
-            AutoPatch = true
-        };
-        
-        patchManager.EnablePatches();
+            patch.Enable();
+        }
         
         return Task.CompletedTask;
     }

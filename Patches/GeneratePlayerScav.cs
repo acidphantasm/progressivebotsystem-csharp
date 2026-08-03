@@ -4,18 +4,28 @@ using SPTarkov.Server.Core.Utils;
 using System.Reflection;
 using HarmonyLib;
 using ProgressiveBotSystem.Globals;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Generators;
+using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Services;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class GeneratePlayerScavPatch : AbstractPatch
 {
-    
-    private static readonly RandomUtil RandomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();
-    private static readonly DatabaseService DatabaseService = ServiceLocator.ServiceProvider.GetRequiredService<DatabaseService>();
-    
+    private static BotTable _botTable = default!;
+    private static RandomUtil _randomUtil = default!;
+
+    public GeneratePlayerScavPatch(
+        BotTable botTable,
+        RandomUtil randomUtil)
+    {
+        _botTable = botTable;
+        _randomUtil = randomUtil;
+    }
     
     protected override MethodBase GetTargetMethod()
     {
@@ -40,10 +50,10 @@ public class GeneratePlayerScavPatch : AbstractPatch
         if (role == "sectantWarrior")
             return;
 
-        if (!RandomUtil.GetChance100(ModConfig.Config.PlayerScavConfig.Chance))
+        if (!_randomUtil.GetChance100(ModConfig.Config.PlayerScavConfig.Chance))
             return;
 
-        var selectedRole = RandomUtil.GetRandomElement(ModConfig.Config.PlayerScavConfig.AllowedBosses);
+        var selectedRole = _randomUtil.GetRandomElement(ModConfig.Config.PlayerScavConfig.AllowedBosses);
         role = selectedRole;
         __state = selectedRole.ToLowerInvariant();
     }
@@ -54,7 +64,7 @@ public class GeneratePlayerScavPatch : AbstractPatch
         if(string.IsNullOrEmpty(__state))
             return;
 
-        if (!DatabaseService.GetBots().Types.TryGetValue(__state, out var bot))
+        if (!_botTable.Types.TryGetValue(__state, out var bot))
             return;
 
         if (__result.Customization is null || bot is null)

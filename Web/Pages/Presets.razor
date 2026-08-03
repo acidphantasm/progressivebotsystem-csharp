@@ -162,7 +162,7 @@
     
     private async Task ShowCreateFolderDialog()
     {
-        var dialog = DialogService.Show<FolderCreateDialog>("Create Folder");
+        var dialog = await DialogService.ShowAsync<FolderCreateDialog>("Create Folder");
         var result = await dialog.Result;
 
         if (result is not null && !result.Canceled)

@@ -18,9 +18,8 @@ public class BotEquipmentHelper(
     DataLoader dataLoader,
     ICloner cloner,
     ApbsLogger apbsLogger) : IOnLoad {
-
-
-    public Task OnLoad()
+    
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         apbsLogger.Debug("BotConfigHelper.OnLoad()");
         return Task.CompletedTask;

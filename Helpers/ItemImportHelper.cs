@@ -5,9 +5,11 @@ using ProgressiveBotSystem.Models.Enums;
 using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using Path = System.IO.Path;
@@ -19,7 +21,7 @@ public class ItemImportHelper(
     ApbsLogger apbsLogger,
     JsonUtil jsonUtil,
     ItemHelper itemHelper,
-    DatabaseService databaseService,
+    TemplateTable templateTable,
     BotBlacklistHelper botBlacklistHelper,
     DateHelper dateHelper)
 {
@@ -659,7 +661,7 @@ public class ItemImportHelper(
 
         foreach (var itemId in clothingData.Keys)
         {
-            var item = databaseService.GetCustomization();
+            var item = templateTable.Customization;
             if (!item.TryGetValue(itemId, out var _))
                 continue;
             
@@ -872,7 +874,7 @@ public class ItemImportHelper(
             return [];
         }
 
-        var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId(null));
+        var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? new MongoId());
         if (magazineTemplate.Value?.Properties == null) return new HashSet<MongoId>();
 
 

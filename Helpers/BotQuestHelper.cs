@@ -5,6 +5,7 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Helpers;
@@ -26,7 +27,7 @@ public class BotQuestHelper : IOnLoad
     private readonly RandomUtil _randomUtil;
     private readonly ModHelper _modHelper;
     
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         

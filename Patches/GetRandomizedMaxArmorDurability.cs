@@ -4,10 +4,13 @@ using HarmonyLib;
 using ProgressiveBotSystem.Constants;
 using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Helpers;
+using SPTarkov.Common.Models.Logging;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Exceptions.Helpers;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Utils;
@@ -16,8 +19,26 @@ using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
 {
+    private static BotActivityHelper _botActivityHelper = default!;
+    private static RandomUtil _randomUtil = default!;
+    private static BotConfig _botConfig = default!;
+    private static ISptLogger<DurabilityLimitsHelper> _logger;
+
+    public GetRandomizedMaxArmorDurabilityPatch(
+        BotActivityHelper botActivityHelper,
+        RandomUtil randomUtil,
+        BotConfig botConfig,
+        ISptLogger<DurabilityLimitsHelper> logger)
+    {
+        _botActivityHelper = botActivityHelper;
+        _randomUtil = randomUtil;
+        _botConfig = botConfig;
+        _logger = logger;
+    }
+    
     private static readonly HashSet<string> ScavRoles = typeof(ScavBots).GetFields().Select(x => (string)x.GetValue(null)).ToHashSet(StringComparer.Ordinal);
     private static readonly HashSet<string> BossRoles = typeof(BossBots).GetFields().Select(x => (string)x.GetValue(null)).ToHashSet(StringComparer.Ordinal);
     private static readonly HashSet<string> FollowerRoles = typeof(FollowerBots).GetFields().Select(x => (string)x.GetValue(null)).ToHashSet(StringComparer.Ordinal);
@@ -32,10 +53,7 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(ref double __result, TemplateItem? itemTemplate, string? botRole = null)
     {
-        var botActivityHelper = ServiceLocator.ServiceProvider.GetRequiredService<BotActivityHelper>();
-        var logger = ServiceLocator.ServiceProvider.GetRequiredService<ISptLogger<DurabilityLimitsHelper>>();
-
-        if (RaidInformation.FreshProfile || RaidInformation.CurrentSessionId is null || botRole is null || !botActivityHelper.IsBotEnabled(botRole)) return true;
+        if (RaidInformation.FreshProfile || RaidInformation.CurrentSessionId is null || botRole is null || !_botActivityHelper.IsBotEnabled(botRole)) return true;
         if (ScavRoles.Contains(botRole) && !ModConfig.Config.ScavBots.ArmourDurability.Enable) return true;
         if (BossRoles.Contains(botRole) && !ModConfig.Config.BossBots.ArmourDurability.Enable) return true;
         if (FollowerRoles.Contains(botRole) && !ModConfig.Config.FollowerBots.ArmourDurability.Enable) return true;
@@ -46,7 +64,7 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
         if (!itemMaxDurability.HasValue)
         {
             const string message = "Item max durability amount is null when trying to get max armor durability";
-            logger.Error(message);
+            _logger.Error(message);
             throw new DurabilityHelperException(message);
         }
 
@@ -56,40 +74,36 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
     
     private static double GenerateMaxArmorDurability(string botRole, double itemMaxDurability)
     {
-        var botConfig = ServiceLocator.ServiceProvider.GetRequiredService<ConfigServer>().GetConfig<BotConfig>();
-        var randomUtil = ServiceLocator.ServiceProvider.GetRequiredService<RandomUtil>();
-        var logger = ServiceLocator.ServiceProvider.GetRequiredService<ISptLogger<DurabilityLimitsHelper>>();
-
         (int? min, int? max)? range = null;
 
-        if (botConfig.Durability.BotDurabilities.TryGetValue(botRole, out var durability))
+        if (_botConfig.Durability.BotDurabilities.TryGetValue(botRole, out var durability))
         {
             range = (durability.Armor.LowestMaxPercent, durability.Armor.HighestMaxPercent);
         }
         else if (FollowerRoles.Contains(botRole))
         {
-            var armor = botConfig.Durability.BotDurabilities["follower"].Armor;
+            var armor = _botConfig.Durability.BotDurabilities["follower"].Armor;
             range = (armor.LowestMaxPercent, armor.HighestMaxPercent);
         }
         else if (BossRoles.Contains(botRole))
         {
-            var armor = botConfig.Durability.BotDurabilities["boss"].Armor;
+            var armor = _botConfig.Durability.BotDurabilities["boss"].Armor;
             range = (armor.LowestMaxPercent, armor.HighestMaxPercent);
         }
         else if (PmcRoles.Contains(botRole))
         {
-            var armor = botConfig.Durability.Pmc.Armor;
+            var armor = _botConfig.Durability.Pmc.Armor;
             range = (armor.LowestMaxPercent, armor.HighestMaxPercent);
         }
         
         if (range is null)
         {
-            logger.Error($"[ARMOUR DURABILITY] {botRole} <- REPORT THIS PLEASE | Defaulting to 90 - 100 Durability");
+            _logger.Error($"[ARMOUR DURABILITY] {botRole} <- REPORT THIS PLEASE | Defaulting to 90 - 100 Durability");
             range = (90, 100);
         }
         
         var (min, max) = range.Value;
-        var multiplier = randomUtil.GetDouble(min ?? 90, max ?? 100);
+        var multiplier = _randomUtil.GetDouble(min ?? 90, max ?? 100);
         return itemMaxDurability * (multiplier / 100.0);
     }
 }

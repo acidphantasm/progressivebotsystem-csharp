@@ -2,24 +2,30 @@
 using ProgressiveBotSystem.Helpers;
 using ProgressiveBotSystem.Models;
 using ProgressiveBotSystem.Models.Enums;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Generators;
+using SPTarkov.Server.Core.Generators.Bot;
+using SPTarkov.Server.Core.Generators.Loot;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Bot;
+using SPTarkov.Server.Core.Helpers.InRaid;
+using SPTarkov.Server.Core.Helpers.Items;
+using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Services.Bot;
+using SPTarkov.Server.Core.Services.Locales;
+using SPTarkov.Server.Core.Services.Profile;
 using SPTarkov.Server.Core.Utils;
-using LogLevel = SPTarkov.Server.Core.Models.Spt.Logging.LogLevel;
 
 namespace ProgressiveBotSystem.Generators;
 
-[Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
+[Injectable(TypePriority = OnLoadOrder.PostLoad)]
 public class CustomBotInventoryGenerator
 {
     public CustomBotInventoryGenerator(
@@ -37,7 +43,8 @@ public class CustomBotInventoryGenerator
         BotEquipmentFilterService botEquipmentFilterService,
         BotEquipmentModPoolService botEquipmentModPoolService,
         BotInventoryContainerService botInventoryContainerService,
-        ConfigServer configServer,
+        PmcConfig pmcConfig,
+        BotConfig botConfig,
         BotInventoryGenerator botInventoryGenerator,
         BotEquipmentHelper botEquipmentHelper,
         CustomBotWeaponGenerator customBotWeaponGenerator,
@@ -62,8 +69,8 @@ public class CustomBotInventoryGenerator
         _customBotWeaponGenerator = customBotWeaponGenerator;
         _customBotEquipmentModGenerator = customBotEquipmentModGenerator;
         
-        _botConfig = configServer.GetConfig<BotConfig>();
-        _pmcConfig = configServer.GetConfig<PmcConfig>();
+        _botConfig = botConfig;
+        _pmcConfig = pmcConfig;
     }
     
     private readonly ISptLogger<CustomBotInventoryGenerator> _logger;

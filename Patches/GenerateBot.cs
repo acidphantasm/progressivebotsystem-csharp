@@ -1,12 +1,14 @@
 ﻿using SPTarkov.Reflection.Patching;
 using System.Reflection;
 using HarmonyLib;
-using SPTarkov.Server.Core.Generators;
+using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class GenerateBotPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()

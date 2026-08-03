@@ -12,7 +12,7 @@ public class DateHelper(): IOnLoad
     private bool HalloweenEnabled { get; set; }
     private bool ChristmasEnabled { get; set; }
     
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         AprilFoolsEnabled = CalculateAprilFools();
         HalloweenEnabled = CalculateHalloween();

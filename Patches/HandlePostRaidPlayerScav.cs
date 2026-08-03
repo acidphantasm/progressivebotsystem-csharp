@@ -2,18 +2,21 @@
 using System.Reflection;
 using HarmonyLib;
 using ProgressiveBotSystem.Globals;
+using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Services;
+using SPTarkov.Server.Core.Services.InRaid;
 
 namespace ProgressiveBotSystem.Patches;
 
+[Injectable]
 public class HandlePostRaidPlayerScavPatch : AbstractPatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(LocationLifecycleService),"HandlePostRaidPlayerScav");
+        return AccessTools.Method(typeof(LocationLifecycleService),"HandlePostRaidPlayerScavAsync");
     }
 
     [PatchPrefix]

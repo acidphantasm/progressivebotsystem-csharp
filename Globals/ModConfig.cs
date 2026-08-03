@@ -7,11 +7,12 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Globals;
 
-[Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
+[Injectable(TypePriority = OnLoadOrder.Preload)]
 public class ModConfig : IOnLoad
 {
     public ModConfig(
@@ -61,7 +62,7 @@ public class ModConfig : IOnLoad
     public static int CurrentVanillaMappingManifestVersion = 1;
     public static int CurrentPresetManifestVersion = 1;
 
-    public async Task OnLoad()
+    public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
         var configPath = Path.Combine(_modPath, "config.json");
         var blacklistPath = Path.Combine(_modPath, "blacklists.json");
@@ -72,22 +73,22 @@ public class ModConfig : IOnLoad
         {
             File.Copy(defaultConfigPath, configPath);
         }
-        
+
         if (!File.Exists(blacklistPath))
         {
             File.Copy(defaultBlacklistPath, blacklistPath);
         }
 
-        var rawConfig = await _fileUtil.ReadFileAsync(configPath);
-        var rawBlacklist = await _fileUtil.ReadFileAsync(blacklistPath);
-        var rawDefaultConfig = await _fileUtil.ReadFileAsync(defaultConfigPath);
-        var rawDefaultBlacklist = await _fileUtil.ReadFileAsync(defaultBlacklistPath);
+        var rawConfig = await _fileUtil.ReadFileAsync(configPath, cancellationToken);
+        var rawBlacklist = await _fileUtil.ReadFileAsync(blacklistPath, cancellationToken);
+        var rawDefaultConfig = await _fileUtil.ReadFileAsync(defaultConfigPath, cancellationToken);
+        var rawDefaultBlacklist = await _fileUtil.ReadFileAsync(defaultBlacklistPath, cancellationToken);
 
         Config = _jsonUtil.Deserialize<ApbsServerConfig>(rawConfig) ?? throw new ArgumentNullException();
 
         if (ConfigHelper.IsJsonOutdated(rawConfig, rawDefaultConfig, Config))
         {
-            await _fileUtil.WriteFileAsync(configPath, _jsonUtil.Serialize(Config, true)!);
+            await _fileUtil.WriteFileAsync(configPath, _jsonUtil.Serialize(Config, true)!, cancellationToken);
             _apbsLogger.Success("Config updated and/or repaired.");
         }
 
@@ -98,7 +99,7 @@ public class ModConfig : IOnLoad
         if (ConfigHelper.IsJsonOutdated(rawBlacklist, rawDefaultBlacklist))
         {
             _apbsLogger.Warning("Blacklist is missing new properties, updating...");
-            await _fileUtil.WriteFileAsync(blacklistPath, _jsonUtil.Serialize(Blacklist, true)!);
+            await _fileUtil.WriteFileAsync(blacklistPath, _jsonUtil.Serialize(Blacklist, true)!, cancellationToken);
             _apbsLogger.Success("Blacklist updated with new default values for missing properties.");
         }
 
@@ -110,7 +111,7 @@ public class ModConfig : IOnLoad
         _apbsLogger.Debug("ModConfig.OnLoad()");
     }
 
-    public static async Task<ConfigOperationResult> ReloadConfig()
+    public static async Task<ConfigOperationResult> ReloadConfig(CancellationToken cancellationToken = default)
     {
         if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
@@ -119,12 +120,12 @@ public class ModConfig : IOnLoad
         {
             if (RaidInformation.IsInRaid)
                 return ConfigOperationResult.InRaid;
-            
+
             var configPath = Path.Combine(_modPath, "config.json");
             var blacklistPath = Path.Combine(_modPath, "blacklists.json");
 
-            var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(configPath);
-            var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(blacklistPath);
+            var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(configPath, cancellationToken);
+            var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(blacklistPath, cancellationToken);
 
             await Task.WhenAll(configTask, blacklistTask);
 
@@ -132,7 +133,7 @@ public class ModConfig : IOnLoad
             OriginalConfig = DeepClone(Config);
             Blacklist = blacklistTask.Result ?? throw new ArgumentNullException(nameof(Blacklist));
             OriginalBlacklist = DeepClone(Blacklist);
-            
+
             if (Config.UsePreset)
             {
                 await _dataLoader.AssignJsonDataFromPreset(_modPath);
@@ -145,10 +146,10 @@ public class ModConfig : IOnLoad
             // DeepClone the Clean data into the Dirty data for use
             _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
 
-            await Task.Run(() => _dateHelper.OnLoad());
-            await Task.Run(() => _botConfigHelper.ReapplyConfig());
-            await _itemImportService.OnLoad();
-            await Task.Run(() => _botBlacklistService.RunBlacklisting());
+            await Task.Run(() => _dateHelper.OnLoadAsync(cancellationToken), cancellationToken);
+            await Task.Run(() => _botConfigHelper.ReapplyConfig(), cancellationToken);
+            await _itemImportService.OnLoadAsync(cancellationToken);
+            await Task.Run(() => _botBlacklistService.RunBlacklisting(), cancellationToken);
 
             _apbsLogger.Success("ModConfig reloaded successfully.");
             return ConfigOperationResult.Success;
@@ -164,7 +165,7 @@ public class ModConfig : IOnLoad
         }
     }
 
-    public static async Task<ConfigOperationResult> SaveConfig(bool savePresetToDisk = false, bool presetNameChange = false)
+    public static async Task<ConfigOperationResult> SaveConfig(bool savePresetToDisk = false, bool presetNameChange = false, CancellationToken cancellationToken = default)
     {
         if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
@@ -173,19 +174,19 @@ public class ModConfig : IOnLoad
         {
             if (RaidInformation.IsInRaid)
                 return ConfigOperationResult.InRaid;
-            
+
             var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
             var configPath = Path.Combine(pathToMod, "config.json");
             var blacklistPath = Path.Combine(pathToMod, "blacklists.json");
 
-            var serializedConfigTask = Task.Run(() => _jsonUtil.Serialize(Config, true));
-            var serializedBlacklistTask = Task.Run(() => _jsonUtil.Serialize(Blacklist, true));
+            var serializedConfigTask = Task.Run(() => _jsonUtil.Serialize(Config, true), cancellationToken);
+            var serializedBlacklistTask = Task.Run(() => _jsonUtil.Serialize(Blacklist, true), cancellationToken);
             await Task.WhenAll(serializedConfigTask, serializedBlacklistTask);
 
-            var writeConfigTask = _fileUtil.WriteFileAsync(configPath, serializedConfigTask.Result!);
-            var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!);
+            var writeConfigTask = _fileUtil.WriteFileAsync(configPath, serializedConfigTask.Result!, cancellationToken);
+            var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!, cancellationToken);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
-            
+
             if (Config.UsePreset)
             {
                 var goodToReassignPreset = false;
@@ -205,19 +206,19 @@ public class ModConfig : IOnLoad
             {
                 await _dataLoader.AssignJsonData(_modPath);
             }
-            
+
             // DeepClone the Clean data into the Dirty data for use
             _dataLoader.AllTierDataDirty = DeepClone(_dataLoader.AllTierDataClean);
-            
-            await Task.Run(() => _dateHelper.OnLoad());
-            await Task.Run(() => _botConfigHelper.ReapplyConfig());
-            await _itemImportService.OnLoad();
-            await Task.Run(() => _botBlacklistService.RunBlacklisting());
+
+            await Task.Run(() => _dateHelper.OnLoadAsync(cancellationToken), cancellationToken);
+            await Task.Run(() => _botConfigHelper.ReapplyConfig(), cancellationToken);
+            await _itemImportService.OnLoadAsync(cancellationToken);
+            await Task.Run(() => _botBlacklistService.RunBlacklisting(), cancellationToken);
 
             // Update 'Original' config stuff since we've saved so the 'Undo' function works
             OriginalConfig = DeepClone(Config);
             OriginalBlacklist = DeepClone(Blacklist);
-            
+
             _apbsLogger.Success("ModConfig saved successfully.");
             return ConfigOperationResult.Success;
         }

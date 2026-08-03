@@ -2,9 +2,9 @@
 using System.Reflection;
 using ProgressiveBotSystem.Constants;
 using ProgressiveBotSystem.Globals;
+using Spectre.Console;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Models.Logging;
-using SPTarkov.Server.Core.Models.Utils;
 
 namespace ProgressiveBotSystem.Utils;
 
@@ -186,16 +186,16 @@ public class ApbsLogger
         switch (logType)
         {
             case Logging.Debug:
-                _logger.LogWithColor($"[APBS] {consoleMessage}", LogTextColor.Blue, LogBackgroundColor.White);
+                _logger.LogWithColor($"[APBS] {consoleMessage}", Color.Blue, Color.White);
                 break;
             case Logging.Warning:
-                _logger.LogWithColor($"[APBS] {consoleMessage}", LogTextColor.Black, LogBackgroundColor.Yellow);
+                _logger.LogWithColor($"[APBS] {consoleMessage}", Color.Black, Color.Yellow);
                 break;
             case Logging.Error:
-                _logger.LogWithColor($"[APBS] {consoleMessage}", LogTextColor.White, LogBackgroundColor.Red);
+                _logger.LogWithColor($"[APBS] {consoleMessage}", Color.White, Color.Red);
                 break;
             case Logging.Success:
-                _logger.LogWithColor($"[APBS] {consoleMessage}", LogTextColor.Green, LogBackgroundColor.Default);
+                _logger.LogWithColor($"[APBS] {consoleMessage}", Color.Green, Color.Default);
                 break;
         }
 
