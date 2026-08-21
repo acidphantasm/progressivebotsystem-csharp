@@ -1,9 +1,11 @@
-﻿using ProgressiveBotSystem.Constants;
-using ProgressiveBotSystem.Generators.WeaponGen;
-using ProgressiveBotSystem.Globals;
-using ProgressiveBotSystem.Helpers;
-using ProgressiveBotSystem.Models;
-using ProgressiveBotSystem.Models.Enums;
+﻿namespace ProgressiveBotSystem.Generators;
+
+using Constants;
+using WeaponGen;
+using Globals;
+using Helpers;
+using Models;
+using Models.Enums;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -23,8 +25,6 @@ using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace SPTarkov.Server.Core.Generators;
-
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad)]
 public class CustomBotWeaponGenerator(
     ISptLogger<CustomBotWeaponGenerator> logger,
@@ -39,7 +39,6 @@ public class CustomBotWeaponGenerator(
     RepairService repairService,
     ICloner cloner,
     BotConfig botConfig,
-    PmcConfig pmcConfig,
     RepairConfig repairConfig,
     IEnumerable<IApbsInventoryMagGen> inventoryMagGenComponents,
     BotEquipmentHelper botEquipmentHelper,

@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.3.1",
+    "ReleaseDate": "August 20, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Recursive detection will now only log a problematic item once instead of every instance of seeing it.",
+      "Fixed load order for vanilla caching",
+      "Bumped vanilla cache manifest version to force a re-cache"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.3.0",
     "ReleaseDate": "August 3, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Updated to 4.1"
     ],

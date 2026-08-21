@@ -59,7 +59,7 @@ public class ModConfig : IOnLoad
     public static bool PrestigeBackport;
     public static bool WttPackNStrap;
     
-    public static int CurrentVanillaMappingManifestVersion = 1;
+    public static int CurrentVanillaMappingManifestVersion = 2;
     public static int CurrentPresetManifestVersion = 1;
 
     public async Task OnLoadAsync(CancellationToken cancellationToken)

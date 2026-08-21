@@ -4,20 +4,18 @@ using ProgressiveBotSystem.Models;
 using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Tables;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using Path = System.IO.Path;
 
 namespace ProgressiveBotSystem.Helpers;
 
-[Injectable(TypePriority = OnLoadOrder.PostLoad)]
+[Injectable(TypePriority = OnLoadOrder.Preload - 1)]
 public class VanillaItemHelper(
     ModHelper modHelper,
     TemplateTable templateTable,
@@ -87,6 +85,12 @@ public class VanillaItemHelper(
     private readonly Dictionary<MongoId, string> _bearFeetMap = new();
     private readonly Dictionary<MongoId, string> _bearHandsMap = new();
     private readonly Dictionary<MongoId, string> _bearHeadMap = new();
+    
+    private static readonly HashSet<MongoId> BaseClassIds = typeof(BaseClasses)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(field => field.FieldType == typeof(MongoId))
+            .Select(field => (MongoId)field.GetValue(null)!)
+            .ToHashSet();
     
     private Dictionary<string, Dictionary<MongoId, string>> CategoryMaps =>
         new()
@@ -274,6 +278,11 @@ public class VanillaItemHelper(
 
         foreach (var (id, item) in allItems)
         {
+            if (BaseClassIds.Contains(id) || id == "684070bd2f743ae53b0b80ec")
+            {
+                continue;
+            }
+            
             foreach (var rule in mapRules.Where(rule => rule.Key(id, item)))
             {
                 rule.Value[id] = itemHelper.GetItemName(id);

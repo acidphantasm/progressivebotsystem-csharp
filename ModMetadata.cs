@@ -9,13 +9,13 @@ public record ModMetadata : IModMetadata, IModBlazorMetadata
     public string Name { get; init; } = "Acid's Progressive Bot System";
     public string Author { get; init; } = "acidphantasm";
     public List<string>? Contributors { get; init; }
-    public SemanticVersioning.Version Version { get; init; } = new("2.3.0");
+    public SemanticVersioning.Version Version { get; init; } = new("2.3.1");
     public SemanticVersioning.Range SptVersion { get; init; } = new("~4.1.0");
     public List<string>? Incompatibilities { get; init; } = ["li.barlog.andern"];
     public Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }
     public string? Url { get; init; }
     public bool HasPrepatcher { get; init; } = false;
-    public string? License { get; init; } = "CC BY-NC-ND 4.0";
+    public string License { get; init; } = "CC BY-NC-ND 4.0";
     public string? WWWRootUrl { get; init; }
     public string? HomePage { get; init; } = "/progressivebotsystem";
     public string? HomePageDescription { get; init; } = "Configure APBS";

@@ -16,7 +16,6 @@ namespace ProgressiveBotSystem.Helpers;
 public class BotEquipmentHelper(
     RandomUtil randomUtil, 
     DataLoader dataLoader,
-    ICloner cloner,
     ApbsLogger apbsLogger) : IOnLoad {
     
     public Task OnLoadAsync(CancellationToken cancellationToken)

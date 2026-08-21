@@ -27,6 +27,8 @@ public class ItemImportService(
 {
     private readonly bool _testMode = false;
     
+    private readonly ConcurrentDictionary<MongoId, byte> _loggedRecursiveItems = new();
+    
     private readonly ConcurrentDictionary<ApbsEquipmentSlots, int> _slotImportCounts = new();
     private Dictionary<(ApbsEquipmentSlots Slot, int Tier, string BotType), (double WeightSum, int ItemCount)> _baselineSlotData = new();
         
@@ -147,6 +149,8 @@ public class ItemImportService(
 
         _processedModCombos.Clear();
         _processedVanillaWeaponModCombos.Clear();
+
+        _loggedRecursiveItems.Clear();
     }
     
     /// <summary>
@@ -682,8 +686,11 @@ public class ItemImportService(
                 {
                     if (!context.Ancestors.Add(childItemId))
                     {
-                        var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
-                        apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Full path: {stackStr} -> {childItemId} (slot '{slotName}')");
+                        if (_loggedRecursiveItems.TryAdd(childItemId, 0))
+                        {
+                            var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
+                            apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Full path: {stackStr} -> {childItemId} (slot '{slotName}')");
+                        }
                         continue;
                     }
 
@@ -866,9 +873,12 @@ public class ItemImportService(
                 {
                     if (!context.Ancestors.Add(childItemId))
                     {
-                        var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
-                        apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Full path: {stackStr} -> {childItemId} (slot '{slotName}')");
-                        continue;
+                        if (_loggedRecursiveItems.TryAdd(childItemId, 0))
+                        {
+                            var stackStr = string.Join(" -> ", context.ParentStack.Select(x => $"{x.ItemId}({x.SlotName})"));
+                            apbsLogger.Error($"[IMPORT] Detected recursive loop! Root: {context.RootItemId} | Full path: {stackStr} -> {childItemId} (slot '{slotName}')");
+                            continue;
+                        }
                     }
 
                     context.ParentStack.Push((childItemId, slotName));

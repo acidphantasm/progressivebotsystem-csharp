@@ -14,8 +14,6 @@ public class ApbsUbglExternalMagGen(
     BotEquipmentHelper botEquipmentHelper,
     InventoryMagGenHelper inventoryMagGenHelper) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
-    private IApbsInventoryMagGen _apbsInventoryMagGenImplementation;
-
     public int GetPriority()
     {
         return 1;
@@ -44,8 +42,7 @@ public class ApbsUbglExternalMagGen(
                 inventoryMagGen.GetBotId(),
                 rerolledAmmoTpl,
                 (int)bulletCount,
-                inventoryMagGen.GetPmcInventory(),
-                null
+                inventoryMagGen.GetPmcInventory()
             );
         }
         

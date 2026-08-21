@@ -1,10 +1,10 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Frozen;
+﻿namespace ProgressiveBotSystem.Generators;
+
+using System.Collections.Concurrent;
 using System.Globalization;
-using ProgressiveBotSystem.Constants;
-using ProgressiveBotSystem.Globals;
-using ProgressiveBotSystem.Models;
-using ProgressiveBotSystem.Utils;
+using Constants;
+using Globals;
+using Models;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -12,25 +12,18 @@ using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Helpers.Bot;
 using SPTarkov.Server.Core.Helpers.Items;
-using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Common;
-using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Spt.Tables;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Services.Bot;
 using SPTarkov.Server.Core.Services.Items;
 using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 using SPTarkov.Server.Core.Utils.Collections;
-
-namespace SPTarkov.Server.Core.Generators;
 
 [Injectable(TypePriority = OnLoadOrder.PostLoad)]
 public class CustomBotEquipmentModGenerator(
@@ -39,7 +32,6 @@ public class CustomBotEquipmentModGenerator(
     ItemHelper itemHelper,
     BotEquipmentFilterService botEquipmentFilterService,
     ItemFilterService itemFilterService,
-    ProfileHelper profileHelper,
     BotWeaponModLimitService botWeaponModLimitService,
     BotHelper botHelper,
     BotGeneratorHelper botGeneratorHelper,
@@ -49,9 +41,7 @@ public class CustomBotEquipmentModGenerator(
     ServerLocalisationService serverLocalisationService,
     BotEquipmentModPoolService botEquipmentModPoolService,
     BotConfig botConfig,
-    ICloner cloner,
-    ApbsLogger apbsLogger
-)
+    ICloner cloner)
 {
     private readonly IEnumerable<string> Bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
     private readonly IEnumerable<string> Followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
