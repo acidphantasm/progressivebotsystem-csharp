@@ -1,5 +1,4 @@
 ﻿using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Utils;
 using System.Reflection;
 using HarmonyLib;
@@ -7,9 +6,7 @@ using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Helpers;
 using SPTarkov.Common.Extensions;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Generators;
 using SPTarkov.Server.Core.Generators.Bot;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
@@ -41,7 +38,7 @@ public class SetRandomisedGameVersionAndCategoryPatch : AbstractPatch
     [PatchPrefix]
     public static bool Prefix(Info botInfo, string __result)
     {
-        if (ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname))
+        if (ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname ?? "abcd1234fakename"))
         {
             botInfo.GameVersion = GameEditions.UNHEARD;
             botInfo.MemberCategory = MemberCategory.Developer;

@@ -22,7 +22,7 @@ public class GenerateBotPatch : AbstractPatch
         // Fix the BotInfo tier from any poverty changes inside the patched GenerateInventory
         if (botGenerationDetails.ExtensionData != null && botGenerationDetails.ExtensionData.TryGetValue("Tier", out var tierValue))
         {
-            bot.Info.ExtensionData["Tier"] = tierValue;
+            bot.Info?.ExtensionData?["Tier"] = tierValue;
         }
     }
 }

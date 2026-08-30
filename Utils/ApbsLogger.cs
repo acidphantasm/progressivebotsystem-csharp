@@ -19,7 +19,7 @@ public class ApbsLogger
 
     public ApbsLogger(ISptLogger<ApbsLogger> logger)
     {
-        _pathToModFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        _pathToModFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidOperationException();
         _logger = logger;
         _task = Task.Run(() => ProcessLogQueue(_cts.Token));
     }
@@ -206,7 +206,7 @@ public class ApbsLogger
 public class LogMessage
 {
     public DateTime Timestamp { get; set; }
-    public string Level { get; set; }
-    public string Message { get; set; }
-    public string FilePath { get; set; }
+    public required string Level { get; set; }
+    public required string Message { get; set; }
+    public required string FilePath { get; set; }
 }
