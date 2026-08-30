@@ -536,7 +536,7 @@ public class CustomBotEquipmentModGenerator(
         botConfig.Equipment.TryGetValue(request.BotData.EquipmentRole, out var botEquipConfig);
         var botEquipBlacklist = botEquipmentFilterService.GetBotEquipmentBlacklist(
             request.BotData.EquipmentRole,
-            RaidInformation.CurrentRaidLevel ?? 1
+            RaidInformation.CurrentRaidLevel
         );
         var botWeaponSightWhitelist = botEquipmentFilterService.GetBotWeaponSightWhitelist(request.BotData.EquipmentRole);
         var randomisationSettings = botHelper.GetBotRandomizationDetails(request.BotData.Level ?? 0, botEquipConfig);

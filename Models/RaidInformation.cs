@@ -28,8 +28,8 @@ public class RaidInformation
         get => RaidLevels.Count;
     }
 
-    public static int? CurrentRaidLevel
+    public static int CurrentRaidLevel
     {
-        get => RaidLevels.IsEmpty ? null : (int)Math.Round(RaidLevels.Values.Average());
+        get => RaidLevels.IsEmpty ? 1 : (int)Math.Round(RaidLevels.Values.Average());
     }
 }

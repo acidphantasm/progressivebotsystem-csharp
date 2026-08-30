@@ -49,11 +49,7 @@ public class GenerateBotLevel : AbstractPatch
         
         if (botGenerationDetails.IsPlayerScav)
         {
-            var scavLevel = 1;
-            if (RaidInformation.CurrentSessionId is not null)
-            {
-                scavLevel = RaidInformation.CurrentRaidLevel ?? 1;
-            }
+            var scavLevel = RaidInformation.CurrentRaidLevel;
             var scavExp = _profileHelper.GetExperience(scavLevel);
             bot.Info.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel));
             botGenerationDetails.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(scavLevel));
@@ -89,7 +85,7 @@ public class GenerateBotLevel : AbstractPatch
     private static MinMax<int> GetRelativePmcBotLevelRange(BotGenerationDetails botGenerationDetails, MinMax<int> levelDetails, int maxAvailableLevel)
     {
         var levelOverride = botGenerationDetails.LocationSpecificPmcLevelOverride;
-        var playerLevel = Math.Max(1, botGenerationDetails.PlayerLevel ?? 1);
+        var playerLevel = Math.Max(1, RaidInformation.CurrentRaidLevel);
         
         var minPossibleLevel = levelOverride is not null
             ? Math.Min(

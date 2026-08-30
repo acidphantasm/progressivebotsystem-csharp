@@ -204,7 +204,7 @@ public class CustomBotInventoryGenerator
                     Inventory = botInventory,
                     BotEquipmentConfig = botEquipConfig,
                     RandomisationDetails = randomisationDetails,
-                    GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                    GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
                 }, questData
             );
         }
@@ -228,7 +228,7 @@ public class CustomBotInventoryGenerator
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
                 GenerateModsBlacklist = [ItemTpl.POCKETS_1X4_TUE, ItemTpl.POCKETS_LARGE],
-                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
             }, questData
         );
 
@@ -244,7 +244,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
             }, questData
         );
 
@@ -260,7 +260,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
             }, questData
         );
 
@@ -276,7 +276,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
             }, questData
         );
 
@@ -300,7 +300,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
             }, questData
         );
 
@@ -322,7 +322,7 @@ public class CustomBotInventoryGenerator
                 Inventory = botInventory,
                 BotEquipmentConfig = botEquipConfig,
                 RandomisationDetails = randomisationDetails,
-                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel ?? 1,
+                GeneratingPlayerLevel = RaidInformation.CurrentRaidLevel,
             }, questData
         );
     }
