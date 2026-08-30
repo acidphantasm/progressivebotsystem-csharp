@@ -26,7 +26,7 @@ public class CustomBotLootCacheService(
     ICloner cloner,
     BotEquipmentHelper botEquipmentHelper)
 {
-    private readonly ConcurrentDictionary<string, BotLootCache> _lootCache = new();
+    private readonly ConcurrentDictionary<string, Lazy<BotLootCache>> _lootCache = new();
     private readonly Lock _drugLock = new();
     private readonly Lock _foodLock = new();
     private readonly Lock _drinkLock = new();
@@ -53,18 +53,13 @@ public class CustomBotLootCacheService(
     {
         var tierInfo = tier.ToString();
         var combinedBotRoleTier = botRole + tierInfo;
-        
-        if (!BotRoleExistsInCache(combinedBotRoleTier))
-        {
-            InitCacheForBotRole(combinedBotRoleTier);
-            AddLootToCache(botRole, isPmc, botJsonTemplate, botLevel, tier);
-        }
 
-        if (!_lootCache.TryGetValue(combinedBotRoleTier, out var botRoleCache))
-        {
-            apbsLogger.Error($"Unable to find: {botRole} in loot cache");
-            return [];
-        }
+        var lazyCache = _lootCache.GetOrAdd(
+            combinedBotRoleTier,
+            _ => new Lazy<BotLootCache>(() => BuildBotLootCache(botRole, isPmc, botJsonTemplate, botLevel, tier), LazyThreadSafetyMode.ExecutionAndPublication)
+        );
+
+        var botRoleCache = lazyCache.Value;
 
         Dictionary<MongoId, double> result;
         switch (lootType)
@@ -163,10 +158,8 @@ public class CustomBotLootCacheService(
     /// <param name="botRole">bots role (assault / pmcBot etc)</param>
     /// <param name="isPmc">Is the bot a PMC (alters what loot is cached)</param>
     /// <param name="botJsonTemplate">db template for bot having its loot generated</param>
-    private void AddLootToCache(string botRole, bool isPmc, BotType botJsonTemplate, int botLevel, int tier)
+    private BotLootCache BuildBotLootCache(string botRole, bool isPmc, BotType botJsonTemplate, int botLevel, int tier)
     {
-        var tierInfo = tier.ToString();
-        var combinedBotRoleTier = botRole + tierInfo;
         var chances = botEquipmentHelper.GetChancesByBotRole(botRole, tier);
         var realWhitelist = chances.Generation.Items;
         
@@ -417,25 +410,21 @@ public class CustomBotLootCacheService(
             (itemTemplate) => IsBulletOrGrenade(itemTemplate.Properties) || IsMagazine(itemTemplate.Properties)
         );
 
-        if (!_lootCache.TryGetValue(combinedBotRoleTier, out var cacheForRole))
+        return new BotLootCache
         {
-            apbsLogger.Error($"Unable to get loot cache value using key: {botRole}");
-
-            return;
-        }
-
-        cacheForRole.HealingItems = healingItemsInWhitelist;
-        cacheForRole.DrugItems = drugItemsInWhitelist;
-        cacheForRole.FoodItems = foodItemsInWhitelist;
-        cacheForRole.DrinkItems = drinkItemsInWhitelist;
-        cacheForRole.CurrencyItems = currencyItemsInWhitelist;
-        cacheForRole.StimItems = stimItemsInWhitelist;
-        cacheForRole.GrenadeItems = grenadeItemsInWhitelist;
-        cacheForRole.SpecialItems = specialLootItems;
-        cacheForRole.BackpackLoot = filteredBackpackItems;
-        cacheForRole.PocketLoot = filteredPocketItems;
-        cacheForRole.VestLoot = filteredVestItems;
-        cacheForRole.SecureLoot = filteredSecureLoot;
+            HealingItems = healingItemsInWhitelist,
+            DrugItems = drugItemsInWhitelist,
+            FoodItems = foodItemsInWhitelist,
+            DrinkItems = drinkItemsInWhitelist,
+            CurrencyItems = currencyItemsInWhitelist,
+            StimItems = stimItemsInWhitelist,
+            GrenadeItems = grenadeItemsInWhitelist,
+            SpecialItems = specialLootItems,
+            BackpackLoot = filteredBackpackItems,
+            PocketLoot = filteredPocketItems,
+            VestLoot = filteredVestItems,
+            SecureLoot = filteredSecureLoot,
+        };
     }
 
     /// <summary>
@@ -547,56 +536,5 @@ public class CustomBotLootCacheService(
     private bool IsCurrency(MongoId tpl)
     {
         return itemHelper.IsOfBaseclass(tpl, BaseClasses.MONEY);
-    }
-
-    /// <summary>
-    ///     Check if a bot type exists inside the loot cache
-    /// </summary>
-    /// <param name="botRole">role to check for</param>
-    /// <returns>true if they exist</returns>
-    private bool BotRoleExistsInCache(string botRole)
-    {
-        return _lootCache.ContainsKey(botRole);
-    }
-
-    /// <summary>
-    ///     If lootcache is undefined, init with empty property arrays
-    /// </summary>
-    /// <param name="botRole">Bot role to hydrate</param>
-    private void InitCacheForBotRole(string botRole)
-    {
-        _lootCache.TryAdd(botRole, new BotLootCache());
-    }
-
-    /// <summary>
-    ///     Compares two item prices by their flea (or handbook if that doesn't exist) price
-    /// </summary>
-    /// <param name="itemAPrice"></param>
-    /// <param name="itemBPrice"></param>
-    /// <returns></returns>
-    private int CompareByValue(int itemAPrice, int itemBPrice)
-    {
-        // If item A has no price, it should be moved to the back when sorting
-        if (itemAPrice is 0)
-        {
-            return 1;
-        }
-
-        if (itemBPrice is 0)
-        {
-            return -1;
-        }
-
-        if (itemAPrice < itemBPrice)
-        {
-            return -1;
-        }
-
-        if (itemAPrice > itemBPrice)
-        {
-            return 1;
-        }
-
-        return 0;
     }
 }
