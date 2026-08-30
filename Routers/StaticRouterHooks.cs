@@ -4,18 +4,18 @@ using ProgressiveBotSystem.Services;
 using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Eft.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.HttpResponse;
 using SPTarkov.Server.Core.Models.Eft.Match;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Services.Profile;
 using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Routers;
+
+using SPTarkov.Server.Core.Models.Enums;
 
 [Injectable(TypePriority = OnLoadOrder.Routers + 1)]
 public class StaticRouterHooks : StaticRouter
@@ -40,12 +40,12 @@ public class StaticRouterHooks : StaticRouter
         _customBotLootCacheService = customBotLootCacheService;
     }
     
-    private static ApbsLogger? _apbsLogger;
-    private static JsonUtil? _jsonUtil;
-    private static BotLogService? _botLogService;
-    private static ProfileHelper? _profileHelper;
-    private static ProfileActivityService? _profileActivityService;
-    private static CustomBotLootCacheService? _customBotLootCacheService;
+    private static ApbsLogger _apbsLogger = null!;
+    private static JsonUtil _jsonUtil = null!;
+    private static BotLogService _botLogService = null!;
+    private static ProfileHelper _profileHelper = null!;
+    private static ProfileActivityService _profileActivityService = null!;
+    private static CustomBotLootCacheService _customBotLootCacheService = null!;
 
     private static List<RouteAction> GetCustomRoutes()
     {
@@ -70,7 +70,7 @@ public class StaticRouterHooks : StaticRouter
                             if (outputData?.Data != null)
                             {
                                 // Fire and forget
-                                _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data));
+                                _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data), token);
                             }
                         }
                         catch (Exception ex)
@@ -78,7 +78,7 @@ public class StaticRouterHooks : StaticRouter
                             _apbsLogger.Error($"Failed to deserialize bots: {ex}");
                         }
                     }
-                    return output;
+                    return output!;
                 }),
             
             new RouteAction<StartLocalRaidRequestData>(
@@ -94,17 +94,21 @@ public class StaticRouterHooks : StaticRouter
                     try
                     {
                         var fullProfile = _profileHelper.GetFullProfile(sessionId);
+                        if (fullProfile.CharacterData?.PmcData?.Info?.MemberCategory == MemberCategory.UnitTest)
+                            return output!;
+                        
                         var profileActivityRaidData = _profileActivityService.GetProfileActivityRaidData(sessionId);
                     
                         RaidInformation.CurrentSessionId = fullProfile.ProfileInfo.ProfileId;
                     
-                        var prestigeLevel = fullProfile.CharacterData.PmcData.Info.PrestigeLevel ?? 0;
+                        var prestigeLevel = fullProfile.CharacterData?.PmcData?.Info?.PrestigeLevel ?? 0;
                         RaidInformation.HighestPrestigeLevel =
                             prestigeLevel >= RaidInformation.HighestPrestigeLevel
                                 ? prestigeLevel
                                 : RaidInformation.HighestPrestigeLevel;
                     
-                        RaidInformation.CurrentRaidLevel = fullProfile.CharacterData.PmcData.Info.Level ?? 1;
+                        var level = fullProfile.CharacterData?.PmcData?.Info?.Level ?? 1;
+                        RaidInformation.AddOrUpdatePlayerLevel(sessionId, level);
                     
                         RaidInformation.RaidLocation = info.Location;
                         RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
@@ -120,7 +124,7 @@ public class StaticRouterHooks : StaticRouter
                     {
                         _apbsLogger.Error("Match Start Router hook failed.");
                     }
-                    return output;
+                    return output!;
                 }),
             
             new RouteAction<EndLocalRaidRequestData>(
@@ -134,10 +138,11 @@ public class StaticRouterHooks : StaticRouter
                 ) =>
                 {
                     RaidInformation.IsInRaid = false;
+                    RaidInformation.ClearRaidLevels();
                     _customBotLootCacheService.ClearApbsCache();
                     
                     _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
-                    return output;
+                    return output!;
                 }),
             
             new RouteAction<EmptyRequestData>(
@@ -160,7 +165,7 @@ public class StaticRouterHooks : StaticRouter
                     {
                         _apbsLogger.Error("Game Start Router hook failed.");
                     }
-                    return output;
+                    return output!;
                 }),
             
             new RouteAction<EmptyRequestData>(
@@ -184,7 +189,7 @@ public class StaticRouterHooks : StaticRouter
                     {
                         _apbsLogger.Error("Profile Status hook failed.");
                     }
-                    return output;
+                    return output!;
                 })
         ];
     }
