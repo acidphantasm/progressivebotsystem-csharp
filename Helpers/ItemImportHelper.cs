@@ -1122,10 +1122,9 @@ public class ItemImportHelper(
         {
             return ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeightValue;
         }
-        var staticWeight = GetStaticGearSlotWeight(slot, templateItem);
 
         if (!ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights || vanillaCount == 0 || vanillaWeightSum == 0)
-            return staticWeight;
+            return GetStaticGearSlotWeight(slot, templateItem);
 
         var multiplier = GetEquipmentSlotMultiplier(slot, templateItem);
         var averageVanillaWeight = vanillaWeightSum / vanillaCount;

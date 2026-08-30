@@ -1,8 +1,20 @@
 ﻿[
   {
+    "Version": "2.3.2",
+    "ReleaseDate": "August 30, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Adjusted Pmc medical loot logic, should be much better with bots having actual medkits now",
+      "Adjusted loot cache handling"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.3.1",
     "ReleaseDate": "August 20, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Recursive detection will now only log a problematic item once instead of every instance of seeing it.",
