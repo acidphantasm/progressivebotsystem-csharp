@@ -138,16 +138,50 @@ public class CustomBotLootGenerator(
         );
 
         // Healing items / Meds
+        var healingPool = customBotLootCacheService.GetLootFromCache(
+            botGenerationDetails.RoleLowercase,
+            botGenerationDetails.IsPmc,
+            LootCacheType.HealingItems,
+            botJsonTemplate,
+            botLevel,
+            tier
+        );
+
+        if (botGenerationDetails.IsPmc && healingItemCount > 0)
+        {
+            var medKitPool = healingPool
+                .Where(kvp => itemHelper.IsOfBaseclass(kvp.Key, BaseClasses.MED_KIT))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            if (medKitPool.Count > 0)
+            {
+                // Guarantee one MedKit goes in first
+                AddLootFromPool(
+                    botId,
+                    medKitPool,
+                    containersBotHasAvailable,
+                    1,
+                    botInventory,
+                    botGenerationDetails.RoleLowercase,
+                    null,
+                    0,
+                    botGenerationDetails.IsPmc
+                );
+
+                // Strip remaining MedKit entries so the pool below can't add a 2nd
+                foreach (var tpl in medKitPool.Keys)
+                {
+                    healingPool.Remove(tpl);
+                }
+
+                healingItemCount -= 1;
+            }
+        }
+
+        // Add remaining healing items if necessary
         AddLootFromPool(
             botId,
-            customBotLootCacheService.GetLootFromCache(
-                botGenerationDetails.RoleLowercase,
-                botGenerationDetails.IsPmc,
-                LootCacheType.HealingItems,
-                botJsonTemplate,
-                botLevel,
-                tier
-            ),
+            healingPool,
             containersBotHasAvailable,
             healingItemCount,
             botInventory,
@@ -511,14 +545,17 @@ public class CustomBotLootGenerator(
             if (!key)
             {
                 logger.Warning($"Unable to process item tpl: {weightedItemTpl} for slots: {equipmentSlots} on bot: {botRole}");
+                pool.Remove(weightedItemTpl);
+                i--;
                 continue;
             }
 
-            if (itemSpawnLimits is not null && ItemHasReachedSpawnLimit(itemToAddTemplate, botRole, itemSpawnLimits))
+            MongoId? matchedLimitId = null;
+
+            if (itemSpawnLimits is not null && ItemHasReachedSpawnLimit(itemToAddTemplate, botRole, itemSpawnLimits, out matchedLimitId))
             {
                 // Remove item from pool to prevent it being picked again
                 pool.Remove(weightedItemTpl);
-
                 i--;
                 continue;
             }
@@ -614,6 +651,11 @@ public class CustomBotLootGenerator(
             // Item added okay, reset counter for next item
             fitItemIntoContainerAttempts = 0;
 
+            if (itemSpawnLimits is not null)
+            {
+                CommitSpawnLimitUsage(matchedLimitId, itemSpawnLimits);
+            }
+            
             // Stop adding items to bots pool if rolling total is over total limit
             if (totalValueLimitRub > 0)
             {
@@ -772,14 +814,14 @@ public class CustomBotLootGenerator(
     /// <param name="botRole">Bot type</param>
     /// <param name="itemSpawnLimits"></param>
     /// <returns>true if item has reached spawn limit</returns>
-    private bool ItemHasReachedSpawnLimit(TemplateItem? itemTemplate, string botRole, ItemSpawnLimitSettings? itemSpawnLimits)
+    private bool ItemHasReachedSpawnLimit(
+        TemplateItem? itemTemplate,
+        string botRole,
+        ItemSpawnLimitSettings? itemSpawnLimits,
+        out MongoId? matchedLimitId
+    )
     {
-        // PMCs and scavs have different sections of bot config for spawn limits
-        if (itemSpawnLimits is not null && itemSpawnLimits.GlobalLimits?.Count == 0)
-        // No items found in spawn limit, drop out
-        {
-            return false;
-        }
+        matchedLimitId = null;
 
         // No spawn limits, skipping
         if (itemSpawnLimits is null)
@@ -787,40 +829,46 @@ public class CustomBotLootGenerator(
             return false;
         }
 
-        var idToCheckFor = GetMatchingIdFromSpawnLimits(itemTemplate, itemSpawnLimits.GlobalLimits);
-        if (idToCheckFor is null)
-        // ParentId or tplid not found in spawnLimits, not a spawn limited item, skip
+        // No items found in spawn limit, drop out
+        // (fixed: was `GlobalLimits?.Count == 0`, which silently fell through to a
+        // NullReferenceException risk below if GlobalLimits was ever actually null)
+        if (itemSpawnLimits.GlobalLimits is null || itemSpawnLimits.GlobalLimits.Count == 0)
         {
             return false;
         }
 
-        // Use tryAdd to see if it exists, and automatically add 1
-        if (!itemSpawnLimits.CurrentLimits.TryAdd(idToCheckFor.Value, 1))
-        // if it does exist, come in here and increment item count with this bot type
+        var idToCheckFor = GetMatchingIdFromSpawnLimits(itemTemplate, itemSpawnLimits.GlobalLimits);
+        if (idToCheckFor is null)
+            // ParentId or tplid not found in spawnLimits, not a spawn limited item, skip
         {
-            itemSpawnLimits.CurrentLimits[idToCheckFor.Value]++;
+            return false;
         }
 
-        // Check if over limit
-        var currentLimitCount = itemSpawnLimits.CurrentLimits[idToCheckFor.Value];
+        matchedLimitId = idToCheckFor;
+
+        itemSpawnLimits.CurrentLimits.TryGetValue(idToCheckFor.Value, out var currentLimitCount);
         var globalLimits = itemSpawnLimits.GlobalLimits[idToCheckFor.Value];
-        if (currentLimitCount > globalLimits)
+
+        if (currentLimitCount >= globalLimits)
         {
-            // Prevent edge-case of small loot pools + code trying to add limited item over and over infinitely
-            if (currentLimitCount > itemSpawnLimits.GlobalLimits[idToCheckFor.Value] * 10)
+            // Defensive guard retained from the original implementation. With counts now only
+            // incrementing on confirmed placement, this should be unreachable in normal operation,
+            // since the pool removal above stops this id being retried within a call. Kept in case
+            // CurrentLimits is ever shared/reused across calls in a way that bypasses that removal.
+            if (currentLimitCount > globalLimits * 10)
             {
                 if (logger.IsLogEnabled(LogLevel.Debug))
                 {
                     logger.Debug(
-                        serverLocalisationService.GetText(
-                            "bot-item_spawn_limit_reached_skipping_item",
-                            new
-                            {
-                                botRole,
-                                itemName = itemTemplate.Name,
-                                attempts = currentLimitCount,
-                            }
-                        )
+                    serverLocalisationService.GetText(
+                    "bot-item_spawn_limit_reached_skipping_item",
+                    new
+                    {
+                        botRole,
+                        itemName = itemTemplate.Name,
+                        attempts = currentLimitCount,
+                    }
+                    )
                     );
                 }
 
@@ -831,6 +879,19 @@ public class CustomBotLootGenerator(
         }
 
         return false;
+    }
+    
+    private static void CommitSpawnLimitUsage(MongoId? matchedLimitId, ItemSpawnLimitSettings? itemSpawnLimits)
+    {
+        if (itemSpawnLimits is null || matchedLimitId is null)
+        {
+            return;
+        }
+
+        if (!itemSpawnLimits.CurrentLimits.TryAdd(matchedLimitId.Value, 1))
+        {
+            itemSpawnLimits.CurrentLimits[matchedLimitId.Value]++;
+        }
     }
 
     /// <summary>
