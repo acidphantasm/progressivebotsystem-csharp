@@ -3,12 +3,12 @@
 
 @using ProgressiveBotSystem.Helpers
 
-@inject DataLoader dataloader
+@inject DataLoader Dataloader
 
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierAmmoEditorComponent AmmoData="@dataloader.AllTierDataClean.Tiers[6].AmmoData" Tier="6" />
+        <TierAmmoEditorComponent AmmoData="@Dataloader.AllTierDataClean.Tiers[6].AmmoData" Tier="6" />
     }
     else
     {

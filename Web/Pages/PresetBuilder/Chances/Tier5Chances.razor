@@ -3,12 +3,12 @@
 
 @using ProgressiveBotSystem.Helpers
 
-@inject DataLoader dataloader
+@inject DataLoader Dataloader
 
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierChancesEditorComponent ChancesData="@dataloader.AllTierDataClean.Tiers[5].ChancesData" Tier="5"/>
+        <TierChancesEditorComponent ChancesData="@Dataloader.AllTierDataClean.Tiers[5].ChancesData" Tier="5"/>
     }
     else
     {

@@ -3,12 +3,12 @@
 
 @using ProgressiveBotSystem.Helpers
 
-@inject DataLoader dataloader
+@inject DataLoader Dataloader
 
 <MudMainContent Class="pa-6">
     @if (ModConfig.Config.UsePreset)
     {
-        <TierAppearanceEditorComponent AppearanceData="@dataloader.AllTierDataClean.Tiers[7].AppearanceData" Tier="7" />
+        <TierAppearanceEditorComponent AppearanceData="@Dataloader.AllTierDataClean.Tiers[7].AppearanceData" Tier="7" />
     }
     else
     {
