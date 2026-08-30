@@ -6,7 +6,8 @@
     "NewFeatures": [],
     "Changes": [
       "Adjusted Pmc medical loot logic, should be much better with bots having actual medkits now",
-      "Adjusted loot cache handling"
+      "Adjusted loot cache handling",
+      "Adjusted Normalize Bot Health Exclusion list, probably works for custom bots now, I dunno I dont use them"
     ],
     "BugFixes": [],
     "KnownIssues": []

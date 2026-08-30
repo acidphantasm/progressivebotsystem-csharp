@@ -1,6 +1,8 @@
 ﻿@page "/progressivebotsystem/botsettings"
 @using ProgressiveBotSystem.Web.Components
+@using SPTarkov.Server.Core.Models.Spt.Tables
 @layout MainLayout
+@inject BotTable BotTable
 
 <MudMainContent>
     <MudContainer Class="mb-20">
@@ -129,7 +131,7 @@
                                        AnchorOrigin="Origin.CenterLeft"
                                        Dense Clearable
                                        Disabled="!AllNormalizeHealthEnable">
-                                @foreach (var name in _botNames)
+                                @foreach (var name in BotNames)
                                 {
                                     <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
                                 }
@@ -880,20 +882,29 @@
             ModConfig.Config.NormalizedHealthPool.ExcludedBots = value;
         }
     }
-    private readonly string[] _botNames =
+    
+    private static readonly HashSet<string> ExcludedBotNames = new(StringComparer.OrdinalIgnoreCase)
     {
-        "arenafighter", "arenafighterevent", "assault",
-        "bossboar", "bossboarsniper", "bossbully", "bossgluhar",
-        "bosskilla", "bosskillaagro", "bossknight", "bosskojaniy",
-        "bosskolontay", "bosspartisan", "bosssanitar", "bosstagilla", "bosstagillaagro", "tagillahelperagro", "bosszryachiy",
-        "exusec", "followerbigpipe", "followerbirdeye", "followerboar", "followerboarclose1",
-        "followerboarclose2", "followerbully", "followergluharassault", "followergluharscout",
-        "followergluharsecurity", "followergluharsnipe", "followerkojaniy", "followerkolontayassault",
-        "followerkolontaysecurity", "followersanitar", "followertagilla", "followerzryachiy",
-        "marksman", "pmcbear", "pmcusec",
-        "pmcbot", "sectantpriest", "sectantwarrior", "peacemaker",
+        "bear",
+        "peacemaker",
+        "shooterbtr",
         "skier",
+        "spiritspring",
+        "spiritwinter",
+        "usec"
     };
+
+    private string[] BotNames
+    {
+        get
+        {
+            return BotTable.Types.Keys
+                .Where(name => !ExcludedBotNames.Contains(name))
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+    }
+
     private void OnExcludedBotsValueChanged(IEnumerable<string> selected)
     {
         MainLayout.EnableUnsavedChangesButton();
