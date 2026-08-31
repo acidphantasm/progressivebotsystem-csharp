@@ -611,6 +611,11 @@ public class CustomBotWeaponGenerator(
 
             return;
         }
+        else
+        {
+            if (randomUtil.GetChance100(33))
+                AddAmmoStackToInventory(botId, generatedWeaponResult.ChosenAmmoTemplate, ammoTemplate.Value.Properties.StackMaxSize ?? 0, inventory);
+        }
 
         // Has an UBGL
         if (generatedWeaponResult.ChosenUbglAmmoTemplate is not null && !generatedWeaponResult.ChosenUbglAmmoTemplate.Value.IsEmpty)
@@ -628,6 +633,28 @@ public class CustomBotWeaponGenerator(
             botConfig.SecureContainerAmmoStackCount,
             generatedWeaponResult.ChosenAmmoTemplate,
             ammoTemplate.Value.Properties.StackMaxSize ?? 0,
+            inventory
+        );
+    }
+    private void AddAmmoStackToInventory(MongoId botId, MongoId chosenAmmoTemplate, int propertiesStackMaxSize, BotBaseInventory inventory)
+    {
+        var container = new HashSet<EquipmentSlots> { EquipmentSlots.TacticalVest, EquipmentSlots.Pockets };
+        var min = propertiesStackMaxSize / 2;
+        var stackSize = randomUtil.GetBiasedRandomNumber(min, propertiesStackMaxSize, 0, 2);
+        var id = new MongoId();
+            botGeneratorHelper.AddItemWithChildrenToEquipmentSlot(
+            botId,
+            container,
+            id,
+            chosenAmmoTemplate,
+            [
+                new Item
+                {
+                    Id = id,
+                    Template = chosenAmmoTemplate,
+                    Upd = new Upd { StackObjectsCount = stackSize },
+                },
+            ],
             inventory
         );
     }

@@ -3,7 +3,9 @@
     "Version": "2.3.2",
     "ReleaseDate": "August 31, 2026",
     "IsLatest": true,
-    "NewFeatures": [],
+    "NewFeatures": [
+      "Bots may have loose ammo in Rig/Pockets"
+    ],
     "Changes": [
       "Adjusted Pmc medical loot logic, should be much better with bots having actual medkits now",
       "Adjusted loot cache handling",
