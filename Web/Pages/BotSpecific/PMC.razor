@@ -1,7 +1,9 @@
 ﻿@page "/progressivebotsystem/pmc"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Services
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
+@inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 @inject ISnackbar Snackbar
 
@@ -18,7 +20,7 @@
                         WarningTooltip1="All settings on this page, and any other setting that may impact these bots are controlled by this toggle."
                         WarningTooltip2="EXCEPTION: Normalize Health is always applied if enabled but not excluded."
                         @bind-Value="PmcEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("_pmcEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("_pmcEnabled"))"
                         IsNonDefault="@(!PmcEnabled)"
                         OnUndo="UndoPmcBots"
                         OnDefault="DefaultPmcBots"/>
@@ -34,8 +36,8 @@
                             Label="Loot"
                             TooltipText="Allows PMC Bots to spawn with additional loot."
                             @bind-Value="PmcLootEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcLootEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcLootBlacklist"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcLootEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcLootBlacklist"))"
                             IsNonDefault="@(PmcLootEnabled ||
                                           PmcLootBlacklist.Count != 0)"
                             OnUndo="UndoLoot"
@@ -52,7 +54,7 @@
                             Label="Prestiging"
                             TooltipText="Allow PMCs to prestige with the player."
                             @bind-Value="PmcPrestigeEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcPrestigeEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcPrestigeEnabled"))"
                             IsNonDefault="@(!PmcPrestigeEnabled)"
                             OnUndo="UndoPrestiging"
                             OnDefault="DefaultPrestiging"/>
@@ -61,7 +63,7 @@
                             Label="Bots Can Be Any Level if Prestiged"
                             TooltipText="Allow bots to be any level if the player has prestiged. Required Prestiging enabled."
                             @bind-Value="PmcPrestigeAnyLevel"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcPrestigeAnyLevel"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcPrestigeAnyLevel"))"
                             IsNonDefault="@(!PmcPrestigeAnyLevel)"
                             OnUndo="UndoPrestigeAnyLevel"
                             OnDefault="DefaultPrestigeAnyLevel"/>
@@ -70,8 +72,8 @@
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows PMCs to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="PmcWeaponAmmunitionRollEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcWeaponAmmunitionRollEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponAmmunitionRollChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcWeaponAmmunitionRollEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponAmmunitionRollChance"))"
                             IsNonDefault="@(PmcWeaponAmmunitionRollEnabled ||
                                           PmcWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
@@ -89,9 +91,9 @@
                             Label="Toploading"
                             TooltipText="Allows PMCs to top load their extra magazines."
                             @bind-Value="PmcWeaponToploadEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcWeaponToploadEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponToploadEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponToploadPercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcWeaponToploadEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponToploadEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponToploadPercent"))"
                             IsNonDefault="@(!PmcWeaponToploadEnabled ||
                                           PmcWeaponToploadChance != 30 ||
                                           PmcWeaponToploadPercent != 30)"
@@ -118,7 +120,7 @@
                             Label="Skip Backplate When Missing Front Plate"
                             TooltipText="Will skip backplates when the front plate is missing, if they had one it would be in the front right?"
                             @bind-Value="SkipBackPlateIfMissingFrontPlate"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
                             IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
                             OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
@@ -127,7 +129,7 @@
                             Label="Limit Plate Class to Front Plate"
                             TooltipText="Tries to limit the plate class of all plates to the class of the front plate, if possible."
                             @bind-Value="LimitPlateClassToFrontPlateClass"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
                             IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
                             OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
@@ -136,11 +138,11 @@
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="PmcResourceRandomizationEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcResourceRandomizationEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcMedRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("PmcMedRateUsagePercent") ||
-                                               MainLayout.pendingChanges.Contains("PmcFoodRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("PmcFoodRateUsagePercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcResourceRandomizationEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcMedRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("PmcMedRateUsagePercent") ||
+                                               PresetStateService.PendingChanges.Contains("PmcFoodRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("PmcFoodRateUsagePercent"))"
                             IsNonDefault="@(!PmcResourceRandomizationEnabled ||
                                           PmcMedRateMaxChance != 10 ||
                                           PmcMedRateUsagePercent != 33 ||
@@ -160,12 +162,12 @@
                             Label="Weapon Durability Changes"
                             TooltipText="Allows configurable weapon durability."
                             @bind-Value="PmcWeaponDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcWeaponDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponDurabilityMaxDelta") ||
-                                               MainLayout.pendingChanges.Contains("PmcWeaponDurabilityEnhancementChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcWeaponDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponDurabilityMaxDelta") ||
+                                               PresetStateService.PendingChanges.Contains("PmcWeaponDurabilityEnhancementChance"))"
                             IsNonDefault="@(!PmcWeaponDurabilityEnabled ||
                                           PmcWeaponDurabilityMin != 95 ||
                                           PmcWeaponDurabilityMax != 100 ||
@@ -197,11 +199,11 @@
                             Label="Armour Durability Changes"
                             TooltipText="Allows configurable armour durability."
                             @bind-Value="PmcArmourDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcArmourDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcArmourDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("PmcArmourDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("PmcArmourDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("PmcArmourDurabilityMaxDelta"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcArmourDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcArmourDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("PmcArmourDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("PmcArmourDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("PmcArmourDurabilityMaxDelta"))"
                             IsNonDefault="@(!PmcArmourDurabilityEnabled ||
                                           PmcArmourDurabilityMin != 95 ||
                                           PmcArmourDurabilityMax != 100 ||
@@ -224,7 +226,7 @@
                             Label="Seasonal PMC Appearance"
                             TooltipText="PMCs will wear clothing that more closely resembles the active season."
                             @bind-Value="PmcSeasonalAppearanceEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcSeasonalAppearanceEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcSeasonalAppearanceEnabled"))"
                             IsNonDefault="@(!PmcSeasonalAppearanceEnabled)"
                             OnUndo="UndoPmcSeasonalAppearance"
                             OnDefault="DefaultPmcSeasonalAppearance"/>
@@ -233,8 +235,8 @@
                             Label="Quest Loadouts"
                             TooltipText="PMCs have a chance to wear quest loadouts on appropriate maps at appropriate levels."
                             @bind-Value="PmcQuestLoadoutEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcQuestLoadoutEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcQuestLoadoutChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcQuestLoadoutEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcQuestLoadoutChance"))"
                             IsNonDefault="@(!PmcQuestLoadoutEnabled ||
                                           PmcQuestLoadoutChance != 5)"
                             OnUndo="UndoPmcQuestLoadouts"
@@ -254,8 +256,8 @@
                             WarningTooltip1="PMCs have a chance to be poor compared to other PMCs at their level & tier, if they are not assigned a quest."
                             WarningTooltip2="Disabling this means they will always use gear that is available in their tier."
                             @bind-Value="PmcPovertyEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcPovertyEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcPovertyChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcPovertyEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcPovertyChance"))"
                             IsNonDefault="@(!PmcPovertyEnabled ||
                                           PmcPovertyChance != 5)"
                             OnUndo="UndoPmcPoverty"
@@ -273,9 +275,9 @@
                             Label="Ammo Tier Sliding"
                             TooltipText="Allows PMCs to slide down to a lower ammo pool tier when they are generated."
                             @bind-Value="PmcAmmoTierSlideEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcAmmoTierSlideEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcAmmoTierSlideAmount") ||
-                                               MainLayout.pendingChanges.Contains("PmcAmmoTierSlideChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcAmmoTierSlideEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcAmmoTierSlideAmount") ||
+                                               PresetStateService.PendingChanges.Contains("PmcAmmoTierSlideChance"))"
                             IsNonDefault="@(PmcAmmoTierSlideEnabled ||
                                           PmcAmmoTierSlideAmount != 1 ||
                                           PmcAmmoTierSlideChance != 33)"
@@ -309,12 +311,12 @@
                             Label="Game Version Weighting"
                             TooltipText="Adjust how often you see specific game versions."
                             @bind-Value="PmcVersionWeightingEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcVersionWeightingEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcStandardVersionWeight") ||
-                                               MainLayout.pendingChanges.Contains("PmcLeftBehindVersionWeight") ||
-                                               MainLayout.pendingChanges.Contains("PmcPrepareForEscapeVersionWeight") ||
-                                               MainLayout.pendingChanges.Contains("PmcEdgeOfDarknessVersionWeight") ||
-                                               MainLayout.pendingChanges.Contains("PmcUnheardVersionWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcVersionWeightingEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcStandardVersionWeight") ||
+                                               PresetStateService.PendingChanges.Contains("PmcLeftBehindVersionWeight") ||
+                                               PresetStateService.PendingChanges.Contains("PmcPrepareForEscapeVersionWeight") ||
+                                               PresetStateService.PendingChanges.Contains("PmcEdgeOfDarknessVersionWeight") ||
+                                               PresetStateService.PendingChanges.Contains("PmcUnheardVersionWeight"))"
                             IsNonDefault="@(PmcVersionWeightingEnabled ||
                                           PmcStandardVersionWeight != 20 ||
                                           PmcLeftBehindVersionWeight != 10 ||
@@ -407,8 +409,8 @@
                             Label="Developer Bots"
                             TooltipText="Flags SPT & APBS Devs as Developers. Also contributors to APBS."
                             @bind-Value="PmcSecretDevelopersNameMarkEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameMarkEnabled") ||
-                                               MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameList"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcSecretDevelopersNameMarkEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("PmcSecretDevelopersNameList"))"
                             IsNonDefault="@(!PmcSecretDevelopersNameMarkEnabled ||
                                           PmcSecretDevelopersNameList.Count != 10 ||
                                           !PmcSecretDevelopersNameList.Contains("Chomp") ||
@@ -465,7 +467,7 @@
                             Label="Force Developer Bot Levels"
                             TooltipText="Allows enabled developer bots to always spawn within the specified level ranges."
                             @bind-Value="PmcSecretDeveloperLevelsEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcSecretDeveloperLevelsEnabled"))"
                             IsNonDefault="@(PmcSecretDeveloperLevelsEnabled)"
                             OnUndo="UndoSecretDeveloperLevelsEnabled"
                             OnDefault="DefaultSecretDeveloperLevelsEnabled"/>
@@ -502,8 +504,8 @@
                         </MudItem>
                         <MudItem xs="1">
                             @if (MainLayout.AppUndoButtonToggle && (
-                                MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsMin") ||
-                                MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsMax"))){
+                                PresetStateService.PendingChanges.Contains("PmcSecretDeveloperLevelsMin") ||
+                                PresetStateService.PendingChanges.Contains("PmcSecretDeveloperLevelsMax"))){
                                 <MudButton @onclick="UndoSecretDeveloperLevelsMinMax" Variant="Variant.Filled"
                                            Color="Color.Inherit" Size="Size.Small">Undo
                                 </MudButton>
@@ -559,15 +561,15 @@
         foreach (var item in ModConfig.OriginalConfig.PmcBots.LootConfig.Blacklist){
             PmcLootBlacklist.Add(item);
         }
-        MainLayout.pendingChanges.Remove("PmcLootEnabled");
-        MainLayout.pendingChanges.Remove("PmcLootBlacklist");
+        PresetStateService.PendingChanges.Remove("PmcLootEnabled");
+        PresetStateService.PendingChanges.Remove("PmcLootBlacklist");
     }
     private void DefaultLoot()
     {
         PmcLootEnabled = false;
         PmcLootBlacklist.Clear();
-        if (!MainLayout.pendingChanges.Contains("PmcLootEnabled")) MainLayout.pendingChanges.Add("PmcLootEnabled");
-        if (!MainLayout.pendingChanges.Contains("PmcLootBlacklist")) MainLayout.pendingChanges.Add("PmcLootBlacklist");
+        if (!PresetStateService.PendingChanges.Contains("PmcLootEnabled")) PresetStateService.PendingChanges.Add("PmcLootEnabled");
+        if (!PresetStateService.PendingChanges.Contains("PmcLootBlacklist")) PresetStateService.PendingChanges.Add("PmcLootBlacklist");
     }
     #endregion
     #region REROLL
@@ -1137,7 +1139,7 @@
     {
         foreach (var classNum in new[] { "2", "3", "4", "5", "6" }){
             config[position][classNum] = original[position][classNum];
-            MainLayout.pendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
+            PresetStateService.PendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
         MainLayout.TriggerUiRefresh();
     }
@@ -1189,8 +1191,8 @@
         PmcSecretDevelopersNameList.Clear();
         foreach (var item in ModConfig.OriginalConfig.PmcBots.Secrets.DeveloperSettings.DevNames.NameList)
             PmcSecretDevelopersNameList.Add(item);
-        MainLayout.pendingChanges.Remove("PmcSecretDevelopersNameMarkEnabled");
-        MainLayout.pendingChanges.Remove("PmcSecretDevelopersNameList");
+        PresetStateService.PendingChanges.Remove("PmcSecretDevelopersNameMarkEnabled");
+        PresetStateService.PendingChanges.Remove("PmcSecretDevelopersNameList");
     }
     private void DefaultSecretDeveloperEnabled()
     {
@@ -1198,8 +1200,8 @@
         PmcSecretDevelopersNameList.Clear();
         foreach (var name in new[] { "Chomp", "Dirtbikercj", "Clodan", "CWX", "DrakiaXYZ", "Kaeno", "Refringe", "Waffle", "AcidPhantasm", "Archangel" })
             PmcSecretDevelopersNameList.Add(name);
-        if (!MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameMarkEnabled")) MainLayout.pendingChanges.Add("PmcSecretDevelopersNameMarkEnabled");
-        if (!MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameList")) MainLayout.pendingChanges.Add("PmcSecretDevelopersNameList");
+        if (!PresetStateService.PendingChanges.Contains("PmcSecretDevelopersNameMarkEnabled")) PresetStateService.PendingChanges.Add("PmcSecretDevelopersNameMarkEnabled");
+        if (!PresetStateService.PendingChanges.Contains("PmcSecretDevelopersNameList")) PresetStateService.PendingChanges.Add("PmcSecretDevelopersNameList");
     }
 
     private bool PmcSecretDeveloperLevelsEnabled

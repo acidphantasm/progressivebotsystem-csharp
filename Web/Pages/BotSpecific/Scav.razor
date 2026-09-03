@@ -1,7 +1,9 @@
 ﻿@page "/progressivebotsystem/scav"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Services
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
+@inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
@@ -16,7 +18,7 @@
                         WarningTooltip1="All settings on this page, and any other setting that may impact these bots are controlled by this toggle."
                         WarningTooltip2="EXCEPTION: Normalize Health is always applied if enabled but not excluded."
                         @bind-Value="ScavEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavEnabled"))"
                         IsNonDefault="@(!ScavEnabled)"
                         OnUndo="UndoScavBots"
                         OnDefault="DefaultScavBots"/>
@@ -32,8 +34,8 @@
                             Label="Loot"
                             TooltipText="Allows Scav Bots to spawn with additional loot."
                             @bind-Value="ScavLootEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavLootEnabled") ||
-                                               MainLayout.pendingChanges.Contains("ScavLootBlacklist"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavLootEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("ScavLootBlacklist"))"
                             IsNonDefault="@(!ScavLootEnabled ||
                                           ScavLootBlacklist.Count > 0)"
                             OnUndo="UndoLoot"
@@ -50,8 +52,8 @@
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows Scavs to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="ScavWeaponAmmunitionRollEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavWeaponAmmunitionRollEnabled") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponAmmunitionRollChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavWeaponAmmunitionRollEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponAmmunitionRollChance"))"
                             IsNonDefault="@(!ScavWeaponAmmunitionRollEnabled ||
                                           ScavWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
@@ -69,9 +71,9 @@
                             Label="Toploading"
                             TooltipText="Allows Scavs to top load their extra magazines."
                             @bind-Value="ScavWeaponToploadEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavWeaponToploadEnabled") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponToploadChance") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponToploadPercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavWeaponToploadEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponToploadChance") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponToploadPercent"))"
                             IsNonDefault="@(ScavWeaponToploadEnabled ||
                                           ScavWeaponToploadChance != 30 ||
                                           ScavWeaponToploadPercent != 30)"
@@ -98,7 +100,7 @@
                             Label="Skip Backplate When Missing Front Plate"
                             TooltipText="Will skip backplates when the front plate is missing, if they had one it would be in the front right?"
                             @bind-Value="SkipBackPlateIfMissingFrontPlate"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
                             IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
                             OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
@@ -107,7 +109,7 @@
                             Label="Limit Plate Class to Front Plate"
                             TooltipText="Tries to limit the plate class of all plates to the class of the front plate, if possible."
                             @bind-Value="LimitPlateClassToFrontPlateClass"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
                             IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
                             OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
@@ -116,11 +118,11 @@
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="ScavResourceRandomizationEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavResourceRandomizationEnabled") ||
-                                               MainLayout.pendingChanges.Contains("ScavMedRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("ScavMedRateUsagePercent") ||
-                                               MainLayout.pendingChanges.Contains("ScavFoodRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("ScavFoodRateUsagePercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavResourceRandomizationEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("ScavMedRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("ScavMedRateUsagePercent") ||
+                                               PresetStateService.PendingChanges.Contains("ScavFoodRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("ScavFoodRateUsagePercent"))"
                             IsNonDefault="@(!ScavResourceRandomizationEnabled ||
                                           ScavMedRateMaxChance != 10 ||
                                           ScavMedRateUsagePercent != 10 ||
@@ -140,12 +142,12 @@
                             Label="Weapon Durability Changes"
                             TooltipText="Allows configurable weapon durability."
                             @bind-Value="ScavWeaponDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavWeaponDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponDurabilityMaxDelta") ||
-                                               MainLayout.pendingChanges.Contains("ScavWeaponDurabilityEnhancementChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavWeaponDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponDurabilityMaxDelta") ||
+                                               PresetStateService.PendingChanges.Contains("ScavWeaponDurabilityEnhancementChance"))"
                             IsNonDefault="@(!ScavWeaponDurabilityEnabled ||
                                           ScavWeaponDurabilityMin != 70 ||
                                           ScavWeaponDurabilityMax != 90 ||
@@ -177,11 +179,11 @@
                             Label="Armour Durability Changes"
                             TooltipText="Allows configurable armour durability."
                             @bind-Value="ScavArmourDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavArmourDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("ScavArmourDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("ScavArmourDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("ScavArmourDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("ScavArmourDurabilityMaxDelta"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavArmourDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("ScavArmourDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("ScavArmourDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("ScavArmourDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("ScavArmourDurabilityMaxDelta"))"
                             IsNonDefault="@(!ScavArmourDurabilityEnabled ||
                                           ScavArmourDurabilityMin != 70 ||
                                           ScavArmourDurabilityMax != 90 ||
@@ -205,7 +207,7 @@
                             TooltipText="Adds all keys to existing scav loot pool."
                             Value="@ScavAddAllKeys"
                             ValueChanged="@(v => ScavAddAllKeys = v)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavAddAllKeys"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavAddAllKeys"))"
                             IsNonDefault="@(ScavAddAllKeys)"
                             OnUndo="UndoScavAllKeys"
                             OnDefault="DefaultScavAllKeys"/>
@@ -215,7 +217,7 @@
                             TooltipText="Adds all mechanical keys to existing scav loot pool."
                             Value="@ScavAddMechanicalKeys"
                             ValueChanged="@(v => ScavAddMechanicalKeys = v)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavAddMechanicalKeys"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavAddMechanicalKeys"))"
                             IsNonDefault="@(ScavAddMechanicalKeys)"
                             OnUndo="UndoScavMechanicalKeys"
                             OnDefault="DefaultScavMechanicalKeys"/>
@@ -225,7 +227,7 @@
                             TooltipText="Adds all keycards to existing scav loot pool."
                             Value="@ScavAddKeycards"
                             ValueChanged="@(v => ScavAddKeycards = v)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavAddKeycards"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavAddKeycards"))"
                             IsNonDefault="@(ScavAddKeycards)"
                             OnUndo="UndoScavKeyCards"
                             OnDefault="DefaultScavKeyCards"/>
@@ -237,7 +239,7 @@
                             Min="0.01"
                             Max="0.5"
                             Disabled="@(!ScavAddKeycards && !ScavAddMechanicalKeys && !ScavAddAllKeys)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavKeyProbability"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavKeyProbability"))"
                             IsNonDefault="@(Math.Abs(ScavKeyProbability - 0.15) > 0.0001)"
                             OnUndo="UndoScavKeyProbability"
                             OnDefault="DefaultScavKeyProbability"/>
@@ -246,7 +248,7 @@
                             Label="Scav Attachment Tiering"
                             TooltipText="Allows Scavs to use tiered attachments."
                             @bind-Value="ScavAttachmentTieringEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavAttachmentTieringEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavAttachmentTieringEnabled"))"
                             IsNonDefault="@(ScavAttachmentTieringEnabled)"
                             OnUndo="UndoScavAttachmentTiering"
                             OnDefault="DefaultScavAttachmentTiering"/>
@@ -255,7 +257,7 @@
                             Label="Normalize Equipment Chance"
                             TooltipText="Makes all equipment in the generated Scav's Tier equal chance of being selected."
                             @bind-Value="ScavEqualEquipmentWeightsEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavEqualEquipmentWeightsEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavEqualEquipmentWeightsEnabled"))"
                             IsNonDefault="@(ScavEqualEquipmentWeightsEnabled)"
                             OnUndo="UndoScavEquipmentTiering"
                             OnDefault="DefaultScavEquipmentTiering"/>
@@ -303,7 +305,7 @@
                             Label="Jackpot Rouble Stack"
                             TooltipText="Gives Scavs a 0.5% chance to have a 1m (or max stack size if lower) stack of roubles."
                             @bind-Value="ScavSecretJackpotRoublesEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ScavSecretJackpotRoublesEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ScavSecretJackpotRoublesEnabled"))"
                             IsNonDefault="@(!ScavSecretJackpotRoublesEnabled)"
                             OnUndo="UndoScavSecretJackpotRoubles"
                             OnDefault="DefaultScavSecretJackpotRoubles"/>
@@ -349,15 +351,15 @@
         ScavLootBlacklist.Clear();
         foreach (var item in ModConfig.OriginalConfig.ScavBots.LootConfig.Blacklist)
             ScavLootBlacklist.Add(item);
-        MainLayout.pendingChanges.Remove("ScavLootEnabled");
-        MainLayout.pendingChanges.Remove("ScavLootBlacklist");
+        PresetStateService.PendingChanges.Remove("ScavLootEnabled");
+        PresetStateService.PendingChanges.Remove("ScavLootBlacklist");
     }
     private void DefaultLoot()
     {
         ScavLootEnabled = true;
         ScavLootBlacklist.Clear();
-        MainLayout.pendingChanges.Add("ScavLootEnabled");
-        MainLayout.pendingChanges.Add("ScavLootBlacklist");
+        PresetStateService.PendingChanges.Add("ScavLootEnabled");
+        PresetStateService.PendingChanges.Add("ScavLootBlacklist");
     }
     #endregion
     #region REROLL
@@ -784,7 +786,7 @@
     {
         foreach (var classNum in new[] { "2", "3", "4", "5", "6" }){
             config[position][classNum] = original[position][classNum];
-            MainLayout.pendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
+            PresetStateService.PendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
         MainLayout.TriggerUiRefresh();
     }

@@ -1,6 +1,8 @@
 ﻿@page "/progressivebotsystem/tierdelta"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Services
 @layout MainLayout
+@inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
@@ -42,7 +44,7 @@
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && MainLayout.pendingChanges.Contains("_tierDeltaCustomEnabled")){
+                        @if (MainLayout.AppUndoButtonToggle && PresetStateService.PendingChanges.Contains("_tierDeltaCustomEnabled")){
                             <MudButton @onclick="UndoTierDeltaCustomEnabled" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -75,8 +77,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier1Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier1Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier1Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier1Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier1" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -111,8 +113,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier2Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier2Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier2Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier2Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier2" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -147,8 +149,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier3Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier3Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier3Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier3Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier3" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -183,8 +185,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier4Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier4Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier4Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier4Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier4" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -219,8 +221,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier5Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier5Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier5Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier5Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier5" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -255,8 +257,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier6Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier6Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier6Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier6Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier6" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -291,8 +293,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier7Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomTier7Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier7Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier7Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomTier7" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -346,7 +348,7 @@
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && MainLayout.pendingChanges.Contains("_tierDeltaCustomScavEnabled")){
+                        @if (MainLayout.AppUndoButtonToggle && PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavEnabled")){
                             <MudButton @onclick="UndoTierDeltaCustomScavEnabled" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -381,8 +383,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier1Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier1Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier1Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier1Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier1" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -419,8 +421,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier2Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier2Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier2Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier2Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier2" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -457,8 +459,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier3Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier3Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier3Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier3Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier3" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -495,8 +497,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier4Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier4Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier4Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier4Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier4" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -533,8 +535,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier5Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier5Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier5Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier5Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier5" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -571,8 +573,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier6Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier6Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier6Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier6Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier6" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
@@ -609,8 +611,8 @@
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout.AppUndoButtonToggle && (
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier7Min") ||
-                            MainLayout.pendingChanges.Contains("_tierDeltaCustomScavTier7Max"))){
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier7Min") ||
+                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier7Max"))){
                             <MudButton @onclick="UndoTierDeltaCustomScavTier7" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>

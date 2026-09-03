@@ -1,10 +1,12 @@
 ﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
 @using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
 @using SPTarkov.Server.Core.Utils
 @inject ISnackbar Snackbar
 @inject ItemHelper ItemHelper
 @inject JsonUtil JsonUtil
+@inject PresetStateService PresetStateService
 
 @if (_loading){
     <MudOverlay Visible="true" DarkBackground="true">
@@ -129,14 +131,14 @@ else{
 
     public void Dispose()
     {
-        MainLayout.OnPresetChanged -= HandlePresetChanged;
-        MainLayout.OnPresetSaved -= HandleSaveCompleted;
+        PresetStateService.OnPresetChanged -= HandlePresetChanged;
+        PresetStateService.OnPresetSaved -= HandleSaveCompleted;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        MainLayout.OnPresetChanged += HandlePresetChanged;
-        MainLayout.OnPresetSaved += HandleSaveCompleted;
+        PresetStateService.OnPresetChanged += HandlePresetChanged;
+        PresetStateService.OnPresetSaved += HandleSaveCompleted;
         await LoadDataAsync();
     }
 
@@ -268,50 +270,21 @@ else{
     private void UpdatePendingChanges(string botType, string category, PresetItemView item)
     {
         var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
-        var weightKey = key + "_weight";
 
-        if (!_originalBotTypes.TryGetValue(botType, out var originalList))
-            return;
-
-        var originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category);
+        var originalItem = _originalBotTypes.TryGetValue(botType, out var originalList)
+            ? originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category)
+            : null;
         var currentItem = _botTypes[botType].FirstOrDefault(i => i.Id == item.Id && i.Category == category);
 
         var added = originalItem == null && currentItem != null;
         var removed = originalItem != null && currentItem == null;
+        var weightChanged = currentItem != null &&
+                            (originalItem != null && currentItem.Weight != originalItem.Weight
+                             || originalItem == null && currentItem.Weight != 1);
 
-        var weightChanged =
-            currentItem != null &&
-            (
-                originalItem != null && currentItem.Weight != originalItem.Weight ||
-                originalItem == null && currentItem.Weight != 1
-            );
-
-        if (added)
-            MainLayout.AmmoAddedItems.Add(key);
-        else
-            MainLayout.AmmoAddedItems.Remove(key);
-
-        if (removed)
-            MainLayout.AmmoRemovedItems.Add(key);
-        else
-            MainLayout.AmmoRemovedItems.Remove(key);
-
-        if (weightChanged)
-            MainLayout.AmmoWeightChanges[weightKey] = currentItem.Weight;
-        else
-            MainLayout.AmmoWeightChanges.Remove(weightKey);
-
-        var wasPendingItem = MainLayout.pendingChanges.Contains(key);
-        var wasPendingWeight = MainLayout.pendingChanges.Contains(weightKey);
-
-        var pendingItemNow = added || removed;
-        var pendingWeightNow = weightChanged;
-
-        if (wasPendingItem != pendingItemNow)
-            Utils.UpdateView(key);
-
-        if (wasPendingWeight != pendingWeightNow)
-            Utils.UpdateView(weightKey);
+        PresetStateService.SyncItemChange(
+        key, added, removed, weightChanged, currentItem?.Weight ?? 0,
+        PresetStateService.AmmoAddedItems, PresetStateService.AmmoRemovedItems, PresetStateService.AmmoWeightChanges);
     }
 
 

@@ -1,7 +1,9 @@
 ﻿@page "/progressivebotsystem/boss"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Services
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
+@inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
@@ -16,7 +18,7 @@
                         WarningTooltip1="All settings on this page, and any other setting that may impact these bots are controlled by this toggle."
                         WarningTooltip2="EXCEPTION: Normalize Health is always applied if enabled but not excluded."
                         @bind-Value="BossEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossEnabled"))"
                         IsNonDefault="@(!BossEnabled)"
                         OnUndo="UndoBossBots"
                         OnDefault="DefaultBossBots"/>
@@ -32,8 +34,8 @@
                             Label="Loot"
                             TooltipText="Allows Boss Bots to spawn with additional loot."
                             @bind-Value="BossLootEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossLootEnabled") ||
-                                               MainLayout.pendingChanges.Contains("BossLootBlacklist"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossLootEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("BossLootBlacklist"))"
                             IsNonDefault="@(!BossLootEnabled ||
                                           BossLootBlacklist.Count > 0)"
                             OnUndo="UndoLoot"
@@ -50,8 +52,8 @@
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows Bosses to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="BossWeaponAmmunitionRollEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossWeaponAmmunitionRollEnabled") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponAmmunitionRollChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossWeaponAmmunitionRollEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponAmmunitionRollChance"))"
                             IsNonDefault="@(!BossWeaponAmmunitionRollEnabled ||
                                           BossWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
@@ -69,9 +71,9 @@
                             Label="Toploading"
                             TooltipText="Allows Bosses to top load their extra magazines."
                             @bind-Value="BossWeaponToploadEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossWeaponToploadEnabled") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponToploadChance") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponToploadPercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossWeaponToploadEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponToploadChance") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponToploadPercent"))"
                             IsNonDefault="@(BossWeaponToploadEnabled ||
                                           BossWeaponToploadChance != 30 ||
                                           BossWeaponToploadPercent != 30)"
@@ -98,7 +100,7 @@
                             Label="Skip Backplate When Missing Front Plate"
                             TooltipText="Will skip backplates when the front plate is missing, if they had one it would be in the front right?"
                             @bind-Value="SkipBackPlateIfMissingFrontPlate"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
                             IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
                             OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
@@ -107,7 +109,7 @@
                             Label="Limit Plate Class to Front Plate"
                             TooltipText="Tries to limit the plate class of all plates to the class of the front plate, if possible."
                             @bind-Value="LimitPlateClassToFrontPlateClass"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
                             IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
                             OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
@@ -116,11 +118,11 @@
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="BossResourceRandomizationEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossResourceRandomizationEnabled") ||
-                                               MainLayout.pendingChanges.Contains("BossMedRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("BossMedRateUsagePercent") ||
-                                               MainLayout.pendingChanges.Contains("BossFoodRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("BossFoodRateUsagePercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossResourceRandomizationEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("BossMedRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("BossMedRateUsagePercent") ||
+                                               PresetStateService.PendingChanges.Contains("BossFoodRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("BossFoodRateUsagePercent"))"
                             IsNonDefault="@(!BossResourceRandomizationEnabled ||
                                           BossMedRateMaxChance != 50 ||
                                           BossMedRateUsagePercent != 50 ||
@@ -140,12 +142,12 @@
                             Label="Weapon Durability Changes"
                             TooltipText="Allows configurable weapon durability."
                             @bind-Value="BossWeaponDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossWeaponDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityMaxDelta") ||
-                                               MainLayout.pendingChanges.Contains("BossWeaponDurabilityEnhancementChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossWeaponDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponDurabilityMaxDelta") ||
+                                               PresetStateService.PendingChanges.Contains("BossWeaponDurabilityEnhancementChance"))"
                             IsNonDefault="@(!BossWeaponDurabilityEnabled ||
                                           BossWeaponDurabilityMin != 90 ||
                                           BossWeaponDurabilityMax != 100 ||
@@ -177,11 +179,11 @@
                             Label="Armour Durability Changes"
                             TooltipText="Allows configurable armour durability."
                             @bind-Value="BossArmourDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BossArmourDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("BossArmourDurabilityMaxDelta"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BossArmourDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("BossArmourDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("BossArmourDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("BossArmourDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("BossArmourDurabilityMaxDelta"))"
                             IsNonDefault="@(!BossArmourDurabilityEnabled ||
                                           BossArmourDurabilityMin != 90 ||
                                           BossArmourDurabilityMax != 100 ||
@@ -274,14 +276,14 @@
         foreach (var item in ModConfig.OriginalConfig.BossBots.LootConfig.Blacklist){
             BossLootBlacklist.Add(item);
         }
-        MainLayout.pendingChanges.Remove("BossLootBlacklist");
+        PresetStateService.PendingChanges.Remove("BossLootBlacklist");
     }
 
     private void DefaultLoot()
     {
         BossLootEnabled = true;
         BossLootBlacklist.Clear();
-        MainLayout.pendingChanges.Add("BossLootBlacklist");
+        PresetStateService.PendingChanges.Add("BossLootBlacklist");
     }
     #endregion
     #region REROLL
@@ -633,7 +635,7 @@
     {
         foreach (var classNum in new[] { "2", "3", "4", "5", "6" }){
             config[position][classNum] = original[position][classNum];
-            MainLayout.pendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
+            PresetStateService.PendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
         MainLayout.TriggerUiRefresh();
     }

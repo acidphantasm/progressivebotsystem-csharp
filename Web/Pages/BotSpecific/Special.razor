@@ -1,7 +1,9 @@
 ﻿@page "/progressivebotsystem/special"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Services
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
+@inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
@@ -16,7 +18,7 @@
                         WarningTooltip1="All settings on this page, and any other setting that may impact these bots are controlled by this toggle."
                         WarningTooltip2="EXCEPTION: Normalize Health is always applied if enabled but not excluded."
                         @bind-Value="SpecialEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialEnabled"))"
                         IsNonDefault="@(!SpecialEnabled)"
                         OnUndo="UndoSpecialBots"
                         OnDefault="DefaultSpecialBots"/>
@@ -32,8 +34,8 @@
                             Label="Loot"
                             TooltipText="Allows Special Bots to spawn with additional loot."
                             @bind-Value="SpecialLootEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialLootEnabled") ||
-                                               MainLayout.pendingChanges.Contains("SpecialLootBlacklist"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialLootEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialLootBlacklist"))"
                             IsNonDefault="@(!SpecialLootEnabled ||
                                           SpecialLootBlacklist.Count > 0)"
                             OnUndo="UndoLoot"
@@ -50,8 +52,8 @@
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows Special bots to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="SpecialWeaponAmmunitionRollEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialWeaponAmmunitionRollEnabled") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponAmmunitionRollChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialWeaponAmmunitionRollEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponAmmunitionRollChance"))"
                             IsNonDefault="@(!SpecialWeaponAmmunitionRollEnabled ||
                                           SpecialWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
@@ -69,9 +71,9 @@
                             Label="Toploading"
                             TooltipText="Allows Special bots to top load their extra magazines."
                             @bind-Value="SpecialWeaponToploadEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialWeaponToploadEnabled") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponToploadChance") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponToploadPercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialWeaponToploadEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponToploadChance") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponToploadPercent"))"
                             IsNonDefault="@(SpecialWeaponToploadEnabled ||
                                           SpecialWeaponToploadChance != 30 ||
                                           SpecialWeaponToploadPercent != 30)"
@@ -98,7 +100,7 @@
                             Label="Skip Backplate When Missing Front Plate"
                             TooltipText="Will skip backplates when the front plate is missing, if they had one it would be in the front right?"
                             @bind-Value="SkipBackPlateIfMissingFrontPlate"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
                             IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
                             OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
@@ -107,7 +109,7 @@
                             Label="Limit Plate Class to Front Plate"
                             TooltipText="Tries to limit the plate class of all plates to the class of the front plate, if possible."
                             @bind-Value="LimitPlateClassToFrontPlateClass"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
                             IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
                             OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
@@ -116,11 +118,11 @@
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="SpecialResourceRandomizationEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialResourceRandomizationEnabled") ||
-                                               MainLayout.pendingChanges.Contains("SpecialMedRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("SpecialMedRateUsagePercent") ||
-                                               MainLayout.pendingChanges.Contains("SpecialFoodRateMaxChance") ||
-                                               MainLayout.pendingChanges.Contains("SpecialFoodRateUsagePercent"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialResourceRandomizationEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialMedRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialMedRateUsagePercent") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialFoodRateMaxChance") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialFoodRateUsagePercent"))"
                             IsNonDefault="@(!SpecialResourceRandomizationEnabled ||
                                           SpecialMedRateMaxChance != 15 ||
                                           SpecialMedRateUsagePercent != 25 ||
@@ -140,12 +142,12 @@
                             Label="Weapon Durability Changes"
                             TooltipText="Allows configurable weapon durability."
                             @bind-Value="SpecialWeaponDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialWeaponDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponDurabilityMaxDelta") ||
-                                               MainLayout.pendingChanges.Contains("SpecialWeaponDurabilityEnhancementChance"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialWeaponDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponDurabilityMaxDelta") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialWeaponDurabilityEnhancementChance"))"
                             IsNonDefault="@(!SpecialWeaponDurabilityEnabled ||
                                           SpecialWeaponDurabilityMin != 90 ||
                                           SpecialWeaponDurabilityMax != 100 ||
@@ -177,11 +179,11 @@
                             Label="Armour Durability Changes"
                             TooltipText="Allows configurable armour durability."
                             @bind-Value="SpecialArmourDurabilityEnabled"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialArmourDurabilityEnabled") ||
-                                               MainLayout.pendingChanges.Contains("SpecialArmourDurabilityMin") ||
-                                               MainLayout.pendingChanges.Contains("SpecialArmourDurabilityMax") ||
-                                               MainLayout.pendingChanges.Contains("SpecialArmourDurabilityMinDelta") ||
-                                               MainLayout.pendingChanges.Contains("SpecialArmourDurabilityMaxDelta"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SpecialArmourDurabilityEnabled") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialArmourDurabilityMin") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialArmourDurabilityMax") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialArmourDurabilityMinDelta") ||
+                                               PresetStateService.PendingChanges.Contains("SpecialArmourDurabilityMaxDelta"))"
                             IsNonDefault="@(!SpecialArmourDurabilityEnabled ||
                                           SpecialArmourDurabilityMin != 90 ||
                                           SpecialArmourDurabilityMax != 100 ||
@@ -242,15 +244,15 @@
         foreach (var item in ModConfig.OriginalConfig.SpecialBots.LootConfig.Blacklist){
             SpecialLootBlacklist.Add(item);
         }
-        MainLayout.pendingChanges.Remove("SpecialLootEnabled");
-        MainLayout.pendingChanges.Remove("SpecialLootBlacklist");
+        PresetStateService.PendingChanges.Remove("SpecialLootEnabled");
+        PresetStateService.PendingChanges.Remove("SpecialLootBlacklist");
     }
     private void DefaultLoot()
     {
         SpecialLootEnabled = true;
         SpecialLootBlacklist.Clear();
-        if (!MainLayout.pendingChanges.Contains("SpecialLootEnabled")) MainLayout.pendingChanges.Add("SpecialLootEnabled");
-        if (!MainLayout.pendingChanges.Contains("SpecialLootBlacklist")) MainLayout.pendingChanges.Add("SpecialLootBlacklist");
+        if (!PresetStateService.PendingChanges.Contains("SpecialLootEnabled")) PresetStateService.PendingChanges.Add("SpecialLootEnabled");
+        if (!PresetStateService.PendingChanges.Contains("SpecialLootBlacklist")) PresetStateService.PendingChanges.Add("SpecialLootBlacklist");
     }
     #endregion
     #region REROLL

@@ -1,10 +1,12 @@
 ﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
 @using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
 @using SPTarkov.Server.Core.Utils
 @inject ISnackbar Snackbar
 @inject ItemHelper ItemHelper
 @inject JsonUtil JsonUtil
+@inject PresetStateService PresetStateService
 
 @if (_loading){
     <MudOverlay Visible="true" DarkBackground="true">
@@ -135,14 +137,14 @@ else{
 
     public void Dispose()
     {
-        MainLayout.OnPresetChanged -= HandlePresetChanged;
-        MainLayout.OnPresetSaved -= HandleSaveCompleted;
+        PresetStateService.OnPresetChanged -= HandlePresetChanged;
+        PresetStateService.OnPresetSaved -= HandleSaveCompleted;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        MainLayout.OnPresetChanged += HandlePresetChanged;
-        MainLayout.OnPresetSaved += HandleSaveCompleted;
+        PresetStateService.OnPresetChanged += HandlePresetChanged;
+        PresetStateService.OnPresetSaved += HandleSaveCompleted;
         await LoadDataAsync();
     }
 
@@ -328,7 +330,6 @@ else{
     private void UpdatePendingChanges(string botType, string category, PresetItemView item)
     {
         var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
-        var weightKey = key + "_weight";
 
         if (!_originalBotTypes.TryGetValue(botType, out var originalList))
             return;
@@ -346,32 +347,9 @@ else{
                 originalItem == null && currentItem.Weight != 1
             );
 
-        if (added)
-            MainLayout.AppearanceAddedItems.Add(key);
-        else
-            MainLayout.AppearanceAddedItems.Remove(key);
-
-        if (removed)
-            MainLayout.AppearanceRemovedItems.Add(key);
-        else
-            MainLayout.AppearanceRemovedItems.Remove(key);
-
-        if (weightChanged)
-            MainLayout.AppearanceWeightChanges[weightKey] = currentItem.Weight;
-        else
-            MainLayout.AppearanceWeightChanges.Remove(weightKey);
-
-        var wasPendingItem = MainLayout.pendingChanges.Contains(key);
-        var wasPendingWeight = MainLayout.pendingChanges.Contains(weightKey);
-
-        var pendingItemNow = added || removed;
-        var pendingWeightNow = weightChanged;
-
-        if (wasPendingItem != pendingItemNow)
-            Utils.UpdateView(key);
-
-        if (wasPendingWeight != pendingWeightNow)
-            Utils.UpdateView(weightKey);
+        PresetStateService.SyncItemChange(
+        key, added, removed, weightChanged, currentItem?.Weight ?? 0,
+        PresetStateService.AppearanceAddedItems, PresetStateService.AppearanceRemovedItems, PresetStateService.AppearanceWeightChanges);
     }
 
     private List<string> GetAvailableItemsForCategory(string category) => category switch

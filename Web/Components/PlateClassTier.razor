@@ -1,4 +1,7 @@
-﻿<MudItem xs="1"/>
+﻿@using ProgressiveBotSystem.Services
+@inject PresetStateService PresetStateService
+
+<MudItem xs="1"/>
 <MudItem xs="11" Style="margin-top: 20px;">
     <MudTooltip Text="@TooltipText" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
         <MudText>@TierLabel</MudText>
@@ -38,7 +41,7 @@
     [Parameter] public EventCallback<string> OnDefault { get; set; }
     [Parameter] public Dictionary<string, double> Defaults { get; set; } = new();
 
-    private bool HasPendingChanges(string position) => Enumerable.Range(2, 5).Any(c => MainLayout.pendingChanges.Contains($"{ChangeKeyPrefix}_{position}_Class{c}"));
+    private bool HasPendingChanges(string position) => Enumerable.Range(2, 5).Any(c => PresetStateService.PendingChanges.Contains($"{ChangeKeyPrefix}_{position}_Class{c}"));
 
     private bool IsNonDefault(Dictionary<string, double> values)
     {

@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Helpers
 @using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
 @using SPTarkov.Server.Core.Utils
 @layout MainLayout
 @attribute [Authorize(Policy = "Administrator")]
@@ -9,6 +10,7 @@
 @inject ISnackbar Snackbar
 @inject DataLoader DataLoader
 @inject JsonUtil JsonUtil
+@inject PresetStateService PresetStateService
 
 <MudMainContent>
     <MudContainer>
@@ -52,7 +54,7 @@
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (MainLayout.pendingChanges.Contains("_presetEnable") || MainLayout.pendingChanges.Contains("_presetName"))){
+                        @if (MainLayout.AppUndoButtonToggle && (PresetStateService.PendingChanges.Contains("_presetEnable") || PresetStateService.PendingChanges.Contains("_presetName"))){
                             <MudButton @onclick="UndoPresetDetails" Variant="Variant.Filled" Color="Color.Inherit"
                                        Size="Size.Small">Undo
                             </MudButton>

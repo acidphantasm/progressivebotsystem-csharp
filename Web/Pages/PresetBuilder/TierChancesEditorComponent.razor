@@ -1,11 +1,13 @@
 ﻿@using System.Collections
 @using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
 @using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
 @using SPTarkov.Server.Core.Utils
 @inject ISnackbar Snackbar
 @inject ItemHelper ItemHelper
 @inject JsonUtil JsonUtil
+@inject PresetStateService PresetStateService
 
 @if (_loading){
     <MudOverlay Visible="true" DarkBackground="true">
@@ -232,14 +234,14 @@ else{
 
     public void Dispose()
     {
-        MainLayout.OnPresetChanged -= HandlePresetChanged;
-        MainLayout.OnPresetSaved -= HandleSaveCompleted;
+        PresetStateService.OnPresetChanged -= HandlePresetChanged;
+        PresetStateService.OnPresetSaved -= HandleSaveCompleted;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        MainLayout.OnPresetChanged += HandlePresetChanged;
-        MainLayout.OnPresetSaved += HandleSaveCompleted;
+        PresetStateService.OnPresetChanged += HandlePresetChanged;
+        PresetStateService.OnPresetSaved += HandleSaveCompleted;
         await LoadDataAsync();
     }
 
@@ -467,18 +469,9 @@ else{
             }
 
             var currentValue = _generationSlotRanges[botType][category][slotIndex.Value];
-
             var changed = currentValue != originalValue;
 
-            if (changed)
-                MainLayout.GenerationWeightChanges[slotKey] = currentValue;
-            else
-                MainLayout.GenerationWeightChanges.Remove(slotKey);
-
-            var wasPending = MainLayout.pendingChanges.Contains(slotKey + "_generationSlotWeight");
-            if (wasPending != changed)
-                Utils.UpdateView(slotKey + "_generationSlotWeight");
-
+            PresetStateService.SyncSlotWeightChange(slotKey, changed, currentValue);
             return;
         }
 
@@ -500,39 +493,14 @@ else{
                              originalItem == null && currentItem.Weight != 1);
 
         if (item.IsGenerationItem){
-            if (added)
-                MainLayout.GenerationWhitelistAddedItems.Add(key);
-            else
-                MainLayout.GenerationWhitelistAddedItems.Remove(key);
-
-            if (removed)
-                MainLayout.GenerationWhitelistRemovedItems.Add(key);
-            else
-                MainLayout.GenerationWhitelistRemovedItems.Remove(key);
-
-            if (weightChanged && currentItem != null)
-                MainLayout.GenerationWhitelistWeightChanges[weightKey] = currentItem.Weight;
-            else
-                MainLayout.GenerationWhitelistWeightChanges.Remove(weightKey);
+            PresetStateService.SyncItemChange(
+            key, added, removed, weightChanged, currentItem?.Weight ?? 0,
+            PresetStateService.GenerationWhitelistAddedItems, PresetStateService.GenerationWhitelistRemovedItems, PresetStateService.GenerationWhitelistWeightChanges,
+            "_generationWeight");
         }
         else{
-            if (weightChanged && currentItem != null)
-                MainLayout.ChancesWeightChanges[weightKey] = currentItem.Weight;
-            else
-                MainLayout.ChancesWeightChanges.Remove(weightKey);
+            PresetStateService.SyncWeightOnlyChange(weightKey, weightChanged, currentItem?.Weight ?? 0, PresetStateService.ChancesWeightChanges);
         }
-
-        var wasPendingItem = MainLayout.pendingChanges.Contains(key);
-        var wasPendingWeight = MainLayout.pendingChanges.Contains(weightKey);
-
-        var pendingItemNow = added || removed;
-        var pendingWeightNow = weightChanged;
-
-        if (wasPendingItem != pendingItemNow)
-            Utils.UpdateView(key);
-
-        if (wasPendingWeight != pendingWeightNow)
-            Utils.UpdateView(weightKey);
     }
 
     private List<string> GetAvailableItemsForCategory(string category) => LoadIdsForCategory(category);

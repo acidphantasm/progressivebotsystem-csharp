@@ -1,11 +1,10 @@
 ﻿namespace ProgressiveBotSystem.Web.Core;
 
+using Services;
 using Shared;
 
 internal class Utils
 {
-    public static List<string> callerList = new();
-
     public static IEnumerable<string> StringObjectIDValidation(string value)
     {
         if (!string.IsNullOrEmpty(value) && (value.Length != 24 || !IsHex(value)))
@@ -56,6 +55,8 @@ internal class Utils
         return false;
     }
 
+    // Still a MainLayout concern: the bottom-bar "unsaved changes" flag, which
+    // has no per-field caller key and isn't tracked in PendingChanges.
     public static void UpdateViewBool(bool holder, bool actual)
     {
         if (holder != actual)
@@ -66,16 +67,18 @@ internal class Utils
 
     private static void UpdatePendingState(bool changed, string caller)
     {
+        var state = PresetStateService.Instance;
+
         if (changed)
         {
-            MainLayout.pendingChanges.Add(caller);
+            state.PendingChanges.Add(caller);
         }
         else
         {
-            MainLayout.pendingChanges.Remove(caller);
+            state.PendingChanges.Remove(caller);
         }
 
-        MainLayout.TriggerUiRefresh();
+        state.RaisePendingChangesUpdated();
     }
 
     public static void UpdateView(bool holder, bool originalConfigValue, string caller)
@@ -114,15 +117,17 @@ internal class Utils
 
     public static void UpdateView(string caller)
     {
-        if (MainLayout.pendingChanges.Contains(caller))
+        var state = PresetStateService.Instance;
+
+        if (state.PendingChanges.Contains(caller))
         {
-            MainLayout.pendingChanges.Remove(caller);
+            state.PendingChanges.Remove(caller);
         }
         else
         {
-            MainLayout.pendingChanges.Add(caller);
+            state.PendingChanges.Add(caller);
         }
 
-        MainLayout.TriggerUiRefresh();
+        state.RaisePendingChangesUpdated();
     }
 }

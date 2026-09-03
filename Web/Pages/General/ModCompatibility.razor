@@ -1,7 +1,9 @@
 ﻿@page "/progressivebotsystem/modcompatibility"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Services
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
+@inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
@@ -14,7 +16,7 @@
                         Label="Modded Weapons"
                         TooltipText="Allows bots to use custom modded weapons."
                         @bind-Value="ModCustomWeaponsEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModCustomWeaponsEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModCustomWeaponsEnabled"))"
                         IsNonDefault="@(ModCustomWeaponsEnabled)"
                         OnUndo="UndoCustomWeapons"
                         OnDefault="DefaultCustomWeapons"/>
@@ -25,7 +27,7 @@
                         WarningTooltip1="This is completely dynamic based on the existing mod pool, so test the values and see how you like it."
                         @bind-Value="UseDynamicWeaponWeights"
                         Disabled="@(!ModCustomWeaponsEnabled)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("UseDynamicWeaponWeights"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("UseDynamicWeaponWeights"))"
                         IsNonDefault="@(!UseDynamicWeaponWeights)"
                         OnUndo="UndoUseDynamicWeaponWeights"
                         OnDefault="DefaultUseDynamicWeaponWeights"/>
@@ -39,7 +41,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!UseDynamicWeaponWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicPmcWeaponWeightMultiplier"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicPmcWeaponWeightMultiplier"))"
                             IsNonDefault="@(Math.Abs(DynamicPmcWeaponWeightMultiplier - 1.0) > 0.001)"
                             OnUndo="UndoPmcDynamicWeaponWeightMultiplier"
                             OnDefault="DefaultPmcDynamicWeaponWeightMultiplier"/>
@@ -52,7 +54,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!UseDynamicWeaponWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicScavWeaponWeightMultiplier"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicScavWeaponWeightMultiplier"))"
                             IsNonDefault="@(Math.Abs(DynamicScavWeaponWeightMultiplier - 1.0) > 0.001)"
                             OnUndo="UndoScavDynamicWeaponWeightMultiplier"
                             OnDefault="DefaultScavDynamicWeaponWeightMultiplier"/>
@@ -65,7 +67,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!UseDynamicWeaponWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicGuardWeaponWeightMultiplier"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicGuardWeaponWeightMultiplier"))"
                             IsNonDefault="@(Math.Abs(DynamicGuardWeaponWeightMultiplier - 1.0) > 0.001)"
                             OnUndo="UndoGuardDynamicWeaponWeightMultiplier"
                             OnDefault="DefaultGuardDynamicWeaponWeightMultiplier"/>
@@ -78,7 +80,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomWeaponsEnabled || UseDynamicWeaponWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModCustomWeaponsEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModCustomWeaponsEnabled"))"
                             IsNonDefault="@(ModPmcWeaponWeights != 8)"
                             OnUndo="UndoPmcWeaponWeights"
                             OnDefault="DefaultPmcWeaponWeights"/>
@@ -90,7 +92,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomWeaponsEnabled || UseDynamicWeaponWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModCustomWeaponsEnabled"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModCustomWeaponsEnabled"))"
                             IsNonDefault="@(ModScavWeaponWeights != 1)"
                             OnUndo="UndoScavWeaponWeights"
                             OnDefault="DefaultScavWeaponWeights"/>
@@ -102,7 +104,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomWeaponsEnabled || UseDynamicWeaponWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModFollowerWeaponWeights"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModFollowerWeaponWeights"))"
                             IsNonDefault="@(ModFollowerWeaponWeights != 6)"
                             OnUndo="UndoFollowerWeaponWeights"
                             OnDefault="DefaultFollowerWeaponWeights"/>
@@ -112,7 +114,7 @@
                         Label="Modded Equipment"
                         TooltipText="Allows bots to use custom modded equipment."
                         @bind-Value="ModCustomEquipmentEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModCustomEquipmentEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModCustomEquipmentEnabled"))"
                         IsNonDefault="@(ModCustomEquipmentEnabled)"
                         OnUndo="UndoCustomEquipment"
                         OnDefault="DefaultCustomEquipment"/>
@@ -123,7 +125,7 @@
                         WarningTooltip1="If this is not enabled, scavs will get equipment at the defined slot values below."
                         @bind-Value="ForceScavEquipmentWeight"
                         Disabled="@(!ModCustomEquipmentEnabled)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ForceScavEquipmentWeight"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ForceScavEquipmentWeight"))"
                         IsNonDefault="@(!ForceScavEquipmentWeight)"
                         OnUndo="UndoForceScavEquipmentWeights"
                         OnDefault="DefaultForceScavEquipmentWeights"/>
@@ -135,7 +137,7 @@
                         Min="0"
                         Max="25"
                         Disabled="@(!ForceScavEquipmentWeight || !ModCustomEquipmentEnabled)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ForceScavEquipmentWeightValue"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ForceScavEquipmentWeightValue"))"
                         IsNonDefault="@(ForceScavEquipmentWeightValue != 1)"
                         OnUndo="UndoForceScavEquipmentWeightValue"
                         OnDefault="DefaultForceScavEquipmentWeightValue"/>
@@ -146,7 +148,7 @@
                         WarningTooltip1="This is completely dynamic based on the existing mod pool, so test the values and see how you like it."
                         @bind-Value="UseDynamicEquipmentWeights"
                         Disabled="@(!ModCustomEquipmentEnabled)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("UseDynamicEquipmentWeights"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("UseDynamicEquipmentWeights"))"
                         IsNonDefault="@(!UseDynamicEquipmentWeights)"
                         OnUndo="UndoUseDynamicEquipmentWeights"
                         OnDefault="DefaultUseDynamicEquipmentWeights"/>
@@ -160,7 +162,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicHeadwearValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicHeadwearValue"))"
                             IsNonDefault="@(Math.Abs(DynamicHeadwearValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicHeadwear"
                             OnDefault="DefaultDynamicHeadwear"/>
@@ -173,7 +175,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicHeadwearWithSlotsValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicHeadwearWithSlotsValue"))"
                             IsNonDefault="@(Math.Abs(DynamicHeadwearWithSlotsValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicHeadwearWithSlots"
                             OnDefault="DefaultDynamicHeadwearWithSlots"/>
@@ -186,7 +188,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicArmourVest"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicArmourVest"))"
                             IsNonDefault="@(Math.Abs(DynamicArmourVestValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicArmourVest"
                             OnDefault="DefaultDynamicArmourVest"/>
@@ -199,7 +201,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicArmouredRigValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicArmouredRigValue"))"
                             IsNonDefault="@(Math.Abs(DynamicArmouredRigValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicArmouredRig"
                             OnDefault="DefaultDynamicArmouredRig"/>
@@ -212,7 +214,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicTacticalVestValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicTacticalVestValue"))"
                             IsNonDefault="@(Math.Abs(DynamicTacticalVestValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicTacticalVest"
                             OnDefault="DefaultDynamicTacticalVest"/>
@@ -225,7 +227,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicTacticalVestLargeGridValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicTacticalVestLargeGridValue"))"
                             IsNonDefault="@(Math.Abs(DynamicTacticalVestLargeGridValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicTacticalVestLargeGrid"
                             OnDefault="DefaultDynamicTacticalVestLargeGrid"/>
@@ -238,7 +240,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicBackpackValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicBackpackValue"))"
                             IsNonDefault="@(Math.Abs(DynamicBackpackValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicBackpack"
                             OnDefault="DefaultDynamicBackpack"/>
@@ -251,7 +253,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicFaceCoverValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicFaceCoverValue"))"
                             IsNonDefault="@(Math.Abs(DynamicFaceCoverValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicFaceCover"
                             OnDefault="DefaultDynamicFaceCover"/>
@@ -264,7 +266,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicFaceCoverAc0Value"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicFaceCoverAc0Value"))"
                             IsNonDefault="@(Math.Abs(DynamicFaceCoverAc0Value - 1.0) > 0.001)"
                             OnUndo="UndoDynamicFaceCoverAc0"
                             OnDefault="DefaultDynamicFaceCoverAc0"/>
@@ -277,7 +279,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicFaceCoverAc3Value"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicFaceCoverAc3Value"))"
                             IsNonDefault="@(Math.Abs(DynamicFaceCoverAc3Value - 1.0) > 0.001)"
                             OnUndo="UndoDynamicFaceCoverAc3"
                             OnDefault="DefaultDynamicFaceCoverAc3"/>
@@ -290,7 +292,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicEyewearValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicEyewearValue"))"
                             IsNonDefault="@(Math.Abs(DynamicEyewearValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicEyewear"
                             OnDefault="DefaultDynamicEyewear"/>
@@ -303,7 +305,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicEarpieceValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicEarpieceValue"))"
                             IsNonDefault="@(Math.Abs(DynamicEarpieceValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicEarpiece"
                             OnDefault="DefaultDynamicEarpiece"/>
@@ -316,7 +318,7 @@
                             Max="3.0"
                             Step="0.05"
                             Disabled="@(!ModCustomEquipmentEnabled || !UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("DynamicArmbandValue"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DynamicArmbandValue"))"
                             IsNonDefault="@(Math.Abs(DynamicArmbandValue - 1.0) > 0.001)"
                             OnUndo="UndoDynamicArmband"
                             OnDefault="DefaultDynamicArmband"/>
@@ -329,7 +331,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("HeadwearWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("HeadwearWeight"))"
                             IsNonDefault="@(HeadwearWeight != 1)"
                             OnUndo="UndoHeadwearWeight"
                             OnDefault="DefaultHeadwearWeight"/>
@@ -341,7 +343,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("HeadwearESlotWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("HeadwearESlotWeight"))"
                             IsNonDefault="@(HeadwearESlotWeight != 6)"
                             OnUndo="UndoHeadwearESlotWeight"
                             OnDefault="DefaultHeadwearESlotWeight"/>
@@ -353,7 +355,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ArmorVestWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ArmorVestWeight"))"
                             IsNonDefault="@(ArmourVestWeight != 10)"
                             OnUndo="UndoArmourVestWeight"
                             OnDefault="DefaultArmourVestWeight"/>
@@ -365,7 +367,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ArmouredRigWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ArmouredRigWeight"))"
                             IsNonDefault="@(ArmouredRigWeight != 7)"
                             OnUndo="UndoArmouredRigWeight"
                             OnDefault="DefaultArmouredRigWeight"/>
@@ -377,7 +379,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("TacticalVestWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("TacticalVestWeight"))"
                             IsNonDefault="@(TacticalVestWeight != 1)"
                             OnUndo="UndoTacticalVestWeight"
                             OnDefault="DefaultTacticalVestWeight"/>
@@ -389,7 +391,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("TacticalVestGLengthWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("TacticalVestGLengthWeight"))"
                             IsNonDefault="@(TacticalVestGLengthWeight != 10)"
                             OnUndo="UndoTacticalVestGLengthWeight"
                             OnDefault="DefaultTacticalVestGLengthWeight"/>
@@ -401,7 +403,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("BackpackWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BackpackWeight"))"
                             IsNonDefault="@(BackpackWeight != 5)"
                             OnUndo="UndoBackpackWeight"
                             OnDefault="DefaultBackpackWeight"/>
@@ -413,7 +415,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("FaceCoverWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("FaceCoverWeight"))"
                             IsNonDefault="@(FaceCoverWeight != 4)"
                             OnUndo="UndoFaceCoverWeight"
                             OnDefault="DefaultFaceCoverWeight"/>
@@ -425,7 +427,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("FaceCoverAc0Weight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("FaceCoverAc0Weight"))"
                             IsNonDefault="@(FaceCoverAc0Weight != 2)"
                             OnUndo="UndoFaceCoverAc0Weight"
                             OnDefault="DefaultFaceCoverAc0Weight"/>
@@ -437,7 +439,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("FaceCoverAc3Weight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("FaceCoverAc3Weight"))"
                             IsNonDefault="@(FaceCoverAc3Weight != 1)"
                             OnUndo="UndoFaceCoverAc3Weight"
                             OnDefault="DefaultFaceCoverAc3Weight"/>
@@ -449,7 +451,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("EyewearWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("EyewearWeight"))"
                             IsNonDefault="@(EyewearWeight != 1)"
                             OnUndo="UndoEyewearWeight"
                             OnDefault="DefaultEyewearWeight"/>
@@ -461,7 +463,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("EarpieceWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("EarpieceWeight"))"
                             IsNonDefault="@(EarpieceWeight != 5)"
                             OnUndo="UndoEarpieceWeight"
                             OnDefault="DefaultEarpieceWeight"/>
@@ -473,7 +475,7 @@
                             Min="1"
                             Max="25"
                             Disabled="@(!ModCustomEquipmentEnabled || UseDynamicEquipmentWeights)"
-                            HasPendingChanges="@(MainLayout.pendingChanges.Contains("ArmBandWeight"))"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ArmBandWeight"))"
                             IsNonDefault="@(ArmBandWeight != 4)"
                             OnUndo="UndoArmBandWeight"
                             OnDefault="DefaultArmBandWeight"/>
@@ -486,7 +488,7 @@
                         WarningTooltip2=""
                         @bind-Value="ModCustomClothingEnabled"
                         Disabled="@(EnableSeasonalPmcAppearance || UseDynamicEquipmentWeights)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModCustomClothingEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModCustomClothingEnabled"))"
                         IsNonDefault="@(ModCustomClothingEnabled)"
                         OnUndo="UndoCustomClothing"
                         OnDefault="DefaultCustomClothing"/>
@@ -497,7 +499,7 @@
                         WarningTooltip1="This puts mod attachments on vanilla weapons. Expect additional RAM usage on the server and longer import times."
                         WarningTooltip2=""
                         @bind-Value="ModCustomAttachmentsEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModCustomAttachmentsEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModCustomAttachmentsEnabled"))"
                         IsNonDefault="@(ModCustomAttachmentsEnabled)"
                         OnUndo="UndoCustomAttachments"
                         OnDefault="DefaultCustomAttachments"/>
@@ -509,7 +511,7 @@
                         Min="1"
                         Max="7"
                         Disabled="@(!ModCustomWeaponsEnabled && !ModCustomEquipmentEnabled)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModInitialTierAppearance"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModInitialTierAppearance"))"
                         IsNonDefault="@(ModInitialTierAppearance != 3)"
                         OnUndo="UndoInitialTierAppearance"
                         OnDefault="DefaultInitialTierAppearance"/>
@@ -525,7 +527,7 @@
                         Label="Vanilla Cursing Safeguard"
                         TooltipText="Prevents vanilla mods being added to vanilla attachments due to custom item filters."
                         @bind-Value="ModSafeGuardEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModSafeGuardEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModSafeGuardEnabled"))"
                         IsNonDefault="@(!ModSafeGuardEnabled)"
                         OnUndo="UndoSafeGuard"
                         OnDefault="DefaultSafeGuard"/>
@@ -536,7 +538,7 @@
                         WarningTooltip1="If you disable this, all Optical Devices will still be removed - but tactical devices will be allowed (they may block vision)."
                         WarningTooltip2=""
                         @bind-Value="ModMprSafeGuardEnabled"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModMprSafeGuardEnabled"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModMprSafeGuardEnabled"))"
                         IsNonDefault="@(!ModMprSafeGuardEnabled)"
                         OnUndo="UndoMprSafeGuard"
                         OnDefault="DefaultMprSafeGuard"/>
@@ -547,7 +549,7 @@
                         WarningTooltip1="Pack'N'Strap Only."
                         WarningTooltip2=""
                         @bind-Value="ModPackNStrapCompatibility"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModPackNStrapCompatibility"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModPackNStrapCompatibility"))"
                         IsNonDefault="@(!ModPackNStrapCompatibility)"
                         OnUndo="UndoPackNStrap"
                         OnDefault="DefaultPackNStrap"/>
@@ -558,7 +560,7 @@
                         WarningTooltip1="WTT Backport Only."
                         WarningTooltip2=""
                         @bind-Value="ModWttBackportDogtags"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModWttBackportDogtags"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModWttBackportDogtags"))"
                         IsNonDefault="@(!ModWttBackportDogtags)"
                         OnUndo="UndoWttBackportDogtags"
                         OnDefault="DefaultWttBackportDogtags"/>
@@ -569,7 +571,7 @@
                         WarningTooltip1="WTT Armoury Only."
                         WarningTooltip2=""
                         @bind-Value="ModWttArmouryBossVariantsOnBosses"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModWttArmouryBossVariantsOnBosses"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModWttArmouryBossVariantsOnBosses"))"
                         IsNonDefault="@(!ModWttArmouryBossVariantsOnBosses)"
                         OnUndo="UndoWttArmouryBosses"
                         OnDefault="DefaultArmouryBosses"/>
@@ -580,7 +582,7 @@
                         WarningTooltip1="WTT Armoury Only."
                         WarningTooltip2=""
                         @bind-Value="ModWttArmouryBossVariantsOnOthers"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModWttArmouryBossVariantsOnOthers"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModWttArmouryBossVariantsOnOthers"))"
                         IsNonDefault="@(!ModWttArmouryBossVariantsOnOthers)"
                         OnUndo="UndoWttArmouryOthers"
                         OnDefault="DefaultWttArmouryOthers"/>
@@ -591,7 +593,7 @@
                         WarningTooltip1="Realism Only."
                         WarningTooltip2=""
                         @bind-Value="ModRealismCompatibility"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModRealismCompatibility"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModRealismCompatibility"))"
                         IsNonDefault="@(ModRealismCompatibility)"
                         OnUndo="UndoRealism"
                         OnDefault="DefaultRealism"/>
@@ -640,7 +642,7 @@
                                    Color="Color.Tertiary" Size="Size.Medium"/>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && MainLayout.pendingChanges.Contains("ModAmmoStackCount")){
+                        @if (MainLayout.AppUndoButtonToggle && PresetStateService.PendingChanges.Contains("ModAmmoStackCount")){
                             <MudButton @onclick="UndoAmmoStackCount" Variant="Variant.Filled" Color="Color.Inherit"
                                        Size="Size.Small">Undo
                             </MudButton>
@@ -664,7 +666,7 @@
                         WarningTooltip1="Enables debug logs in \user\mods\acidphantasm-progressivebotsystem\logs\debug.log"
                         WarningTooltip2=""
                         @bind-Value="DebugLogging"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("DebugLogging"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("DebugLogging"))"
                         IsNonDefault="@(DebugLogging)"
                         OnUndo="UndoDebug"
                         OnDefault="DefaultDebug"/>
@@ -675,7 +677,7 @@
                         WarningTooltip1="Enables bot equipment logs in \user\mods\acidphantasm-progressivebotsystem\logs\*_generation.log"
                         WarningTooltip2=""
                         @bind-Value="BotEquipmentLogging"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("BotEquipmentLogging"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("BotEquipmentLogging"))"
                         IsNonDefault="@(!BotEquipmentLogging)"
                         OnUndo="UndoBotLog"
                         OnDefault="DefaultBotLog"/>
@@ -686,7 +688,7 @@
                         WarningTooltip1="Remember to turn this back off when you're done tuning."
                         WarningTooltip2=""
                         @bind-Value="ModImportTuningLog"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModImportTuningLog"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModImportTuningLog"))"
                         IsNonDefault="@(ModImportTuningLog)"
                         OnUndo="UndoModImportTuningLog"
                         OnDefault="DefaultModImportTuningLog"/>
@@ -697,7 +699,7 @@
                         Value="@ModImportTuningBot"
                         ValueChanged="@(x => ModImportTuningBot = x)"
                         Items="@_modImportTuningBots"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains(nameof(ModImportTuningBot)))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains(nameof(ModImportTuningBot)))"
                         IsNonDefault="@(ModImportTuningBot != "pmc")"
                         OnUndo="UndoModImportTuningBot"
                         OnDefault="DefaultModImportTuningBot"/>
@@ -709,7 +711,7 @@
                         Min="ModInitialTierAppearance"
                         Max="7"
                         Disabled="@(!ModImportTuningLog)"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("ModImportTuningTier"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ModImportTuningTier"))"
                         IsNonDefault="@(ModImportTuningTier != 3)"
                         OnUndo="UndoModImportTuningTier"
                         OnDefault="DefaultModImportTuningTier"/>
@@ -725,7 +727,7 @@
                         Label="April Fool's Event"
                         TooltipText="Active: April 1. It inverts the tiering."
                         @bind-Value="EventsAprilFools"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("EventsAprilFools"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("EventsAprilFools"))"
                         IsNonDefault="@(!EventsAprilFools)"
                         OnUndo="UndoAprilFools"
                         OnDefault="DefaultAprilFools"/>
@@ -734,7 +736,7 @@
                         Label="Halloween Event"
                         TooltipText="Active: October 31. All bots get pumpkin heads."
                         @bind-Value="EventsHalloween"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("EventsHalloween"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("EventsHalloween"))"
                         IsNonDefault="@(!EventsHalloween)"
                         OnUndo="UndoHalloween"
                         OnDefault="DefaultHalloween"/>
@@ -743,7 +745,7 @@
                         Label="Christmas Event"
                         TooltipText="Active: December 24-25. All bots get Killa's Christmas Helmet and Armour."
                         @bind-Value="EventsChristmas"
-                        HasPendingChanges="@(MainLayout.pendingChanges.Contains("EventsChristmas"))"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("EventsChristmas"))"
                         IsNonDefault="@(!EventsChristmas)"
                         OnUndo="UndoChristmas"
                         OnDefault="DefaultChristmas"/>
