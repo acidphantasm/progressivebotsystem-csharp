@@ -4,18 +4,20 @@
     "ReleaseDate": "September 3, 2026",
     "IsLatest": true,
     "NewFeatures": [
-      "Bots may have loose ammo in Rig/Pockets"
+      "Bots have 25% chance to have loose ammo in Rig/Pockets"
     ],
     "Changes": [
       "Added SIC Authorization attribute to WebConfig pages (not home page)",
-      "Added 25% chance for a prestige'd Pmc to get a non-prestige dogtag",
+      "Added 25% chance for a prestige Pmc to get a non-prestige dogtag",
       "Added new Double Dogtag from Content Backport to possible dogtags",
       "Adjusted Pmc medical loot logic, should be much better with bots having actual medkits now",
       "Adjusted loot cache handling",
       "Adjusted Normalize Bot Health Exclusion list, probably works for custom bots now, I dunno I dont use them",
       "Removed Disable Animations / Authorization code from WebConfig"
     ],
-    "BugFixes": [],
+    "BugFixes": [
+      "Resolved outdated Forge URL for update download link"
+    ],
     "KnownIssues": []
   },
   {
