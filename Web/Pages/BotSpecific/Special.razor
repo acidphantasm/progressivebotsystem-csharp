@@ -5,7 +5,8 @@
 <MudMainContent>
     <MudContainer Class="mb-20">
         <MudExpansionPanels MultiExpansion="true">
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Special Specific Configuration" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Special Specific Configuration"
+                               Expanded="true">
                 <MudGrid>
 
                     <MudSwitchTTWarning
@@ -17,13 +18,13 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialEnabled"))"
                         IsNonDefault="@(!SpecialEnabled)"
                         OnUndo="UndoSpecialBots"
-                        OnDefault="DefaultSpecialBots" />
+                        OnDefault="DefaultSpecialBots"/>
 
                 </MudGrid>
             </MudExpansionPanel>
-            @if (SpecialEnabled)
-            {
-                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Special Specific Options" Expanded="true">
+            @if (SpecialEnabled){
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px"
+                                   Text="Special Specific Options" Expanded="true">
                     <MudGrid>
 
                         <MudSwitchTT
@@ -31,29 +32,29 @@
                             TooltipText="Allows Special Bots to spawn with additional loot."
                             @bind-Value="SpecialLootEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialLootEnabled") ||
-                                                MainLayout.pendingChanges.Contains("SpecialLootBlacklist"))"
-                            IsNonDefault="@(!SpecialLootEnabled || 
-                                            SpecialLootBlacklist.Count > 0)"
+                                               MainLayout.pendingChanges.Contains("SpecialLootBlacklist"))"
+                            IsNonDefault="@(!SpecialLootEnabled ||
+                                          SpecialLootBlacklist.Count > 0)"
                             OnUndo="UndoLoot"
-                            OnDefault="DefaultLoot" />
+                            OnDefault="DefaultLoot"/>
 
                         <LootBlacklistValues
                             Blacklist="SpecialLootBlacklist"
                             OriginalBlacklist="ModConfig.OriginalConfig.SpecialBots.LootConfig.Blacklist"
-                            ChangeKey="SpecialLootBlacklist" />
+                            ChangeKey="SpecialLootBlacklist"/>
 
-                        <MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
+                        <MudDivider DividerType="DividerType.FullWidth" Class="my-3"/>
 
                         <MudSwitchTT
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows Special bots to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="SpecialWeaponAmmunitionRollEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialWeaponAmmunitionRollEnabled") ||
-                                                MainLayout.pendingChanges.Contains("SpecialWeaponAmmunitionRollChance"))"
-                            IsNonDefault="@(!SpecialWeaponAmmunitionRollEnabled || 
-                                            SpecialWeaponAmmunitionRollChance != 50)"
+                                               MainLayout.pendingChanges.Contains("SpecialWeaponAmmunitionRollChance"))"
+                            IsNonDefault="@(!SpecialWeaponAmmunitionRollEnabled ||
+                                          SpecialWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
-                            OnDefault="DefaultRollAmmunitionEnabled" />
+                            OnDefault="DefaultRollAmmunitionEnabled"/>
 
                         <MudSliderChildTT
                             Label="Roll Again Chance"
@@ -61,20 +62,20 @@
                             @bind-Value="SpecialWeaponAmmunitionRollChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!SpecialWeaponAmmunitionRollEnabled)" />
+                            Disabled="@(!SpecialWeaponAmmunitionRollEnabled)"/>
 
                         <MudSwitchTT
                             Label="Toploading"
                             TooltipText="Allows Special bots to top load their extra magazines."
                             @bind-Value="SpecialWeaponToploadEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialWeaponToploadEnabled") ||
-                                                MainLayout.pendingChanges.Contains("SpecialWeaponToploadChance") ||
-                                                MainLayout.pendingChanges.Contains("SpecialWeaponToploadPercent"))"
+                                               MainLayout.pendingChanges.Contains("SpecialWeaponToploadChance") ||
+                                               MainLayout.pendingChanges.Contains("SpecialWeaponToploadPercent"))"
                             IsNonDefault="@(SpecialWeaponToploadEnabled ||
-                                            SpecialWeaponToploadChance != 30 ||
-                                            SpecialWeaponToploadPercent != 30)"
+                                          SpecialWeaponToploadChance != 30 ||
+                                          SpecialWeaponToploadPercent != 30)"
                             OnUndo="UndoToploadEnabled"
-                            OnDefault="DefaultToploadEnabled" />
+                            OnDefault="DefaultToploadEnabled"/>
 
                         <MudSliderChildTT
                             Label="Topload Chance"
@@ -82,7 +83,7 @@
                             @bind-Value="SpecialWeaponToploadChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!SpecialWeaponToploadEnabled)" />
+                            Disabled="@(!SpecialWeaponToploadEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Topload Percent"
@@ -90,7 +91,7 @@
                             @bind-Value="SpecialWeaponToploadPercent"
                             Min="10"
                             Max="50"
-                            Disabled="@(!SpecialWeaponToploadEnabled)" />
+                            Disabled="@(!SpecialWeaponToploadEnabled)"/>
 
                         <MudSwitchTT
                             Label="Skip Backplate When Missing Front Plate"
@@ -99,7 +100,7 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
                             IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
-                            OnDefault="DefaultSkipBackPlateIfMissingFrontPlate" />
+                            OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
 
                         <MudSwitchTT
                             Label="Limit Plate Class to Front Plate"
@@ -108,31 +109,31 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
                             IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
-                            OnDefault="DefaultLimitPlateClassToFrontPlateClass" />
+                            OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
 
                         <MudSwitchTT
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="SpecialResourceRandomizationEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("SpecialResourceRandomizationEnabled") ||
-                                                MainLayout.pendingChanges.Contains("SpecialMedRateMaxChance") ||
-                                                MainLayout.pendingChanges.Contains("SpecialMedRateUsagePercent") ||
-                                                MainLayout.pendingChanges.Contains("SpecialFoodRateMaxChance") ||
-                                                MainLayout.pendingChanges.Contains("SpecialFoodRateUsagePercent"))"
+                                               MainLayout.pendingChanges.Contains("SpecialMedRateMaxChance") ||
+                                               MainLayout.pendingChanges.Contains("SpecialMedRateUsagePercent") ||
+                                               MainLayout.pendingChanges.Contains("SpecialFoodRateMaxChance") ||
+                                               MainLayout.pendingChanges.Contains("SpecialFoodRateUsagePercent"))"
                             IsNonDefault="@(!SpecialResourceRandomizationEnabled ||
-                                            SpecialMedRateMaxChance != 15 ||
-                                            SpecialMedRateUsagePercent != 25 ||
-                                            SpecialFoodRateMaxChance != 15 ||
-                                            SpecialFoodRateUsagePercent != 25)"
+                                          SpecialMedRateMaxChance != 15 ||
+                                          SpecialMedRateUsagePercent != 25 ||
+                                          SpecialFoodRateMaxChance != 15 ||
+                                          SpecialFoodRateUsagePercent != 25)"
                             OnUndo="UndoResourceRandomization"
-                            OnDefault="DefaultResourceRandomization" />
+                            OnDefault="DefaultResourceRandomization"/>
 
                         <MedicalFoodValues
                             @bind-MedMaxChance="SpecialMedRateMaxChance"
                             @bind-MedUsagePercent="SpecialMedRateUsagePercent"
                             @bind-FoodMaxChance="SpecialFoodRateMaxChance"
                             @bind-FoodUsagePercent="SpecialFoodRateUsagePercent"
-                            Disabled="@(!SpecialResourceRandomizationEnabled)" />
+                            Disabled="@(!SpecialResourceRandomizationEnabled)"/>
 
                         <MudSwitchTT
                             Label="Weapon Durability Changes"
@@ -151,7 +152,7 @@
                                           SpecialWeaponDurabilityMaxDelta != 10 ||
                                           SpecialWeaponDurabilityEnhancementChance != 0)"
                             OnUndo="UndoWeaponDurability"
-                            OnDefault="DefaultWeaponDurability" />
+                            OnDefault="DefaultWeaponDurability"/>
 
                         <DurabilityValues
                             Label="Weapon"
@@ -161,7 +162,7 @@
                             @bind-MaxDelta="SpecialWeaponDurabilityMaxDelta"
                             MinLimitPercent="SpecialWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="SpecialWeaponDurabilityMaxLimitPercent"
-                            Disabled="@(!SpecialWeaponDurabilityEnabled)" />
+                            Disabled="@(!SpecialWeaponDurabilityEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Enhancement Chance"
@@ -169,7 +170,7 @@
                             @bind-Value="SpecialWeaponDurabilityEnhancementChance"
                             Min="0"
                             Max="100"
-                            Disabled="@(!SpecialWeaponDurabilityEnabled)" />
+                            Disabled="@(!SpecialWeaponDurabilityEnabled)"/>
 
                         <MudSwitchTT
                             Label="Armour Durability Changes"
@@ -186,7 +187,7 @@
                                           SpecialArmourDurabilityMinDelta != 0 ||
                                           SpecialArmourDurabilityMaxDelta != 10)"
                             OnUndo="UndoArmourDurability"
-                            OnDefault="DefaultArmourDurability" />
+                            OnDefault="DefaultArmourDurability"/>
 
                         <DurabilityValues
                             Label="Armour"
@@ -196,7 +197,7 @@
                             @bind-MaxDelta="SpecialArmourDurabilityMaxDelta"
                             MinLimitPercent="SpecialArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="SpecialArmourDurabilityMaxLimitPercent"
-                            Disabled="@(!SpecialArmourDurabilityEnabled)" />
+                            Disabled="@(!SpecialArmourDurabilityEnabled)"/>
 
                     </MudGrid>
                 </MudExpansionPanel>
@@ -229,13 +230,15 @@
             Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.LootConfig.Enable, nameof(SpecialLootEnabled));
         }
     }
-    private List<string> SpecialLootBlacklist => ModConfig.Config.SpecialBots.LootConfig.Blacklist;
+    private List<string> SpecialLootBlacklist
+    {
+        get => ModConfig.Config.SpecialBots.LootConfig.Blacklist;
+    }
     private void UndoLoot()
     {
         SpecialLootEnabled = ModConfig.OriginalConfig.SpecialBots.LootConfig.Enable;
         SpecialLootBlacklist.Clear();
-        foreach (var item in ModConfig.OriginalConfig.SpecialBots.LootConfig.Blacklist)
-        {
+        foreach (var item in ModConfig.OriginalConfig.SpecialBots.LootConfig.Blacklist){
             SpecialLootBlacklist.Add(item);
         }
         MainLayout.pendingChanges.Remove("SpecialLootEnabled");
@@ -468,9 +471,13 @@
         }
     }
     private int SpecialWeaponDurabilityMinLimitPercent
-        => ModConfig.Config.SpecialBots.WeaponDurability.MinLimitPercent;
+    {
+        get => ModConfig.Config.SpecialBots.WeaponDurability.MinLimitPercent;
+    }
     private int SpecialWeaponDurabilityMaxLimitPercent
-        => ModConfig.Config.SpecialBots.WeaponDurability.Max - ModConfig.Config.SpecialBots.WeaponDurability.MinDelta;
+    {
+        get => ModConfig.Config.SpecialBots.WeaponDurability.Max - ModConfig.Config.SpecialBots.WeaponDurability.MinDelta;
+    }
     private int SpecialWeaponDurabilityEnhancementChance
     {
         get => ModConfig.Config.SpecialBots.WeaponDurability.EnhancementChance;
@@ -545,8 +552,14 @@
             Utils.UpdateView(value, ModConfig.OriginalConfig.SpecialBots.ArmourDurability.MaxDelta, nameof(SpecialArmourDurabilityMaxDelta));
         }
     }
-    private int SpecialArmourDurabilityMinLimitPercent => ModConfig.Config.SpecialBots.ArmourDurability.MinLimitPercent;
-    private int SpecialArmourDurabilityMaxLimitPercent => ModConfig.Config.SpecialBots.ArmourDurability.Max - ModConfig.Config.SpecialBots.ArmourDurability.MinDelta;
+    private int SpecialArmourDurabilityMinLimitPercent
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.MinLimitPercent;
+    }
+    private int SpecialArmourDurabilityMaxLimitPercent
+    {
+        get => ModConfig.Config.SpecialBots.ArmourDurability.Max - ModConfig.Config.SpecialBots.ArmourDurability.MinDelta;
+    }
     private void UndoArmourDurability()
     {
         SpecialArmourDurabilityEnabled = ModConfig.OriginalConfig.SpecialBots.ArmourDurability.Enable;

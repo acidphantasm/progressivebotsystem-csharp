@@ -1,5 +1,4 @@
-﻿
-namespace ProgressiveBotSystem.Models;
+﻿namespace ProgressiveBotSystem.Models;
 
 public class BotLogData
 {

@@ -1,42 +1,36 @@
 ﻿@using ProgressiveBotSystem.Models
+@using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
 @using SPTarkov.Server.Core.Utils
-@using SPTarkov.Server.Core.Helpers
-@using SPTarkov.Server.Core.Helpers.Items
-
 @inject ISnackbar Snackbar
 
 @inject ItemHelper ItemHelper
 @inject JsonUtil JsonUtil
 
-@if (_loading)
-{
+@if (_loading){
     <MudOverlay Visible="true" DarkBackground="true">
         <div style="width:100vw; height:100vh;" class="d-flex justify-center align-center">
             <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
         </div>
     </MudOverlay>
 }
-else
-{
+else{
     <MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#101316;">
         <MudTabs>
-            @foreach (var botType in _botTypes.Keys)
-            {
+            @foreach (var botType in _botTypes.Keys){
                 <MudTabPanel Text="@botType">
-                    @if (_masterItemsPerCategory.TryGetValue(botType, out var categories))
-                    {
-                        @foreach (var category in categories.Keys)
-                        {
-                            <MudDivider DividerType="DividerType.Inset" />
+                    @if (_masterItemsPerCategory.TryGetValue(botType, out var categories)){
+                        @foreach (var category in categories.Keys){
+                            <MudDivider DividerType="DividerType.Inset"/>
                             <div class="d-flex mb-4 pa-2 w-100" style="gap: 1rem;">
                                 <!-- Used Items -->
                                 <div style="flex:1 1 0; display:flex; flex-direction:column;">
                                     <MudText Typo="Typo.subtitle2" Style="height:28px;">@category</MudText>
-                                    <div class="rounded pa-2 flex-grow-1" style="height:300px; overflow-y:auto; background-color:#0a0c0e;">
-                                        @foreach (var item in _botTypes[botType].Where(i => i.Category.Equals(category, StringComparison.OrdinalIgnoreCase)))
-                                        {
-                                            <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center" Style="gap:0.5rem;">
+                                    <div class="rounded pa-2 flex-grow-1"
+                                         style="height:300px; overflow-y:auto; background-color:#0a0c0e;">
+                                        @foreach (var item in _botTypes[botType].Where(i => i.Category.Equals(category, StringComparison.OrdinalIgnoreCase))){
+                                            <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
+                                                      Style="gap:0.5rem;">
                                                 <MudNumericField T="double"
                                                                  Min="0.0"
                                                                  Value="item.Weight"
@@ -44,14 +38,18 @@ else
                                                                  Variant="Variant.Outlined"
                                                                  HideSpinButtons="true"
                                                                  Margin="Margin.None"
-                                                                 Style="width:72px; height:28px; font-size:0.8rem; padding:0 4px;" />
+                                                                 Style="width:72px; height:28px; font-size:0.8rem; padding:0 4px;"/>
 
-                                                <MudText Typo="Typo.subtitle2" Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                                <MudText Typo="Typo.subtitle2"
+                                                         Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
                                                     @item.DisplayName
                                                 </MudText>
                                                 <MudSpacer/>
-                                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
-                                                           OnClick="@(() => MoveToAvailable(botType, category, item))">&gt;</MudButton>
+                                                <MudButton Size="Size.Small" Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           OnClick="@(() => MoveToAvailable(botType, category, item))">
+                                                    &gt;
+                                                </MudButton>
                                             </MudPaper>
                                         }
                                     </div>
@@ -72,15 +70,19 @@ else
                                                       Style="width:200px; height:20px; font-size:0.875rem;"/>
                                     </div>
 
-                                    <div class="rounded pa-2 flex-grow-1" style="height:280px; overflow-y:auto; background-color:#0a0c0e;">
-                                        @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, "")))
-                                        {
-                                            <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center" Style="gap:0.5rem;">
-                                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
-                                                           OnClick="@(() => MoveToUsed(botType, category, item))">&lt;</MudButton>
+                                    <div class="rounded pa-2 flex-grow-1"
+                                         style="height:280px; overflow-y:auto; background-color:#0a0c0e;">
+                                        @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, ""))){
+                                            <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
+                                                      Style="gap:0.5rem;">
+                                                <MudButton Size="Size.Small" Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           OnClick="@(() => MoveToUsed(botType, category, item))">&lt;
+                                                </MudButton>
 
                                                 <div style="flex:1; display:flex; justify-content:center;">
-                                                    <MudText Typo="Typo.subtitle2" Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                                    <MudText Typo="Typo.subtitle2"
+                                                             Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
                                                         @item.DisplayName
                                                     </MudText>
                                                 </div>
@@ -99,8 +101,8 @@ else
 }
 
 @code {
-    [Parameter, EditorRequired] public AppearanceTierData AppearanceData { get; set; }
-    [Parameter, EditorRequired] public string Tier { get; set; }
+    [Parameter] [EditorRequired] public AppearanceTierData AppearanceData { get; set; }
+    [Parameter] [EditorRequired] public string Tier { get; set; }
 
     private bool _loading = true;
     private readonly Dictionary<string, string> _searchTextPerCategory = new();
@@ -113,11 +115,10 @@ else
     {
         InvokeAsync(StateHasChanged);
     }
-    
+
     private void HandleSaveCompleted()
     {
-        foreach (var botType in _botTypes.Keys)
-        {
+        foreach (var botType in _botTypes.Keys){
             _originalBotTypes[botType] = _botTypes[botType]
                 .Select(i => new PresetItemView
                 {
@@ -138,7 +139,7 @@ else
         MainLayout.OnPresetChanged -= HandlePresetChanged;
         MainLayout.OnPresetSaved -= HandleSaveCompleted;
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         MainLayout.OnPresetChanged += HandlePresetChanged;
@@ -157,41 +158,34 @@ else
         _masterItemsPerCategory.Clear();
         _cachedItems.Clear();
 
-        try
-        {
-            foreach (var prop in typeof(AppearanceTierData).GetProperties())
-            {
+        try{
+            foreach (var prop in typeof(AppearanceTierData).GetProperties()){
                 var botType = prop.Name;
                 var botTypeDictionary = prop.GetValue(AppearanceData);
 
                 if (botTypeDictionary == null) continue;
 
-                if (botTypeDictionary is Dictionary<string, SPTarkov.Server.Core.Models.Eft.Common.Tables.Appearance> dict)
-                {
+                if (botTypeDictionary is Dictionary<string, SPTarkov.Server.Core.Models.Eft.Common.Tables.Appearance> dict){
                     AddAppearanceBotType(botType, dict);
                 }
-                
-                else if (botTypeDictionary is SeasonAppearance season)
-                {
-                    foreach (var seasonProp in typeof(SeasonAppearance).GetProperties())
-                    {
+
+                else if (botTypeDictionary is SeasonAppearance season){
+                    foreach (var seasonProp in typeof(SeasonAppearance).GetProperties()){
                         var botTypeSeasonal = seasonProp.Name;
                         var botTypeSeasonalDictionary = seasonProp.GetValue(season) as Dictionary<string, SPTarkov.Server.Core.Models.Eft.Common.Tables.Appearance>;
 
                         if (botTypeSeasonalDictionary == null) continue;
 
-                        string botTypeName = $"{botType}-{botTypeSeasonal}";
+                        var botTypeName = $"{botType}-{botTypeSeasonal}";
                         AddAppearanceBotType(botTypeName, botTypeSeasonalDictionary);
                     }
                 }
             }
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex){
             Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
         }
-        finally
-        {
+        finally{
             _loading = false;
             StateHasChanged();
         }
@@ -205,20 +199,16 @@ else
         if (!_masterItemsPerCategory.ContainsKey(botTypeName))
             _masterItemsPerCategory[botTypeName] = new Dictionary<string, List<PresetItemView>>();
 
-        foreach (var appearanceKvp in appearanceDict)
-        {
+        foreach (var appearanceKvp in appearanceDict){
             var appearance = appearanceKvp.Value;
             if (appearance == null) continue;
 
-            foreach (var slotProp in typeof(SPTarkov.Server.Core.Models.Eft.Common.Tables.Appearance).GetProperties())
-            {
+            foreach (var slotProp in typeof(SPTarkov.Server.Core.Models.Eft.Common.Tables.Appearance).GetProperties()){
                 var slot = slotProp.Name.ToLowerInvariant();
                 var slotValue = slotProp.GetValue(appearance);
 
-                if (slotValue is IDictionary<MongoId, double> dict)
-                {
-                    if (!_masterItemsPerCategory[botTypeName].ContainsKey(slot))
-                    {
+                if (slotValue is IDictionary<MongoId, double> dict){
+                    if (!_masterItemsPerCategory[botTypeName].ContainsKey(slot)){
                         var name = botTypeName.ToLowerInvariant().Contains("pmcusec") ? "pmcUsec" : "pmcBear";
                         _masterItemsPerCategory[botTypeName][slot] = GetAvailableItemsForCategory($"{name}_{slot}")
                             .Select(id => new PresetItemView
@@ -233,8 +223,7 @@ else
                             .ToList();
                     }
 
-                    foreach (var kv in dict)
-                    {
+                    foreach (var kv in dict){
                         var itemView = new PresetItemView
                         {
                             Id = kv.Key,
@@ -261,7 +250,7 @@ else
                 }
             }
         }
-        
+
         _originalBotTypes[botTypeName] = _botTypes[botTypeName]
             .Select(i => new PresetItemView
             {
@@ -333,10 +322,10 @@ else
     private void OnWeightChanged(string botType, string category, PresetItemView item, double newValue)
     {
         item.Weight = newValue;
-        
+
         UpdatePendingChanges(botType, category, item);
     }
-    
+
     private void UpdatePendingChanges(string botType, string category, PresetItemView item)
     {
         var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
@@ -354,8 +343,8 @@ else
         var weightChanged =
             currentItem != null &&
             (
-                (originalItem != null && currentItem.Weight != originalItem.Weight) ||
-                (originalItem == null && currentItem.Weight != 1)
+                originalItem != null && currentItem.Weight != originalItem.Weight ||
+                originalItem == null && currentItem.Weight != 1
             );
 
         if (added)
@@ -385,7 +374,7 @@ else
         if (wasPendingWeight != pendingWeightNow)
             Utils.UpdateView(weightKey);
     }
-    
+
     private List<string> GetAvailableItemsForCategory(string category) => category switch
     {
         "pmcUsec_body" => LoadIdsForCategory("UsecBody"),
@@ -405,20 +394,16 @@ else
         var path = Path.Combine(folderPath, $"{category}.json");
         if (!File.Exists(path)) return new List<string>();
 
-        try
-        {
+        try{
             var dict = JsonUtil.DeserializeFromFile<Dictionary<string, string>>(path);
-            if (dict != null)
-            {
-                foreach (var kv in dict)
-                {
+            if (dict != null){
+                foreach (var kv in dict){
                     _cachedItems[kv.Key] = kv.Value;
                 }
             }
             return dict?.Keys.ToList() ?? new List<string>();
         }
-        catch
-        {
+        catch{
             return new List<string>();
         }
     }

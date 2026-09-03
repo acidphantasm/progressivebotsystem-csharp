@@ -1,17 +1,18 @@
-﻿using System.Text;
-using ProgressiveBotSystem.Models;
-using SPTarkov.Server.Core.Utils;
+﻿namespace ProgressiveBotSystem.Generators;
 
-namespace ProgressiveBotSystem.Generators;
+using System.Text;
+using Models;
+using SemanticVersioning;
+using SPTarkov.Server.Core.Utils;
 
 public class ReleaseNoteGenerator
 {
     private readonly string _jsonFile;
-    private readonly string _outputFile;
-    private readonly SemanticVersioning.Range _sptVersion;
     private readonly JsonUtil _jsonUtil;
+    private readonly string _outputFile;
+    private readonly Range _sptVersion;
 
-    public ReleaseNoteGenerator(string modRootFolder, SemanticVersioning.Range sptVersion, JsonUtil jsonUtil)
+    public ReleaseNoteGenerator(string modRootFolder, Range sptVersion, JsonUtil jsonUtil)
     {
         _sptVersion = sptVersion;
         _jsonUtil = jsonUtil;
@@ -22,11 +23,13 @@ public class ReleaseNoteGenerator
 
     public async Task GenerateIfFirstBuildAsync()
     {
-        var allReleases = await _jsonUtil.DeserializeFromFileAsync<List<ReleaseNote>>(_jsonFile)
-                          ?? throw new InvalidOperationException("Failed to deserialize ReleaseNotes.json");
+        var allReleases =
+            await _jsonUtil.DeserializeFromFileAsync<List<ReleaseNote>>(_jsonFile)
+            ?? throw new InvalidOperationException("Failed to deserialize ReleaseNotes.json");
 
-        var latestRelease = allReleases.FirstOrDefault(r => r.IsLatest)
-                            ?? allReleases.OrderByDescending(r => r.Version).First();
+        var latestRelease =
+            allReleases.FirstOrDefault(r => r.IsLatest)
+            ?? allReleases.OrderByDescending(r => r.Version).First();
 
         var txt = new StringBuilder();
 
@@ -42,7 +45,10 @@ public class ReleaseNoteGenerator
 
     private void AppendSection(List<string>? items, string header, StringBuilder txt)
     {
-        if (items == null || items.Count == 0) return;
+        if (items == null || items.Count == 0)
+        {
+            return;
+        }
 
         txt.AppendLine(header);
         foreach (var item in items)

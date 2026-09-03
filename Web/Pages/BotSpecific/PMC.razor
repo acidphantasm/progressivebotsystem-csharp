@@ -7,7 +7,8 @@
 <MudMainContent>
     <MudContainer Class="mb-20">
         <MudExpansionPanels MultiExpansion="true">
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="PMC Specific Configuration" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="PMC Specific Configuration"
+                               Expanded="true">
                 <MudGrid>
 
                     <MudSwitchTTWarning
@@ -19,13 +20,13 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("_pmcEnabled"))"
                         IsNonDefault="@(!PmcEnabled)"
                         OnUndo="UndoPmcBots"
-                        OnDefault="DefaultPmcBots" />
+                        OnDefault="DefaultPmcBots"/>
 
                 </MudGrid>
             </MudExpansionPanel>
-            @if (PmcEnabled)
-            {
-                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="PMC Specific Options" Expanded="true">
+            @if (PmcEnabled){
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px"
+                                   Text="PMC Specific Options" Expanded="true">
                     <MudGrid>
 
                         <MudSwitchTT
@@ -33,18 +34,18 @@
                             TooltipText="Allows PMC Bots to spawn with additional loot."
                             @bind-Value="PmcLootEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcLootEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcLootBlacklist"))"
+                                               MainLayout.pendingChanges.Contains("PmcLootBlacklist"))"
                             IsNonDefault="@(PmcLootEnabled ||
-                                            PmcLootBlacklist.Count != 0)"
+                                          PmcLootBlacklist.Count != 0)"
                             OnUndo="UndoLoot"
-                            OnDefault="DefaultLoot" />
+                            OnDefault="DefaultLoot"/>
 
                         <LootBlacklistValues
                             Blacklist="PmcLootBlacklist"
                             OriginalBlacklist="ModConfig.OriginalConfig.PmcBots.LootConfig.Blacklist"
-                            ChangeKey="PmcLootBlacklist" />
+                            ChangeKey="PmcLootBlacklist"/>
 
-                        <MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
+                        <MudDivider DividerType="DividerType.FullWidth" Class="my-3"/>
 
                         <MudSwitchTT
                             Label="Prestiging"
@@ -53,7 +54,7 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcPrestigeEnabled"))"
                             IsNonDefault="@(!PmcPrestigeEnabled)"
                             OnUndo="UndoPrestiging"
-                            OnDefault="DefaultPrestiging" />
+                            OnDefault="DefaultPrestiging"/>
 
                         <MudSwitchTT
                             Label="Bots Can Be Any Level if Prestiged"
@@ -62,18 +63,18 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcPrestigeAnyLevel"))"
                             IsNonDefault="@(!PmcPrestigeAnyLevel)"
                             OnUndo="UndoPrestigeAnyLevel"
-                            OnDefault="DefaultPrestigeAnyLevel" />
+                            OnDefault="DefaultPrestigeAnyLevel"/>
 
                         <MudSwitchTT
                             Label="Roll Ammunition Selection Again"
                             TooltipText="Allows PMCs to reroll their selected round from their weapons caliber, max one time per each magazine."
                             @bind-Value="PmcWeaponAmmunitionRollEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcWeaponAmmunitionRollEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcWeaponAmmunitionRollChance"))"
+                                               MainLayout.pendingChanges.Contains("PmcWeaponAmmunitionRollChance"))"
                             IsNonDefault="@(PmcWeaponAmmunitionRollEnabled ||
-                                            PmcWeaponAmmunitionRollChance != 50)"
+                                          PmcWeaponAmmunitionRollChance != 50)"
                             OnUndo="UndoRollAmmunitionEnabled"
-                            OnDefault="DefaultRollAmmunitionEnabled" />
+                            OnDefault="DefaultRollAmmunitionEnabled"/>
 
                         <MudSliderChildTT
                             Label="Roll Again Chance"
@@ -81,20 +82,20 @@
                             @bind-Value="PmcWeaponAmmunitionRollChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcWeaponAmmunitionRollEnabled)" />
+                            Disabled="@(!PmcWeaponAmmunitionRollEnabled)"/>
 
                         <MudSwitchTT
                             Label="Toploading"
                             TooltipText="Allows PMCs to top load their extra magazines."
                             @bind-Value="PmcWeaponToploadEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcWeaponToploadEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcWeaponToploadEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcWeaponToploadPercent"))"
+                                               MainLayout.pendingChanges.Contains("PmcWeaponToploadEnabled") ||
+                                               MainLayout.pendingChanges.Contains("PmcWeaponToploadPercent"))"
                             IsNonDefault="@(!PmcWeaponToploadEnabled ||
-                                            PmcWeaponToploadChance != 30 ||
-                                            PmcWeaponToploadPercent != 30)"
+                                          PmcWeaponToploadChance != 30 ||
+                                          PmcWeaponToploadPercent != 30)"
                             OnUndo="UndoToploadEnabled"
-                            OnDefault="DefaultToploadEnabled" />
+                            OnDefault="DefaultToploadEnabled"/>
 
                         <MudSliderChildTT
                             Label="Topload Chance"
@@ -102,7 +103,7 @@
                             @bind-Value="PmcWeaponToploadChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcWeaponToploadEnabled)" />
+                            Disabled="@(!PmcWeaponToploadEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Topload Percent"
@@ -110,7 +111,7 @@
                             @bind-Value="PmcWeaponToploadPercent"
                             Min="10"
                             Max="50"
-                            Disabled="@(!PmcWeaponToploadEnabled)" />
+                            Disabled="@(!PmcWeaponToploadEnabled)"/>
 
                         <MudSwitchTT
                             Label="Skip Backplate When Missing Front Plate"
@@ -119,7 +120,7 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
                             IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
-                            OnDefault="DefaultSkipBackPlateIfMissingFrontPlate" />
+                            OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
 
                         <MudSwitchTT
                             Label="Limit Plate Class to Front Plate"
@@ -128,31 +129,31 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
                             IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
-                            OnDefault="DefaultLimitPlateClassToFrontPlateClass" />
+                            OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
 
                         <MudSwitchTT
                             Label="Resource Randomization"
                             TooltipText="Allows random resource consumption on Food/Drink/Medical Items."
                             @bind-Value="PmcResourceRandomizationEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcResourceRandomizationEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcMedRateMaxChance") ||
-                                                MainLayout.pendingChanges.Contains("PmcMedRateUsagePercent") ||
-                                                MainLayout.pendingChanges.Contains("PmcFoodRateMaxChance") ||
-                                                MainLayout.pendingChanges.Contains("PmcFoodRateUsagePercent"))"
+                                               MainLayout.pendingChanges.Contains("PmcMedRateMaxChance") ||
+                                               MainLayout.pendingChanges.Contains("PmcMedRateUsagePercent") ||
+                                               MainLayout.pendingChanges.Contains("PmcFoodRateMaxChance") ||
+                                               MainLayout.pendingChanges.Contains("PmcFoodRateUsagePercent"))"
                             IsNonDefault="@(!PmcResourceRandomizationEnabled ||
-                                            PmcMedRateMaxChance != 10 ||
-                                            PmcMedRateUsagePercent != 33 ||
-                                            PmcFoodRateMaxChance != 10 ||
-                                            PmcFoodRateUsagePercent != 33)"
+                                          PmcMedRateMaxChance != 10 ||
+                                          PmcMedRateUsagePercent != 33 ||
+                                          PmcFoodRateMaxChance != 10 ||
+                                          PmcFoodRateUsagePercent != 33)"
                             OnUndo="UndoResourceRandomization"
-                            OnDefault="DefaultResourceRandomization" />
+                            OnDefault="DefaultResourceRandomization"/>
 
                         <MedicalFoodValues
                             @bind-MedMaxChance="PmcMedRateMaxChance"
                             @bind-MedUsagePercent="PmcMedRateUsagePercent"
                             @bind-FoodMaxChance="PmcFoodRateMaxChance"
                             @bind-FoodUsagePercent="PmcFoodRateUsagePercent"
-                            Disabled="@(!PmcResourceRandomizationEnabled)" />
+                            Disabled="@(!PmcResourceRandomizationEnabled)"/>
 
                         <MudSwitchTT
                             Label="Weapon Durability Changes"
@@ -171,7 +172,7 @@
                                           PmcWeaponDurabilityMaxDelta != 5 ||
                                           PmcWeaponDurabilityEnhancementChance != 10)"
                             OnUndo="UndoWeaponDurability"
-                            OnDefault="DefaultWeaponDurability" />
+                            OnDefault="DefaultWeaponDurability"/>
 
                         <DurabilityValues
                             Label="Weapon"
@@ -181,7 +182,7 @@
                             @bind-MaxDelta="PmcWeaponDurabilityMaxDelta"
                             MinLimitPercent="PmcWeaponDurabilityMinLimitPercent"
                             MaxLimitPercent="PmcWeaponDurabilityMaxLimitPercent"
-                            Disabled="@(!PmcWeaponDurabilityEnabled)" />
+                            Disabled="@(!PmcWeaponDurabilityEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Enhancement Chance"
@@ -189,7 +190,7 @@
                             @bind-Value="PmcWeaponDurabilityEnhancementChance"
                             Min="0"
                             Max="100"
-                            Disabled="@(!PmcWeaponDurabilityEnabled)" />
+                            Disabled="@(!PmcWeaponDurabilityEnabled)"/>
 
                         <MudSwitchTT
                             Label="Armour Durability Changes"
@@ -206,7 +207,7 @@
                                           PmcArmourDurabilityMinDelta != 0 ||
                                           PmcArmourDurabilityMaxDelta != 5)"
                             OnUndo="UndoArmourDurability"
-                            OnDefault="DefaultArmourDurability" />
+                            OnDefault="DefaultArmourDurability"/>
 
                         <DurabilityValues
                             Label="Armour"
@@ -216,7 +217,7 @@
                             @bind-MaxDelta="PmcArmourDurabilityMaxDelta"
                             MinLimitPercent="PmcArmourDurabilityMinLimitPercent"
                             MaxLimitPercent="PmcArmourDurabilityMaxLimitPercent"
-                            Disabled="@(!PmcArmourDurabilityEnabled)" />
+                            Disabled="@(!PmcArmourDurabilityEnabled)"/>
 
                         <MudSwitchTT
                             Label="Seasonal PMC Appearance"
@@ -225,18 +226,18 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcSeasonalAppearanceEnabled"))"
                             IsNonDefault="@(!PmcSeasonalAppearanceEnabled)"
                             OnUndo="UndoPmcSeasonalAppearance"
-                            OnDefault="DefaultPmcSeasonalAppearance" />
+                            OnDefault="DefaultPmcSeasonalAppearance"/>
 
                         <MudSwitchTT
                             Label="Quest Loadouts"
                             TooltipText="PMCs have a chance to wear quest loadouts on appropriate maps at appropriate levels."
                             @bind-Value="PmcQuestLoadoutEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcQuestLoadoutEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcQuestLoadoutChance"))"
-                            IsNonDefault="@(!PmcQuestLoadoutEnabled || 
-                                            PmcQuestLoadoutChance != 5)"
+                                               MainLayout.pendingChanges.Contains("PmcQuestLoadoutChance"))"
+                            IsNonDefault="@(!PmcQuestLoadoutEnabled ||
+                                          PmcQuestLoadoutChance != 5)"
                             OnUndo="UndoPmcQuestLoadouts"
-                            OnDefault="DefaultPmcQuestLoadouts" />
+                            OnDefault="DefaultPmcQuestLoadouts"/>
 
                         <MudSliderChildTT
                             Label="Quest Chance"
@@ -244,7 +245,7 @@
                             @bind-Value="PmcQuestLoadoutChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcQuestLoadoutEnabled)" />
+                            Disabled="@(!PmcQuestLoadoutEnabled)"/>
 
                         <MudSwitchTTWarning
                             Label="Poverty Check"
@@ -253,11 +254,11 @@
                             WarningTooltip2="Disabling this means they will always use gear that is available in their tier."
                             @bind-Value="PmcPovertyEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcPovertyEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcPovertyChance"))"
-                            IsNonDefault="@(!PmcPovertyEnabled || 
-                                            PmcPovertyChance != 5)"
+                                               MainLayout.pendingChanges.Contains("PmcPovertyChance"))"
+                            IsNonDefault="@(!PmcPovertyEnabled ||
+                                          PmcPovertyChance != 5)"
                             OnUndo="UndoPmcPoverty"
-                            OnDefault="DefaultPmcPoverty" />
+                            OnDefault="DefaultPmcPoverty"/>
 
                         <MudSliderChildTT
                             Label="Poverty Chance"
@@ -265,20 +266,20 @@
                             @bind-Value="PmcPovertyChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcPovertyEnabled)" />
+                            Disabled="@(!PmcPovertyEnabled)"/>
 
                         <MudSwitchTT
                             Label="Ammo Tier Sliding"
                             TooltipText="Allows PMCs to slide down to a lower ammo pool tier when they are generated."
                             @bind-Value="PmcAmmoTierSlideEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcAmmoTierSlideEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcAmmoTierSlideAmount") ||
-                                                MainLayout.pendingChanges.Contains("PmcAmmoTierSlideChance"))"
+                                               MainLayout.pendingChanges.Contains("PmcAmmoTierSlideAmount") ||
+                                               MainLayout.pendingChanges.Contains("PmcAmmoTierSlideChance"))"
                             IsNonDefault="@(PmcAmmoTierSlideEnabled ||
-                                            PmcAmmoTierSlideAmount != 1 ||
-                                            PmcAmmoTierSlideChance != 33)"
+                                          PmcAmmoTierSlideAmount != 1 ||
+                                          PmcAmmoTierSlideChance != 33)"
                             OnUndo="UndoPmcAmmoTierSliding"
-                            OnDefault="DefaultPmcAmmoTierSliding" />
+                            OnDefault="DefaultPmcAmmoTierSliding"/>
 
                         <MudSliderChildTT
                             Label="Slide Amount"
@@ -286,7 +287,7 @@
                             @bind-Value="PmcAmmoTierSlideAmount"
                             Min="1"
                             Max="7"
-                            Disabled="@(!PmcAmmoTierSlideEnabled)" />
+                            Disabled="@(!PmcAmmoTierSlideEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Slide Chance"
@@ -294,33 +295,33 @@
                             @bind-Value="PmcAmmoTierSlideChance"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcAmmoTierSlideEnabled)" />
+                            Disabled="@(!PmcAmmoTierSlideEnabled)"/>
 
                         <MudSliderChildTT
                             Label="TUE/EOD Specific Dogtag Chance"
                             TooltipText="If the bot is Unheard or EOD, how often they should have that dogtag."
                             @bind-Value="PmcVersionDogtagChance"
                             Min="0"
-                            Max="100" />
+                            Max="100"/>
 
                         <MudSwitchTT
                             Label="Game Version Weighting"
                             TooltipText="Adjust how often you see specific game versions."
                             @bind-Value="PmcVersionWeightingEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcVersionWeightingEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcStandardVersionWeight") ||
-                                                MainLayout.pendingChanges.Contains("PmcLeftBehindVersionWeight") ||
-                                                MainLayout.pendingChanges.Contains("PmcPrepareForEscapeVersionWeight") ||
-                                                MainLayout.pendingChanges.Contains("PmcEdgeOfDarknessVersionWeight") ||
-                                                MainLayout.pendingChanges.Contains("PmcUnheardVersionWeight"))"
+                                               MainLayout.pendingChanges.Contains("PmcStandardVersionWeight") ||
+                                               MainLayout.pendingChanges.Contains("PmcLeftBehindVersionWeight") ||
+                                               MainLayout.pendingChanges.Contains("PmcPrepareForEscapeVersionWeight") ||
+                                               MainLayout.pendingChanges.Contains("PmcEdgeOfDarknessVersionWeight") ||
+                                               MainLayout.pendingChanges.Contains("PmcUnheardVersionWeight"))"
                             IsNonDefault="@(PmcVersionWeightingEnabled ||
-                                            PmcStandardVersionWeight != 20 ||
-                                            PmcLeftBehindVersionWeight != 10 ||
-                                            PmcPrepareForEscapeVersionWeight != 10 ||
-                                            PmcEdgeOfDarknessVersionWeight != 40 ||
-                                            PmcUnheardVersionWeight != 20)"
+                                          PmcStandardVersionWeight != 20 ||
+                                          PmcLeftBehindVersionWeight != 10 ||
+                                          PmcPrepareForEscapeVersionWeight != 10 ||
+                                          PmcEdgeOfDarknessVersionWeight != 40 ||
+                                          PmcUnheardVersionWeight != 20)"
                             OnUndo="UndoPmcVersionWeighting"
-                            OnDefault="DefaultPmcVersionWeighting" />
+                            OnDefault="DefaultPmcVersionWeighting"/>
 
                         <MudSliderChildTT
                             Label="Standard"
@@ -328,7 +329,7 @@
                             @bind-Value="PmcStandardVersionWeight"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcVersionWeightingEnabled)" />
+                            Disabled="@(!PmcVersionWeightingEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Left Behind"
@@ -336,7 +337,7 @@
                             @bind-Value="PmcLeftBehindVersionWeight"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcVersionWeightingEnabled)" />
+                            Disabled="@(!PmcVersionWeightingEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Prepare for Escape"
@@ -344,7 +345,7 @@
                             @bind-Value="PmcPrepareForEscapeVersionWeight"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcVersionWeightingEnabled)" />
+                            Disabled="@(!PmcVersionWeightingEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Edge of Darkness"
@@ -352,7 +353,7 @@
                             @bind-Value="PmcEdgeOfDarknessVersionWeight"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcVersionWeightingEnabled)" />
+                            Disabled="@(!PmcVersionWeightingEnabled)"/>
 
                         <MudSliderChildTT
                             Label="Unheard Edition"
@@ -360,23 +361,24 @@
                             @bind-Value="PmcUnheardVersionWeight"
                             Min="1"
                             Max="100"
-                            Disabled="@(!PmcVersionWeightingEnabled)" />
+                            Disabled="@(!PmcVersionWeightingEnabled)"/>
 
                     </MudGrid>
                 </MudExpansionPanel>
 
-                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="PMC Plate Class Selection" Expanded="true">
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px"
+                                   Text="PMC Plate Class Selection" Expanded="true">
                     <MudGrid>
-                        @foreach (var tier in new[] {
-                            ("Tier 1 (Lv1-10)",  "Pmc_PlateClass_Tier1", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier1, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier1),
+                        @foreach (var tier in new[]
+                        {
+                            ("Tier 1 (Lv1-10)", "Pmc_PlateClass_Tier1", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier1, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier1),
                             ("Tier 2 (Lv11-20)", "Pmc_PlateClass_Tier2", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier2, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier2),
                             ("Tier 3 (Lv21-30)", "Pmc_PlateClass_Tier3", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier3, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier3),
                             ("Tier 4 (Lv31-40)", "Pmc_PlateClass_Tier4", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier4, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier4),
                             ("Tier 5 (Lv41-50)", "Pmc_PlateClass_Tier5", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier5, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier5),
                             ("Tier 6 (Lv51-60)", "Pmc_PlateClass_Tier6", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier6, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier6),
-                            ("Tier 7 (Lv61-79)", "Pmc_PlateClass_Tier7", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier7, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier7),
-                        })
-                        {
+                            ("Tier 7 (Lv61-79)", "Pmc_PlateClass_Tier7", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier7, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier7)
+                        }){
                             var tierTooltip = $"Adjust the plate class levels for {tier.Item1}. If a plate is selected that cannot fit in the armour, APBS will upgrade the plate level by 1 until it is valid.";
                             var tierDefaults = PmcTierDefaults[tier.Item1];
 
@@ -389,14 +391,15 @@
                                 LeftValues="@ToDict(tier.Item3["left_side_plate"])"
                                 RightValues="@ToDict(tier.Item3["right_side_plate"])"
                                 Defaults="@tierDefaults"
-                                ValuesChanged="@((e) => HandlePlateChanged(tier.Item2, tier.Item3, tier.Item4, e))"
-                                OnUndo="@((pos) => HandlePlateUndo(tier.Item2, tier.Item3, tier.Item4, pos))"
-                                OnDefault="@((pos) => HandlePlateDefault(tier.Item2, tier.Item3, pos, tierDefaults))" />
+                                ValuesChanged="@(e => HandlePlateChanged(tier.Item2, tier.Item3, tier.Item4, e))"
+                                OnUndo="@(pos => HandlePlateUndo(tier.Item2, tier.Item3, tier.Item4, pos))"
+                                OnDefault="@(pos => HandlePlateDefault(tier.Item2, tier.Item3, pos, tierDefaults))"/>
                         }
                     </MudGrid>
                 </MudExpansionPanel>
 
-                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Nothing to see here..." Expanded="false">
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px"
+                                   Text="Nothing to see here..." Expanded="false">
                     <MudGrid>
 
                         <MudSwitchTT
@@ -404,54 +407,58 @@
                             TooltipText="Flags SPT & APBS Devs as Developers. Also contributors to APBS."
                             @bind-Value="PmcSecretDevelopersNameMarkEnabled"
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameMarkEnabled") ||
-                                                MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameList"))"
+                                               MainLayout.pendingChanges.Contains("PmcSecretDevelopersNameList"))"
                             IsNonDefault="@(!PmcSecretDevelopersNameMarkEnabled ||
-                                            PmcSecretDevelopersNameList.Count != 10 ||
-                                            !PmcSecretDevelopersNameList.Contains("Chomp") ||
-                                            !PmcSecretDevelopersNameList.Contains("Dirtbikercj") ||
-                                            !PmcSecretDevelopersNameList.Contains("Clodan") ||
-                                            !PmcSecretDevelopersNameList.Contains("CWX") ||
-                                            !PmcSecretDevelopersNameList.Contains("DrakiaXYZ") ||
-                                            !PmcSecretDevelopersNameList.Contains("Kaeno") ||
-                                            !PmcSecretDevelopersNameList.Contains("Refringe") ||
-                                            !PmcSecretDevelopersNameList.Contains("Waffle") ||
-                                            !PmcSecretDevelopersNameList.Contains("AcidPhantasm") ||
-                                            !PmcSecretDevelopersNameList.Contains("Archangel"))"
+                                          PmcSecretDevelopersNameList.Count != 10 ||
+                                          !PmcSecretDevelopersNameList.Contains("Chomp") ||
+                                          !PmcSecretDevelopersNameList.Contains("Dirtbikercj") ||
+                                          !PmcSecretDevelopersNameList.Contains("Clodan") ||
+                                          !PmcSecretDevelopersNameList.Contains("CWX") ||
+                                          !PmcSecretDevelopersNameList.Contains("DrakiaXYZ") ||
+                                          !PmcSecretDevelopersNameList.Contains("Kaeno") ||
+                                          !PmcSecretDevelopersNameList.Contains("Refringe") ||
+                                          !PmcSecretDevelopersNameList.Contains("Waffle") ||
+                                          !PmcSecretDevelopersNameList.Contains("AcidPhantasm") ||
+                                          !PmcSecretDevelopersNameList.Contains("Archangel"))"
                             OnUndo="UndoSecretDeveloperEnabled"
-                            OnDefault="DefaultSecretDeveloperEnabled" />
+                            OnDefault="DefaultSecretDeveloperEnabled"/>
 
                         <MudItem xs="1">
                             <MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-2">
-                                <MudTooltip Text="Enter the name of the bot you want marked as a developer, then click the arrow (or press enter) to add it." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                <MudTooltip
+                                    Text="Enter the name of the bot you want marked as a developer, then click the arrow (or press enter) to add it."
+                                    Color="Color.Dark" Placement="Placement.Right" Arrow="true">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small"/>
                                 </MudTooltip>
                             </MudPaper>
                         </MudItem>
                         <MudItem xs="4" Class="align-center">
                             <MudTextField T="string" @bind-Value="@PmcSecretDevelopersEntryHolder"
-                                Typo="Typo.body2" HelperText="Enter valid Bot name"
-                                Placeholder="Bot Name"
-                                Variant="Variant.Text"
-                                Disabled="!PmcSecretDevelopersNameMarkEnabled"
-                                OnKeyDown="@((e) => { if (HandleKeyDown(e)) TryAddDeveloperName(); })"
-                                Validation="@(new Func<string, IEnumerable<string>>(Utils.StringLengthValidation))"
-                                Immediate="true"
-                                Adornment="Adornment.End"
-                                AdornmentIcon="@Icons.Material.Filled.ArrowRight"
-                                OnAdornmentClick="TryAddDeveloperName" />
+                                          Typo="Typo.body2" HelperText="Enter valid Bot name"
+                                          Placeholder="Bot Name"
+                                          Variant="Variant.Text"
+                                          Disabled="!PmcSecretDevelopersNameMarkEnabled"
+                                          OnKeyDown="@(e => {
+                                                         if (HandleKeyDown(e)) TryAddDeveloperName();
+                                                     })"
+                                          Validation="@(new Func<string, IEnumerable<string>>(Utils.StringLengthValidation))"
+                                          Immediate="true"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Filled.ArrowRight"
+                                          OnAdornmentClick="TryAddDeveloperName"/>
                         </MudItem>
                         <MudItem xs="6">
-                            @foreach (var item in PmcSecretDevelopersNameList)
-                            {
-                                <MudChip Disabled="!PmcSecretDevelopersNameMarkEnabled" Value="@item" T="string" Color="Color.Default"
-                                    OnClose="@(() => {
-                                        PmcSecretDevelopersNameList.Remove(item);
-                                        Utils.UpdateView(PmcSecretDevelopersNameList, ModConfig.OriginalConfig.PmcBots.Secrets.DeveloperSettings.DevNames.NameList, "PmcSecretDevelopersNameList");
-                                    })">@item</MudChip>
+                            @foreach (var item in PmcSecretDevelopersNameList){
+                                <MudChip Disabled="!PmcSecretDevelopersNameMarkEnabled" Value="@item" T="string"
+                                         Color="Color.Default"
+                                         OnClose="@(() => {
+                                                      PmcSecretDevelopersNameList.Remove(item);
+                                                      Utils.UpdateView(PmcSecretDevelopersNameList, ModConfig.OriginalConfig.PmcBots.Secrets.DeveloperSettings.DevNames.NameList, "PmcSecretDevelopersNameList");
+                                                  })">@item</MudChip>
                             }
                         </MudItem>
 
-                        <MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
+                        <MudDivider DividerType="DividerType.FullWidth" Class="my-3"/>
 
                         <MudSwitchTT
                             Label="Force Developer Bot Levels"
@@ -460,39 +467,52 @@
                             HasPendingChanges="@(MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsEnabled"))"
                             IsNonDefault="@(PmcSecretDeveloperLevelsEnabled)"
                             OnUndo="UndoSecretDeveloperLevelsEnabled"
-                            OnDefault="DefaultSecretDeveloperLevelsEnabled" />
+                            OnDefault="DefaultSecretDeveloperLevelsEnabled"/>
 
-                        <MudItem xs="2" />
+                        <MudItem xs="2"/>
                         <MudItem xs="3">
-                            <MudTooltip Text="Minimum and maximum levels for bots in the Developer Name list, if enabled." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip
+                                Text="Minimum and maximum levels for bots in the Developer Name list, if enabled."
+                                Color="Color.Dark" Placement="Placement.Right" Arrow="true">
                                 <MudText>Developer Bot Level Values</MudText>
                             </MudTooltip>
                         </MudItem>
                         <MudItem xs="6">
-                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                                <MudTooltip Text="Lowest level that above named bots can be." Color="Color.Dark" Placement="Placement.Right" Arrow="true">
-                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="PmcSecretDeveloperLevelsMin" Label="Minimum" HelperText="Level" Variant="Variant.Filled"
-                                        Min="1" Max="@(PmcSecretDeveloperLevelsMax - 1)" Disabled="!PmcSecretDeveloperLevelsEnabled" />
+                            <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;"
+                                      Elevation="0">
+                                <MudTooltip Text="Lowest level that above named bots can be." Color="Color.Dark"
+                                            Placement="Placement.Right" Arrow="true">
+                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true"
+                                                     @bind-Value="PmcSecretDeveloperLevelsMin" Label="Minimum"
+                                                     HelperText="Level" Variant="Variant.Filled"
+                                                     Min="1" Max="@(PmcSecretDeveloperLevelsMax - 1)"
+                                                     Disabled="!PmcSecretDeveloperLevelsEnabled"/>
                                 </MudTooltip>
-                                <MudSpacer />
-                                <MudTooltip Text="Highest level that above named bots can be." Color="Color.Dark" Placement="Placement.Left" Arrow="true">
-                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="PmcSecretDeveloperLevelsMax" Label="Maximum" HelperText="Level" Variant="Variant.Filled"
-                                        Min="@(PmcSecretDeveloperLevelsMin + 1)" Max="79" Disabled="!PmcSecretDeveloperLevelsEnabled" />
+                                <MudSpacer/>
+                                <MudTooltip Text="Highest level that above named bots can be." Color="Color.Dark"
+                                            Placement="Placement.Left" Arrow="true">
+                                    <MudNumericField Margin="Margin.Dense" HideSpinButtons="true"
+                                                     @bind-Value="PmcSecretDeveloperLevelsMax" Label="Maximum"
+                                                     HelperText="Level" Variant="Variant.Filled"
+                                                     Min="@(PmcSecretDeveloperLevelsMin + 1)" Max="79"
+                                                     Disabled="!PmcSecretDeveloperLevelsEnabled"/>
                                 </MudTooltip>
                             </MudPaper>
                         </MudItem>
                         <MudItem xs="1">
                             @if (MainLayout.AppUndoButtonToggle && (
                                 MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsMin") ||
-                                MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsMax")))
-                            {
-                                <MudButton @onclick="UndoSecretDeveloperLevelsMinMax" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                MainLayout.pendingChanges.Contains("PmcSecretDeveloperLevelsMax"))){
+                                <MudButton @onclick="UndoSecretDeveloperLevelsMinMax" Variant="Variant.Filled"
+                                           Color="Color.Inherit" Size="Size.Small">Undo
+                                </MudButton>
                             }
                             else if (MainLayout.AppDefaultButtonToggle && (
                                 PmcSecretDeveloperLevelsMin != 30 ||
-                                PmcSecretDeveloperLevelsMax != 79))
-                            {
-                                <MudButton @onclick="DefaultSecretDeveloperLevelsMinMax" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                PmcSecretDeveloperLevelsMax != 79)){
+                                <MudButton @onclick="DefaultSecretDeveloperLevelsMinMax" Variant="Variant.Filled"
+                                           Color="Color.Dark" Size="Size.Small">Default
+                                </MudButton>
                             }
                         </MudItem>
 
@@ -527,13 +547,15 @@
             Utils.UpdateView(value, ModConfig.OriginalConfig.PmcBots.LootConfig.Enable, nameof(PmcLootEnabled));
         }
     }
-    private List<string> PmcLootBlacklist => ModConfig.Config.PmcBots.LootConfig.Blacklist;
+    private List<string> PmcLootBlacklist
+    {
+        get => ModConfig.Config.PmcBots.LootConfig.Blacklist;
+    }
     private void UndoLoot()
     {
         PmcLootEnabled = ModConfig.OriginalConfig.PmcBots.LootConfig.Enable;
         PmcLootBlacklist.Clear();
-        foreach (var item in ModConfig.OriginalConfig.PmcBots.LootConfig.Blacklist)
-        {
+        foreach (var item in ModConfig.OriginalConfig.PmcBots.LootConfig.Blacklist){
             PmcLootBlacklist.Add(item);
         }
         MainLayout.pendingChanges.Remove("PmcLootEnabled");
@@ -766,9 +788,13 @@
         }
     }
     private int PmcWeaponDurabilityMinLimitPercent
-        => ModConfig.Config.PmcBots.WeaponDurability.MinLimitPercent;
+    {
+        get => ModConfig.Config.PmcBots.WeaponDurability.MinLimitPercent;
+    }
     private int PmcWeaponDurabilityMaxLimitPercent
-        => ModConfig.Config.PmcBots.WeaponDurability.Max - ModConfig.Config.PmcBots.WeaponDurability.MinDelta;
+    {
+        get => ModConfig.Config.PmcBots.WeaponDurability.Max - ModConfig.Config.PmcBots.WeaponDurability.MinDelta;
+    }
     private int PmcWeaponDurabilityEnhancementChance
     {
         get => ModConfig.Config.PmcBots.WeaponDurability.EnhancementChance;
@@ -843,8 +869,14 @@
             Utils.UpdateView(value, ModConfig.OriginalConfig.PmcBots.ArmourDurability.MaxDelta, nameof(PmcArmourDurabilityMaxDelta));
         }
     }
-    private int PmcArmourDurabilityMinLimitPercent => ModConfig.Config.PmcBots.ArmourDurability.MinLimitPercent;
-    private int PmcArmourDurabilityMaxLimitPercent => ModConfig.Config.PmcBots.ArmourDurability.Max - ModConfig.Config.PmcBots.ArmourDurability.MinDelta;
+    private int PmcArmourDurabilityMinLimitPercent
+    {
+        get => ModConfig.Config.PmcBots.ArmourDurability.MinLimitPercent;
+    }
+    private int PmcArmourDurabilityMaxLimitPercent
+    {
+        get => ModConfig.Config.PmcBots.ArmourDurability.Max - ModConfig.Config.PmcBots.ArmourDurability.MinDelta;
+    }
     private void UndoArmourDurability()
     {
         PmcArmourDurabilityEnabled = ModConfig.OriginalConfig.PmcBots.ArmourDurability.Enable;
@@ -1083,13 +1115,13 @@
     #region PLATE CLASSES
     private static readonly Dictionary<string, Dictionary<string, double>> PmcTierDefaults = new()
     {
-        ["Tier 1 (Lv1-10)"]  = new() { {"2",0}, {"3",90}, {"4",10}, {"5",0},  {"6",0}  },
-        ["Tier 2 (Lv11-20)"] = new() { {"2",0}, {"3",65}, {"4",33}, {"5",2},  {"6",0}  },
-        ["Tier 3 (Lv21-30)"] = new() { {"2",0}, {"3",16}, {"4",75}, {"5",7},  {"6",2}  },
-        ["Tier 4 (Lv31-40)"] = new() { {"2",0}, {"3",1},  {"4",50}, {"5",39}, {"6",10} },
-        ["Tier 5 (Lv41-50)"] = new() { {"2",0}, {"3",0},  {"4",20}, {"5",70}, {"6",10} },
-        ["Tier 6 (Lv51-60)"] = new() { {"2",0}, {"3",0},  {"4",10}, {"5",70}, {"6",20} },
-        ["Tier 7 (Lv61-79)"] = new() { {"2",0}, {"3",0},  {"4",5},  {"5",75}, {"6",20} },
+        ["Tier 1 (Lv1-10)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 90 }, { "4", 10 }, { "5", 0 }, { "6", 0 } },
+        ["Tier 2 (Lv11-20)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 65 }, { "4", 33 }, { "5", 2 }, { "6", 0 } },
+        ["Tier 3 (Lv21-30)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 16 }, { "4", 75 }, { "5", 7 }, { "6", 2 } },
+        ["Tier 4 (Lv31-40)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 1 }, { "4", 50 }, { "5", 39 }, { "6", 10 } },
+        ["Tier 5 (Lv41-50)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 0 }, { "4", 20 }, { "5", 70 }, { "6", 10 } },
+        ["Tier 6 (Lv51-60)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 0 }, { "4", 10 }, { "5", 70 }, { "6", 20 } },
+        ["Tier 7 (Lv61-79)"] = new Dictionary<string, double> { { "2", 0 }, { "3", 0 }, { "4", 5 }, { "5", 75 }, { "6", 20 } }
     };
 
     private Dictionary<string, double> ToDict(Dictionary<string, double> source) => new(source);
@@ -1102,8 +1134,7 @@
 
     private void HandlePlateUndo(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, Dictionary<string, Dictionary<string, double>> original, string position)
     {
-        foreach (var classNum in new[] { "2", "3", "4", "5", "6" })
-        {
+        foreach (var classNum in new[] { "2", "3", "4", "5", "6" }){
             config[position][classNum] = original[position][classNum];
             MainLayout.pendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
@@ -1112,8 +1143,7 @@
 
     private void HandlePlateDefault(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, string position, Dictionary<string, double> defaults)
     {
-        foreach (var (classNum, value) in defaults)
-        {
+        foreach (var (classNum, value) in defaults){
             config[position][classNum] = value;
             Utils.UpdateView(value, value, $"{keyPrefix}_{position}_Class{classNum}");
         }
@@ -1131,18 +1161,19 @@
         }
     }
     private string PmcSecretDevelopersEntryHolder { get; set; } = "";
-    private List<string> PmcSecretDevelopersNameList => ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList;
+    private List<string> PmcSecretDevelopersNameList
+    {
+        get => ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList;
+    }
 
     private void TryAddDeveloperName()
     {
         if (string.IsNullOrEmpty(PmcSecretDevelopersEntryHolder)) return;
-        if (PmcSecretDevelopersNameList.Contains(PmcSecretDevelopersEntryHolder))
-        {
+        if (PmcSecretDevelopersNameList.Contains(PmcSecretDevelopersEntryHolder)){
             Snackbar.Add("Name already added.", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }
-        if (!Utils.IsStringAndValidLength(PmcSecretDevelopersEntryHolder))
-        {
+        if (!Utils.IsStringAndValidLength(PmcSecretDevelopersEntryHolder)){
             Snackbar.Add("Invalid Name.", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }

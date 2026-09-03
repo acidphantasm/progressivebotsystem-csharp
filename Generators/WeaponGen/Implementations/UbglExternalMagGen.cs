@@ -1,28 +1,23 @@
-﻿using ProgressiveBotSystem.Helpers;
+﻿namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
+
+using Helpers;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.Helpers.Bot;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
-
-namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
-
-using SPTarkov.Server.Core.Helpers.Bot;
 
 [Injectable]
 public class ApbsUbglExternalMagGen(
     BotWeaponGeneratorHelper botWeaponGeneratorHelper,
     RandomUtil randomUtil,
     BotEquipmentHelper botEquipmentHelper,
-    InventoryMagGenHelper inventoryMagGenHelper) : ApbsInventoryMagGen, IApbsInventoryMagGen
+    InventoryMagGenHelper inventoryMagGenHelper
+) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
-    public int GetPriority()
-    {
-        return 1;
-    }
+    public int GetPriority() => 1;
 
-    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen)
-    {
-        return inventoryMagGen.GetWeaponTemplate().Parent == BaseClasses.LAUNCHER;
-    }
+    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen) =>
+        inventoryMagGen.GetWeaponTemplate().Parent == BaseClasses.LAUNCHER;
 
     public void Process(ApbsInventoryMagGen inventoryMagGen)
     {
@@ -30,14 +25,20 @@ public class ApbsUbglExternalMagGen(
             inventoryMagGen.GetMagCount(),
             inventoryMagGen.GetMagazineTemplate()
         );
-        
+
         var rerollConfig = inventoryMagGen.GetRerollDetails();
         if (rerollConfig.Enable && randomUtil.GetChance100(rerollConfig.Chance))
         {
             var weapon = inventoryMagGen.GetWeaponTemplate();
-            var ammoTable = botEquipmentHelper.GetAmmoByBotRole(inventoryMagGen.GetBotRole(), inventoryMagGen.GetTier());
-            var rerolledAmmoTpl = inventoryMagGenHelper.GetWeightedCompatibleAmmo(ammoTable, weapon);
-            
+            var ammoTable = botEquipmentHelper.GetAmmoByBotRole(
+                inventoryMagGen.GetBotRole(),
+                inventoryMagGen.GetTier()
+            );
+            var rerolledAmmoTpl = inventoryMagGenHelper.GetWeightedCompatibleAmmo(
+                ammoTable,
+                weapon
+            );
+
             botWeaponGeneratorHelper.AddAmmoIntoEquipmentSlots(
                 inventoryMagGen.GetBotId(),
                 rerolledAmmoTpl,
@@ -45,7 +46,7 @@ public class ApbsUbglExternalMagGen(
                 inventoryMagGen.GetPmcInventory()
             );
         }
-        
+
         botWeaponGeneratorHelper.AddAmmoIntoEquipmentSlots(
             inventoryMagGen.GetBotId(),
             inventoryMagGen.GetAmmoTemplate().Id,

@@ -1,8 +1,8 @@
-﻿using System.Text;
-using System.Text.Json;
-using ProgressiveBotSystem.Models;
+﻿namespace ProgressiveBotSystem.Helpers;
 
-namespace ProgressiveBotSystem.Helpers;
+using System.Text;
+using System.Text.Json;
+using Models;
 
 public static class ConfigHelper
 {
@@ -21,41 +21,94 @@ public static class ConfigHelper
         ["generalConfig.plateChances.specialSidePlateChance"] = 7,
     };
 
-    private static void RepairArrays(ApbsServerConfig config, Dictionary<string, int> diskArrayLengths)
+    private static void RepairArrays(
+        ApbsServerConfig config,
+        Dictionary<string, int> diskArrayLengths
+    )
     {
         var defaults = new ApbsServerConfig();
         var repairActions = new Dictionary<string, Action>
         {
-            ["generalConfig.muzzleChance"] = () => config.GeneralConfig.MuzzleChance = defaults.GeneralConfig.MuzzleChance,
-            ["generalConfig.plateChances.pmcMainPlateChance"] = () => config.GeneralConfig.PlateChances.PmcMainPlateChance = defaults.GeneralConfig.PlateChances.PmcMainPlateChance,
-            ["generalConfig.plateChances.pmcSidePlateChance"] = () => config.GeneralConfig.PlateChances.PmcSidePlateChance = defaults.GeneralConfig.PlateChances.PmcSidePlateChance,
-            ["generalConfig.plateChances.scavMainPlateChance"] = () => config.GeneralConfig.PlateChances.ScavMainPlateChance = defaults.GeneralConfig.PlateChances.ScavMainPlateChance,
-            ["generalConfig.plateChances.scavSidePlateChance"] = () => config.GeneralConfig.PlateChances.ScavSidePlateChance = defaults.GeneralConfig.PlateChances.ScavSidePlateChance,
-            ["generalConfig.plateChances.bossMainPlateChance"] = () => config.GeneralConfig.PlateChances.BossMainPlateChance = defaults.GeneralConfig.PlateChances.BossMainPlateChance,
-            ["generalConfig.plateChances.bossSidePlateChance"] = () => config.GeneralConfig.PlateChances.BossSidePlateChance = defaults.GeneralConfig.PlateChances.BossSidePlateChance,
-            ["generalConfig.plateChances.followerMainPlateChance"] = () => config.GeneralConfig.PlateChances.FollowerMainPlateChance = defaults.GeneralConfig.PlateChances.FollowerMainPlateChance,
-            ["generalConfig.plateChances.followerSidePlateChance"] = () => config.GeneralConfig.PlateChances.FollowerSidePlateChance = defaults.GeneralConfig.PlateChances.FollowerSidePlateChance,
-            ["generalConfig.plateChances.specialMainPlateChance"] = () => config.GeneralConfig.PlateChances.SpecialMainPlateChance = defaults.GeneralConfig.PlateChances.SpecialMainPlateChance,
-            ["generalConfig.plateChances.specialSidePlateChance"] = () => config.GeneralConfig.PlateChances.SpecialSidePlateChance = defaults.GeneralConfig.PlateChances.SpecialSidePlateChance,
+            ["generalConfig.muzzleChance"] = () =>
+                config.GeneralConfig.MuzzleChance = defaults.GeneralConfig.MuzzleChance,
+            ["generalConfig.plateChances.pmcMainPlateChance"] = () =>
+                config.GeneralConfig.PlateChances.PmcMainPlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .PmcMainPlateChance,
+            ["generalConfig.plateChances.pmcSidePlateChance"] = () =>
+                config.GeneralConfig.PlateChances.PmcSidePlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .PmcSidePlateChance,
+            ["generalConfig.plateChances.scavMainPlateChance"] = () =>
+                config.GeneralConfig.PlateChances.ScavMainPlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .ScavMainPlateChance,
+            ["generalConfig.plateChances.scavSidePlateChance"] = () =>
+                config.GeneralConfig.PlateChances.ScavSidePlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .ScavSidePlateChance,
+            ["generalConfig.plateChances.bossMainPlateChance"] = () =>
+                config.GeneralConfig.PlateChances.BossMainPlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .BossMainPlateChance,
+            ["generalConfig.plateChances.bossSidePlateChance"] = () =>
+                config.GeneralConfig.PlateChances.BossSidePlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .BossSidePlateChance,
+            ["generalConfig.plateChances.followerMainPlateChance"] = () =>
+                config.GeneralConfig.PlateChances.FollowerMainPlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .FollowerMainPlateChance,
+            ["generalConfig.plateChances.followerSidePlateChance"] = () =>
+                config.GeneralConfig.PlateChances.FollowerSidePlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .FollowerSidePlateChance,
+            ["generalConfig.plateChances.specialMainPlateChance"] = () =>
+                config.GeneralConfig.PlateChances.SpecialMainPlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .SpecialMainPlateChance,
+            ["generalConfig.plateChances.specialSidePlateChance"] = () =>
+                config.GeneralConfig.PlateChances.SpecialSidePlateChance = defaults
+                    .GeneralConfig
+                    .PlateChances
+                    .SpecialSidePlateChance,
         };
 
         foreach (var kvp in RequiredArrayLengths)
         {
-            if (diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value)
+            if (
+                diskArrayLengths.TryGetValue(kvp.Key, out var diskLength)
+                && diskLength != kvp.Value
+            )
             {
                 repairActions[kvp.Key]();
             }
         }
     }
 
-    public static bool IsJsonOutdated(string rawJson, string rawDefaultJson, ApbsServerConfig? config = null)
+    public static bool IsJsonOutdated(
+        string rawJson,
+        string rawDefaultJson,
+        ApbsServerConfig? config = null
+    )
     {
         var (diskKeys, diskArrayLengths) = ParseDiskJson(rawJson);
         var defaultKeys = ParseDefaultJson(rawDefaultJson);
 
         var hasMissingKeys = defaultKeys.Any(k => !diskKeys.Contains(k));
         var hasExtraKeys = diskKeys.Any(k => !defaultKeys.Contains(k));
-        var hasInvalidArrays = RequiredArrayLengths.Any(kvp => diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value);
+        var hasInvalidArrays = RequiredArrayLengths.Any(kvp =>
+            diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value
+        );
 
         if (config != null && hasInvalidArrays)
         {
@@ -66,11 +119,13 @@ public static class ConfigHelper
     }
 
     /// <summary>
-    /// Bruh this is confusing as shit and I re-read this doc like 6 times, but it finally works
-    /// https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/use-utf8jsonreader
+    ///     Bruh this is confusing as shit and I re-read this doc like 6 times, but it finally works
+    ///     https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/use-utf8jsonreader
     /// </summary>
     /// <param name="json"></param>
-    private static (HashSet<string> keyPaths, Dictionary<string, int> arrayLengths) ParseDiskJson(string json)
+    private static (HashSet<string> keyPaths, Dictionary<string, int> arrayLengths) ParseDiskJson(
+        string json
+    )
     {
         var keyPaths = new HashSet<string>();
         var arrayLengths = new Dictionary<string, int>();
@@ -85,9 +140,10 @@ public static class ConfigHelper
             {
                 case JsonTokenType.PropertyName:
                     currentProperty = reader.GetString()!;
-                    var path = pathStack.Count > 0
-                        ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
-                        : currentProperty;
+                    var path =
+                        pathStack.Count > 0
+                            ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
+                            : currentProperty;
                     keyPaths.Add(path);
                     break;
                 case JsonTokenType.StartObject:
@@ -99,16 +155,21 @@ public static class ConfigHelper
                     break;
                 case JsonTokenType.EndObject:
                     if (pathStack.Count > 0)
+                    {
                         pathStack.Pop();
+                    }
                     break;
                 case JsonTokenType.StartArray:
                     if (currentProperty != null)
                     {
-                        var arrayPath = pathStack.Count > 0
-                            ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
-                            : currentProperty;
+                        var arrayPath =
+                            pathStack.Count > 0
+                                ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
+                                : currentProperty;
                         if (RequiredArrayLengths.ContainsKey(arrayPath))
+                        {
                             arrayCountStack.Push((arrayPath, 0));
+                        }
                         currentProperty = null;
                     }
                     break;
@@ -134,10 +195,10 @@ public static class ConfigHelper
         }
         return (keyPaths, arrayLengths);
     }
-    
+
     /// <summary>
-    /// Bruh this is confusing as shit and I re-read this doc like 6 times, but it finally works
-    /// https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/use-utf8jsonreader
+    ///     Bruh this is confusing as shit and I re-read this doc like 6 times, but it finally works
+    ///     https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/use-utf8jsonreader
     /// </summary>
     /// <param name="json"></param>
     private static HashSet<string> ParseDefaultJson(string json)
@@ -153,9 +214,10 @@ public static class ConfigHelper
             {
                 case JsonTokenType.PropertyName:
                     currentProperty = reader.GetString()!;
-                    var path = pathStack.Count > 0
-                        ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
-                        : currentProperty;
+                    var path =
+                        pathStack.Count > 0
+                            ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
+                            : currentProperty;
                     keyPaths.Add(path);
                     break;
                 case JsonTokenType.StartObject:
@@ -167,7 +229,9 @@ public static class ConfigHelper
                     break;
                 case JsonTokenType.EndObject:
                     if (pathStack.Count > 0)
+                    {
                         pathStack.Pop();
+                    }
                     break;
             }
         }

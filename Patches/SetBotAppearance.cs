@@ -1,20 +1,17 @@
-﻿using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.DI;
+﻿namespace ProgressiveBotSystem.Patches;
+
 using System.Reflection;
+using Globals;
 using HarmonyLib;
-using ProgressiveBotSystem.Globals;
-using ProgressiveBotSystem.Helpers;
+using Helpers;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Generators;
+using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Tables;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Services.Server;
-
-namespace ProgressiveBotSystem.Patches;
 
 [Injectable]
 public class SetBotAppearancePatch : AbstractPatch
@@ -32,7 +29,8 @@ public class SetBotAppearancePatch : AbstractPatch
         TemplateTable templateTable,
         SeasonalEventService seasonalEventService,
         BotEquipmentHelper botEquipmentHelper,
-        TierHelper tierHelper)
+        TierHelper tierHelper
+    )
     {
         _weightedRandomHelper = weightedRandomHelper;
         _globalTable = globalTable;
@@ -41,22 +39,34 @@ public class SetBotAppearancePatch : AbstractPatch
         _botEquipmentHelper = botEquipmentHelper;
         _tierHelper = tierHelper;
     }
-    
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(BotGenerator),"SetBotAppearance");
-    }
+
+    protected override MethodBase GetTargetMethod() =>
+        AccessTools.Method(typeof(BotGenerator), "SetBotAppearance");
 
     [PatchPrefix]
-    public static bool Prefix(BotBase bot, Appearance appearance, BotGenerationDetails botGenerationDetails)
+    public static bool Prefix(
+        BotBase bot,
+        Appearance appearance,
+        BotGenerationDetails botGenerationDetails
+    )
     {
-        if (!botGenerationDetails.IsPmc) return true;
+        if (!botGenerationDetails.IsPmc)
+        {
+            return true;
+        }
 
-        var botLevel = bot.Info.Level ?? 0;
-        var tier = ModConfig.Config.GeneralConfig.BlickyMode ? 0 : _tierHelper.GetTierByLevel(botLevel);
+        var botLevel = bot.Info?.Level ?? 0;
+        var tier = ModConfig.Config.GeneralConfig.BlickyMode
+            ? 0
+            : _tierHelper.GetTierByLevel(botLevel);
         var weatherSeason = _seasonalEventService.GetActiveWeatherSeason();
         var getSeasonalData = ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance;
-        var appearanceData = _botEquipmentHelper.GetAppearanceByBotRole(botGenerationDetails.Role, tier, weatherSeason, getSeasonalData);
+        var appearanceData = _botEquipmentHelper.GetAppearanceByBotRole(
+            botGenerationDetails.Role,
+            tier,
+            weatherSeason,
+            getSeasonalData
+        );
 
         bot.Customization.Head = _weightedRandomHelper.GetWeightedValue(appearanceData.Head);
         bot.Customization.Feet = _weightedRandomHelper.GetWeightedValue(appearanceData.Feet);
@@ -66,7 +76,9 @@ public class SetBotAppearancePatch : AbstractPatch
         var chosenBodyTemplate = _templateTable.Customization[bot.Customization.Body.Value];
 
         // Some bodies have matching hands, look up body to see if this is the case
-        var chosenBody = bodyGlobalDictDb.FirstOrDefault(c => c.Key == chosenBodyTemplate?.Name.Trim());
+        var chosenBody = bodyGlobalDictDb.FirstOrDefault(c =>
+            c.Key == chosenBodyTemplate?.Name.Trim()
+        );
         bot.Customization.Hands =
             chosenBody.Value?.IsNotRandom ?? false
                 ? chosenBody.Value.Hands // Has fixed hands for chosen body, update to match

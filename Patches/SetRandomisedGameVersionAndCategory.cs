@@ -1,17 +1,17 @@
-﻿using SPTarkov.Reflection.Patching;
-using SPTarkov.Server.Core.Utils;
+﻿namespace ProgressiveBotSystem.Patches;
+
 using System.Reflection;
+using Globals;
 using HarmonyLib;
-using ProgressiveBotSystem.Globals;
-using ProgressiveBotSystem.Helpers;
+using Helpers;
 using SPTarkov.Common.Extensions;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
-
-namespace ProgressiveBotSystem.Patches;
+using SPTarkov.Server.Core.Utils;
 
 [Injectable]
 public class SetRandomisedGameVersionAndCategoryPatch : AbstractPatch
@@ -23,22 +23,26 @@ public class SetRandomisedGameVersionAndCategoryPatch : AbstractPatch
     public SetRandomisedGameVersionAndCategoryPatch(
         RandomUtil randomUtil,
         ProfileHelper profileHelper,
-        TierHelper tierHelper)
+        TierHelper tierHelper
+    )
     {
         _randomUtil = randomUtil;
         _profileHelper = profileHelper;
         _tierHelper = tierHelper;
     }
 
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(BotGenerator), "SetRandomisedGameVersionAndCategory");
-    }
+    protected override MethodBase GetTargetMethod() =>
+        AccessTools.Method(typeof(BotGenerator), "SetRandomisedGameVersionAndCategory");
 
     [PatchPrefix]
     public static bool Prefix(Info botInfo, string __result)
     {
-        if (ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname ?? "abcd1234fakename"))
+        if (
+            ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable
+            && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(
+                botInfo.Nickname ?? "abcd1234fakename"
+            )
+        )
         {
             botInfo.GameVersion = GameEditions.UNHEARD;
             botInfo.MemberCategory = MemberCategory.Developer;

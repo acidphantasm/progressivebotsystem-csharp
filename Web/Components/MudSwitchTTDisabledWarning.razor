@@ -2,14 +2,13 @@
     <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
         <MudTooltip Color="Color.Dark" Placement="Placement.Right" Arrow="true">
             <ChildContent>
-                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small"/>
             </ChildContent>
             <TooltipContent>
                 <MudText Typo="Typo.caption">@WarningTooltip1</MudText>
-                <MudSpacer />
-                @if (!string.IsNullOrEmpty(WarningTooltip2))
-                {
-                    <MudSpacer />
+                <MudSpacer/>
+                @if (!string.IsNullOrEmpty(WarningTooltip2)){
+                    <MudSpacer/>
                     <MudText Typo="Typo.caption">@WarningTooltip2</MudText>
                 }
             </TooltipContent>
@@ -25,17 +24,17 @@
 </MudItem>
 <MudItem xs="6">
     <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-        <MudSwitch T="bool" Value="@Value" ValueChanged="@ValueChanged" Color="Color.Tertiary" UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="@Disabled">@Value</MudSwitch>
+        <MudSwitch T="bool" Value="@Value" ValueChanged="@ValueChanged" Color="Color.Tertiary"
+                   UncheckedColor="Color.Default" LabelPlacement="Placement.End" Disabled="@Disabled">@Value</MudSwitch>
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)
-    {
+    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle){
         <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
     }
-    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle)
-    {
-        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle){
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default
+        </MudButton>
     }
 </MudItem>
 

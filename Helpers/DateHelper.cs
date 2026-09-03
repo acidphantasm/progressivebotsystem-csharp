@@ -1,17 +1,17 @@
-﻿using ProgressiveBotSystem.Globals;
+﻿namespace ProgressiveBotSystem.Helpers;
+
+using Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 
-namespace ProgressiveBotSystem.Helpers;
-
 [Injectable(InjectionType.Singleton)]
-public class DateHelper(): IOnLoad
+public class DateHelper : IOnLoad
 {
     private bool _initialized;
     private bool AprilFoolsEnabled { get; set; }
     private bool HalloweenEnabled { get; set; }
     private bool ChristmasEnabled { get; set; }
-    
+
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         AprilFoolsEnabled = CalculateAprilFools();
@@ -22,44 +22,41 @@ public class DateHelper(): IOnLoad
         return Task.CompletedTask;
     }
 
-    public bool IsAprilFoolsEnabled()
-    {
-        return !_initialized ? CalculateAprilFools() : AprilFoolsEnabled;
-    }
-    
+    public bool IsAprilFoolsEnabled() => !_initialized ? CalculateAprilFools() : AprilFoolsEnabled;
+
     private bool CalculateAprilFools()
     {
         if (!ModConfig.Config.CompatibilityConfig.Secrets.AprilFoolsEvent)
+        {
             return false;
-        
+        }
+
         var now = DateTime.Now;
         return now is { Month: 4, Day: 1 };
     }
 
-    public bool IsHalloweenEnabled()
-    {
-        return !_initialized ? CalculateHalloween() : HalloweenEnabled;
-    }
-    
+    public bool IsHalloweenEnabled() => !_initialized ? CalculateHalloween() : HalloweenEnabled;
+
     private bool CalculateHalloween()
     {
         if (!ModConfig.Config.CompatibilityConfig.Secrets.HalloweenEvent)
+        {
             return false;
-        
+        }
+
         var now = DateTime.Now;
         return now is { Month: 10, Day: 31 };
     }
 
-    public bool IsChristmasEnabled()
-    {
-        return !_initialized ? CalculateChristmas() : ChristmasEnabled;
-    }
-    
+    public bool IsChristmasEnabled() => !_initialized ? CalculateChristmas() : ChristmasEnabled;
+
     private bool CalculateChristmas()
     {
         if (!ModConfig.Config.CompatibilityConfig.Secrets.ChristmasEvent)
+        {
             return false;
-        
+        }
+
         var now = DateTime.Now;
         var start = new DateTime(now.Year, 12, 24);
         var end = new DateTime(now.Year, 12, 25);

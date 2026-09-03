@@ -61,7 +61,8 @@
       "Scabbard": [],
       "minLevel": 11,
       "maxLevel": 21
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Setup",
       "requiredMap": [
@@ -99,10 +100,13 @@
       "Scabbard": [],
       "minLevel": 18,
       "maxLevel": 28
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Punisher Part 1",
-      "requiredMap": [ "shoreline" ],
+      "requiredMap": [
+        "shoreline"
+      ],
       "requiredWeaponMods": [],
       "requiredWeaponModSlots": [],
       "requiredWeaponModBaseClasses": [],
@@ -129,7 +133,8 @@
       "Scabbard": [],
       "minLevel": 17,
       "maxLevel": 27
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Punisher Part 2",
       "requiredMap": [
@@ -156,7 +161,8 @@
       "Scabbard": [],
       "minLevel": 18,
       "maxLevel": 28
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Punisher Part 3",
       "requiredMap": [
@@ -185,7 +191,8 @@
       "Scabbard": [],
       "minLevel": 19,
       "maxLevel": 29
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Punisher Part 4",
       "requiredMap": [
@@ -234,7 +241,8 @@
       "Scabbard": [],
       "minLevel": 20,
       "maxLevel": 30
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Punisher Part 5",
       "requiredMap": [],
@@ -263,7 +271,8 @@
       "Scabbard": [],
       "minLevel": 20,
       "maxLevel": 30
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Punisher Part 6",
       "requiredMap": [
@@ -298,7 +307,8 @@
       "Scabbard": [],
       "minLevel": 21,
       "maxLevel": 31
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Test Drive Part 1",
       "requiredMap": [],
@@ -332,7 +342,8 @@
       "Scabbard": [],
       "minLevel": 30,
       "maxLevel": 40
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Test Drive Part 2",
       "requiredMap": [
@@ -367,7 +378,8 @@
       "Scabbard": [],
       "minLevel": 30,
       "maxLevel": 40
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Test Drive Part 3",
       "requiredMap": [
@@ -401,7 +413,8 @@
       "Scabbard": [],
       "minLevel": 30,
       "maxLevel": 40
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Test Drive Part 4",
       "requiredMap": [
@@ -433,7 +446,8 @@
       "Scabbard": [],
       "minLevel": 40,
       "maxLevel": 50
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Test Drive Part 5",
       "requiredMap": [
@@ -468,7 +482,8 @@
       "Scabbard": [],
       "minLevel": 40,
       "maxLevel": 50
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "The Good Times Part 1",
       "requiredMap": [
@@ -501,7 +516,8 @@
       "Scabbard": [],
       "minLevel": 30,
       "maxLevel": 40
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Dangerous Props",
       "requiredMap": [],
@@ -526,7 +542,8 @@
       "Scabbard": [],
       "minLevel": 35,
       "maxLevel": 45
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Connections Up North",
       "requiredMap": [],
@@ -563,7 +580,8 @@
       "Scabbard": [],
       "minLevel": 35,
       "maxLevel": 45
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Peacekeeping Mission",
       "requiredMap": [
@@ -601,7 +619,8 @@
       "Scabbard": [],
       "minLevel": 33,
       "maxLevel": 43
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Dandies",
       "requiredMap": [
@@ -630,7 +649,8 @@
       "Scabbard": [],
       "minLevel": 33,
       "maxLevel": 43
-    },{
+    },
+    {
       "isQuestEnabled": true,
       "questName": "Decontamination Service",
       "requiredMap": [

@@ -1,19 +1,18 @@
-using ProgressiveBotSystem.Constants;
-using ProgressiveBotSystem.Globals;
-using ProgressiveBotSystem.Helpers;
+namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
+
+using Constants;
+using Globals;
+using Helpers;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
+using SPTarkov.Server.Core.Helpers.Bot;
+using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
-using SPTarkov.Server.Core.Utils;
-
-namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
-
-using SPTarkov.Common.Models.Logging;
-using SPTarkov.Server.Core.Helpers.Bot;
-using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Services.Locales;
+using SPTarkov.Server.Core.Utils;
 
 [Injectable]
 public class ApbsExternalInventoryMagGen(
@@ -27,15 +26,9 @@ public class ApbsExternalInventoryMagGen(
     InventoryMagGenHelper inventoryMagGenHelper
 ) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
-    public int GetPriority()
-    {
-        return 99;
-    }
+    public int GetPriority() => 99;
 
-    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen)
-    {
-        return true; // Fallback, if code reaches here it means no other implementation can handle this type of magazine
-    }
+    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen) => true; // Fallback, if code reaches here it means no other implementation can handle this type of magazine
 
     public void Process(ApbsInventoryMagGen inventoryMagGen)
     {
@@ -45,9 +38,9 @@ public class ApbsExternalInventoryMagGen(
         // Magazine Db template
         var magTemplate = inventoryMagGen.GetMagazineTemplate();
         var magazineTpl = magTemplate.Id;
-        
+
         var attemptedMagBlacklist = new HashSet<MongoId>();
-        
+
         var weapon = inventoryMagGen.GetWeaponTemplate();
         var ammoCaliber = inventoryMagGen.GetAmmoTemplate().Properties.Caliber;
         var selectedAmmoId = inventoryMagGen.GetAmmoTemplate().Id;
@@ -60,28 +53,54 @@ public class ApbsExternalInventoryMagGen(
         var modPool = botEquipmentHelper.GetModsByBotRole(botRole, tier);
         var rerollConfig = inventoryMagGen.GetRerollDetails();
         var toploadConfig = inventoryMagGen.GetToploadConfig();
-        
-        var shouldBotRerollAmmo = rerollConfig.Enable && !toploadConfig.Enable && randomUtil.GetChance100(rerollConfig.Chance);
-        var shouldBotTopload = toploadConfig.Enable && !rerollConfig.Enable && randomUtil.GetChance100(toploadConfig.Chance);
-        
-        var randomizedMagazineCount = inventoryMagGenHelper.GetRandomizedMagazineCount(inventoryMagGen.GetMagCount());
-        if (itemHelper.IsOfBaseclass(weapon.Id, BaseClasses.PISTOL)) randomizedMagazineCount = randomUtil.GetInt(1, 2);
-        
+
+        var shouldBotRerollAmmo =
+            rerollConfig.Enable
+            && !toploadConfig.Enable
+            && randomUtil.GetChance100(rerollConfig.Chance);
+        var shouldBotTopload =
+            toploadConfig.Enable
+            && !rerollConfig.Enable
+            && randomUtil.GetChance100(toploadConfig.Chance);
+
+        var randomizedMagazineCount = inventoryMagGenHelper.GetRandomizedMagazineCount(
+            inventoryMagGen.GetMagCount()
+        );
+        if (itemHelper.IsOfBaseclass(weapon.Id, BaseClasses.PISTOL))
+        {
+            randomizedMagazineCount = randomUtil.GetInt(1, 2);
+        }
+
         for (var i = 0; i < randomizedMagazineCount; i++)
         {
-            if (ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit && !VanillaItemConstants.WeaponsWithNoSmallMagazines.Contains(weapon.Id))
+            if (
+                ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit
+                && !VanillaItemConstants.WeaponsWithNoSmallMagazines.Contains(weapon.Id)
+            )
             {
                 modPool.TryGetValue(weapon.Id, out var weaponModPool);
                 HashSet<MongoId>? magazinePool = null;
                 weaponModPool?.TryGetValue("mod_magazine", out magazinePool);
-    
+
                 if (magazinePool is not null && magazinePool.Count != 0)
                 {
-                    var currentMagazineSize = magTemplate.Properties.Cartridges.Max(x => x.MaxCount.Value);
+                    var currentMagazineSize = magTemplate.Properties.Cartridges.Max(x =>
+                        x.MaxCount.Value
+                    );
 
-                    if (currentMagazineSize > 35 && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1)
+                    if (
+                        currentMagazineSize > 35
+                        && i >= ModConfig.Config.GeneralConfig.LargeCapacityMagazineCount - 1
+                    )
                     {
-                        var smallMagazinePool = inventoryMagGenHelper.GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 25, 35);
+                        var smallMagazinePool =
+                            inventoryMagGenHelper.GetCustomFilteredMagazinePoolByCapacity(
+                                tier,
+                                weapon,
+                                magazinePool,
+                                25,
+                                35
+                            );
 
                         magazineTpl = randomUtil.GetArrayValue(smallMagazinePool);
                         magTemplate = itemHelper.GetItem(magazineTpl).Value;
@@ -92,19 +111,23 @@ public class ApbsExternalInventoryMagGen(
             var selectedAmmoForMag = selectedAmmoId;
             if (shouldBotRerollAmmo)
             {
-                selectedAmmoForMag = inventoryMagGenHelper.GetWeightedCompatibleAmmo(ammoTable, weapon);
+                selectedAmmoForMag = inventoryMagGenHelper.GetWeightedCompatibleAmmo(
+                    ammoTable,
+                    weapon
+                );
             }
-            
-            List<Item> magazineWithAmmo = new List<Item>();
+
+            var magazineWithAmmo = new List<Item>();
             if (shouldBotTopload)
             {
                 magazineWithAmmo = inventoryMagGenHelper.CreateMagazineWithAmmo(
-                    magazineTpl, 
-                    selectedAmmoForMag, 
-                    ammoTable, 
-                    ammoCaliber, 
+                    magazineTpl,
+                    selectedAmmoForMag,
+                    ammoTable,
+                    ammoCaliber,
                     magTemplate,
-                    toploadConfig.Percent);
+                    toploadConfig.Percent
+                );
             }
             else
             {
@@ -118,7 +141,7 @@ public class ApbsExternalInventoryMagGen(
             HashSet<EquipmentSlots> inventorySlots = ModConfig.WttPackNStrap
                 ? [EquipmentSlots.ArmBand, EquipmentSlots.TacticalVest, EquipmentSlots.Pockets]
                 : [EquipmentSlots.TacticalVest, EquipmentSlots.Pockets];
-            
+
             var fitsIntoInventory = botGeneratorHelper.AddItemWithChildrenToEquipmentSlot(
                 inventoryMagGen.GetBotId(),
                 inventorySlots,
@@ -140,7 +163,9 @@ public class ApbsExternalInventoryMagGen(
                 // Prevent infinite loop by only allowing 5 attempts at fitting a magazine into inventory
                 if (fitAttempts > 5)
                 {
-                    logger.Debug($"Tier: {tier} - Role: {botRole} - Failed {fitAttempts} times to add magazine {magazineTpl} to bot inventory, stopping");
+                    logger.Debug(
+                        $"Tier: {tier} - Role: {botRole} - Failed {fitAttempts} times to add magazine {magazineTpl} to bot inventory, stopping"
+                    );
 
                     break;
                 }
@@ -173,18 +198,28 @@ public class ApbsExternalInventoryMagGen(
                 // Set chosen magazine tpl to the weapons default magazine tpl and try to fit into inventory next loop
                 magazineTpl = defaultMagazineTpl.Value;
                 magTemplate = itemHelper.GetItem(magazineTpl).Value;
-                
+
                 if (magTemplate is null)
                 {
-                    logger.Error(serverLocalisationService.GetText("bot-unable_to_find_default_magazine_item", magazineTpl));
+                    logger.Error(
+                        serverLocalisationService.GetText(
+                            "bot-unable_to_find_default_magazine_item",
+                            magazineTpl
+                        )
+                    );
 
                     break;
                 }
-                
+
                 // This fix is for when the default mag doesn't fit the parent weapon. This primarily happens with modded weapons.
                 if (!inventoryMagGenHelper.DoesMagazineFitWeapon(weapon, magTemplate))
                 {
-                    magTemplate = inventoryMagGenHelper.GetFallbackFittingMagazine(modPool, weapon, magTemplate, tier);
+                    magTemplate = inventoryMagGenHelper.GetFallbackFittingMagazine(
+                        modPool,
+                        weapon,
+                        magTemplate,
+                        tier
+                    );
                     magazineTpl = magTemplate.Id;
                 }
 
@@ -237,10 +272,15 @@ public class ApbsExternalInventoryMagGen(
     /// <param name="weaponTpl"> Weapon to get mag for </param>
     /// <param name="magazineBlacklist"> Blacklisted magazines </param>
     /// <returns> Item of chosen magazine </returns>
-    public TemplateItem? GetRandomExternalMagazineForInternalMagazineGun(MongoId weaponTpl, HashSet<MongoId> magazineBlacklist)
+    public TemplateItem? GetRandomExternalMagazineForInternalMagazineGun(
+        MongoId weaponTpl,
+        HashSet<MongoId> magazineBlacklist
+    )
     {
         // The mag Slot data for the weapon
-        var magSlot = itemHelper.GetItem(weaponTpl).Value.Properties.Slots.FirstOrDefault(x => x.Name == "mod_magazine");
+        var magSlot = itemHelper
+            .GetItem(weaponTpl)
+            .Value.Properties.Slots.FirstOrDefault(x => x.Name == "mod_magazine");
         if (magSlot is null)
         {
             return null;
@@ -257,7 +297,9 @@ public class ApbsExternalInventoryMagGen(
         }
 
         // Non-internal magazines that fit into the weapon
-        var externalMagazineOnlyPool = magazinePool.Where(x => x.Properties.ReloadMagType != ReloadMode.InternalMagazine);
+        var externalMagazineOnlyPool = magazinePool.Where(x =>
+            x.Properties.ReloadMagType != ReloadMode.InternalMagazine
+        );
         if (externalMagazineOnlyPool is null || !externalMagazineOnlyPool.Any())
         {
             return null;

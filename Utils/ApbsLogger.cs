@@ -1,102 +1,207 @@
-﻿using System.Collections.Concurrent;
+﻿namespace ProgressiveBotSystem.Utils;
+
+using System.Collections.Concurrent;
 using System.Reflection;
-using ProgressiveBotSystem.Constants;
-using ProgressiveBotSystem.Globals;
+using Constants;
+using Globals;
 using Spectre.Console;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 
-namespace ProgressiveBotSystem.Utils;
-
 [Injectable(InjectionType.Singleton)]
 public class ApbsLogger
 {
-    private readonly ConcurrentQueue<LogMessage> _queue = new ConcurrentQueue<LogMessage>();
-    private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-    private readonly Task _task;
-    private readonly string _pathToModFolder;
+    private readonly CancellationTokenSource _cts = new();
     private readonly ISptLogger<ApbsLogger> _logger;
+    private readonly string _pathToModFolder;
+    private readonly ConcurrentQueue<LogMessage> _queue = new();
+    private readonly Task _task;
 
     public ApbsLogger(ISptLogger<ApbsLogger> logger)
     {
-        _pathToModFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidOperationException();
+        _pathToModFolder =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            ?? throw new InvalidOperationException();
         _logger = logger;
         _task = Task.Run(() => ProcessLogQueue(_cts.Token));
     }
 
-    public void Debug(string message1, string message2 = "", string message3 = "", string message4 = "",
-    string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+    public void Debug(
+        string message1,
+        string message2 = "",
+        string message3 = "",
+        string message4 = "",
+        string message5 = "",
+        string message6 = "",
+        string message7 = "",
+        string message8 = ""
+    )
     {
-        if (!ModConfig.Config.Debug.EnableDebugLog) return;
+        if (!ModConfig.Config.Debug.EnableDebugLog)
+        {
+            return;
+        }
 
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Debug + ".txt");
 
-        EnqueueLog(new LogMessage
-        {
-            Timestamp = DateTime.Now,
-            Level = "DEBUG",
-            FilePath = logFilePath,
-            Message = CreateMessage(Logging.Debug, message1, message2, message3, message4, message5, message6, message7, message8)
-        });
+        EnqueueLog(
+            new LogMessage
+            {
+                Timestamp = DateTime.Now,
+                Level = "DEBUG",
+                FilePath = logFilePath,
+                Message = CreateMessage(
+                    Logging.Debug,
+                    message1,
+                    message2,
+                    message3,
+                    message4,
+                    message5,
+                    message6,
+                    message7,
+                    message8
+                ),
+            }
+        );
     }
 
-    public void Warning(string message1, string message2 = "", string message3 = "", string message4 = "",
-        string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+    public void Warning(
+        string message1,
+        string message2 = "",
+        string message3 = "",
+        string message4 = "",
+        string message5 = "",
+        string message6 = "",
+        string message7 = "",
+        string message8 = ""
+    )
     {
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Warning + ".txt");
 
-        EnqueueLog(new LogMessage
-        {
-            Timestamp = DateTime.Now,
-            Level = "WARNING",
-            FilePath = logFilePath,
-            Message = CreateMessage(Logging.Warning, message1, message2, message3, message4, message5, message6, message7, message8)
-        });
+        EnqueueLog(
+            new LogMessage
+            {
+                Timestamp = DateTime.Now,
+                Level = "WARNING",
+                FilePath = logFilePath,
+                Message = CreateMessage(
+                    Logging.Warning,
+                    message1,
+                    message2,
+                    message3,
+                    message4,
+                    message5,
+                    message6,
+                    message7,
+                    message8
+                ),
+            }
+        );
     }
 
-    public void Error(string message1, string message2 = "", string message3 = "", string message4 = "",
-        string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+    public void Error(
+        string message1,
+        string message2 = "",
+        string message3 = "",
+        string message4 = "",
+        string message5 = "",
+        string message6 = "",
+        string message7 = "",
+        string message8 = ""
+    )
     {
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Error + ".txt");
 
-        EnqueueLog(new LogMessage
-        {
-            Timestamp = DateTime.Now,
-            Level = "ERROR",
-            FilePath = logFilePath,
-            Message = CreateMessage(Logging.Error, message1, message2, message3, message4, message5, message6, message7, message8)
-        });
+        EnqueueLog(
+            new LogMessage
+            {
+                Timestamp = DateTime.Now,
+                Level = "ERROR",
+                FilePath = logFilePath,
+                Message = CreateMessage(
+                    Logging.Error,
+                    message1,
+                    message2,
+                    message3,
+                    message4,
+                    message5,
+                    message6,
+                    message7,
+                    message8
+                ),
+            }
+        );
     }
 
-    public void Success(string message1, string message2 = "", string message3 = "", string message4 = "",
-        string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+    public void Success(
+        string message1,
+        string message2 = "",
+        string message3 = "",
+        string message4 = "",
+        string message5 = "",
+        string message6 = "",
+        string message7 = "",
+        string message8 = ""
+    )
     {
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Success + ".txt");
 
-        EnqueueLog(new LogMessage
-        {
-            Timestamp = DateTime.Now,
-            Level = "SUCCESS",
-            FilePath = logFilePath,
-            Message = CreateMessage(Logging.Success, message1, message2, message3, message4, message5, message6, message7, message8)
-        });
+        EnqueueLog(
+            new LogMessage
+            {
+                Timestamp = DateTime.Now,
+                Level = "SUCCESS",
+                FilePath = logFilePath,
+                Message = CreateMessage(
+                    Logging.Success,
+                    message1,
+                    message2,
+                    message3,
+                    message4,
+                    message5,
+                    message6,
+                    message7,
+                    message8
+                ),
+            }
+        );
     }
 
-    public void Bot(string logFolder, string message1, string message2 = "", string message3 = "", string message4 = "",
-        string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+    public void Bot(
+        string logFolder,
+        string message1,
+        string message2 = "",
+        string message3 = "",
+        string message4 = "",
+        string message5 = "",
+        string message6 = "",
+        string message7 = "",
+        string message8 = ""
+    )
     {
         var logFilePath = Path.Combine(_pathToModFolder, "logs", logFolder + ".txt");
 
-        EnqueueLog(new LogMessage
-        {
-            Timestamp = DateTime.Now,
-            Level = "BOT",
-            FilePath = logFilePath,
-            Message = CreateMessage(string.Empty, message1, message2, message3, message4, message5, message6, message7, message8)
-        });
+        EnqueueLog(
+            new LogMessage
+            {
+                Timestamp = DateTime.Now,
+                Level = "BOT",
+                FilePath = logFilePath,
+                Message = CreateMessage(
+                    string.Empty,
+                    message1,
+                    message2,
+                    message3,
+                    message4,
+                    message5,
+                    message6,
+                    message7,
+                    message8
+                ),
+            }
+        );
     }
 
-    
     private void EnqueueLog(LogMessage message)
     {
         _queue.Enqueue(message);
@@ -110,7 +215,10 @@ public class ApbsLogger
             {
                 try
                 {
-                    await File.AppendAllTextAsync(message.FilePath, $"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{message.Level}] {message.Message}");
+                    await File.AppendAllTextAsync(
+                        message.FilePath,
+                        $"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{message.Level}] {message.Message}"
+                    );
                 }
                 catch (Exception ex)
                 {
@@ -129,10 +237,20 @@ public class ApbsLogger
         _cts.Cancel();
         _task.Wait();
     }
-    
-    private string CreateMessage(string logType, string message1, string message2 = "", string message3 = "", string message4 = "", string message5 = "", string message6 = "", string message7 = "", string message8 = "")
+
+    private string CreateMessage(
+        string logType,
+        string message1,
+        string message2 = "",
+        string message3 = "",
+        string message4 = "",
+        string message5 = "",
+        string message6 = "",
+        string message7 = "",
+        string message8 = ""
+    )
     {
-        var messageList = new List<string>()
+        var messageList = new List<string>
         {
             message1,
             message2,
@@ -141,7 +259,7 @@ public class ApbsLogger
             message5,
             message6,
             message7,
-            message8
+            message8,
         };
 
         var messages = string.Empty;
@@ -181,8 +299,11 @@ public class ApbsLogger
             }
         }
 
-        if (!showInConsole) return messages;
-        
+        if (!showInConsole)
+        {
+            return messages;
+        }
+
         switch (logType)
         {
             case Logging.Debug:

@@ -8,7 +8,8 @@
     <MudContainer Class="mb-20">
         <MudExpansionPanels MultiExpansion="true">
 
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Normalization of AI" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Normalization of AI"
+                               Expanded="true">
                 <MudGrid>
 
                     <MudSwitchTTWarning
@@ -20,7 +21,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthEnable"))"
                         IsNonDefault="@(AllNormalizeHealthEnable)"
                         OnUndo="UndoNormalizeHealthEnable"
-                        OnDefault="DefaultNormalizeHealthEnable" />
+                        OnDefault="DefaultNormalizeHealthEnable"/>
 
                     <MudSwitchSliderTT
                         Label="Chest Head"
@@ -34,7 +35,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthHeadEnable") || MainLayout.pendingChanges.Contains("AllNormalizeHealthHead"))"
                         IsNonDefault="@(AllNormalizeHealthHead != 35 || !AllNormalizeHealthHeadEnable)"
                         OnUndo="UndoNormalizeHealthHead"
-                        OnDefault="DefaultNormalizeHealthHead" />
+                        OnDefault="DefaultNormalizeHealthHead"/>
 
                     <MudSwitchSliderTT
                         Label="Chest Health"
@@ -48,7 +49,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthChestEnable") || MainLayout.pendingChanges.Contains("AllNormalizeHealthChest"))"
                         IsNonDefault="@(AllNormalizeHealthChest != 85 || !AllNormalizeHealthChestEnable)"
                         OnUndo="UndoNormalizeHealthChest"
-                        OnDefault="DefaultNormalizeHealthChest" />
+                        OnDefault="DefaultNormalizeHealthChest"/>
 
                     <MudSwitchSliderTT
                         Label="Stomach Health"
@@ -60,10 +61,10 @@
                         Max="250"
                         DisabledSlider="@(!AllNormalizeHealthStomachEnable || !AllNormalizeHealthEnable)"
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthStomach") || MainLayout.pendingChanges.Contains("AllNormalizeHealthStomachEnable"))"
-                        IsNonDefault="@(AllNormalizeHealthStomach != 70 || AllNormalizeHealthStomachEnable != true)"
+                        IsNonDefault="@(AllNormalizeHealthStomach != 70 || !AllNormalizeHealthStomachEnable)"
                         OnUndo="UndoNormalizeHealthStomach"
-                        OnDefault="DefaultNormalizeHealthStomach" />
-            
+                        OnDefault="DefaultNormalizeHealthStomach"/>
+
                     <MudSwitchSliderTT
                         Label="Left Arm Health"
                         TooltipText="Health of Left Arm. Toggle switch to enable or disable this body part."
@@ -76,8 +77,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthLeftArm") || MainLayout.pendingChanges.Contains("AllNormalizeHealthLeftArmEnable"))"
                         IsNonDefault="@(AllNormalizeHealthLeftArm != 60 || !AllNormalizeHealthLeftArmEnable)"
                         OnUndo="UndoNormalizeHealthLeftArm"
-                        OnDefault="DefaultNormalizeHealthLeftArm" />
-            
+                        OnDefault="DefaultNormalizeHealthLeftArm"/>
+
                     <MudSwitchSliderTT
                         Label="Right Arm Health"
                         TooltipText="Health of Right Arm. Toggle switch to enable or disable this body part."
@@ -90,8 +91,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthRightArm") || MainLayout.pendingChanges.Contains("AllNormalizeHealthRightArmEnable"))"
                         IsNonDefault="@(AllNormalizeHealthRightArm != 60 || !AllNormalizeHealthRightArmEnable)"
                         OnUndo="UndoNormalizeHealthRightArm"
-                        OnDefault="DefaultNormalizeHealthRightArm" />
-            
+                        OnDefault="DefaultNormalizeHealthRightArm"/>
+
                     <MudSwitchSliderTT
                         Label="Left Leg Health"
                         TooltipText="Health of Left Leg. Toggle switch to enable or disable this body part."
@@ -104,8 +105,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthLeftLeg") || MainLayout.pendingChanges.Contains("AllNormalizeHealthLeftLegEnable"))"
                         IsNonDefault="@(AllNormalizeHealthLeftLeg != 65 || !AllNormalizeHealthLeftLegEnable)"
                         OnUndo="UndoNormalizeHealthLeftLeg"
-                        OnDefault="DefaultNormalizeHealthLeftLeg" />
-            
+                        OnDefault="DefaultNormalizeHealthLeftLeg"/>
+
                     <MudSwitchSliderTT
                         Label="Right Leg Health"
                         TooltipText="Health of Right Leg. Toggle switch to enable or disable this body part."
@@ -118,9 +119,9 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeHealthRightLeg") || MainLayout.pendingChanges.Contains("AllNormalizeHealthRightLegEnable"))"
                         IsNonDefault="@(AllNormalizeHealthRightLeg != 65 || !AllNormalizeHealthRightLegEnable)"
                         OnUndo="UndoNormalizeHealthRightLeg"
-                        OnDefault="DefaultNormalizeHealthRightLeg" />
+                        OnDefault="DefaultNormalizeHealthRightLeg"/>
 
-                    <MudItem xs="2" />
+                    <MudItem xs="2"/>
                     <MudItem xs="9">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                             <MudSelect T="string" Label="Excluded Bots"
@@ -131,21 +132,22 @@
                                        AnchorOrigin="Origin.CenterLeft"
                                        Dense Clearable
                                        Disabled="!AllNormalizeHealthEnable">
-                                @foreach (var name in BotNames)
-                                {
+                                @foreach (var name in BotNames){
                                     <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("AllNormalizeHealthExcludedBots") && MainLayout.AppUndoButtonToggle)
-                        {
-                            <MudButton @onclick="UndoNormalizeHealthExcludedBots" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        @if (MainLayout.pendingChanges.Contains("AllNormalizeHealthExcludedBots") && MainLayout.AppUndoButtonToggle){
+                            <MudButton @onclick="UndoNormalizeHealthExcludedBots" Variant="Variant.Filled"
+                                       Color="Color.Inherit" Size="Size.Small">Undo
+                            </MudButton>
                         }
-                        else if (AllNormalizeHealthExcludedBots.Count > 0 && MainLayout.AppDefaultButtonToggle)
-                        {
-                            <MudButton @onclick="DefaultNormalizeHealthExcludedBots" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        else if (AllNormalizeHealthExcludedBots.Count > 0 && MainLayout.AppDefaultButtonToggle){
+                            <MudButton @onclick="DefaultNormalizeHealthExcludedBots" Variant="Variant.Filled"
+                                       Color="Color.Dark" Size="Size.Small">Default
+                            </MudButton>
                         }
                     </MudItem>
 
@@ -158,12 +160,13 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllNormalizeSkillsEnable"))"
                         IsNonDefault="@(AllNormalizeSkillsEnable)"
                         OnUndo="UndoNormalizeSkillsEnable"
-                        OnDefault="DefaultNormalizeSkillsEnable" />
+                        OnDefault="DefaultNormalizeSkillsEnable"/>
 
                 </MudGrid>
             </MudExpansionPanel>
 
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Player Scav Settings" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Player Scav Settings"
+                               Expanded="true">
                 <MudGrid>
 
                     <MudSwitchTTWarning
@@ -175,7 +178,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("PscavEnable"))"
                         IsNonDefault="@(PscavEnable)"
                         OnUndo="UndoPlayerScavEnable"
-                        OnDefault="DefaultPlayerScavEnable" />
+                        OnDefault="DefaultPlayerScavEnable"/>
 
                     <MudSwitchTT
                         Label="Use Pmc Skills"
@@ -184,7 +187,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("PscavEnablePmcSkills"))"
                         IsNonDefault="@(PscavEnablePmcSkills)"
                         OnUndo="UndoPlayerScavPmcSkills"
-                        OnDefault="DefaultPlayerScavPmcSkills" />
+                        OnDefault="DefaultPlayerScavPmcSkills"/>
 
                     <MudSwitchTT
                         Label="Pmc Skill Writeback"
@@ -193,7 +196,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("PscavEnablePmcSkillWriteback"))"
                         IsNonDefault="@(PscavEnablePmcSkillWriteback)"
                         OnUndo="UndoPlayerScavPmcSkillWriteback"
-                        OnDefault="DefaultPlayerScavPmcSkillWriteback" />
+                        OnDefault="DefaultPlayerScavPmcSkillWriteback"/>
 
                     <MudSwitchTTWarning
                         Label="Scav as Boss"
@@ -204,7 +207,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("PscavEnableBossRegeneration"))"
                         IsNonDefault="@(PscavEnableBossRegeneration)"
                         OnUndo="UndoPlayerScavBossEnable"
-                        OnDefault="DefaultPlayerScavBossEnable" />
+                        OnDefault="DefaultPlayerScavBossEnable"/>
 
                     <MudSliderChildTT
                         Label="Chance"
@@ -212,7 +215,7 @@
                         @bind-Value="PscavBossRegenerationChance"
                         Min="1"
                         Max="100"
-                        Disabled="@(!PscavEnableBossRegeneration)" />
+                        Disabled="@(!PscavEnableBossRegeneration)"/>
 
                     <MudSwitchTT
                         Label="Use Boss Health Values"
@@ -221,9 +224,9 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("PscavEnableBossHealthValues"))"
                         IsNonDefault="@(PscavEnableBossHealthValues)"
                         OnUndo="UndoPlayerScavBossHealthValues"
-                        OnDefault="DefaultPlayerScavBossHealthValues" />
+                        OnDefault="DefaultPlayerScavBossHealthValues"/>
 
-                    <MudItem xs="2" />
+                    <MudItem xs="2"/>
                     <MudItem xs="9">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                             <MudSelect T="string" Label="Allowed Bosses"
@@ -234,28 +237,30 @@
                                        AnchorOrigin="Origin.CenterLeft"
                                        Dense Clearable
                                        Disabled="!PscavEnableBossRegeneration">
-                                @foreach (var name in _bossNames)
-                                {
+                                @foreach (var name in _bossNames){
                                     <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (MainLayout.pendingChanges.Contains("PscavBossRegenerationAllowedBosses") && MainLayout.AppUndoButtonToggle)
-                        {
-                            <MudButton @onclick="UndoPlayerScavBossAllowedBosses" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        @if (MainLayout.pendingChanges.Contains("PscavBossRegenerationAllowedBosses") && MainLayout.AppUndoButtonToggle){
+                            <MudButton @onclick="UndoPlayerScavBossAllowedBosses" Variant="Variant.Filled"
+                                       Color="Color.Inherit" Size="Size.Small">Undo
+                            </MudButton>
                         }
-                        else if (PscavBossRegenerationAllowedBosses.Count > 0 && MainLayout.AppDefaultButtonToggle)
-                        {
-                            <MudButton @onclick="DefaultPlayerScavBossAllowedBosses" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        else if (PscavBossRegenerationAllowedBosses.Count > 0 && MainLayout.AppDefaultButtonToggle){
+                            <MudButton @onclick="DefaultPlayerScavBossAllowedBosses" Variant="Variant.Filled"
+                                       Color="Color.Dark" Size="Size.Small">Default
+                            </MudButton>
                         }
                     </MudItem>
 
                 </MudGrid>
             </MudExpansionPanel>
 
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Map Weapon Selection Weighting" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Map Weapon Selection Weighting"
+                               Expanded="true">
                 <MudGrid>
 
                     <MapWeaponRangeWeighting
@@ -265,7 +270,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingCustomsLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingCustomsShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingCustomsLong - 20) > 0.001 || Math.Abs(MapRangeWeightingCustomsShort - 80) > 0.001)"
                         OnUndo="UndoCustomsWeaponRangeWeights"
-                        OnDefault="DefaultCustomsWeaponRangeWeights" />
+                        OnDefault="DefaultCustomsWeaponRangeWeights"/>
 
                     <MapWeaponRangeWeighting
                         Label="Reserve"
@@ -274,8 +279,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingReserveLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingReserveShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingReserveLong - 20) > 0.001 || Math.Abs(MapRangeWeightingReserveShort - 80) > 0.001)"
                         OnUndo="UndoReserveWeaponRangeWeights"
-                        OnDefault="DefaultReserveWeaponRangeWeights" />
-            
+                        OnDefault="DefaultReserveWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Labs"
                         @bind-LongWeight="MapRangeWeightingLabsLong"
@@ -283,8 +288,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingLabsLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingLabsShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingLabsLong - 10) > 0.001 || Math.Abs(MapRangeWeightingLabsShort - 90) > 0.001)"
                         OnUndo="UndoLabsWeaponRangeWeights"
-                        OnDefault="DefaultLabsWeaponRangeWeights" />
-            
+                        OnDefault="DefaultLabsWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Factory Night"
                         @bind-LongWeight="MapRangeWeightingFactoryNightLong"
@@ -292,8 +297,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingFactoryNightLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingFactoryNightShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingFactoryNightLong - 5) > 0.001 || Math.Abs(MapRangeWeightingFactoryNightShort - 95) > 0.001)"
                         OnUndo="UndoFactoryNightWeaponRangeWeights"
-                        OnDefault="DefaultFactoryNightWeaponRangeWeights" />
-            
+                        OnDefault="DefaultFactoryNightWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Factory Day"
                         @bind-LongWeight="MapRangeWeightingFactoryDayLong"
@@ -301,8 +306,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingFactoryDayLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingFactoryDayShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingFactoryDayLong - 5) > 0.001 || Math.Abs(MapRangeWeightingFactoryDayShort - 95) > 0.001)"
                         OnUndo="UndoFactoryDayWeaponRangeWeights"
-                        OnDefault="DefaultFactoryDayWeaponRangeWeights" />
-            
+                        OnDefault="DefaultFactoryDayWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Interchange"
                         @bind-LongWeight="MapRangeWeightingInterchangeLong"
@@ -310,8 +315,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingInterchangeLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingInterchangeShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingInterchangeLong - 20) > 0.001 || Math.Abs(MapRangeWeightingInterchangeShort - 80) > 0.001)"
                         OnUndo="UndoInterchangeWeaponRangeWeights"
-                        OnDefault="DefaultInterchangeWeaponRangeWeights" />
-            
+                        OnDefault="DefaultInterchangeWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Ground Zero"
                         @bind-LongWeight="MapRangeWeightingSandboxLong"
@@ -319,8 +324,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingSandboxLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingSandboxShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingSandboxLong - 15) > 0.001 || Math.Abs(MapRangeWeightingSandboxShort - 85) > 0.001)"
                         OnUndo="UndoSandboxWeaponRangeWeights"
-                        OnDefault="DefaultSandboxWeaponRangeWeights" />
-            
+                        OnDefault="DefaultSandboxWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Ground Zero (21+)"
                         @bind-LongWeight="MapRangeWeightingSandboxHighLong"
@@ -328,8 +333,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingSandboxHighLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingSandboxHighShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingSandboxHighLong - 15) > 0.001 || Math.Abs(MapRangeWeightingSandboxHighShort - 85) > 0.001)"
                         OnUndo="UndoSandboxHighWeaponRangeWeights"
-                        OnDefault="DefaultSandboxHighWeaponRangeWeights" />
-            
+                        OnDefault="DefaultSandboxHighWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Woods"
                         @bind-LongWeight="MapRangeWeightingWoodsLong"
@@ -337,8 +342,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingWoodsLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingWoodsShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingWoodsLong - 60) > 0.001 || Math.Abs(MapRangeWeightingWoodsShort - 40) > 0.001)"
                         OnUndo="UndoWoodsWeaponRangeWeights"
-                        OnDefault="DefaultWoodsWeaponRangeWeights" />
-            
+                        OnDefault="DefaultWoodsWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Shoreline"
                         @bind-LongWeight="MapRangeWeightingShorelineLong"
@@ -346,8 +351,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingShorelineLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingShorelineShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingShorelineLong - 50) > 0.001 || Math.Abs(MapRangeWeightingShorelineShort - 50) > 0.001)"
                         OnUndo="UndoShorelineWeaponRangeWeights"
-                        OnDefault="DefaultShorelineWeaponRangeWeights" />
-            
+                        OnDefault="DefaultShorelineWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Lighthouse"
                         @bind-LongWeight="MapRangeWeightingLighthouseLong"
@@ -355,8 +360,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingLighthouseLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingLighthouseShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingLighthouseLong - 30) > 0.001 || Math.Abs(MapRangeWeightingLighthouseShort - 70) > 0.001)"
                         OnUndo="UndoLighthouseWeaponRangeWeights"
-                        OnDefault="DefaultLighthouseWeaponRangeWeights" />
-            
+                        OnDefault="DefaultLighthouseWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="TarkovStreets"
                         @bind-LongWeight="MapRangeWeightingTarkovStreetsLong"
@@ -364,8 +369,8 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingTarkovStreetsLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingTarkovStreetsShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingTarkovStreetsLong - 20) > 0.001 || Math.Abs(MapRangeWeightingTarkovStreetsShort - 80) > 0.001)"
                         OnUndo="UndoTarkovStreetsWeaponRangeWeights"
-                        OnDefault="DefaultTarkovStreetsWeaponRangeWeights" />
-            
+                        OnDefault="DefaultTarkovStreetsWeaponRangeWeights"/>
+
                     <MapWeaponRangeWeighting
                         Label="Labyrinth"
                         @bind-LongWeight="MapRangeWeightingLabyrinthLong"
@@ -373,12 +378,13 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("MapRangeWeightingLabyrinthLong") || MainLayout.pendingChanges.Contains("MapRangeWeightingLabyrinthShort"))"
                         IsNonDefault="@(Math.Abs(MapRangeWeightingLabyrinthLong - 5) > 0.001 || Math.Abs(MapRangeWeightingLabyrinthShort - 95) > 0.001)"
                         OnUndo="UndoLabyrinthWeaponRangeWeights"
-                        OnDefault="DefaultLabyrinthWeaponRangeWeights" />
+                        OnDefault="DefaultLabyrinthWeaponRangeWeights"/>
 
                 </MudGrid>
             </MudExpansionPanel>
 
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Weapon & Armour Configurations" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Weapon & Armour Configurations"
+                               Expanded="true">
                 <MudGrid>
 
                     <MudSwitchTT
@@ -388,17 +394,17 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllPerWeaponAttachmentRolls"))"
                         IsNonDefault="@(!AllPerWeaponAttachmentRolls)"
                         OnUndo="UndoPerWeaponAttachmentRolls"
-                        OnDefault="DefaultPerWeaponAttachmentRolls" />
+                        OnDefault="DefaultPerWeaponAttachmentRolls"/>
 
                     <MudSwitchTT
                         Label="Large Capacity Magazine Limit"
                         TooltipText="Limits the amount of large capacity (36 rounds or higher) magazines a bot can spawn with (per weapon)."
                         @bind-Value="AllWeaponLargeCapacityMagazineLimitEnabled"
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponLargeCapacityMagazineLimitEnabled") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponLargeCapacityMagazineCount"))"
+                                           MainLayout.pendingChanges.Contains("AllWeaponLargeCapacityMagazineCount"))"
                         IsNonDefault="@(!AllWeaponLargeCapacityMagazineLimitEnabled || AllWeaponLargeCapacityMagazineCount != 2)"
                         OnUndo="UndoLargeCapacityMagazineLimit"
-                        OnDefault="DefaultLargeCapacityMagazineLimit" />
+                        OnDefault="DefaultLargeCapacityMagazineLimit"/>
 
                     <MudSliderChildTT
                         Label="Large Capacity Magazines Count"
@@ -406,18 +412,18 @@
                         @bind-Value="AllWeaponLargeCapacityMagazineCount"
                         Min="1"
                         Max="4"
-                        Disabled="@(!AllWeaponLargeCapacityMagazineLimitEnabled)" />
+                        Disabled="@(!AllWeaponLargeCapacityMagazineLimitEnabled)"/>
 
                     <MudSliderTT
                         Label="Buttpad Chance"
                         TooltipText="This is the chance that bot weapons, that have a stock with an available buttpad have one."
                         @bind-Value="AllWeaponButtpadChance"
                         Min="1"
-                        Max="100" 
+                        Max="100"
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponButtpadChance"))"
                         IsNonDefault="@(AllWeaponButtpadChance != 50)"
                         OnUndo="UndoWeaponButtpadChance"
-                        OnDefault="DefaultWeaponButtpadChance" />
+                        OnDefault="DefaultWeaponButtpadChance"/>
 
                     <MudSwitchTT
                         Label="Force Stock"
@@ -426,7 +432,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponForceStock"))"
                         IsNonDefault="@(AllWeaponForceStock)"
                         OnUndo="UndoWeaponForceStock"
-                        OnDefault="DefaultWeaponForceStock" />
+                        OnDefault="DefaultWeaponForceStock"/>
 
                     <MudSwitchTT
                         Label="Force Dust Cover"
@@ -435,7 +441,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponForceDustcover"))"
                         IsNonDefault="@(AllWeaponForceDustcover)"
                         OnUndo="UndoWeaponForceDustcover"
-                        OnDefault="DefaultWeaponForceDustcover" />
+                        OnDefault="DefaultWeaponForceDustcover"/>
 
                     <MudSwitchTTWarning
                         Label="Force Optical Devices"
@@ -446,7 +452,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponForceOpticalDevice"))"
                         IsNonDefault="@(AllWeaponForceOpticalDevice)"
                         OnUndo="UndoWeaponForceOpticalDevice"
-                        OnDefault="DefaultWeaponForceOpticalDevice" />
+                        OnDefault="DefaultWeaponForceOpticalDevice"/>
 
                     <MudSwitchTT
                         Label="Force Muzzle Children Attachments"
@@ -455,40 +461,63 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponForceMuzzleChildren"))"
                         IsNonDefault="@(AllWeaponForceMuzzleChildren)"
                         OnUndo="UndoWeaponForceMuzzleChildren"
-                        OnDefault="DefaultWeaponForceMuzzleChildren" />
+                        OnDefault="DefaultWeaponForceMuzzleChildren"/>
 
                     <MudSwitchTT
                         Label="Override Muzzle Chances"
                         TooltipText="Override default database and preset chances of having a muzzle, if their weapon allows it."
                         @bind-Value="AllWeaponOverrideMuzzleChanceEnabled"
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceEnabled") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier1") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier2") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier3") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier4") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier5") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier6") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier7"))"
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier1") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier2") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier3") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier4") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier5") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier6") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponOverrideMuzzleChanceValueTier7"))"
                         IsNonDefault="@(AllWeaponOverrideMuzzleChanceEnabled ||
-                                        !AllWeaponOverrideMuzzleChanceValues.SequenceEqual(ModConfig.OriginalConfig.GeneralConfig.MuzzleChance))"
+                                      !AllWeaponOverrideMuzzleChanceValues.SequenceEqual(ModConfig.OriginalConfig.GeneralConfig.MuzzleChance))"
                         OnUndo="UndoWeaponOverrideMuzzleChances"
-                        OnDefault="DefaultWeaponOverrideMuzzleChances" />
+                        OnDefault="DefaultWeaponOverrideMuzzleChances"/>
 
-                    <MudItem xs="2" />
+                    <MudItem xs="2"/>
                     <MudItem xs="3">
-                        <MudTooltip Text="Chance of weapon having a muzzle device, configurable per tier, if their weapon allows it." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                        <MudTooltip
+                            Text="Chance of weapon having a muzzle device, configurable per tier, if their weapon allows it."
+                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                             <MudText>Muzzle Chance</MudText>
                         </MudTooltip>
                     </MudItem>
                     <MudItem xs="7">
                         <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier1" Label="Weight" HelperText="Tier 1" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier2" Label="Weight" HelperText="Tier 2" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier3" Label="Weight" HelperText="Tier 3" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier4" Label="Weight" HelperText="Tier 4" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier5" Label="Weight" HelperText="Tier 5" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier6" Label="Weight" HelperText="Tier 6" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="AllWeaponOverrideMuzzleChanceValueTier7" Label="Weight" HelperText="Tier 7" Variant="Variant.Filled" Min="1" Max="100" Disabled="!AllWeaponOverrideMuzzleChanceEnabled" />
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier1" Label="Weight"
+                                             HelperText="Tier 1" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier2" Label="Weight"
+                                             HelperText="Tier 2" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier3" Label="Weight"
+                                             HelperText="Tier 3" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier4" Label="Weight"
+                                             HelperText="Tier 4" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier5" Label="Weight"
+                                             HelperText="Tier 5" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier6" Label="Weight"
+                                             HelperText="Tier 6" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
+                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
+                                             @bind-Value="AllWeaponOverrideMuzzleChanceValueTier7" Label="Weight"
+                                             HelperText="Tier 7" Variant="Variant.Filled" Min="1" Max="100"
+                                             Disabled="!AllWeaponOverrideMuzzleChanceEnabled"/>
                         </MudPaper>
                     </MudItem>
 
@@ -497,13 +526,13 @@
                         TooltipText="Limits weapons to specified number of optics & tactical devices listed below."
                         @bind-Value="AllWeaponAttachmentLimitEnabled"
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllWeaponAttachmentLimitEnabled") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponAttachmentOpticalLimit") ||
-                                            MainLayout.pendingChanges.Contains("AllWeaponAttachmentTacticalLimit"))"
+                                           MainLayout.pendingChanges.Contains("AllWeaponAttachmentOpticalLimit") ||
+                                           MainLayout.pendingChanges.Contains("AllWeaponAttachmentTacticalLimit"))"
                         IsNonDefault="@(!AllWeaponAttachmentLimitEnabled ||
-                                        AllWeaponAttachmentOpticalLimit != 2 ||
-                                        AllWeaponAttachmentTacticalLimit != 1)"
+                                      AllWeaponAttachmentOpticalLimit != 2 ||
+                                      AllWeaponAttachmentTacticalLimit != 1)"
                         OnUndo="UndoWeaponAttachmentLimits"
-                        OnDefault="DefaultWeaponAttachmentLimits" />
+                        OnDefault="DefaultWeaponAttachmentLimits"/>
 
                     <MudSliderChildTT
                         Label="Optical Device Limit"
@@ -511,7 +540,7 @@
                         @bind-Value="AllWeaponAttachmentOpticalLimit"
                         Min="1"
                         Max="5"
-                        Disabled="@(!AllWeaponAttachmentLimitEnabled)" />
+                        Disabled="@(!AllWeaponAttachmentLimitEnabled)"/>
 
                     <MudSliderChildTT
                         Label="Tactical Device Limit"
@@ -519,7 +548,7 @@
                         @bind-Value="AllWeaponAttachmentTacticalLimit"
                         Min="1"
                         Max="5"
-                        Disabled="@(!AllWeaponAttachmentLimitEnabled)" />
+                        Disabled="@(!AllWeaponAttachmentLimitEnabled)"/>
 
                 </MudGrid>
             </MudExpansionPanel>
@@ -536,7 +565,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllOnlyChadsEnabled"))"
                         IsNonDefault="@(AllOnlyChadsEnabled)"
                         OnUndo="undoOnlyChads"
-                        OnDefault="defaultOnlyChads" />
+                        OnDefault="defaultOnlyChads"/>
 
                     <MudSwitchTTWarning
                         Label="Tarkov & Chill"
@@ -547,7 +576,7 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllTarkovAndChillEnabled"))"
                         IsNonDefault="@(AllTarkovAndChillEnabled)"
                         OnUndo="UndoTarkovAndChill"
-                        OnDefault="DefaultTarkovAndChill" />
+                        OnDefault="DefaultTarkovAndChill"/>
 
                     <MudSwitchTTWarning
                         Label="Blicky Mode"
@@ -558,17 +587,17 @@
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllBlickyModeEnabled"))"
                         IsNonDefault="@(AllBlickyModeEnabled)"
                         OnUndo="UndoBlickyMode"
-                        OnDefault="DefaultBlickyMode" />
+                        OnDefault="DefaultBlickyMode"/>
 
                     <MudSwitchTT
                         Label="Allow T-7 Thermal Goggles"
                         TooltipText="Allows bots to spawn with T-7 Thermal Goggles."
                         @bind-Value="AllEquipmentT7ThermalEnabled"
                         HasPendingChanges="@(MainLayout.pendingChanges.Contains("AllEquipmentT7ThermalEnabled") ||
-                                            MainLayout.pendingChanges.Contains("AllEquipmentT7ThermalStartTier"))"
+                                           MainLayout.pendingChanges.Contains("AllEquipmentT7ThermalStartTier"))"
                         IsNonDefault="@(AllBlickyModeEnabled || AllEquipmentT7ThermalStartTier != 6)"
                         OnUndo="UndoT7Thermal"
-                        OnDefault="DefaultT7Thermal" />
+                        OnDefault="DefaultT7Thermal"/>
 
                     <MudSliderChildTT
                         Label="Tier Appearance Level"
@@ -576,86 +605,92 @@
                         @bind-Value="AllEquipmentT7ThermalStartTier"
                         Min="1"
                         Max="7"
-                        Disabled="@(!AllEquipmentT7ThermalEnabled)" />
+                        Disabled="@(!AllEquipmentT7ThermalEnabled)"/>
 
-                    <MudDivider DividerType="DividerType.FullWidth" Class="my-3" />
-                    
-                    <MudItem xs="1" />
+                    <MudDivider DividerType="DividerType.FullWidth" Class="my-3"/>
+
+                    <MudItem xs="1"/>
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Override default database and preset chances of having a plates, if their armour allows it." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                            <MudTooltip
+                                Text="Override default database and preset chances of having a plates, if their armour allows it."
+                                Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                 <MudText>Override Plate Chances</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="6">
                         <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="AllPlateChanceEnabled" Color="Color.Tertiary" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@AllPlateChanceEnabled</MudSwitch>
+                            <MudSwitch T="bool" @bind-Value="AllPlateChanceEnabled" Color="Color.Tertiary"
+                                       UncheckedColor="Color.Default"
+                                       LabelPlacement="Placement.End">@AllPlateChanceEnabled</MudSwitch>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton @onclick="ResetCustomPlateChances" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        <MudButton @onclick="ResetCustomPlateChances" Variant="Variant.Filled" Color="Color.Dark"
+                                   Size="Size.Small">Default
+                        </MudButton>
                     </MudItem>
 
                     <PlateChanceRow
                         Label="PMC Main Plate Chances"
                         TooltipText="Sets PMC front/back plate chances per tier."
                         Values="PmcMainPlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="PMC Side Plate Chances"
                         TooltipText="Sets PMC left/right plate chances per tier."
                         Values="PmcSidePlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Scav Main Plate Chances"
                         TooltipText="Sets Scav front/back plate chances per tier."
                         Values="ScavMainPlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Scav Side Plate Chances"
                         TooltipText="Sets Scav left/right plate chances per tier."
                         Values="ScavSidePlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Boss Main Plate Chances"
                         TooltipText="Sets Boss front/back plate chances per tier."
                         Values="BossMainPlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Boss Side Plate Chances"
                         TooltipText="Sets Boss left/right plate chances per tier."
                         Values="BossSidePlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Guard Main Plate Chances"
                         TooltipText="Sets Guard front/back plate chances per tier."
                         Values="FollowerMainPlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Guard Side Plate Chances"
                         TooltipText="Sets Guard left/right plate chances per tier."
                         Values="FollowerSidePlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Special Main Plate Chances"
                         TooltipText="Sets Raider, Rogue, Bloodhound, and Cultists front/back plate chances per tier."
                         Values="SpecialMainPlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                     <PlateChanceRow
                         Label="Special Side Plate Chances"
                         TooltipText="Sets Raider, Rogue, Bloodhound, and Cultists left/right plate chances per tier."
                         Values="SpecialSidePlateChance"
-                        Disabled="!AllPlateChanceEnabled" />
+                        Disabled="!AllPlateChanceEnabled"/>
 
                 </MudGrid>
             </MudExpansionPanel>
@@ -882,7 +917,7 @@
             ModConfig.Config.NormalizedHealthPool.ExcludedBots = value;
         }
     }
-    
+
     private static readonly HashSet<string> ExcludedBotNames = new(StringComparer.OrdinalIgnoreCase)
     {
         "bear",
@@ -932,8 +967,7 @@
         {
             Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.Enable, nameof(PscavEnable));
             ModConfig.Config.PlayerScavConfig.Enable = value;
-            if (!value)
-            {
+            if (!value){
                 DefaultPlayerScavPmcSkills();
                 DefaultPlayerScavPmcSkillWriteback();
                 DefaultPlayerScavBossEnable();
@@ -974,8 +1008,7 @@
         {
             Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.AllowBossRegeneration, nameof(PscavEnableBossRegeneration));
             ModConfig.Config.PlayerScavConfig.AllowBossRegeneration = value;
-            if (!value)
-            {
+            if (!value){
                 DefaultPlayerScavBossHealthValues();
                 DefaultPlayerScavBossChance();
                 DefaultPlayerScavBossAllowedBosses();
@@ -1137,37 +1170,65 @@
     private int AllWeaponOverrideMuzzleChanceValueTier1
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[0];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[0], nameof(AllWeaponOverrideMuzzleChanceValueTier1)); ModConfig.Config.GeneralConfig.MuzzleChance[0] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[0], nameof(AllWeaponOverrideMuzzleChanceValueTier1));
+            ModConfig.Config.GeneralConfig.MuzzleChance[0] = value;
+        }
     }
     private int AllWeaponOverrideMuzzleChanceValueTier2
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[1];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[1], nameof(AllWeaponOverrideMuzzleChanceValueTier2)); ModConfig.Config.GeneralConfig.MuzzleChance[1] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[1], nameof(AllWeaponOverrideMuzzleChanceValueTier2));
+            ModConfig.Config.GeneralConfig.MuzzleChance[1] = value;
+        }
     }
     private int AllWeaponOverrideMuzzleChanceValueTier3
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[2];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[2], nameof(AllWeaponOverrideMuzzleChanceValueTier3)); ModConfig.Config.GeneralConfig.MuzzleChance[2] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[2], nameof(AllWeaponOverrideMuzzleChanceValueTier3));
+            ModConfig.Config.GeneralConfig.MuzzleChance[2] = value;
+        }
     }
     private int AllWeaponOverrideMuzzleChanceValueTier4
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[3];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[3], nameof(AllWeaponOverrideMuzzleChanceValueTier4)); ModConfig.Config.GeneralConfig.MuzzleChance[3] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[3], nameof(AllWeaponOverrideMuzzleChanceValueTier4));
+            ModConfig.Config.GeneralConfig.MuzzleChance[3] = value;
+        }
     }
     private int AllWeaponOverrideMuzzleChanceValueTier5
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[4];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[4], nameof(AllWeaponOverrideMuzzleChanceValueTier5)); ModConfig.Config.GeneralConfig.MuzzleChance[4] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[4], nameof(AllWeaponOverrideMuzzleChanceValueTier5));
+            ModConfig.Config.GeneralConfig.MuzzleChance[4] = value;
+        }
     }
     private int AllWeaponOverrideMuzzleChanceValueTier6
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[5];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[5], nameof(AllWeaponOverrideMuzzleChanceValueTier6)); ModConfig.Config.GeneralConfig.MuzzleChance[5] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[5], nameof(AllWeaponOverrideMuzzleChanceValueTier6));
+            ModConfig.Config.GeneralConfig.MuzzleChance[5] = value;
+        }
     }
     private int AllWeaponOverrideMuzzleChanceValueTier7
     {
         get => ModConfig.Config.GeneralConfig.MuzzleChance[6];
-        set { Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[6], nameof(AllWeaponOverrideMuzzleChanceValueTier7)); ModConfig.Config.GeneralConfig.MuzzleChance[6] = value; }
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MuzzleChance[6], nameof(AllWeaponOverrideMuzzleChanceValueTier7));
+            ModConfig.Config.GeneralConfig.MuzzleChance[6] = value;
+        }
     }
     private List<int> AllWeaponOverrideMuzzleChanceValues
     {
@@ -1305,10 +1366,10 @@
     private double MapRangeWeightingCustomsLong
     {
         get => ModConfig.Config.GeneralConfig.MapRangeWeighting.Bigmap.LongRange;
-        set 
-        { 
-            ModConfig.Config.GeneralConfig.MapRangeWeighting.Bigmap.LongRange = value; 
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.LongRange, nameof(MapRangeWeightingCustomsLong)); 
+        set
+        {
+            ModConfig.Config.GeneralConfig.MapRangeWeighting.Bigmap.LongRange = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.LongRange, nameof(MapRangeWeightingCustomsLong));
         }
     }
     private double MapRangeWeightingCustomsShort
@@ -1317,19 +1378,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Bigmap.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.ShortRange, nameof(MapRangeWeightingCustomsShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.ShortRange, nameof(MapRangeWeightingCustomsShort));
         }
     }
 
     private void UndoCustomsWeaponRangeWeights()
     {
-        MapRangeWeightingCustomsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.LongRange; 
+        MapRangeWeightingCustomsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.LongRange;
         MapRangeWeightingCustomsShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Bigmap.ShortRange;
     }
 
     private void DefaultCustomsWeaponRangeWeights()
     {
-        MapRangeWeightingCustomsLong = 20; 
+        MapRangeWeightingCustomsLong = 20;
         MapRangeWeightingCustomsShort = 80;
     }
     private double MapRangeWeightingSandboxLong
@@ -1338,7 +1399,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Sandbox.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.LongRange, nameof(MapRangeWeightingSandboxLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.LongRange, nameof(MapRangeWeightingSandboxLong));
         }
     }
     private double MapRangeWeightingSandboxShort
@@ -1347,19 +1408,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Sandbox.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.ShortRange, nameof(MapRangeWeightingSandboxShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.ShortRange, nameof(MapRangeWeightingSandboxShort));
         }
     }
 
     private void UndoSandboxWeaponRangeWeights()
     {
-        MapRangeWeightingSandboxLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.LongRange; 
+        MapRangeWeightingSandboxLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.LongRange;
         MapRangeWeightingSandboxShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Sandbox.ShortRange;
     }
 
     private void DefaultSandboxWeaponRangeWeights()
     {
-        MapRangeWeightingSandboxLong = 15; 
+        MapRangeWeightingSandboxLong = 15;
         MapRangeWeightingSandboxShort = 85;
     }
     private double MapRangeWeightingSandboxHighLong
@@ -1368,7 +1429,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.SandboxHigh.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.LongRange, nameof(MapRangeWeightingSandboxHighLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.LongRange, nameof(MapRangeWeightingSandboxHighLong));
         }
     }
     private double MapRangeWeightingSandboxHighShort
@@ -1377,19 +1438,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.SandboxHigh.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.ShortRange, nameof(MapRangeWeightingSandboxHighShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.ShortRange, nameof(MapRangeWeightingSandboxHighShort));
         }
     }
 
     private void UndoSandboxHighWeaponRangeWeights()
     {
-        MapRangeWeightingSandboxHighLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.LongRange; 
+        MapRangeWeightingSandboxHighLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.LongRange;
         MapRangeWeightingSandboxHighShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.SandboxHigh.ShortRange;
     }
 
     private void DefaultSandboxHighWeaponRangeWeights()
     {
-        MapRangeWeightingSandboxHighLong = 15; 
+        MapRangeWeightingSandboxHighLong = 15;
         MapRangeWeightingSandboxHighShort = 85;
     }
     private double MapRangeWeightingShorelineLong
@@ -1398,7 +1459,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Shoreline.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.LongRange, nameof(MapRangeWeightingShorelineLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.LongRange, nameof(MapRangeWeightingShorelineLong));
         }
     }
     private double MapRangeWeightingShorelineShort
@@ -1407,19 +1468,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Shoreline.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.ShortRange, nameof(MapRangeWeightingShorelineShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.ShortRange, nameof(MapRangeWeightingShorelineShort));
         }
     }
 
     private void UndoShorelineWeaponRangeWeights()
     {
-        MapRangeWeightingShorelineLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.LongRange; 
+        MapRangeWeightingShorelineLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.LongRange;
         MapRangeWeightingShorelineShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Shoreline.ShortRange;
     }
 
     private void DefaultShorelineWeaponRangeWeights()
     {
-        MapRangeWeightingShorelineLong = 50; 
+        MapRangeWeightingShorelineLong = 50;
         MapRangeWeightingShorelineShort = 50;
     }
     private double MapRangeWeightingTarkovStreetsLong
@@ -1428,7 +1489,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.TarkovStreets.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.LongRange, nameof(MapRangeWeightingTarkovStreetsLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.LongRange, nameof(MapRangeWeightingTarkovStreetsLong));
         }
     }
     private double MapRangeWeightingTarkovStreetsShort
@@ -1437,19 +1498,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.TarkovStreets.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.ShortRange, nameof(MapRangeWeightingTarkovStreetsShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.ShortRange, nameof(MapRangeWeightingTarkovStreetsShort));
         }
     }
 
     private void UndoTarkovStreetsWeaponRangeWeights()
     {
-        MapRangeWeightingTarkovStreetsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.LongRange; 
+        MapRangeWeightingTarkovStreetsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.LongRange;
         MapRangeWeightingTarkovStreetsShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.TarkovStreets.ShortRange;
     }
 
     private void DefaultTarkovStreetsWeaponRangeWeights()
     {
-        MapRangeWeightingTarkovStreetsLong = 20; 
+        MapRangeWeightingTarkovStreetsLong = 20;
         MapRangeWeightingTarkovStreetsShort = 80;
     }
     private double MapRangeWeightingLabyrinthLong
@@ -1458,7 +1519,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Labyrinth.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.LongRange, nameof(MapRangeWeightingLabyrinthLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.LongRange, nameof(MapRangeWeightingLabyrinthLong));
         }
     }
     private double MapRangeWeightingLabyrinthShort
@@ -1467,18 +1528,18 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Labyrinth.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.ShortRange, nameof(MapRangeWeightingLabyrinthShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.ShortRange, nameof(MapRangeWeightingLabyrinthShort));
         }
     }
-    private void UndoLabyrinthWeaponRangeWeights() 
-    { 
-        MapRangeWeightingLabyrinthLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.LongRange; 
-        MapRangeWeightingLabyrinthShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.ShortRange; 
+    private void UndoLabyrinthWeaponRangeWeights()
+    {
+        MapRangeWeightingLabyrinthLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.LongRange;
+        MapRangeWeightingLabyrinthShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Labyrinth.ShortRange;
     }
 
     private void DefaultLabyrinthWeaponRangeWeights()
     {
-        MapRangeWeightingLabyrinthLong = 5; 
+        MapRangeWeightingLabyrinthLong = 5;
         MapRangeWeightingLabyrinthShort = 95;
     }
     private double MapRangeWeightingLighthouseLong
@@ -1487,7 +1548,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Lighthouse.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.LongRange, nameof(MapRangeWeightingLighthouseLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.LongRange, nameof(MapRangeWeightingLighthouseLong));
         }
     }
     private double MapRangeWeightingLighthouseShort
@@ -1496,28 +1557,28 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Lighthouse.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.ShortRange, nameof(MapRangeWeightingLighthouseShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.ShortRange, nameof(MapRangeWeightingLighthouseShort));
         }
     }
 
     private void UndoLighthouseWeaponRangeWeights()
     {
-        MapRangeWeightingLighthouseLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.LongRange; 
+        MapRangeWeightingLighthouseLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.LongRange;
         MapRangeWeightingLighthouseShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Lighthouse.ShortRange;
     }
 
     private void DefaultLighthouseWeaponRangeWeights()
     {
-        MapRangeWeightingLighthouseLong = 30; 
+        MapRangeWeightingLighthouseLong = 30;
         MapRangeWeightingLighthouseShort = 70;
     }
     private double MapRangeWeightingReserveLong
     {
         get => ModConfig.Config.GeneralConfig.MapRangeWeighting.RezervBase.LongRange;
-        set 
-        { 
-            ModConfig.Config.GeneralConfig.MapRangeWeighting.RezervBase.LongRange = value; 
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.LongRange, nameof(MapRangeWeightingReserveLong)); 
+        set
+        {
+            ModConfig.Config.GeneralConfig.MapRangeWeighting.RezervBase.LongRange = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.LongRange, nameof(MapRangeWeightingReserveLong));
         }
     }
     private double MapRangeWeightingReserveShort
@@ -1526,19 +1587,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.RezervBase.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.ShortRange, nameof(MapRangeWeightingReserveShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.ShortRange, nameof(MapRangeWeightingReserveShort));
         }
     }
 
     private void UndoReserveWeaponRangeWeights()
     {
-        MapRangeWeightingReserveLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.LongRange; 
+        MapRangeWeightingReserveLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.LongRange;
         MapRangeWeightingReserveShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.RezervBase.ShortRange;
     }
 
     private void DefaultReserveWeaponRangeWeights()
     {
-        MapRangeWeightingReserveLong = 20; 
+        MapRangeWeightingReserveLong = 20;
         MapRangeWeightingReserveShort = 80;
     }
     private double MapRangeWeightingLabsLong
@@ -1547,7 +1608,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Laboratory.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.LongRange, nameof(MapRangeWeightingLabsLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.LongRange, nameof(MapRangeWeightingLabsLong));
         }
     }
     private double MapRangeWeightingLabsShort
@@ -1556,19 +1617,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Laboratory.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.ShortRange, nameof(MapRangeWeightingLabsShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.ShortRange, nameof(MapRangeWeightingLabsShort));
         }
     }
 
     private void UndoLabsWeaponRangeWeights()
     {
-        MapRangeWeightingLabsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.LongRange; 
+        MapRangeWeightingLabsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.LongRange;
         MapRangeWeightingLabsShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Laboratory.ShortRange;
     }
 
     private void DefaultLabsWeaponRangeWeights()
     {
-        MapRangeWeightingLabsLong = 10; 
+        MapRangeWeightingLabsLong = 10;
         MapRangeWeightingLabsShort = 90;
     }
     private double MapRangeWeightingFactoryNightLong
@@ -1577,7 +1638,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Factory4Night.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.LongRange, nameof(MapRangeWeightingFactoryNightLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.LongRange, nameof(MapRangeWeightingFactoryNightLong));
         }
     }
     private double MapRangeWeightingFactoryNightShort
@@ -1586,18 +1647,18 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Factory4Night.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.ShortRange, nameof(MapRangeWeightingFactoryNightShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.ShortRange, nameof(MapRangeWeightingFactoryNightShort));
         }
     }
-    private void UndoFactoryNightWeaponRangeWeights() 
-    { 
-        MapRangeWeightingFactoryNightLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.LongRange; 
-        MapRangeWeightingFactoryNightShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.ShortRange; 
+    private void UndoFactoryNightWeaponRangeWeights()
+    {
+        MapRangeWeightingFactoryNightLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.LongRange;
+        MapRangeWeightingFactoryNightShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Night.ShortRange;
     }
 
     private void DefaultFactoryNightWeaponRangeWeights()
     {
-        MapRangeWeightingFactoryNightLong = 5; 
+        MapRangeWeightingFactoryNightLong = 5;
         MapRangeWeightingFactoryNightShort = 95;
     }
     private double MapRangeWeightingFactoryDayLong
@@ -1606,7 +1667,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Factory4Day.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.LongRange, nameof(MapRangeWeightingFactoryDayLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.LongRange, nameof(MapRangeWeightingFactoryDayLong));
         }
     }
     private double MapRangeWeightingFactoryDayShort
@@ -1615,19 +1676,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Factory4Day.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.ShortRange, nameof(MapRangeWeightingFactoryDayShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.ShortRange, nameof(MapRangeWeightingFactoryDayShort));
         }
     }
 
     private void UndoFactoryDayWeaponRangeWeights()
     {
-        MapRangeWeightingFactoryDayLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.LongRange; 
+        MapRangeWeightingFactoryDayLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.LongRange;
         MapRangeWeightingFactoryDayShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Factory4Day.ShortRange;
     }
-    private void DefaultFactoryDayWeaponRangeWeights() 
-    { 
-        MapRangeWeightingFactoryDayLong = 5; 
-        MapRangeWeightingFactoryDayShort = 95; 
+    private void DefaultFactoryDayWeaponRangeWeights()
+    {
+        MapRangeWeightingFactoryDayLong = 5;
+        MapRangeWeightingFactoryDayShort = 95;
     }
     private double MapRangeWeightingInterchangeLong
     {
@@ -1635,7 +1696,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Interchange.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.LongRange, nameof(MapRangeWeightingInterchangeLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.LongRange, nameof(MapRangeWeightingInterchangeLong));
         }
     }
     private double MapRangeWeightingInterchangeShort
@@ -1644,18 +1705,18 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Interchange.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.ShortRange, nameof(MapRangeWeightingInterchangeShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.ShortRange, nameof(MapRangeWeightingInterchangeShort));
         }
     }
-    private void UndoInterchangeWeaponRangeWeights() 
-    { 
-        MapRangeWeightingInterchangeLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.LongRange; 
-        MapRangeWeightingInterchangeShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.ShortRange; 
+    private void UndoInterchangeWeaponRangeWeights()
+    {
+        MapRangeWeightingInterchangeLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.LongRange;
+        MapRangeWeightingInterchangeShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Interchange.ShortRange;
     }
 
     private void DefaultInterchangeWeaponRangeWeights()
     {
-        MapRangeWeightingInterchangeLong = 20; 
+        MapRangeWeightingInterchangeLong = 20;
         MapRangeWeightingInterchangeShort = 80;
     }
     private double MapRangeWeightingWoodsLong
@@ -1664,7 +1725,7 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Woods.LongRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.LongRange, nameof(MapRangeWeightingWoodsLong)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.LongRange, nameof(MapRangeWeightingWoodsLong));
         }
     }
     private double MapRangeWeightingWoodsShort
@@ -1673,19 +1734,19 @@
         set
         {
             ModConfig.Config.GeneralConfig.MapRangeWeighting.Woods.ShortRange = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.ShortRange, nameof(MapRangeWeightingWoodsShort)); 
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.ShortRange, nameof(MapRangeWeightingWoodsShort));
         }
     }
 
     private void UndoWoodsWeaponRangeWeights()
     {
-        MapRangeWeightingWoodsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.LongRange; 
+        MapRangeWeightingWoodsLong = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.LongRange;
         MapRangeWeightingWoodsShort = ModConfig.OriginalConfig.GeneralConfig.MapRangeWeighting.Woods.ShortRange;
     }
 
     private void DefaultWoodsWeaponRangeWeights()
     {
-        MapRangeWeightingWoodsLong = 60; 
+        MapRangeWeightingWoodsLong = 60;
         MapRangeWeightingWoodsShort = 40;
     }
     #endregion
@@ -1752,16 +1813,16 @@
     private void ResetCustomPlateChances()
     {
         ModConfig.Config.GeneralConfig.PlateChances.Enable = false;
-        ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance = new() { 65, 75, 90, 90, 95, 100, 100 };
-        ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance = new() { 15, 25, 35, 55, 75, 95, 100 };
-        ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance = new() { 25, 25, 25, 25, 25, 25, 25 };
-        ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance = new() { 10, 10, 10, 10, 10, 10, 10 };
-        ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance = new() { 90, 90, 90, 90, 90, 90, 90 };
-        ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance = new() { 75, 75, 75, 75, 75, 75, 75 };
-        ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance = new() { 75, 75, 75, 75, 75, 75, 75 };
-        ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance = new() { 50, 50, 50, 50, 50, 50, 50 };
-        ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance = new() { 75, 75, 75, 75, 75, 75, 75 };
-        ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance = new() { 50, 50, 50, 50, 50, 50, 50 };
+        ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance = new List<int> { 65, 75, 90, 90, 95, 100, 100 };
+        ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance = new List<int> { 15, 25, 35, 55, 75, 95, 100 };
+        ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance = new List<int> { 25, 25, 25, 25, 25, 25, 25 };
+        ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance = new List<int> { 10, 10, 10, 10, 10, 10, 10 };
+        ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance = new List<int> { 90, 90, 90, 90, 90, 90, 90 };
+        ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance = new List<int> { 75, 75, 75, 75, 75, 75, 75 };
+        ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance = new List<int> { 75, 75, 75, 75, 75, 75, 75 };
+        ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance = new List<int> { 50, 50, 50, 50, 50, 50, 50 };
+        ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance = new List<int> { 75, 75, 75, 75, 75, 75, 75 };
+        ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance = new List<int> { 50, 50, 50, 50, 50, 50, 50 };
     }
     #endregion
     #region CASCADING PARAMETERS

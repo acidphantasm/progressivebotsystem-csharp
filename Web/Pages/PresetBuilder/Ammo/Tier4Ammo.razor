@@ -1,17 +1,14 @@
 ﻿@page "/progressivebotsystem/presets/tier4/ammo"
-@layout MainLayout
-
 @using ProgressiveBotSystem.Helpers
+@layout MainLayout
 
 @inject DataLoader Dataloader
 
 <MudMainContent Class="pa-6">
-    @if (ModConfig.Config.UsePreset)
-    {
-        <TierAmmoEditorComponent AmmoData="@Dataloader.AllTierDataClean.Tiers[4].AmmoData" Tier="4" />
+    @if (ModConfig.Config.UsePreset){
+        <TierAmmoEditorComponent AmmoData="@Dataloader.AllTierDataClean.Tiers[4].AmmoData" Tier="4"/>
     }
-    else
-    {
+    else{
         <MudPaper Elevation="4" Class="pa-6 ma-4 d-flex justify-center align-center" Style="height:200px;">
             <MudText Typo="Typo.h6" Align="Align.Center">
                 You don't have a preset loaded. What are you doing here?

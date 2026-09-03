@@ -1,10 +1,10 @@
-﻿using SPTarkov.Server.Core.Models.Common;
+﻿namespace ProgressiveBotSystem.Constants;
 
-namespace ProgressiveBotSystem.Constants;
+using SPTarkov.Server.Core.Models.Common;
 
 public class VanillaItemConstants
 {
-    public static readonly List<MongoId> VanillaButtPads = new List<MongoId>
+    public static readonly List<MongoId> VanillaButtPads = new()
     {
         "58d2912286f7744e27117493",
         "5a0c59791526d8dba737bba7",
@@ -15,10 +15,10 @@ public class VanillaItemConstants
         "6516e9bc5901745209404287",
         "6516e9d7e239bd0c487e3766",
         "67110d5ed1758189fc0bd221",
-        "67110d6fa71d1f123d021cd3"
+        "67110d6fa71d1f123d021cd3",
     };
 
-    public static readonly List<MongoId> WeaponsWithNoSmallMagazines = new List<MongoId>
+    public static readonly List<MongoId> WeaponsWithNoSmallMagazines = new()
     {
         "661cec09b2c6356b4d0c7a36",
         "5cc82d76e24e8d00134b4b83",
@@ -29,10 +29,10 @@ public class VanillaItemConstants
         "65fb023261d5829b2d090755",
         "661ceb1b9311543c7104149b",
         "574d967124597745970e7c94",
-        "66e718dc498d978477e0ba75" // Armory M249
+        "66e718dc498d978477e0ba75", // Armory M249
     };
 
-    public static readonly List<MongoId> LabyrinthKeys = new List<MongoId>
+    public static readonly List<MongoId> LabyrinthKeys = new()
     {
         "679baa2c61f588ae2b062a24", // Key 01
         "679baa4f59b8961f370dd683", // Key 02
@@ -41,6 +41,6 @@ public class VanillaItemConstants
         "67ab3d4b83869afd170fdd3f", // BBQ-S43 Gas Torch
         "679bab714e9ca6b3d80586b4", // Corpse Room Key
         "678fa929819ddc4c350c0317", // Valve Handwheel
-        "67e183377c6c2011970f3149"  // Ariadne key
+        "67e183377c6c2011970f3149", // Ariadne key
     };
 }

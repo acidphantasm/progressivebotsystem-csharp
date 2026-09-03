@@ -1,4 +1,4 @@
-﻿<MudItem xs="2" />
+﻿<MudItem xs="2"/>
 <MudItem xs="3" Style="margin-top: 20px;">
     <MudTooltip Text="@TooltipText" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
         <MudText>@Label</MudText>
@@ -6,8 +6,8 @@
 </MudItem>
 <MudItem xs="6">
     <MudPaper Class="d-flex align-start mud-width-full" Elevation="0">
-        @for (var i = 2; i <= 6; i++)
-        {
+        @* ReSharper disable once RedundantLambdaParameterType *@
+        @for (var i = 2; i <= 6; i++){
             var classNum = i.ToString();
             <MudNumericField Margin="Margin.Dense"
                              HideSpinButtons="true"
@@ -17,18 +17,17 @@
                              HelperText="@($"Class {classNum}")"
                              Variant="Variant.Filled"
                              Min="0"
-                             Max="100" />
+                             Max="100"/>
         }
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)
-    {
+    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle){
         <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
     }
-    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle)
-    {
-        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle){
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default
+        </MudButton>
     }
 </MudItem>
 

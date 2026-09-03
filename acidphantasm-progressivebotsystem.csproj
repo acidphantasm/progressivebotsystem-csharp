@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>ProgressiveBotSystem</RootNamespace>
@@ -12,20 +11,20 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugType>None</DebugType>
-        <DebugSymbols>false</DebugSymbols>
-        <GenerateDependencyFile>false</GenerateDependencyFile>
-        <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
-    </PropertyGroup>
-    <PropertyGroup>
-        <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT 4.1 BE\</TarkovDir>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\SPT 4.1 BE\</TarkovDir>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-    </PropertyGroup>
-    
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="SPTarkov.Common" Version="4.1.0" />
     <PackageReference Include="SPTarkov.DI" Version="4.1.0" />
@@ -34,80 +33,98 @@
     <PackageReference Include="SPTarkov.Server.Web" Version="4.1.0" />
   </ItemGroup>
 
-    
-    <Target Name="GenerateJsonHashes" BeforeTargets="BeforeBuild">
-        <Exec Command="dotnet exec &quot;$(MSBuildProjectDirectory)..\..\datavalidation\DataValidation\DataValidation\bin\Debug\net9.0\DataValidation.dll&quot; &quot;$(ProjectDir)Data&quot; &quot;$(ProjectDir)\Constants\JsonFileHashes.cs&quot;" />
-    </Target>
+  <Target Name="GenerateJsonHashes" BeforeTargets="BeforeBuild">
+    <Exec Command="dotnet exec &quot;$(MSBuildProjectDirectory)..\..\datavalidation\DataValidation\DataValidation\bin\Debug\net9.0\DataValidation.dll&quot; &quot;$(ProjectDir)Data&quot; &quot;$(ProjectDir)\Constants\JsonFileHashes.cs&quot;" />
+  </Target>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <PropertyGroup>
-            <ModOutputDir>$(TarkovDir)SPT_Runtime\user\mods\$(ProjectName)\</ModOutputDir>
-            <ReleaseOutputDir>$(ProjectDir)release\$(ProjectName)\SPT_Runtime\user\mods\$(ProjectName)\</ReleaseOutputDir>
-            <ZipFile>$(ProjectDir)release\$(ProjectName).7z</ZipFile>
-            <SevenZipExe>"C:\Program Files\7-Zip\7z.exe"</SevenZipExe>
-        </PropertyGroup>
-
-        <ItemGroup>
-            <ServerComponents Include="$(ProjectDir)bin\Release\$(ProjectName)\*.*" />
-            <Data Include="$(ProjectDir)Data\**\*.*" />
-            <WebAssets Include="$(ProjectDir)wwwroot\**\*.*" />
-        </ItemGroup>
-
-        <MakeDir Directories="$(ModOutputDir)Presets" Condition="!Exists('$(ModOutputDir)Presets')" />
-        <MakeDir Directories="$(ModOutputDir)logs" Condition="!Exists('$(ModOutputDir)logs')" />
-
-        <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ModOutputDir)%(RecursiveDir)" />
-        <Copy SourceFiles="@(Data)" DestinationFolder="$(ModOutputDir)Data\%(RecursiveDir)" />
-        <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ModOutputDir)wwwroot\%(RecursiveDir)" />
-
-        <MakeDir Directories="$(ProjectDir)release" Condition="!Exists('$(ProjectDir)release')" />
-        <MakeDir Directories="$(ReleaseOutputDir)" Condition="!Exists('$(ReleaseOutputDir)')" />
-        <MakeDir Directories="$(ReleaseOutputDir)Presets" Condition="!Exists('$(ReleaseOutputDir)Presets')" />
-        <MakeDir Directories="$(ReleaseOutputDir)logs" Condition="!Exists('$(ReleaseOutputDir)logs')" />
-
-        <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ReleaseOutputDir)%(RecursiveDir)" />
-        <Copy SourceFiles="@(Data)" DestinationFolder="$(ReleaseOutputDir)Data\%(RecursiveDir)" />
-        <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ReleaseOutputDir)wwwroot\%(RecursiveDir)" />
-
-        <Delete Files="$(ZipFile)" Condition="Exists('$(ZipFile)')" />
-
-        <Exec Command='$(SevenZipExe) a -t7z "$(ZipFile)" "$(ProjectDir)release\$(ProjectName)\*" -mx=5 -m0=lzma2' />
-    </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <ModOutputDir>$(TarkovDir)SPT_Runtime\user\mods\$(ProjectName)\</ModOutputDir>
+      <ReleaseOutputDir>$(ProjectDir)release\$(ProjectName)\SPT_Runtime\user\mods\$(ProjectName)\</ReleaseOutputDir>
+      <ZipFile>$(ProjectDir)release\$(ProjectName).7z</ZipFile>
+      <SevenZipExe>"C:\Program Files\7-Zip\7z.exe"</SevenZipExe>
+    </PropertyGroup>
 
     <ItemGroup>
-        <None Update="Presets\**\.gitkeep">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </None>
-        <None Update="logs\**\.gitkeep">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </None>
+      <ServerComponents Include="$(ProjectDir)bin\Release\$(ProjectName)\*.*" />
+      <Data Include="$(ProjectDir)Data\**\*.*" />
+      <WebAssets Include="$(ProjectDir)wwwroot\**\*.*" />
     </ItemGroup>
+
+    <MakeDir Directories="$(ModOutputDir)Presets" Condition="!Exists('$(ModOutputDir)Presets')" />
+    <MakeDir Directories="$(ModOutputDir)logs" Condition="!Exists('$(ModOutputDir)logs')" />
+
+    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ModOutputDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(Data)" DestinationFolder="$(ModOutputDir)Data\%(RecursiveDir)" />
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ModOutputDir)wwwroot\%(RecursiveDir)" />
+
+    <MakeDir Directories="$(ProjectDir)release" Condition="!Exists('$(ProjectDir)release')" />
+    <MakeDir Directories="$(ReleaseOutputDir)" Condition="!Exists('$(ReleaseOutputDir)')" />
+    <MakeDir
+      Directories="$(ReleaseOutputDir)Presets"
+      Condition="!Exists('$(ReleaseOutputDir)Presets')"
+    />
+    <MakeDir Directories="$(ReleaseOutputDir)logs" Condition="!Exists('$(ReleaseOutputDir)logs')" />
+
+    <Copy
+      SourceFiles="@(ServerComponents)"
+      DestinationFolder="$(ReleaseOutputDir)%(RecursiveDir)"
+    />
+    <Copy SourceFiles="@(Data)" DestinationFolder="$(ReleaseOutputDir)Data\%(RecursiveDir)" />
+    <Copy
+      SourceFiles="@(WebAssets)"
+      DestinationFolder="$(ReleaseOutputDir)wwwroot\%(RecursiveDir)"
+    />
+
+    <Delete Files="$(ZipFile)" Condition="Exists('$(ZipFile)')" />
+
+    <Exec Command="$(SevenZipExe) a -t7z &quot;$(ZipFile)&quot; &quot;$(ProjectDir)release\$(ProjectName)\*&quot; -mx=5 -m0=lzma2" />
+  </Target>
+
+  <ItemGroup>
+    <None Update="Presets\**\.gitkeep">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="logs\**\.gitkeep">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Utils\Logger\" />
   </ItemGroup>
 
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Content Include="acidphantasm-progressivebotsystem.csproj.user" />
-    </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Content Include="acidphantasm-progressivebotsystem.csproj.user" />
+  </ItemGroup>
 
-    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <None Include="$(MSBuildProjectFullPath).user" Condition="Exists('$(MSBuildProjectFullPath).user')" />
-    </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None
+      Include="$(MSBuildProjectFullPath).user"
+      Condition="Exists('$(MSBuildProjectFullPath).user')"
+    />
+  </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="DefaultConfigs\blacklists.default.json" />
+    <_ContentIncludedByDefault Remove="DefaultConfigs\config.default.json" />
+  </ItemGroup>
+
+  <Target
+    Name="CopyToSPT"
+    AfterTargets="AfterBuild"
+    Condition="'$(Configuration)' == 'Debug' AND '$(SPTPath)' != ''"
+  >
+    <Message Importance="high" Text="Copying mods to $(ModOutputDir)" />
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="DefaultConfigs\blacklists.default.json" />
-      <_ContentIncludedByDefault Remove="DefaultConfigs\config.default.json" />
+      <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)" />
+      <FilesToCopy Include="$(OutputPath)$(TargetName).pdb" />
     </ItemGroup>
-
-    <Target Name="CopyToSPT" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug' AND '$(SPTPath)' != ''">
-        <Message Importance="high" Text="Copying mods to $(ModOutputDir)" />
-        <ItemGroup>
-            <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)" />
-            <FilesToCopy Include="$(OutputPath)$(TargetName).pdb" />
-        </ItemGroup>
-        <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ModOutputDir)" ContinueOnError="false" />
-        <Message Text="Files copied" />
-    </Target>
-
+    <Copy
+      SourceFiles="@(FilesToCopy)"
+      DestinationFolder="$(ModOutputDir)"
+      ContinueOnError="false"
+    />
+    <Message Text="Files copied" />
+  </Target>
 </Project>

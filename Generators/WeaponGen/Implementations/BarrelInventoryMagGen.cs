@@ -1,25 +1,20 @@
+namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
+
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.Helpers.Bot;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
 
-namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
-
-using SPTarkov.Server.Core.Helpers.Bot;
-
 [Injectable]
-public class ApbsBarrelInventoryMagGen(RandomUtil randomUtil, BotWeaponGeneratorHelper botWeaponGeneratorHelper)
-    : ApbsInventoryMagGen,
-        IApbsInventoryMagGen
+public class ApbsBarrelInventoryMagGen(
+    RandomUtil randomUtil,
+    BotWeaponGeneratorHelper botWeaponGeneratorHelper
+) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
-    public int GetPriority()
-    {
-        return 50;
-    }
+    public int GetPriority() => 50;
 
-    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen)
-    {
-        return inventoryMagGen.GetWeaponTemplate().Properties.ReloadMode == ReloadMode.OnlyBarrel;
-    }
+    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen) =>
+        inventoryMagGen.GetWeaponTemplate().Properties.ReloadMode == ReloadMode.OnlyBarrel;
 
     public void Process(ApbsInventoryMagGen inventoryMagGen)
     {
@@ -42,8 +37,7 @@ public class ApbsBarrelInventoryMagGen(RandomUtil randomUtil, BotWeaponGenerator
             inventoryMagGen.GetBotId(),
             inventoryMagGen.GetAmmoTemplate().Id,
             (int)randomisedAmmoStackSize,
-            inventoryMagGen.GetPmcInventory(),
-            null
+            inventoryMagGen.GetPmcInventory()
         );
     }
 }

@@ -1,20 +1,20 @@
-﻿using System.Collections.Concurrent;
+﻿using Path = System.IO.Path;
+
+namespace ProgressiveBotSystem.Helpers;
+
+using System.Collections.Concurrent;
 using System.Collections.Frozen;
-using ProgressiveBotSystem.Globals;
-using ProgressiveBotSystem.Models.Enums;
-using ProgressiveBotSystem.Utils;
+using Globals;
+using Models.Enums;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Tables;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
-using Path = System.IO.Path;
-
-namespace ProgressiveBotSystem.Helpers;
+using Utils;
+using Path = Path;
 
 [Injectable(InjectionType.Singleton)]
 public class ItemImportHelper(
@@ -23,62 +23,23 @@ public class ItemImportHelper(
     ItemHelper itemHelper,
     TemplateTable templateTable,
     BotBlacklistHelper botBlacklistHelper,
-    DateHelper dateHelper)
+    DateHelper dateHelper
+)
 {
-    private bool _alreadyRan;
-    
-    private HashSet<MongoId> _vanillaEquipmentLookup = new();
-    private HashSet<MongoId> _vanillaAttachmentLookup = new();
-    private HashSet<MongoId> _vanillaAmmoLookup = new();
-    private HashSet<MongoId> _vanillaClothingLookup = new();
-    
-    
-    private Dictionary<int, HashSet<MongoId>> _fullModConfigBlacklist = new();
-    
-    private Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> _vanillaEquipmentSlotDictionary = new();
-    private Dictionary<string, HashSet<MongoId>> _vanillaAmmoDictionary = new();
-    private Dictionary<string, Dictionary<string, HashSet<MongoId>>> _vanillaClothingBotSlotDictionary = new();
-    
-    // Because we're looping the database, and holster is super special, we cache that slot once from default inventory instead of repeated lookups
-    private HashSet<MongoId>? _holsterAllowedItems;
-    private bool _holsterCacheInitialized;
-    private readonly Lock _holsterLock = new();
-    
     // Custom Base classes
     private static readonly MongoId BaseClassPackNStrapBelt = "6815465859b8c6ff13f94026";
-    
-    private readonly ApbsEquipmentSlots[] _shortRangeSlots =
-    [
-        ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange,
-        ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange,
-    ];
 
-    private readonly ApbsEquipmentSlots[] _longRangeSlots =
+    private readonly FrozenSet<MongoId> _allImportableEquipmentBaseClasses =
     [
-        ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange,
-        ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange,
-    ];
-    
-    private readonly FrozenSet<MongoId> _shortRangeBaseClasses =
-    [
-        BaseClasses.ASSAULT_RIFLE,
-        BaseClasses.GRENADE_LAUNCHER,
-        BaseClasses.MACHINE_GUN,
-        BaseClasses.ROCKET_LAUNCHER,
-        BaseClasses.SHOTGUN,
-        BaseClasses.SMG,
-    ];
-    
-    private readonly FrozenSet<MongoId> _longRangeBaseClasses =
-    [
-        BaseClasses.ASSAULT_CARBINE,
-        BaseClasses.SNIPER_RIFLE,
-        BaseClasses.MARKSMAN_RIFLE,
-    ];
-    
-    private readonly FrozenSet<MongoId> _holsterBaseClasses =
-    [
-        BaseClasses.PISTOL,
+        BaseClasses.ARM_BAND,
+        BaseClasses.ARMOR,
+        BaseClasses.BACKPACK,
+        BaseClasses.HEADPHONES,
+        BaseClasses.VISORS,
+        BaseClasses.FACE_COVER,
+        BaseClasses.HEADWEAR,
+        BaseClasses.VEST,
+        BaseClassPackNStrapBelt,
     ];
 
     private readonly FrozenSet<MongoId> _allImportableWeaponBaseClasses =
@@ -95,48 +56,29 @@ public class ItemImportHelper(
         BaseClasses.KNIFE,
     ];
 
-    private readonly FrozenSet<MongoId> _allImportableEquipmentBaseClasses =
+    private readonly FrozenSet<MongoId> _armouryBossVariantWeapons =
     [
-        BaseClasses.ARM_BAND,
-        BaseClasses.ARMOR,
-        BaseClasses.BACKPACK,
-        BaseClasses.HEADPHONES,
-        BaseClasses.VISORS,
-        BaseClasses.FACE_COVER,
-        BaseClasses.HEADWEAR,
-        BaseClasses.VEST,
-        BaseClassPackNStrapBelt
-    ];
-
-    private readonly FrozenSet<MongoId> _bannedItems =
-    [
-        ItemTpl.ASSAULTRIFLE_MASTER_HAND,
-        ItemTpl.MACHINEGUN_NSV_UTYOS_127X108_HEAVY_MACHINE_GUN,
-        ItemTpl.SIGNALPISTOL_ZID_SP81_26X75_SIGNAL_PISTOL,
-        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_BLUE,
-        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_FIREWORK,
-        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_GREEN,
-        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_RED,
-        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_SPECIAL_YELLOW,
-        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_YELLOW,
-        ItemTpl.FLARE_ROP30_REACTIVE_FLARE_CARTRIDGE_WHITE,
-        ItemTpl.GRENADELAUNCHER_FN40GL_02,
-        ItemTpl.GRENADELAUNCHER_FN40GL_03,
-        ItemTpl.KNIFE_SUPERFORS_DB_2020_DEAD_BLOW_HAMMER,
-        ItemTpl.KNIFE_INFECTIOUS_STRIKE,
-        ItemTpl.KNIFE_CHAINED_LABRYS,
-        ItemTpl.AMMO_23X75_CHER7M,
-        ItemTpl.AMMO_40X46_M716,
-        ItemTpl.AMMO_556X45_6MM_BB,
-        "683df636e1e3fa1bf165f7ed", // Weird dual caliber gun from, uhhh, ECOT? I dont member
-        "660b2d05cec10101410e7d7b", // avenger a10 warthog weapon from fire support
-        "68f5333abc75f09d96d97500", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
-        "690e9265772bfce1d043966d", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
-        "695f8753d24480b7b1921023", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
-        "68f51bfb3e92385d1908db68", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
-        "696504ca8ce4c9b2404e1b32", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
-        "6964ea3a5e4c1218314e1b2f", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
-        "69669ea64847b58fd5393f71" // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "677ca3e62e9e964a11a55d8e", // golden ae50 (reshala) holster
+        "679a6a534f3d279c99b135b9", // custom aen94 (gluhar) primary
+        "690ebacfc047a9a9f1a98782", // RO991 SMG (gluhar) secondary
+        "676b4e2ff185a450a0b300b4", // wages of sin (killa) primary
+        "68677d09339b397ed3d37522", // sr2 udav (killa)  holster
+        "6868d249cdee524f8c0ba45f", // beretta 92fs (knight + bigpipe + birdeye) holster
+        "6657bd4d3a4d6e7c33fd2fdc", // camo svd (shturman) primary
+        "686093d590c3dce07984c38a", // aek973 (shturman) secondary
+        "68e0002a0d6a4dab56810fbd", // m78 lmg (parmesan) primary
+        "6840ebf5b8687ba34f8dfbca", // browning auto-5 shotty (parmesan) secondary
+        "684e32eaec9f5eb3cacc7ca7", // msr .300 (lighthouse shitter) primary
+        "68a3836826dffa87b5767c04", // axmc .300 (lighthouse shitter) primary
+        "6945dc69fe52c2415de357f7", // xm AMR op af (lighthouse shitter) primary
+        "6761b213607f9a6f79017c7e", // pdw .300 (big pipe) primary
+        "69161a1d649768162e8219ef", // custom masada (big pipe) primary
+        "66e718dc498d978477e0ba75", // m249 lmg (big pipe) secondary
+        "deee28079e76d537f532021c", // .338 lm (birdeye) primary
+        "1bf618e47cce6d69bec01e9f", // .338 lm (birdeye) primary
+        "68fd7d14ff5a09197b5ab82a", // cheytac m2000 (birdeye) primary
+        "682d460e951a926af552d764", // ak5c custom (birdeye) secondary
+        "68b7f4060a4536984f82cf4b", // mk23 .45 (birdeye) holster
     ];
 
     private readonly FrozenSet<MongoId> _bannedAttachments =
@@ -216,91 +158,41 @@ public class ItemImportHelper(
         "55d481904bdc2d8c2f8b456a",
         "5b1fb3e15acfc4001637f068",
         "564ca9df4bdc2d35148b4569",
-        "61a4cda622af7f4f6a3ce617" // Rhino speedloader
-    ];
-    
-    private readonly FrozenSet<MongoId> _tier4Optics = 
-    [            
-        "5c0517910db83400232ffee5",
-        "558022b54bdc2dac148b458d",
-        "58491f3324597764bc48fa02",
-        "584924ec24597768f12ae244",
-        "60a23797a37c940de7062d02",
-        "59f9d81586f7744c7506ee62",
-        "5b2389515acfc4771e1be0c0",
-        "5b3b99265acfc4704b4a1afb",
-        "5b31163c5acfc400153b71cb",
-        "64785e7c19d732620e045e15",
-        "655f13e0a246670fb0373245",
-        "6567e751a715f85433025998",
-        "67617ec9ea1e82ea5e103054",
-        "672e37d19f3e60fb0cbbe568",
-        "5649a2464bdc2d91118b45a8"
-    ];
-    
-    private readonly FrozenSet<MongoId> _modScope000Whitelist = 
-    [
-        "5b2388675acfc4771e1be0be",
-        "5b3b99475acfc432ff4dcbee",
-        "5a37cb10c4a282329a73b4e7",
-        "617151c1d92c473c770214ab",
-        "57c5ac0824597754771e88a9",
-        "6567e7681265c8a131069b0f",
-        "67617ec9ea1e82ea5e103054",
-        "672e37d19f3e60fb0cbbe568"
-    ];
-    
-    private readonly FrozenSet<MongoId> _foldingModSights = 
-    [
-        "5caf16a2ae92152ac412efbc",
-        "61816fcad92c473c770215cc",
-        "61817865d3a39d50044c13a4",
-        "5bb20e49d4351e3bac1212de",
-        "5ba26b01d4351e0085325a51",
-        "5ba26b17d4351e00367f9bdd",
-        "5c1780312e221602b66cc189",
-        "5c17804b2e2216152006c02f",
-        "5dfa3d7ac41b2312ea33362a",
-        "5dfa3d950dee1b22f862eae0",
-        "5fb6564947ce63734e3fa1da",
-        "5fb6567747ce63734e3fa1dc",
-        "5bc09a18d4351e003562b68e",
-        "5bc09a30d4351e00367fb7c8",
-        "5c18b90d2e2216152142466b",
-        "5c18b9192e2216398b5a8104",
-        "5fc0fa362770a0045c59c677",
-        "5fc0fa957283c4046c58147e",
-        "5894a73486f77426d259076c",
-        "5894a81786f77427140b8347"
+        "61a4cda622af7f4f6a3ce617", // Rhino speedloader
     ];
 
-    private readonly FrozenSet<MongoId> _armouryBossVariantWeapons =
+    private readonly FrozenSet<MongoId> _bannedItems =
     [
-        "677ca3e62e9e964a11a55d8e", // golden ae50 (reshala) holster
-        "679a6a534f3d279c99b135b9", // custom aen94 (gluhar) primary
-        "690ebacfc047a9a9f1a98782", // RO991 SMG (gluhar) secondary
-        "676b4e2ff185a450a0b300b4", // wages of sin (killa) primary
-        "68677d09339b397ed3d37522", // sr2 udav (killa)  holster
-        "6868d249cdee524f8c0ba45f", // beretta 92fs (knight + bigpipe + birdeye) holster
-        "6657bd4d3a4d6e7c33fd2fdc", // camo svd (shturman) primary
-        "686093d590c3dce07984c38a", // aek973 (shturman) secondary
-        "68e0002a0d6a4dab56810fbd", // m78 lmg (parmesan) primary
-        "6840ebf5b8687ba34f8dfbca", // browning auto-5 shotty (parmesan) secondary
-        "684e32eaec9f5eb3cacc7ca7", // msr .300 (lighthouse shitter) primary
-        "68a3836826dffa87b5767c04", // axmc .300 (lighthouse shitter) primary
-        "6945dc69fe52c2415de357f7", // xm AMR op af (lighthouse shitter) primary
-        "6761b213607f9a6f79017c7e", // pdw .300 (big pipe) primary
-        "69161a1d649768162e8219ef", // custom masada (big pipe) primary
-        "66e718dc498d978477e0ba75", // m249 lmg (big pipe) secondary
-        "deee28079e76d537f532021c", // .338 lm (birdeye) primary
-        "1bf618e47cce6d69bec01e9f", // .338 lm (birdeye) primary
-        "68fd7d14ff5a09197b5ab82a", // cheytac m2000 (birdeye) primary
-        "682d460e951a926af552d764", // ak5c custom (birdeye) secondary
-        "68b7f4060a4536984f82cf4b", // mk23 .45 (birdeye) holster
+        ItemTpl.ASSAULTRIFLE_MASTER_HAND,
+        ItemTpl.MACHINEGUN_NSV_UTYOS_127X108_HEAVY_MACHINE_GUN,
+        ItemTpl.SIGNALPISTOL_ZID_SP81_26X75_SIGNAL_PISTOL,
+        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_BLUE,
+        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_FIREWORK,
+        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_GREEN,
+        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_RED,
+        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_SPECIAL_YELLOW,
+        ItemTpl.FLARE_RSP30_REACTIVE_SIGNAL_CARTRIDGE_YELLOW,
+        ItemTpl.FLARE_ROP30_REACTIVE_FLARE_CARTRIDGE_WHITE,
+        ItemTpl.GRENADELAUNCHER_FN40GL_02,
+        ItemTpl.GRENADELAUNCHER_FN40GL_03,
+        ItemTpl.KNIFE_SUPERFORS_DB_2020_DEAD_BLOW_HAMMER,
+        ItemTpl.KNIFE_INFECTIOUS_STRIKE,
+        ItemTpl.KNIFE_CHAINED_LABRYS,
+        ItemTpl.AMMO_23X75_CHER7M,
+        ItemTpl.AMMO_40X46_M716,
+        ItemTpl.AMMO_556X45_6MM_BB,
+        "683df636e1e3fa1bf165f7ed", // Weird dual caliber gun from, uhhh, ECOT? I dont member
+        "660b2d05cec10101410e7d7b", // avenger a10 warthog weapon from fire support
+        "68f5333abc75f09d96d97500", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "690e9265772bfce1d043966d", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "695f8753d24480b7b1921023", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "68f51bfb3e92385d1908db68", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "696504ca8ce4c9b2404e1b32", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "6964ea3a5e4c1218314e1b2f", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
+        "69669ea64847b58fd5393f71", // FPV Drone mod ID (probably not needed, but I'm not chancing it)
     ];
-    
-    private readonly Dictionary<MongoId, string[]> _bossWeaponLookup =
-    new()
+
+    private readonly Dictionary<MongoId, string[]> _bossWeaponLookup = new()
     {
         ["677ca3e62e9e964a11a55d8e"] = ["bossbully"],
 
@@ -310,12 +202,7 @@ public class ItemImportHelper(
         ["676b4e2ff185a450a0b300b4"] = ["bosskilla"],
         ["68677d09339b397ed3d37522"] = ["bosskilla"],
 
-        ["6868d249cdee524f8c0ba45f"] =
-        [
-            "bossknight",
-            "followerbigpipe",
-            "followerbirdeye"
-        ],
+        ["6868d249cdee524f8c0ba45f"] = ["bossknight", "followerbigpipe", "followerbirdeye"],
 
         ["6657bd4d3a4d6e7c33fd2fdc"] = ["bosskojaniy"],
         ["686093d590c3dce07984c38a"] = ["bosskojaniy"],
@@ -337,28 +224,140 @@ public class ItemImportHelper(
         ["682d460e951a926af552d764"] = ["followerbirdeye"],
         ["68b7f4060a4536984f82cf4b"] = ["followerbirdeye"],
     };
-    
+
+    private readonly FrozenSet<MongoId> _foldingModSights =
+    [
+        "5caf16a2ae92152ac412efbc",
+        "61816fcad92c473c770215cc",
+        "61817865d3a39d50044c13a4",
+        "5bb20e49d4351e3bac1212de",
+        "5ba26b01d4351e0085325a51",
+        "5ba26b17d4351e00367f9bdd",
+        "5c1780312e221602b66cc189",
+        "5c17804b2e2216152006c02f",
+        "5dfa3d7ac41b2312ea33362a",
+        "5dfa3d950dee1b22f862eae0",
+        "5fb6564947ce63734e3fa1da",
+        "5fb6567747ce63734e3fa1dc",
+        "5bc09a18d4351e003562b68e",
+        "5bc09a30d4351e00367fb7c8",
+        "5c18b90d2e2216152142466b",
+        "5c18b9192e2216398b5a8104",
+        "5fc0fa362770a0045c59c677",
+        "5fc0fa957283c4046c58147e",
+        "5894a73486f77426d259076c",
+        "5894a81786f77427140b8347",
+    ];
+
+    private readonly FrozenSet<MongoId> _holsterBaseClasses = [BaseClasses.PISTOL];
+    private readonly Lock _holsterLock = new();
+
+    private readonly FrozenSet<MongoId> _longRangeBaseClasses =
+    [
+        BaseClasses.ASSAULT_CARBINE,
+        BaseClasses.SNIPER_RIFLE,
+        BaseClasses.MARKSMAN_RIFLE,
+    ];
+
+    private readonly ApbsEquipmentSlots[] _longRangeSlots =
+    [
+        ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange,
+        ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange,
+    ];
+
+    private readonly FrozenSet<MongoId> _modScope000Whitelist =
+    [
+        "5b2388675acfc4771e1be0be",
+        "5b3b99475acfc432ff4dcbee",
+        "5a37cb10c4a282329a73b4e7",
+        "617151c1d92c473c770214ab",
+        "57c5ac0824597754771e88a9",
+        "6567e7681265c8a131069b0f",
+        "67617ec9ea1e82ea5e103054",
+        "672e37d19f3e60fb0cbbe568",
+    ];
+
+    private readonly FrozenSet<MongoId> _shortRangeBaseClasses =
+    [
+        BaseClasses.ASSAULT_RIFLE,
+        BaseClasses.GRENADE_LAUNCHER,
+        BaseClasses.MACHINE_GUN,
+        BaseClasses.ROCKET_LAUNCHER,
+        BaseClasses.SHOTGUN,
+        BaseClasses.SMG,
+    ];
+
+    private readonly ApbsEquipmentSlots[] _shortRangeSlots =
+    [
+        ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange,
+        ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange,
+    ];
+
+    private readonly FrozenSet<MongoId> _tier4Optics =
+    [
+        "5c0517910db83400232ffee5",
+        "558022b54bdc2dac148b458d",
+        "58491f3324597764bc48fa02",
+        "584924ec24597768f12ae244",
+        "60a23797a37c940de7062d02",
+        "59f9d81586f7744c7506ee62",
+        "5b2389515acfc4771e1be0c0",
+        "5b3b99265acfc4704b4a1afb",
+        "5b31163c5acfc400153b71cb",
+        "64785e7c19d732620e045e15",
+        "655f13e0a246670fb0373245",
+        "6567e751a715f85433025998",
+        "67617ec9ea1e82ea5e103054",
+        "672e37d19f3e60fb0cbbe568",
+        "5649a2464bdc2d91118b45a8",
+    ];
+    private bool _alreadyRan;
+
+    private Dictionary<int, HashSet<MongoId>> _fullModConfigBlacklist = new();
+
+    // Because we're looping the database, and holster is super special, we cache that slot once from default inventory instead of repeated lookups
+    private HashSet<MongoId>? _holsterAllowedItems;
+    private bool _holsterCacheInitialized;
+    private Dictionary<string, HashSet<MongoId>> _vanillaAmmoDictionary = new();
+    private HashSet<MongoId> _vanillaAmmoLookup = new();
+    private HashSet<MongoId> _vanillaAttachmentLookup = new();
+    private Dictionary<
+        string,
+        Dictionary<string, HashSet<MongoId>>
+    > _vanillaClothingBotSlotDictionary = new();
+    private HashSet<MongoId> _vanillaClothingLookup = new();
+
+    private HashSet<MongoId> _vanillaEquipmentLookup = new();
+
+    private Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> _vanillaEquipmentSlotDictionary =
+        new();
+
     /// <summary>
     ///     Helper to skip importing entirely
     /// </summary>
-    public bool ShouldSkipImport()
-    {
-        return !ModConfig.Config.CompatibilityConfig.EnableModdedEquipment &&
-               !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments &&
-               !ModConfig.Config.CompatibilityConfig.EnableModdedWeapons &&
-               (!ModConfig.Config.CompatibilityConfig.EnableModdedClothing ||
-                ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance);
-    }
-    
+    public bool ShouldSkipImport() =>
+        !ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
+        && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments
+        && !ModConfig.Config.CompatibilityConfig.EnableModdedWeapons
+        && (
+            !ModConfig.Config.CompatibilityConfig.EnableModdedClothing
+            || ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance
+        );
+
     /// <summary>
     ///     Validates any configuration options, corrects them if needed and logs if they're invalid
     /// </summary>
     public void ValidateConfig()
     {
-        if (ModConfig.Config.CompatibilityConfig.InitalTierAppearance < 1 || ModConfig.Config.CompatibilityConfig.InitalTierAppearance > 7)
+        if (
+            ModConfig.Config.CompatibilityConfig.InitalTierAppearance < 1
+            || ModConfig.Config.CompatibilityConfig.InitalTierAppearance > 7
+        )
         {
             ModConfig.Config.CompatibilityConfig.InitalTierAppearance = 3;
-            apbsLogger.Error($"Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp.");
+            apbsLogger.Error(
+                "Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp."
+            );
         }
 
         _fullModConfigBlacklist = BuildFullModConfigBlacklistByTier();
@@ -386,19 +385,27 @@ public class ItemImportHelper(
 
     private void Add(HashSet<MongoId> set, List<string>? list)
     {
-        if (list is null) return;
+        if (list is null)
+        {
+            return;
+        }
 
         foreach (var id in list)
+        {
             set.Add(id);
+        }
     }
-    
+
     /// <summary>
     ///     Build the vanilla dictionaries that get generated the first time you run the server after installing APBS
     ///     This is the dictionary that contains all vanilla items that live in the same types of data APBS can import
     /// </summary>
     public async Task BuildVanillaDictionaries()
     {
-        if (_alreadyRan) return;
+        if (_alreadyRan)
+        {
+            return;
+        }
 
         var equipmentTask = ValidateVanillaEquipmentDatabase();
         var ammoTask = ValidateVanillaAmmoDatabase();
@@ -416,36 +423,43 @@ public class ItemImportHelper(
             .SelectMany(x => x.Value)
             .ToHashSet();
 
-        _vanillaAmmoLookup = _vanillaAmmoDictionary
-            .SelectMany(x => x.Value)
-            .ToHashSet();
+        _vanillaAmmoLookup = _vanillaAmmoDictionary.SelectMany(x => x.Value).ToHashSet();
 
         _vanillaClothingLookup = _vanillaClothingBotSlotDictionary
             .SelectMany(x => x.Value)
             .SelectMany(x => x.Value)
             .ToHashSet();
-        
+
         _alreadyRan = true;
     }
-    
+
     /// <summary>
     ///     Deserializes all the weapon / equipment JSON's from the VanillaMappings and adds those items to the dictionary
     /// </summary>
-    private async Task<Dictionary<ApbsEquipmentSlots, HashSet<MongoId>>> ValidateVanillaEquipmentDatabase()
+    private async Task<
+        Dictionary<ApbsEquipmentSlots, HashSet<MongoId>>
+    > ValidateVanillaEquipmentDatabase()
     {
-        var returnDictionary = Enum
-            .GetValues<ApbsEquipmentSlots>()
+        var returnDictionary = Enum.GetValues<ApbsEquipmentSlots>()
             .ToDictionary(slot => slot, _ => new HashSet<MongoId>());
 
-        var primaryPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", "PrimaryWeapon.json");
-        var primary = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(primaryPath)
-                      ?? throw new ArgumentNullException(nameof(primaryPath));
+        var primaryPath = Path.Combine(
+            ModConfig._modPath,
+            "GeneratedVanillaMappings-DO_NOT_TOUCH",
+            "PrimaryWeapon.json"
+        );
+        var primary =
+            await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(primaryPath)
+            ?? throw new ArgumentNullException(nameof(primaryPath));
 
         foreach (var kvp in primary)
         {
             var itemId = kvp.Key;
             var item = itemHelper.GetItem(itemId);
-            if (item.Value is null) continue;
+            if (item.Value is null)
+            {
+                continue;
+            }
 
             foreach (var slot in GetSlotsForPrimaryWeapon(itemId))
             {
@@ -465,7 +479,7 @@ public class ItemImportHelper(
             ("FaceCover.json", ApbsEquipmentSlots.FaceCover),
             ("Scabbard.json", ApbsEquipmentSlots.Scabbard),
             ("TacticalVest.json", ApbsEquipmentSlots.TacticalVest),
-            ("ArmBand.json", ApbsEquipmentSlots.ArmBand)
+            ("ArmBand.json", ApbsEquipmentSlots.ArmBand),
         };
 
         foreach (var (fileName, slot) in equipmentFiles)
@@ -480,18 +494,28 @@ public class ItemImportHelper(
 
         return returnDictionary;
     }
-    
+
     /// <summary>
     ///     Adds item to the vanilla dictionary, this is a helper method
     ///     Called from ValidateVanillaEquipmentDatabase
     /// </summary>
-    private async Task AddEquipmentToSlotAsync(Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> dictionary, string fileName, ApbsEquipmentSlots slot)
+    private async Task AddEquipmentToSlotAsync(
+        Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> dictionary,
+        string fileName,
+        ApbsEquipmentSlots slot
+    )
     {
-        var items = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)) ?? throw new ArgumentNullException(fileName);
+        var items =
+            await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
+                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+            ) ?? throw new ArgumentNullException(fileName);
         foreach (var itemId in items.Keys)
         {
             var item = itemHelper.GetItem(itemId);
-            if (item.Value is null) continue;
+            if (item.Value is null)
+            {
+                continue;
+            }
 
             dictionary[slot].Add(itemId);
         }
@@ -533,7 +557,7 @@ public class ItemImportHelper(
             ("Caliber762x39.json", "Caliber762x39"),
             ("Caliber762x51.json", "Caliber762x51"),
             ("Caliber762x54R.json", "Caliber762x54R"),
-            ("Caliber1143x23ACP.json", "Caliber1143x23ACP")
+            ("Caliber1143x23ACP.json", "Caliber1143x23ACP"),
         };
 
         foreach (var (fileName, caliber) in ammoFiles)
@@ -548,19 +572,29 @@ public class ItemImportHelper(
 
         return returnDictionary;
     }
-    
+
     /// <summary>
     ///     Adds item to the vanilla dictionary, this is a helper method
     ///     Called from ValidateVanillaAmmoDatabase
     /// </summary>
-    private async Task AddAmmoToCaliberAsync(Dictionary<string, HashSet<MongoId>> dictionary, string fileName, string caliber)
+    private async Task AddAmmoToCaliberAsync(
+        Dictionary<string, HashSet<MongoId>> dictionary,
+        string fileName,
+        string caliber
+    )
     {
-        var items = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)) ?? throw new ArgumentNullException(fileName);
+        var items =
+            await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
+                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+            ) ?? throw new ArgumentNullException(fileName);
         foreach (var itemId in items.Keys)
         {
             var item = itemHelper.GetItem(itemId);
-            if (item.Value is null) continue;
-            
+            if (item.Value is null)
+            {
+                continue;
+            }
+
             if (!dictionary.TryGetValue(caliber, out var list))
             {
                 list = new HashSet<MongoId>();
@@ -576,22 +610,25 @@ public class ItemImportHelper(
     private async Task<HashSet<MongoId>> ValidateVanillaAttachmentDatabase()
     {
         var hashSet = new HashSet<MongoId>();
-        
+
         await AddAttachmentsToModAsync(hashSet, "Mods.json");
         await AddAttachmentsToModAsync(hashSet, "ArmourPlates.json");
-        
+
         // Debug Logging
         apbsLogger.Debug($"[VANILLA] Mods contains {hashSet.Count} items");
         return hashSet;
     }
-    
+
     /// <summary>
     ///     Adds item to the vanilla list, this is a helper method
     ///     Called from ValidateVanillaAttachmentDatabase
     /// </summary>
     private async Task AddAttachmentsToModAsync(HashSet<MongoId> hashSet, string fileName)
     {
-        var items = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)) ?? throw new ArgumentNullException(fileName);
+        var items =
+            await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
+                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+            ) ?? throw new ArgumentNullException(fileName);
         foreach (var itemId in items.Keys)
         {
             var item = itemHelper.GetItem(itemId);
@@ -599,7 +636,7 @@ public class ItemImportHelper(
             {
                 continue;
             }
-            
+
             hashSet.Add(itemId);
         }
     }
@@ -607,7 +644,9 @@ public class ItemImportHelper(
     /// <summary>
     ///     Deserializes all the clothing JSON's from the VanillaMappings and adds those items to the dictionary
     /// </summary>
-    private async Task<Dictionary<string, Dictionary<string, HashSet<MongoId>>>> ValidateVanillaClothingDatabase()
+    private async Task<
+        Dictionary<string, Dictionary<string, HashSet<MongoId>>>
+    > ValidateVanillaClothingDatabase()
     {
         var returnDictionary = new Dictionary<string, Dictionary<string, HashSet<MongoId>>>();
 
@@ -617,11 +656,10 @@ public class ItemImportHelper(
             ("BearHands.json", "pmcBEAR", "hands"),
             ("BearHead.json", "pmcBEAR", "head"),
             ("BearBody.json", "pmcBEAR", "body"),
-
             ("UsecFeet.json", "pmcUSEC", "feet"),
             ("UsecHands.json", "pmcUSEC", "hands"),
             ("UsecHead.json", "pmcUSEC", "head"),
-            ("UsecBody.json", "pmcUSEC", "body")
+            ("UsecBody.json", "pmcUSEC", "body"),
         };
 
         foreach (var (fileName, side, slot) in clothingFiles)
@@ -633,7 +671,9 @@ public class ItemImportHelper(
         {
             foreach (var (slot, items) in slotDict)
             {
-                apbsLogger.Debug($"[VANILLA] Clothing Side: {side}, Slot: {slot} contains {items.Count} items");
+                apbsLogger.Debug(
+                    $"[VANILLA] Clothing Side: {side}, Slot: {slot} contains {items.Count} items"
+                );
             }
         }
 
@@ -641,12 +681,20 @@ public class ItemImportHelper(
     }
 
     /// <summary>
-    /// Adds clothing items to the vanilla dictionary
+    ///     Adds clothing items to the vanilla dictionary
     /// </summary>
-    private async Task AddClothingToModAsync(Dictionary<string, Dictionary<string, HashSet<MongoId>>> dictionary, string fileName, string side, string slot)
+    private async Task AddClothingToModAsync(
+        Dictionary<string, Dictionary<string, HashSet<MongoId>>> dictionary,
+        string fileName,
+        string side,
+        string slot
+    )
     {
-        var clothingData = await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)) ?? throw new ArgumentNullException(fileName);
-        
+        var clothingData =
+            await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
+                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+            ) ?? throw new ArgumentNullException(fileName);
+
         if (!dictionary.TryGetValue(side, out var slotDict))
         {
             slotDict = new Dictionary<string, HashSet<MongoId>>();
@@ -662,18 +710,23 @@ public class ItemImportHelper(
         foreach (var itemId in clothingData.Keys)
         {
             var item = templateTable.Customization;
-            if (!item.TryGetValue(itemId, out var _))
+            if (!item.TryGetValue(itemId, out _))
+            {
                 continue;
-            
+            }
+
             items.Add(itemId);
         }
     }
-    
+
     /// <summary>
     ///     Dry-run classification of which slot an item would be routed to during import.
     ///     Returns null if the item would be skipped (mountable headphones, unrecognized, etc.)
     /// </summary>
-    public ApbsEquipmentSlots? ClassifyEquipmentSlot(TemplateItem templateItem, ConcurrentDictionary<MongoId, byte> mountedHeadphones)
+    public ApbsEquipmentSlots? ClassifyEquipmentSlot(
+        TemplateItem templateItem,
+        ConcurrentDictionary<MongoId, byte> mountedHeadphones
+    )
     {
         var itemId = templateItem.Id;
 
@@ -744,12 +797,10 @@ public class ItemImportHelper(
     /// <summary>
     ///     Return the proper slot types for specific weapon base classes
     /// </summary>
-    private IReadOnlyList<ApbsEquipmentSlots> GetSlotsForPrimaryWeapon(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses) ? _shortRangeSlots
-            : itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses) ? _longRangeSlots
-            : [];
-    }
+    private IReadOnlyList<ApbsEquipmentSlots> GetSlotsForPrimaryWeapon(MongoId itemId) =>
+        itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses) ? _shortRangeSlots
+        : itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses) ? _longRangeSlots
+        : [];
 
     /// <summary>
     ///     Check if the item is banned from import
@@ -760,27 +811,41 @@ public class ItemImportHelper(
     /// </summary>
     public bool EquipmentNeedsImporting(MongoId itemId)
     {
-        if (_bannedItems.Contains(itemId)) 
+        if (_bannedItems.Contains(itemId))
+        {
             return false;
-        
+        }
+
         if (_vanillaEquipmentLookup.Contains(itemId))
         {
-            var isVanillaWeapon = itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
+            var isVanillaWeapon = itemHelper.IsOfBaseclasses(
+                itemId,
+                _allImportableWeaponBaseClasses
+            );
             if (isVanillaWeapon && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
+            {
                 return false;
+            }
 
             return isVanillaWeapon;
         }
 
-        var isWeapon = ModConfig.Config.CompatibilityConfig.EnableModdedWeapons &&
-                        itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
+        var isWeapon =
+            ModConfig.Config.CompatibilityConfig.EnableModdedWeapons
+            && itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
 
-        var isEquipment = ModConfig.Config.CompatibilityConfig.EnableModdedEquipment &&
-                           itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
+        var isEquipment =
+            ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
+            && itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
 
-        if (itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR) && dateHelper.IsHalloweenEnabled())
+        if (
+            itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR)
+            && dateHelper.IsHalloweenEnabled()
+        )
+        {
             return false;
-        
+        }
+
         return isWeapon || isEquipment;
     }
 
@@ -790,59 +855,87 @@ public class ItemImportHelper(
     /// </summary>
     public bool CustomizationNeedsImporting(CustomizationItem templateItem)
     {
-        if (_bannedItems.Contains(templateItem.Id)) 
+        if (_bannedItems.Contains(templateItem.Id))
+        {
             return false;
+        }
 
-        var isCustomization = ModConfig.Config.CompatibilityConfig.EnableModdedClothing && 
-                              !ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance &&
-                              !_vanillaClothingLookup.Contains(templateItem.Id);
+        var isCustomization =
+            ModConfig.Config.CompatibilityConfig.EnableModdedClothing
+            && !ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance
+            && !_vanillaClothingLookup.Contains(templateItem.Id);
 
-        if (!isCustomization) 
+        if (!isCustomization)
+        {
             return false;
-        
+        }
+
         if (templateItem.Properties?.Side is null)
+        {
             return false;
-        
-        if (!templateItem.Properties.Side.Contains("Bear") &&
-            !templateItem.Properties.Side.Contains("Usec")) 
+        }
+
+        if (
+            !templateItem.Properties.Side.Contains("Bear")
+            && !templateItem.Properties.Side.Contains("Usec")
+        )
+        {
             return false;
-            
+        }
+
         return templateItem.Properties.BodyPart is "Body" or "Feet";
     }
 
     /// <summary>
     ///     Check if the weapon is vanilla
     /// </summary>
-    public bool WeaponOrEquipmentIsVanilla(MongoId itemId)
-    {
-        return _vanillaEquipmentLookup.Contains(itemId);
-    }
+    public bool WeaponOrEquipmentIsVanilla(MongoId itemId) =>
+        _vanillaEquipmentLookup.Contains(itemId);
 
     /// <summary>
     ///     Check if the item is banned from import
     ///     Check if the item is ammo
     ///     The Caliber9x18PM caliber is also used for grenade shrapnel, so lets check those and skip if they are shrapnel
-    ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn these
+    ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn
+    ///     these
     ///     If all of these pass, go ahead and check if the vanilla dictionary contains the item, if it does then skip it
     ///     If all checks are completed, go ahead and mark the item for import
     /// </summary>
     public bool AmmoNeedsImporting(MongoId itemId, string caliber)
     {
-        if (_bannedItems.Contains(itemId)) 
+        if (_bannedItems.Contains(itemId))
+        {
             return false;
-        if (!itemHelper.IsOfBaseclass(itemId, BaseClasses.AMMO)) 
+        }
+        if (!itemHelper.IsOfBaseclass(itemId, BaseClasses.AMMO))
+        {
             return false;
-        if (caliber == string.Empty) 
+        }
+        if (caliber == string.Empty)
+        {
             return false;
-        
+        }
+
         // Specifically check grenade shrapnel which also happens to always have 9x18PM as the caliber
-        if (caliber == "Caliber9x18PM" && itemHelper.GetItemName(itemId).Contains("shrapnel")) 
+        if (caliber == "Caliber9x18PM" && itemHelper.GetItemName(itemId).Contains("shrapnel"))
+        {
             return false;
+        }
         // Skip these calibers as they are for things we don't spawn on bots (or we already have like the disks)
-        if (caliber == "Caliber127x108" || caliber == "Caliber30x29" || caliber == "Caliber26x75" || caliber == "Caliber20x1mm") 
+        if (
+            caliber == "Caliber127x108"
+            || caliber == "Caliber30x29"
+            || caliber == "Caliber26x75"
+            || caliber == "Caliber20x1mm"
+        )
+        {
             return false;
-        
-        if (_vanillaAmmoLookup.Contains(itemId)) return false;
+        }
+
+        if (_vanillaAmmoLookup.Contains(itemId))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -851,15 +944,14 @@ public class ItemImportHelper(
     ///     Check if the item is banned from import
     ///     Check if the item is ammo
     ///     The Caliber9x18PM caliber is also used for grenade shrapnel, so lets check those and skip if they are shrapnel
-    ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn these
+    ///     Go ahead and check specific calibers to skip, these are usually used for mounted weapons on the map. We don't spawn
+    ///     these
     ///     If all of these pass, go ahead and check if the vanilla dictionary contains the item, if it does then skip it
     ///     If all checks are completed, go ahead and mark the item for import
     /// </summary>
-    public bool AmmoCaliberNeedsAdded(string caliber)
-    {
-        return !_vanillaAmmoDictionary.ContainsKey(caliber);
-    }
-    
+    public bool AmmoCaliberNeedsAdded(string caliber) =>
+        !_vanillaAmmoDictionary.ContainsKey(caliber);
+
     /// <summary>
     ///     Get the cartridge ids from a weapon's magazine template that work with the weapon
     /// </summary>
@@ -868,19 +960,32 @@ public class ItemImportHelper(
     /// <exception cref="ArgumentNullException">Thrown when weaponTemplate is null.</exception>
     public HashSet<MongoId> GetCompatibleCartridgesFromMagazineTemplate(TemplateItem weaponTemplate)
     {
-        var magazineSlot = weaponTemplate.Properties?.Slots?.FirstOrDefault(slot => slot.Name == "mod_magazine");
+        var magazineSlot = weaponTemplate.Properties?.Slots?.FirstOrDefault(slot =>
+            slot.Name == "mod_magazine"
+        );
         if (magazineSlot is null)
         {
             return [];
         }
 
-        var magazineTemplate = itemHelper.GetItem(magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty());
-        if (magazineTemplate.Value?.Properties == null) return new HashSet<MongoId>();
-
+        var magazineTemplate = itemHelper.GetItem(
+            magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault()
+                ?? MongoId.Empty()
+        );
+        if (magazineTemplate.Value?.Properties == null)
+        {
+            return new HashSet<MongoId>();
+        }
 
         var cartridges =
-            magazineTemplate.Value.Properties.Slots.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter
-            ?? magazineTemplate.Value.Properties.Cartridges.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter;
+            magazineTemplate
+                .Value.Properties.Slots.FirstOrDefault()
+                ?.Properties?.Filters?.FirstOrDefault()
+                ?.Filter
+            ?? magazineTemplate
+                .Value.Properties.Cartridges.FirstOrDefault()
+                ?.Properties?.Filters?.FirstOrDefault()
+                ?.Filter;
 
         return cartridges ?? [];
     }
@@ -888,141 +993,119 @@ public class ItemImportHelper(
     /// <summary>
     ///     Hydrate the holster cache
     ///     This cache contains all the weapons that can go in the holster, including the Pistol baseclass
-    ///     We check it this way for Holster, specifically because there are some revolvers and some shotguns that go here and not in primary classes
+    ///     We check it this way for Holster, specifically because there are some revolvers and some shotguns that go here and
+    ///     not in primary classes
     /// </summary>
     private void EnsureHolsterCacheExistsFirst()
     {
         lock (_holsterLock)
         {
-            if (_holsterCacheInitialized) return;
+            if (_holsterCacheInitialized)
+            {
+                return;
+            }
 
             var defaultInventory = itemHelper.GetItem(ItemTpl.INVENTORY_DEFAULT).Value;
 
-            _holsterAllowedItems = defaultInventory?
-                .Properties?.Slots?.FirstOrDefault(x => x.Name == "Holster")?
-                .Properties?.Filters?.FirstOrDefault(f => f.Filter?.Count > 0)?
-                .Filter is { } filter
-                ? [..filter]
+            _holsterAllowedItems = defaultInventory
+                ?.Properties?.Slots?.FirstOrDefault(x => x.Name == "Holster")
+                ?.Properties?.Filters?.FirstOrDefault(f => f.Filter?.Count > 0)
+                ?.Filter
+                is { } filter
+                ? [.. filter]
                 : null;
 
             _holsterCacheInitialized = true;
         }
     }
-    
+
     /// <summary>
     ///     Is the item supposed to go in the Holster slot?
     /// </summary>
     public bool IsHolster(MongoId itemId)
     {
         EnsureHolsterCacheExistsFirst();
-        
-        return _holsterAllowedItems?.Contains(itemId) == true || itemHelper.IsOfBaseclasses(itemId, _holsterBaseClasses);
+
+        return _holsterAllowedItems?.Contains(itemId) == true
+            || itemHelper.IsOfBaseclasses(itemId, _holsterBaseClasses);
     }
 
     /// <summary>
     ///     Is the item supposed to go in the Primary slot?
     /// </summary>
-    public bool IsPrimaryWeapon(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses) || itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
-    }
+    public bool IsPrimaryWeapon(MongoId itemId) =>
+        itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses)
+        || itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
 
     /// <summary>
     ///     Is the item supposed to go in the PrimaryLongRange slot?
     /// </summary>
-    public bool IsLongRangePrimaryWeapon(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
-    }
+    public bool IsLongRangePrimaryWeapon(MongoId itemId) =>
+        itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
 
     /// <summary>
     ///     Is the item supposed to go in the Backpack slot?
     /// </summary>
-    public bool IsBackpack(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.BACKPACK);
-    }
+    public bool IsBackpack(MongoId itemId) =>
+        itemHelper.IsOfBaseclass(itemId, BaseClasses.BACKPACK);
 
     /// <summary>
     ///     Is the item supposed to go in the Face cover slot?
     /// </summary>
-    public bool IsFacecover(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.FACE_COVER);
-    }
-    
+    public bool IsFacecover(MongoId itemId) =>
+        itemHelper.IsOfBaseclass(itemId, BaseClasses.FACE_COVER);
+
     /// <summary>
     ///     Is the item supposed to go in the Tactical Rig slot?
     /// </summary>
-    public bool IsRigSlot(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.VEST);
-    }
-    
+    public bool IsRigSlot(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.VEST);
+
     /// <summary>
     ///     Is the item supposed to go in the ArmouredRig Data slot?
     /// </summary>
-    public bool IsArmouredRig(TemplateItem? itemDetails)
-    {
+    public bool IsArmouredRig(TemplateItem? itemDetails) =>
         // Armoured Rigs have Slots, Tactical Rigs do not
-        return itemDetails?.Properties?.Slots != null && itemDetails.Properties.Slots.Any();
-    }
+        itemDetails?.Properties?.Slots != null
+        && itemDetails.Properties.Slots.Any();
 
     /// <summary>
     ///     Is the item supposed to go in the ArmourVest slot?
     /// </summary>
-    public bool IsArmourVest(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.ARMOR);
-    }
+    public bool IsArmourVest(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.ARMOR);
 
     /// <summary>
     ///     Is the item supposed to go in the Armband slot?
     /// </summary>
-    public bool IsArmband(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.ARM_BAND);
-    }
+    public bool IsArmband(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.ARM_BAND);
 
     /// <summary>
     ///     Is the item supposed to go in the Headphones slot?
     /// </summary>
-    public bool IsHeadphones(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADPHONES);
-    }
+    public bool IsHeadphones(MongoId itemId) =>
+        itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADPHONES);
 
     /// <summary>
     ///     Is the item supposed to go in the Headwear slot?
     /// </summary>
-    public bool IsHeadwear(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR);
-    }
+    public bool IsHeadwear(MongoId itemId) =>
+        itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR);
 
     /// <summary>
     ///     Is the item supposed to go in the Knife slot?
     /// </summary>
-    public bool IsScabbard(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.KNIFE);
-    }
+    public bool IsScabbard(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.KNIFE);
 
     /// <summary>
     ///     Is the item supposed to go in the Eyeglasses slot?
     /// </summary>
-    public bool IsEyeglasses(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClasses.VISORS);
-    }
+    public bool IsEyeglasses(MongoId itemId) =>
+        itemHelper.IsOfBaseclass(itemId, BaseClasses.VISORS);
 
     /// <summary>
     ///     Is the item a pack n strap belt?
     /// </summary>
-    public bool IsPackNStrapBelt(MongoId itemId)
-    {
-        return itemHelper.IsOfBaseclass(itemId, BaseClassPackNStrapBelt);
-    }
+    public bool IsPackNStrapBelt(MongoId itemId) =>
+        itemHelper.IsOfBaseclass(itemId, BaseClassPackNStrapBelt);
 
     /// <summary>
     ///     Marks the pack n strap belts as unlootable
@@ -1030,25 +1113,44 @@ public class ItemImportHelper(
     /// </summary>
     public void MarkPackNStrapUnlootable(TemplateItem itemDetails)
     {
-        if (itemDetails.Properties is null) return;
-        
-        var unlootableFromSide = new List<PlayerSideMask> { PlayerSideMask.Bear, PlayerSideMask.Usec, PlayerSideMask.Savage };
+        if (itemDetails.Properties is null)
+        {
+            return;
+        }
+
+        var unlootableFromSide = new List<PlayerSideMask>
+        {
+            PlayerSideMask.Bear,
+            PlayerSideMask.Usec,
+            PlayerSideMask.Savage,
+        };
         itemDetails.Properties.Unlootable = true;
         itemDetails.Properties.UnlootableFromSide = unlootableFromSide;
         itemDetails.Properties.UnlootableFromSlot = "ArmBand";
     }
-    
+
     /// <summary>
     ///     Returns the weight for an imported weapon in the given slot.
     ///     If using DynamicWeighting return the following:
     ///     At multiplier 1.0 each modded weapon has the same individual selection chance as the average vanilla weapon.
     ///     Below 1.0 = modded less likely than average vanilla, above 1.0 = modded more likely than average vanilla.
     /// </summary>
-    public double GetWeaponSlotWeight(ApbsEquipmentSlots slot, string botType, double vanillaWeightSum = 0, int vanillaCount = 0)
+    public double GetWeaponSlotWeight(
+        ApbsEquipmentSlots slot,
+        string botType,
+        double vanillaWeightSum = 0,
+        int vanillaCount = 0
+    )
     {
-        var staticWeight = IsPrimary(slot) ? GetPrimaryWeaponWeight(botType) : GetStaticNonPrimaryWeight(slot, botType);
+        var staticWeight = IsPrimary(slot)
+            ? GetPrimaryWeaponWeight(botType)
+            : GetStaticNonPrimaryWeight(slot, botType);
 
-        if (!ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights || vanillaCount == 0 || vanillaWeightSum == 0)
+        if (
+            !ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights
+            || vanillaCount == 0
+            || vanillaWeightSum == 0
+        )
         {
             return staticWeight;
         }
@@ -1056,47 +1158,46 @@ public class ItemImportHelper(
         var averageVanillaWeight = vanillaWeightSum / vanillaCount;
         var multiplier = botType.ToLowerInvariant() switch
         {
-            "pmc"   => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Pmc,
-            "scav"  => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Scav,
+            "pmc" => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Pmc,
+            "scav" => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Scav,
             _ => ModConfig.Config.CompatibilityConfig.DynamicWeaponWeightMultipliers.Follower,
         };
         return Math.Max(1, Math.Round(averageVanillaWeight * multiplier, 2));
     }
-    
+
     private double GetStaticNonPrimaryWeight(ApbsEquipmentSlots slot, string botType)
     {
         return botType switch
         {
             "pmc" => slot switch
             {
-                ApbsEquipmentSlots.Holster  => 5,
+                ApbsEquipmentSlots.Holster => 5,
                 ApbsEquipmentSlots.Scabbard => 6,
-                _ => 1
+                _ => 1,
             },
             "scav" => slot switch
             {
-                _ => 1
+                _ => 1,
             },
             _ => slot switch
             {
-                ApbsEquipmentSlots.Holster  => 3,
+                ApbsEquipmentSlots.Holster => 3,
                 ApbsEquipmentSlots.Scabbard => 3,
-                _ => 1
-            }
+                _ => 1,
+            },
         };
     }
 
     /// <summary>
     ///     Is the slot being checked a primary weapon slot?
     /// </summary>
-    private bool IsPrimary(ApbsEquipmentSlots slot)
-    {
-        return slot is ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange
-            or ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange
-            or ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange
-            or ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange;
-    }
-    
+    private bool IsPrimary(ApbsEquipmentSlots slot) =>
+        slot
+            is ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange
+                or ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange
+                or ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange
+                or ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange;
+
     /// <summary>
     ///     Returns the Mod Config values for the imported weapon weights
     ///     This is a shortcut helper method for GetWeaponSlotWeight so we don't need additional logic there
@@ -1108,29 +1209,42 @@ public class ItemImportHelper(
             "pmc" => ModConfig.Config.CompatibilityConfig.PmcWeaponWeights,
             "scav" => ModConfig.Config.CompatibilityConfig.ScavWeaponWeights,
             "default" => ModConfig.Config.CompatibilityConfig.FollowerWeaponWeights,
-            _ => 1
+            _ => 1,
         };
     }
-    
+
     /// <summary>
     ///     Returns the weight for an imported equipment item in the given slot.
-    ///     Follows the same individual parity logic as weapons — at 1.0 each modded item matches the average vanilla item weight for that slot.
+    ///     Follows the same individual parity logic as weapons — at 1.0 each modded item matches the average vanilla item
+    ///     weight for that slot.
     /// </summary>
-    public double GetGearSlotWeight(ApbsEquipmentSlots slot, TemplateItem templateItem, bool isScav = false, double vanillaWeightSum = 0, int vanillaCount = 0)
+    public double GetGearSlotWeight(
+        ApbsEquipmentSlots slot,
+        TemplateItem templateItem,
+        bool isScav = false,
+        double vanillaWeightSum = 0,
+        int vanillaCount = 0
+    )
     {
         if (isScav && ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeight)
         {
             return ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeightValue;
         }
 
-        if (!ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights || vanillaCount == 0 || vanillaWeightSum == 0)
+        if (
+            !ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights
+            || vanillaCount == 0
+            || vanillaWeightSum == 0
+        )
+        {
             return GetStaticGearSlotWeight(slot, templateItem);
+        }
 
         var multiplier = GetEquipmentSlotMultiplier(slot, templateItem);
         var averageVanillaWeight = vanillaWeightSum / vanillaCount;
         return Math.Max(1, Math.Round(averageVanillaWeight * multiplier, 2));
     }
-    
+
     private int GetStaticGearSlotWeight(ApbsEquipmentSlots slot, TemplateItem templateItem)
     {
         var gridLength = templateItem.Properties?.Grids?.Count() ?? 0;
@@ -1140,46 +1254,75 @@ public class ItemImportHelper(
         {
             ApbsEquipmentSlots.ArmBand => ModConfig.Config.CompatibilityConfig.ArmBandWeight,
             ApbsEquipmentSlots.ArmorVest => ModConfig.Config.CompatibilityConfig.ArmourVestWeight,
-            ApbsEquipmentSlots.ArmouredRig => ModConfig.Config.CompatibilityConfig.ArmouredRigWeight,
+            ApbsEquipmentSlots.ArmouredRig => ModConfig
+                .Config
+                .CompatibilityConfig
+                .ArmouredRigWeight,
             ApbsEquipmentSlots.Backpack => ModConfig.Config.CompatibilityConfig.BackpackWeight,
             ApbsEquipmentSlots.Eyewear => ModConfig.Config.CompatibilityConfig.EyewearWeight,
             ApbsEquipmentSlots.Earpiece => ModConfig.Config.CompatibilityConfig.EarpieceWeight,
-            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight,
-            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig
+                .Config
+                .CompatibilityConfig
+                .FaceCoverAc2Weight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig
+                .Config
+                .CompatibilityConfig
+                .FaceCoverAc0Weight,
             ApbsEquipmentSlots.FaceCover => ModConfig.Config.CompatibilityConfig.FaceCoverWeight,
-            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight,
+            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig
+                .Config
+                .CompatibilityConfig
+                .HeadwearESlotWeight,
             ApbsEquipmentSlots.Headwear => ModConfig.Config.CompatibilityConfig.HeadwearWeight,
-            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight,
-            ApbsEquipmentSlots.TacticalVest => ModConfig.Config.CompatibilityConfig.TacticalVestWeight,
-            _ => 15
+            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig
+                .Config
+                .CompatibilityConfig
+                .TacticalVestGLengthWeight,
+            ApbsEquipmentSlots.TacticalVest => ModConfig
+                .Config
+                .CompatibilityConfig
+                .TacticalVestWeight,
+            _ => 15,
         };
     }
-    
-    public double GetEquipmentSlotMultiplierPublic(ApbsEquipmentSlots slot, TemplateItem? templateItem = null) => GetEquipmentSlotMultiplier(slot, templateItem);
-    private double GetEquipmentSlotMultiplier(ApbsEquipmentSlots slot, TemplateItem? templateItem = null)
+
+    public double GetEquipmentSlotMultiplierPublic(
+        ApbsEquipmentSlots slot,
+        TemplateItem? templateItem = null
+    ) => GetEquipmentSlotMultiplier(slot, templateItem);
+
+    private double GetEquipmentSlotMultiplier(
+        ApbsEquipmentSlots slot,
+        TemplateItem? templateItem = null
+    )
     {
         var config = ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers;
 
         return slot switch
         {
-            ApbsEquipmentSlots.Headwear => templateItem?.Properties?.Slots?.Any() == true ? config.HeadwearWithSlots : config.Headwear,
+            ApbsEquipmentSlots.Headwear => templateItem?.Properties?.Slots?.Any() == true
+                ? config.HeadwearWithSlots
+                : config.Headwear,
             ApbsEquipmentSlots.FaceCover => (templateItem?.Properties?.ArmorClass ?? 0) switch
             {
                 > 2 => config.FaceCoverAc2,
                 > 0 => config.FaceCoverAc0,
-                _   => config.FaceCover
+                _ => config.FaceCover,
             },
-            ApbsEquipmentSlots.TacticalVest => (templateItem?.Properties?.Grids?.Count() ?? 0) > 10 ? config.TacticalVestLargeGrid : config.TacticalVest,
-            ApbsEquipmentSlots.ArmorVest    => config.ArmorVest,
-            ApbsEquipmentSlots.ArmouredRig  => config.ArmouredRig,
-            ApbsEquipmentSlots.Backpack     => config.Backpack,
-            ApbsEquipmentSlots.Eyewear      => config.Eyewear,
-            ApbsEquipmentSlots.Earpiece     => config.Earpiece,
-            ApbsEquipmentSlots.ArmBand      => config.ArmBand,
-            _                               => 1.0
+            ApbsEquipmentSlots.TacticalVest => (templateItem?.Properties?.Grids?.Count() ?? 0) > 10
+                ? config.TacticalVestLargeGrid
+                : config.TacticalVest,
+            ApbsEquipmentSlots.ArmorVest => config.ArmorVest,
+            ApbsEquipmentSlots.ArmouredRig => config.ArmouredRig,
+            ApbsEquipmentSlots.Backpack => config.Backpack,
+            ApbsEquipmentSlots.Eyewear => config.Eyewear,
+            ApbsEquipmentSlots.Earpiece => config.Earpiece,
+            ApbsEquipmentSlots.ArmBand => config.ArmBand,
+            _ => 1.0,
         };
     }
-    
+
     /// <summary>
     ///     Check if the item has an armour class or armour plate slots
     ///     If it isn't armoured, bail out and don't skip it
@@ -1187,17 +1330,27 @@ public class ItemImportHelper(
     /// </summary>
     public bool IfArmouredHelmetAndShouldSkip(TemplateItem templateItem, int currentTier)
     {
-        if (currentTier >= 4) return false;
-        if (!itemHelper.IsOfBaseclass(templateItem.Id, BaseClasses.HEADWEAR)) return false;
-        
+        if (currentTier >= 4)
+        {
+            return false;
+        }
+        if (!itemHelper.IsOfBaseclass(templateItem.Id, BaseClasses.HEADWEAR))
+        {
+            return false;
+        }
+
         foreach (var slot in templateItem.Properties?.Slots ?? [])
         {
             foreach (var filter in slot.Properties?.Filters ?? [])
             {
                 foreach (var itemId in filter.Filter ?? [])
                 {
-                    var childArmorClass = itemHelper.GetItem(itemId).Value?.Properties?.ArmorClass ?? 0;
-                    if (childArmorClass >= 4) return true;
+                    var childArmorClass =
+                        itemHelper.GetItem(itemId).Value?.Properties?.ArmorClass ?? 0;
+                    if (childArmorClass >= 4)
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -1205,142 +1358,189 @@ public class ItemImportHelper(
         return false;
     }
 
-    public bool AreHeadphonesMountable(TemplateItem headphoneTemplateItem)
-    {
-        return headphoneTemplateItem.Properties?.BlocksEarpiece != null && (bool)headphoneTemplateItem.Properties?.BlocksEarpiece.Value;
-    }
+    public bool AreHeadphonesMountable(TemplateItem headphoneTemplateItem) =>
+        headphoneTemplateItem.Properties?.BlocksEarpiece != null
+        && (bool)headphoneTemplateItem.Properties?.BlocksEarpiece.Value;
 
-    public bool AttachmentNeedsImporting(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
+    public bool AttachmentNeedsImporting(
+        TemplateItem parentItem,
+        TemplateItem itemToAdd,
+        string slot
+    )
     {
-        if (_bannedAttachments.Contains(itemToAdd.Id)) 
+        if (_bannedAttachments.Contains(itemToAdd.Id))
+        {
             return false;
-        
+        }
+
         if (ModConfig.Config.CompatibilityConfig.EnableSafeGuard)
         {
-            if ((IsVanillaAttachment(parentItem.Id) || WeaponOrEquipmentIsVanilla(parentItem.Id)) 
-                && IsVanillaAttachment(itemToAdd.Id))
+            if (
+                (IsVanillaAttachment(parentItem.Id) || WeaponOrEquipmentIsVanilla(parentItem.Id))
+                && IsVanillaAttachment(itemToAdd.Id)
+            )
+            {
                 return false;
+            }
         }
 
         if (VssValCheck(parentItem, slot))
+        {
             return false;
+        }
 
         if (Ar15Mod1Check(parentItem, slot))
+        {
             return false;
+        }
 
         if (MagazineWithNoCount(itemToAdd, slot))
+        {
             return false;
+        }
 
         if (IsFrontOrRearSightAndVanillaItem(parentItem, slot))
+        {
             return false;
+        }
 
         if (IsBannedModScope000(itemToAdd, slot))
+        {
             return false;
+        }
 
         if (IsFrontOrRearSightAndDoesntFold(parentItem, itemToAdd, slot))
+        {
             return false;
-        
+        }
+
         return true;
     }
 
-    public bool IsVanillaAttachment(MongoId itemId)
-    {
-        return _vanillaAttachmentLookup.Contains(itemId);
-    }
+    public bool IsVanillaAttachment(MongoId itemId) => _vanillaAttachmentLookup.Contains(itemId);
 
-    private bool VssValCheck(TemplateItem parentItem, string slot)
-    {
-        return (parentItem.Id == ItemTpl.MARKSMANRIFLE_VSS_VINTOREZ_9X39_SPECIAL_SNIPER_RIFLE ||
-                parentItem.Id == ItemTpl.ASSAULTCARBINE_AS_VAL_9X39_SPECIAL_ASSAULT_RIFLE) 
-               && slot == "mod_mount_000";
-    }
-    
-    private bool Ar15Mod1Check(TemplateItem parentItem, string slot)
-    {
-        return parentItem.Id == ItemTpl.HANDGUARD_AR15_AB_ARMS_MOD1 && slot == "mod_scope";
-    }
+    private bool VssValCheck(TemplateItem parentItem, string slot) =>
+        (
+            parentItem.Id == ItemTpl.MARKSMANRIFLE_VSS_VINTOREZ_9X39_SPECIAL_SNIPER_RIFLE
+            || parentItem.Id == ItemTpl.ASSAULTCARBINE_AS_VAL_9X39_SPECIAL_ASSAULT_RIFLE
+        )
+        && slot == "mod_mount_000";
 
-    private bool MagazineWithNoCount(TemplateItem itemToAdd, string slot)
-    {
-        return slot == "mod_magazine" && !(itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount.HasValue ?? false);
-    }
+    private bool Ar15Mod1Check(TemplateItem parentItem, string slot) =>
+        parentItem.Id == ItemTpl.HANDGUARD_AR15_AB_ARMS_MOD1 && slot == "mod_scope";
 
-    private bool IsFrontOrRearSightAndVanillaItem(TemplateItem parentItem, string slot)
-    {
-        return slot.StartsWith("mod_sight_") && _vanillaAttachmentLookup.Contains(parentItem.Id);
-    }
+    private bool MagazineWithNoCount(TemplateItem itemToAdd, string slot) =>
+        slot == "mod_magazine"
+        && !(itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount.HasValue ?? false);
 
-    private bool IsBannedModScope000(TemplateItem itemToAdd, string slot)
-    {
-        return slot == "mod_scope_000" && !_modScope000Whitelist.Contains(itemToAdd.Id);
-    }
+    private bool IsFrontOrRearSightAndVanillaItem(TemplateItem parentItem, string slot) =>
+        slot.StartsWith("mod_sight_") && _vanillaAttachmentLookup.Contains(parentItem.Id);
 
-    private bool IsFrontOrRearSightAndDoesntFold(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
+    private bool IsBannedModScope000(TemplateItem itemToAdd, string slot) =>
+        slot == "mod_scope_000" && !_modScope000Whitelist.Contains(itemToAdd.Id);
+
+    private bool IsFrontOrRearSightAndDoesntFold(
+        TemplateItem parentItem,
+        TemplateItem itemToAdd,
+        string slot
+    )
     {
         if (!slot.StartsWith("mod_sight_") || _foldingModSights.Contains(itemToAdd.Id))
+        {
             return false;
+        }
 
-        var filters = parentItem.Properties?.Slots?
-            .FirstOrDefault(s => s.Name == slot)?
-            .Properties?.Filters?
-            .FirstOrDefault(f => f.Filter != null && f.Filter.Count > 0)?
-            .Filter;
+        var filters = parentItem
+            .Properties?.Slots?.FirstOrDefault(s => s.Name == slot)
+            ?.Properties?.Filters?.FirstOrDefault(f => f.Filter != null && f.Filter.Count > 0)
+            ?.Filter;
 
         if (filters != null && filters.All(id => !_foldingModSights.Contains(id)))
+        {
             return false;
+        }
 
         return true;
     }
 
-    public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd, string slot, int tier)
+    public bool AttachmentShouldBeInTier(
+        TemplateItem parentItem,
+        TemplateItem itemToAdd,
+        string slot,
+        int tier
+    )
     {
-        var isRequired = parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false;
+        var isRequired =
+            parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false;
         if (isRequired)
+        {
             return true;
+        }
 
         if (slot.StartsWith("mod_magazine"))
         {
             var maxCount = itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount;
-            if (!maxCount.HasValue) return true;
-            if (!MagazinePoolCoversAllTiers(parentItem, slot)) return true;
+            if (!maxCount.HasValue)
+            {
+                return true;
+            }
+            if (!MagazinePoolCoversAllTiers(parentItem, slot))
+            {
+                return true;
+            }
 
             var magTier = GetMagazineTierForCount((int)maxCount.Value);
             return tier >= magTier;
         }
 
         if (slot.StartsWith("mod_scope"))
+        {
             return tier >= 4 && _tier4Optics.Contains(itemToAdd.Id);
+        }
 
         if (slot.StartsWith("mod_charge"))
         {
             var ergo = itemToAdd.Properties?.Ergonomics ?? 0;
-    
+
             if (!ChargeHandlePoolCoversAllTiers(parentItem, slot))
+            {
                 return true;
+            }
 
             return tier switch
             {
                 1 or 2 => ergo == 0,
                 3 => ergo <= 1,
-                _ => ergo >= 1
+                _ => ergo >= 1,
             };
         }
-        
-        if (!slot.StartsWith("mod_stock") && !slot.StartsWith("mod_handguard") && !slot.StartsWith("mod_reciever") && !slot.StartsWith("mod_pistol_grip"))
+
+        if (
+            !slot.StartsWith("mod_stock")
+            && !slot.StartsWith("mod_handguard")
+            && !slot.StartsWith("mod_reciever")
+            && !slot.StartsWith("mod_pistol_grip")
+        )
+        {
             return true;
+        }
 
         var stat = GetStatForSlot(itemToAdd, slot);
         if (!stat.HasValue || stat.Value <= 0)
+        {
             return true;
+        }
 
         var sortedValues = GetSortedErgoValues(parentItem, slot);
         if (!ErgoPoolCoversAllTiers(sortedValues))
+        {
             return true;
+        }
 
         var percentile = GetPercentile(sortedValues, stat.Value);
         return IsInPercentileBandForTier(percentile, tier);
     }
-    
+
     private bool ChargeHandlePoolCoversAllTiers(TemplateItem parentItem, string slot)
     {
         var hasZeroErgo = false;
@@ -1350,13 +1550,24 @@ public class ItemImportHelper(
         {
             var itemData = itemHelper.GetItem(itemId).Value;
             if (itemData == null || _bannedAttachments.Contains(itemData.Id))
+            {
                 continue;
+            }
 
             var ergo = itemData.Properties?.Ergonomics ?? 0;
-            if (ergo <= 0) hasZeroErgo = true;
-            if (ergo >= 1) hasPositiveErgo = true;
+            if (ergo <= 0)
+            {
+                hasZeroErgo = true;
+            }
+            if (ergo >= 1)
+            {
+                hasPositiveErgo = true;
+            }
 
-            if (hasZeroErgo && hasPositiveErgo) break;
+            if (hasZeroErgo && hasPositiveErgo)
+            {
+                break;
+            }
         }
 
         // T1-2 need ergo == 0, T4+ need ergo >= 1
@@ -1405,24 +1616,40 @@ public class ItemImportHelper(
 
     private List<double> GetSortedErgoValues(TemplateItem parentItem, string slot)
     {
-        
-        if (VssValCheck(parentItem, slot) || Ar15Mod1Check(parentItem, slot) || IsFrontOrRearSightAndVanillaItem(parentItem, slot)) return [];
+        if (
+            VssValCheck(parentItem, slot)
+            || Ar15Mod1Check(parentItem, slot)
+            || IsFrontOrRearSightAndVanillaItem(parentItem, slot)
+        )
+        {
+            return [];
+        }
 
         var values = new List<double>();
         foreach (var itemId in GetItemFilters(parentItem, slot))
         {
             var itemData = itemHelper.GetItem(itemId).Value;
             if (itemData == null || _bannedAttachments.Contains(itemData.Id))
+            {
                 continue;
+            }
 
-            if (IsBannedModScope000(itemData, slot)) continue;
-            if (IsFrontOrRearSightAndDoesntFold(parentItem, itemData, slot)) continue;
+            if (IsBannedModScope000(itemData, slot))
+            {
+                continue;
+            }
+            if (IsFrontOrRearSightAndDoesntFold(parentItem, itemData, slot))
+            {
+                continue;
+            }
 
             var stat = GetStatForSlot(itemData, slot);
-        
+
             if (!stat.HasValue || stat.Value <= 0)
+            {
                 continue;
-            
+            }
+
             values.Add(stat.Value);
         }
 
@@ -1433,7 +1660,9 @@ public class ItemImportHelper(
     private bool ErgoPoolCoversAllTiers(List<double> sortedValues)
     {
         if (sortedValues.Count < 8)
+        {
             return false;
+        }
 
         var range = sortedValues.Last() - sortedValues.First();
         var uniqueValues = sortedValues.Distinct().Count();
@@ -1443,7 +1672,11 @@ public class ItemImportHelper(
 
     private HashSet<MongoId> GetItemFilters(TemplateItem parentItem, string slot)
     {
-        return parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Properties?.Filters?.FirstOrDefault()?.Filter ?? [];
+        return parentItem
+                .Properties?.Slots?.FirstOrDefault(x => x.Name == slot)
+                ?.Properties?.Filters?.FirstOrDefault()
+                ?.Filter
+            ?? [];
     }
 
     private double GetPercentile(List<double> sortedValues, double stat)
@@ -1454,7 +1687,12 @@ public class ItemImportHelper(
 
     private double? GetStatForSlot(TemplateItem item, string slot)
     {
-        if (slot.StartsWith("mod_stock") || slot.StartsWith("mod_handguard") || slot.StartsWith("mod_reciever") || slot.StartsWith("mod_pistol_grip"))
+        if (
+            slot.StartsWith("mod_stock")
+            || slot.StartsWith("mod_handguard")
+            || slot.StartsWith("mod_reciever")
+            || slot.StartsWith("mod_pistol_grip")
+        )
         {
             return item.Properties?.Ergonomics;
         }
@@ -1462,32 +1700,36 @@ public class ItemImportHelper(
         return null;
     }
 
-    private bool IsInPercentileBandForTier(double percentile, int tier) => tier switch
-    {
-        1 => percentile <= 0.35,    // bottom 35%
-        2 => percentile <= 0.50,    // bottom 50%
-        3 => percentile <= 0.65,    // bottom 65%
-        4 => percentile >= 0.35,    // top 65% (overlap t3)
-        5 => percentile >= 0.45,    // top 55%
-        6 => percentile >= 0.55,    // top 45%
-        7 => percentile >= 0.70,    // top 30%
-        _ => true
-    };
+    private bool IsInPercentileBandForTier(double percentile, int tier) =>
+        tier switch
+        {
+            1 => percentile <= 0.35, // bottom 35%
+            2 => percentile <= 0.50, // bottom 50%
+            3 => percentile <= 0.65, // bottom 65%
+            4 => percentile >= 0.35, // top 65% (overlap t3)
+            5 => percentile >= 0.45, // top 55%
+            6 => percentile >= 0.55, // top 45%
+            7 => percentile >= 0.70, // top 30%
+            _ => true,
+        };
 
-    private int GetMagazineTierForCount(int count) => count switch
-    {
-        <= 10 => 1,
-        <= 20 => 2,
-        <= 30 => 4,
-        <= 45 => 5,
-        _     => 7
-    };
-    
+    private int GetMagazineTierForCount(int count) =>
+        count switch
+        {
+            <= 10 => 1,
+            <= 20 => 2,
+            <= 30 => 4,
+            <= 45 => 5,
+            _ => 7,
+        };
+
     public void LogErgoSlotSummary(TemplateItem parentItem, string slot)
     {
         var sortedValues = GetSortedErgoValues(parentItem, slot);
         if (!ErgoPoolCoversAllTiers(sortedValues))
+        {
             return;
+        }
 
         var tierBands = new Dictionary<int, List<double>>();
         for (var tier = 1; tier <= 7; tier++)
@@ -1498,26 +1740,28 @@ public class ItemImportHelper(
                 .ToList();
         }
 
-        var bandSummary = string.Join(" | ", tierBands.Select(kv => $"T{kv.Key}:{kv.Value.Count}({(kv.Value.Count > 0 ? $"{kv.Value.Min()}-{kv.Value.Max()}" : "empty")})"));
+        var bandSummary = string.Join(
+            " | ",
+            tierBands.Select(kv =>
+                $"T{kv.Key}:{kv.Value.Count}({(kv.Value.Count > 0 ? $"{kv.Value.Min()}-{kv.Value.Max()}" : "empty")})"
+            )
+        );
 
-        apbsLogger.Warning($"[TIER][ERGO] POOL | parent: {parentItem.Id} | slot: {slot} | range: {sortedValues.First()}-{sortedValues.Last()} | {bandSummary}");
+        apbsLogger.Warning(
+            $"[TIER][ERGO] POOL | parent: {parentItem.Id} | slot: {slot} | range: {sortedValues.First()}-{sortedValues.Last()} | {bandSummary}"
+        );
     }
-    
+
     /// <summary>
     ///     Check if the item is banned from import
     /// </summary>
-    public bool IsBlacklistedViaModConfig(MongoId itemId, int tier)
-    {
-        return _fullModConfigBlacklist[tier].Contains(itemId);
-    }
+    public bool IsBlacklistedViaModConfig(MongoId itemId, int tier) =>
+        _fullModConfigBlacklist[tier].Contains(itemId);
 
-    public bool IsWttBossWeapon(MongoId itemId)
-    {
-        return ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses && _armouryBossVariantWeapons.Contains(itemId);
-    }
+    public bool IsWttBossWeapon(MongoId itemId) =>
+        ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses
+        && _armouryBossVariantWeapons.Contains(itemId);
 
-    public string[] BossAssignmentPerWtt(MongoId itemId)
-    {
-        return _bossWeaponLookup.TryGetValue(itemId, out var bossList) ? bossList : [];
-    }
+    public string[] BossAssignmentPerWtt(MongoId itemId) =>
+        _bossWeaponLookup.TryGetValue(itemId, out var bossList) ? bossList : [];
 }

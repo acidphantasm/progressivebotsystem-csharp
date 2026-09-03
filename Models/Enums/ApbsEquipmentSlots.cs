@@ -18,5 +18,5 @@ public enum ApbsEquipmentSlots
     SecondPrimaryWeapon_ShortRange,
     Holster,
     Scabbard,
-    ArmouredRig
+    ArmouredRig,
 }

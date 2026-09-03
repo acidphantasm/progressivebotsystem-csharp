@@ -1,7 +1,7 @@
-﻿using ProgressiveBotSystem.Models;
-using SPTarkov.DI.Annotations;
+﻿namespace ProgressiveBotSystem.Globals;
 
-namespace ProgressiveBotSystem.Globals;
+using Models;
+using SPTarkov.DI.Annotations;
 
 [Injectable(InjectionType.Singleton)]
 public class TierInformation

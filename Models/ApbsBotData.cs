@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace ProgressiveBotSystem.Models;
 
-namespace ProgressiveBotSystem.Models;
+using System.Text.Json.Serialization;
 
 public record ApbsBotData
 {
@@ -12,7 +12,7 @@ public record ApbsBotData
 
     [JsonPropertyName("equipmentRole")]
     public string? EquipmentRole { get; set; }
-    
+
     [JsonPropertyName("tier")]
     public int Tier { get; set; }
 }

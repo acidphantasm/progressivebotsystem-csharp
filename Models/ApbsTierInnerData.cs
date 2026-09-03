@@ -1,17 +1,13 @@
-﻿using System.Collections;
-using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-using ProgressiveBotSystem.Models.Enums;
-using SPTarkov.Server.Core.Models.Common;
-using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+﻿namespace ProgressiveBotSystem.Models;
 
-namespace ProgressiveBotSystem.Models;
+using System.Text.Json.Serialization;
+using Enums;
+using SPTarkov.Server.Core.Models.Common;
 
 public class BotChancesData
 {
     [JsonPropertyName("chances")]
     public ApbsChances Chances { get; set; }
-    
 }
 
 public class ApbsChances
@@ -51,7 +47,7 @@ public class ApbsChances
 
     [JsonPropertyName("shotgun")]
     public Dictionary<string, double> ShotgunChances { get; set; }
-    
+
     [JsonPropertyName("generation")]
     public ApbsGeneration Generation { get; set; }
 }
@@ -100,14 +96,16 @@ public record ApbsGenerationWeightingItems
     [JsonPropertyName("specialItems")]
     public ApbsGenerationData SpecialItems { get; set; }
 }
+
 public record ApbsGenerationData
 {
     [JsonPropertyName("weights")]
     public Dictionary<double, double> Weights { get; set; }
-    
+
     [JsonPropertyName("whitelist")]
     public Dictionary<MongoId, double> Whitelist { get; set; }
 }
+
 public class ApbsEquipmentBot
 {
     [JsonPropertyName("equipment")]

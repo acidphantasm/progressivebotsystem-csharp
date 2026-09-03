@@ -1,10 +1,10 @@
-﻿using System.Text.Json.Serialization;
-using ProgressiveBotSystem.Models.Enums;
+﻿namespace ProgressiveBotSystem.Models;
+
+using System.Text.Json.Serialization;
+using Enums;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Config;
-
-namespace ProgressiveBotSystem.Models;
 
 public record ApbsGenerateEquipmentProperties
 {

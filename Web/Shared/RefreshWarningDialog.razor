@@ -1,19 +1,16 @@
 ﻿<MudDialog>
     <DialogContent>
         <MudText>@ContentText</MudText>
-        @if (ChangeHashSet != null)
-        {
+        @if (ChangeHashSet != null){
             <MudText> Changes:</MudText>
             <MudSpacer/>
-            foreach (var item in ChangeHashSet)
-            {
+            foreach (var item in ChangeHashSet){
                 <MudText>@item</MudText>
-            }            
+            }
         }
     </DialogContent>
     <DialogActions>
-        @if (showCancel) 
-        {
+        @if (showCancel){
             <MudButton OnClick="Cancel">Cancel</MudButton>
         }
         <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
@@ -29,7 +26,7 @@
 
     [Parameter]
     public HashSet<string>? ChangeHashSet { get; set; }
-    
+
     [Parameter]
     public List<string>? ChangeList { get; set; }
 

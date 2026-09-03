@@ -7,7 +7,7 @@
       "6601546f86889319850bd566"
     ]
   },
-  "66015dc4aaad2f54cb04c56a" : {
+  "66015dc4aaad2f54cb04c56a": {
     "cartridges": [
       "6601546f86889319850bd566"
     ]
@@ -1642,7 +1642,7 @@
       "5a7b483fe899ef0016170d15"
     ],
     "mod_foregrip": [
-      "673cb81f5b1511adb10cd326"      
+      "673cb81f5b1511adb10cd326"
     ],
     "mod_sight_front": [
       "5c18b90d2e2216152142466b"
@@ -1670,7 +1670,7 @@
   },
   "67405ef125beb509e8070276": {
     "mod_foregrip": [
-      "673cb81f5b1511adb10cd326"      
+      "673cb81f5b1511adb10cd326"
     ],
     "mod_sight_front": [
       "5c18b90d2e2216152142466b"
@@ -1698,7 +1698,7 @@
   },
   "67405fd0812f476fb2020066": {
     "mod_foregrip": [
-      "673cb81f5b1511adb10cd326"      
+      "673cb81f5b1511adb10cd326"
     ],
     "mod_sight_front": [
       "5c18b90d2e2216152142466b"
@@ -2348,7 +2348,7 @@
       "626bb8532c923541184624b4",
       "57c69dd424597774c03b7bbc",
       "5dff77c759400025ea5150cf"
-    ]    
+    ]
   },
   "661cec09b2c6356b4d0c7a36": {
     "mod_magazine": [
@@ -2417,24 +2417,24 @@
     ]
   },
   "6680304edadb7aa61d00cef0": {
-    "mod_magazine":[
+    "mod_magazine": [
       "668031ffe3e7eb26e8004cdd",
       "66866f4ec3d473265104f381"
     ],
-    "mod_muzzle_000":[
+    "mod_muzzle_000": [
       "668670e3fb75ee4a5e02eb16"
     ],
-    "mod_stock":[
+    "mod_stock": [
       "668032ba74b8f2050c0b917d",
       "668672b8c99550c6fd0f0b29",
       "66867310f3734a938b077f79",
       "66881008f23233ee9a0742e7",
       "669cf78806768ff39504fc1c"
     ],
-    "mod_reciever":[
+    "mod_reciever": [
       "6680326874b8f2050c0b9178"
     ],
-    "mod_foregrip":[
+    "mod_foregrip": [
       "668031bde3e7eb26e8004cd7",
       "5c7fc87d2e221644f31c0298",
       "619386379fb0c665d5490dbe",
@@ -2452,7 +2452,7 @@
       "661e52415be02310ed07a07a",
       "661e52b5b099f32c28003586"
     ],
-    "mod_barrel":[
+    "mod_barrel": [
       "668031705014e211b4078046",
       "66866fe776d1a87cd80fd388",
       "6686700a2b934a68630a7fe6",
@@ -3092,7 +3092,7 @@
       "5fc0fa957283c4046c58147e",
       "5894a81786f77427140b8347"
     ],
-    "mod_tactical": [      
+    "mod_tactical": [
       "57fd23e32459772d0805bcf1",
       "5a7b483fe899ef0016170d15"
     ]
@@ -11101,7 +11101,7 @@
     "Collar": [
       "6575c3ec52b7f8c76a05ee39"
     ],
-    "Front_plate": [ 
+    "Front_plate": [
       "656f9d5900d62bcd2e02407c",
       "656fa8d700d62bcd2e024084",
       "656fa99800d62bcd2e024088",

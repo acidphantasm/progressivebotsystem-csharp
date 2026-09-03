@@ -1,4 +1,4 @@
-﻿<MudItem xs="2" />
+﻿<MudItem xs="2"/>
 <MudItem xs="3">
     <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
         <MudTooltip Text="@TooltipText" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
@@ -8,25 +8,27 @@
 </MudItem>
 <MudItem xs="1">
     <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-        <MudSwitch T="bool" Value="@ValueBool" ValueChanged="@ValueBoolChanged" Color="Color.Tertiary" UncheckedColor="Color.Default" Disabled="@DisabledSwitch" />
+        <MudSwitch T="bool" Value="@ValueBool" ValueChanged="@ValueBoolChanged" Color="Color.Tertiary"
+                   UncheckedColor="Color.Default" Disabled="@DisabledSwitch"/>
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Size="Size.Small" Disabled="@DisabledSlider">@ValueInt</MudButton>
+    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Size="Size.Small"
+               Disabled="@DisabledSlider">@ValueInt</MudButton>
 </MudItem>
 <MudItem xs="4">
     <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-        <MudSlider T="int" Value="@ValueInt" ValueChanged="@ValueIntChanged" Min="@Min" Max="@Max" Color="Color.Tertiary" Variant="Variant.Outlined" Size="Size.Medium" Disabled="@DisabledSlider" />
+        <MudSlider T="int" Value="@ValueInt" ValueChanged="@ValueIntChanged" Min="@Min" Max="@Max"
+                   Color="Color.Tertiary" Variant="Variant.Outlined" Size="Size.Medium" Disabled="@DisabledSlider"/>
     </MudPaper>
 </MudItem>
 <MudItem xs="1">
-    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)
-    {
+    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle){
         <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
     }
-    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle)
-    {
-        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle){
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default
+        </MudButton>
     }
 </MudItem>
 
@@ -35,12 +37,12 @@
     [Parameter] public string TooltipText { get; set; } = "";
     [Parameter] public bool ValueBool { get; set; }
     [Parameter] public EventCallback<bool> ValueBoolChanged { get; set; }
-    [Parameter] public bool DisabledSwitch { get; set; } = false;
+    [Parameter] public bool DisabledSwitch { get; set; }
     [Parameter] public int ValueInt { get; set; }
     [Parameter] public EventCallback<int> ValueIntChanged { get; set; }
     [Parameter] public int Min { get; set; } = 1;
     [Parameter] public int Max { get; set; } = 100;
-    [Parameter] public bool DisabledSlider { get; set; } = false;
+    [Parameter] public bool DisabledSlider { get; set; }
     [Parameter] public bool HasPendingChanges { get; set; }
     [Parameter] public bool IsNonDefault { get; set; }
     [Parameter] public EventCallback OnUndo { get; set; }
