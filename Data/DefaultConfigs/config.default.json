@@ -1250,9 +1250,6 @@
   "configAppSettings": {
     "showUndo": true,
     "showDefault": false,
-    "disableAnimations": false,
-    "allowUpdateChecks": false,
-    "requireAuthCode": false,
-    "authCode": "Kitten Mittons"
+    "allowUpdateChecks": false
   }
 }

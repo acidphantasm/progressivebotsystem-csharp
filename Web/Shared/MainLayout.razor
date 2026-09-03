@@ -12,7 +12,6 @@
 @inject DataLoader Dataloader
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
-@inject IJSRuntime Js
 
 <HeadContent>
     <link href="/acidphantasm-progressivebotsystem/css/app.css" rel="stylesheet"/>
@@ -22,7 +21,7 @@
         rel="stylesheet">
 </HeadContent>
 
-<MudThemeProvider Theme="@APBSThemeAdjustments" IsDarkMode/>
+<MudThemeProvider Theme="@_apbsThemeAdjustments" IsDarkMode/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>
 <MudDialogProvider/>
@@ -102,94 +101,67 @@
     }
 </style>
 
-@if (!AppRequireAuthCode || _isAuthenticated){
-    <div class="no-highlight">
-        <MudLayout>
-            <MudAppBar Dense Elevation="1">
-                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.MenuOpen" Color="Color.Primary"
-                           OnClick="@(e => DrawerToggle())">Menu
+<div class="no-highlight">
+    <MudLayout>
+        <MudAppBar Dense Elevation="1">
+            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.MenuOpen" Color="Color.Primary"
+                       OnClick="@(e => DrawerToggle())">Menu
+            </MudButton>
+            <MudSpacer/>
+            <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="RefreshPage">
+                    You or someone you know is in raid. Changes cannot be made. Click to check status.
                 </MudButton>
-                <MudSpacer/>
-                <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true">
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="RefreshPage">
-                        You or someone you know is in raid. Changes cannot be made. Click to check status.
-                    </MudButton>
-                </MudOverlay>
-                <MudSpacer/>
-                <div class="d-flex gap-2">
-                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh"
-                               Color="Color.Primary" OnClick="@(e => RefreshData())" Disabled="_isReloading">Reload
-                        Config
-                    </MudButton>
-                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary"
-                               OnClick="@(e => SaveData())" Disabled="_isSaving">Save Config
-                    </MudButton>
+            </MudOverlay>
+            <MudSpacer/>
+            <div class="d-flex gap-2">
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh"
+                           Color="Color.Primary" OnClick="@(e => RefreshData())" Disabled="_isReloading">Reload
+                    Config
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary"
+                           OnClick="@(e => SaveData())" Disabled="_isSaving">Save Config
+                </MudButton>
+            </div>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always"
+                   Variant="@DrawerVariant.Temporary" Breakpoint="Breakpoint.None">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h5" Class="mt-1">SETTINGS</MudText>
+            </MudDrawerHeader>
+            <NavMenu/>
+        </MudDrawer>
+        <MudMainContent Class="pt-3">
+            <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true"/>
+            <CascadingValue Value="this">
+                <div class="content">
+                    @Body
                 </div>
-            </MudAppBar>
-            <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always"
-                       Variant="@DrawerVariant.Temporary" Breakpoint="Breakpoint.None">
-                <MudDrawerHeader>
-                    <MudText Typo="Typo.h5" Class="mt-1">SETTINGS</MudText>
-                </MudDrawerHeader>
-                <NavMenu/>
-            </MudDrawer>
-            <MudMainContent Class="pt-3">
-                <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true"/>
-                <CascadingValue Value="this">
-                    @if (AppDisableAnimations){
-                        <div class="no-animation-content">
-                            @Body
-                        </div>
-                    }
-                    else{
-                        <div class="content">
-                            @Body
-                        </div>
-                    }
-                </CascadingValue>
-            </MudMainContent>
-            <MudAppBar Dense Elevation="1" Bottom>
-                <MudCheckBox @bind-Value="AppUndoButtonToggle" Label="Show Undo Button"/>
-                <MudCheckBox @bind-Value="AppDefaultButtonToggle" Label="Show Default Button"/>
-                <MudCheckBox @bind-Value="AppDisableAnimations" Label="Disable Animations"/>
-                <MudCheckBox @bind-Value="AppAllowUpdateChecks" Label="Enable Update Checks"/>
-                <MudCheckBox @bind-Value="AppRequireAuthCode" Label="Enable Authorization Code Access"
-                             Disabled="@(!AppRequireAuthCode)"/>
-                <MudSpacer/>
-                @if (pendingChanges.Count > 0){
-                    <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="ShowPendingChanges"
-                               Style="color: #0c0e10 !important;">@pendingChanges.Count.ToString() Unsaved changes
-                    </MudButton>
-                }
-                @if (pendingChanges.Count == 0){
-                    <MudButton Variant="Variant.Outlined" Color="Color.Inherit">@pendingChanges.Count.ToString() Unsaved
-                        Changes
-                    </MudButton>
-                }
-            </MudAppBar>
-        </MudLayout>
-    </div>
-}
-else{
-    <MudPaper Class="pa-4 mx-auto mt-10" Style="width: 350px">
-        <MudText Typo="Typo.h5">Enter Access Code</MudText>
-
-        <MudTextField @bind-Value="_authCode" Label="Access Code" Margin="Margin.Dense"/>
-
-        @if (_authFailed){
-            <MudText Color="Color.Error">Invalid code</MudText>
-        }
-
-        <MudButton Variant="Variant.Filled" OnClick="CheckAuth" Class="mt-3" Color="Color.Primary">
-            Login
-        </MudButton>
-    </MudPaper>
-}
+            </CascadingValue>
+        </MudMainContent>
+        <MudAppBar Dense Elevation="1" Bottom>
+            <MudCheckBox @bind-Value="AppUndoButtonToggle" Label="Show Undo Button"/>
+            <MudCheckBox @bind-Value="AppDefaultButtonToggle" Label="Show Default Button"/>
+            <MudCheckBox @bind-Value="AppAllowUpdateChecks" Label="Enable Update Checks"/>
+            <MudSpacer/>
+            @if (pendingChanges.Count > 0){
+                <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="ShowPendingChanges"
+                           Style="color: #0c0e10 !important;">@pendingChanges.Count.ToString() Unsaved changes
+                </MudButton>
+            }
+            @if (pendingChanges.Count == 0){
+                <MudButton Variant="Variant.Outlined" Color="Color.Inherit">@pendingChanges.Count.ToString() Unsaved
+                    Changes
+                </MudButton>
+            }
+        </MudAppBar>
+    </MudLayout>
+</div>
 
 @code {
 
 
-    readonly MudTheme APBSThemeAdjustments = new()
+    readonly MudTheme _apbsThemeAdjustments = new()
     {
         PaletteDark = new PaletteDark
         {
@@ -254,11 +226,6 @@ else{
     public static bool AlreadyCheckedForUpdate = false;
     public static bool UpdateAvailable = false;
 
-    private bool _isAuthenticated;
-    private string _authCode;
-    private bool _authFailed;
-
-
     // Equipment Tracking Changes
     public static Dictionary<string, double> EquipmentWeightChanges = new();
     public static HashSet<string> EquipmentRemovedItems = new();
@@ -281,16 +248,6 @@ else{
     public static HashSet<string> AppearanceRemovedItems = new();
     public static HashSet<string> AppearanceAddedItems = new();
 
-    public static bool AppRequireAuthCode
-    {
-        get => ModConfig.Config.ConfigAppSettings.RequireAuthCode;
-        set
-        {
-            ModConfig.Config.ConfigAppSettings.RequireAuthCode = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.RequireAuthCode, nameof(AppRequireAuthCode));
-        }
-    }
-
     public static bool AppUndoButtonToggle
     {
         get => ModConfig.Config.ConfigAppSettings.ShowUndo;
@@ -309,15 +266,6 @@ else{
             Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.ShowDefault, nameof(AppDefaultButtonToggle));
         }
     }
-    public static bool AppDisableAnimations
-    {
-        get => ModConfig.Config.ConfigAppSettings.DisableAnimations;
-        set
-        {
-            ModConfig.Config.ConfigAppSettings.DisableAnimations = value;
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.DisableAnimations, nameof(AppDisableAnimations));
-        }
-    }
     public static bool AppAllowUpdateChecks
     {
         get => ModConfig.Config.ConfigAppSettings.AllowUpdateChecks;
@@ -325,19 +273,6 @@ else{
         {
             ModConfig.Config.ConfigAppSettings.AllowUpdateChecks = value;
             Utils.UpdateView(value, ModConfig.OriginalConfig.ConfigAppSettings.AllowUpdateChecks, nameof(AppAllowUpdateChecks));
-        }
-    }
-
-    private async Task CheckAuth()
-    {
-        if (_authCode == ModConfig.Config.ConfigAppSettings.AuthCode){
-            _isAuthenticated = true;
-
-            await Js.InvokeVoidAsync("sessionStorage.setItem", "modAuth", "true");
-            StateHasChanged();
-        }
-        else{
-            _authFailed = true;
         }
     }
 
@@ -349,9 +284,6 @@ else{
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender){
-            var stored = await Js.InvokeAsync<string>("sessionStorage.getItem", "modAuth");
-            _isAuthenticated = stored == "true";
-
             StateHasChanged();
         }
     }
@@ -468,7 +400,7 @@ else{
         _app?.StateHasChanged();
     }
 
-    public static void TriggerUIRefresh()
+    public static void TriggerUiRefresh()
     {
         _app?.StateHasChanged();
     }
@@ -701,7 +633,7 @@ else{
         ApplyAppearanceChangesToTier(Dataloader.AllTierDataClean.Tiers[7].AppearanceData, "7");
     }
 
-    private static readonly Dictionary<string, ApbsEquipmentSlots> _stringToSlot = new()
+    private static readonly Dictionary<string, ApbsEquipmentSlots> StringToSlot = new()
     {
         { "Headwear", ApbsEquipmentSlots.Headwear },
         { "Earpiece", ApbsEquipmentSlots.Earpiece },
@@ -745,7 +677,7 @@ else{
                 if (!keyBot.Equals(botName, StringComparison.OrdinalIgnoreCase))
                     return;
 
-                if (!_stringToSlot.TryGetValue(categoryStr, out var slot))
+                if (!StringToSlot.TryGetValue(categoryStr, out var slot))
                     return;
 
                 var equipmentDict = botData.Equipment;

@@ -1179,15 +1179,6 @@ public class ConfigAppSettings
     [JsonPropertyName("showDefault")]
     public bool ShowDefault { get; set; } = false;
 
-    [JsonPropertyName("disableAnimations")]
-    public bool DisableAnimations { get; set; } = false;
-
     [JsonPropertyName("allowUpdateChecks")]
     public bool AllowUpdateChecks { get; set; } = false;
-
-    [JsonPropertyName("requireAuthCode")]
-    public bool RequireAuthCode { get; set; } = false;
-
-    [JsonPropertyName("authCode")]
-    public string AuthCode { get; set; } = "Kitten Mittons";
 }
