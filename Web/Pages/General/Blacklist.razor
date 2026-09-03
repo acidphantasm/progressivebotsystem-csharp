@@ -1,7 +1,8 @@
 ﻿@page "/progressivebotsystem/blacklisting"
+@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject ISnackbar Snackbar
-
+@attribute [Authorize(Policy = "Administrator")]
 <style>
     .mud-divider {
         border-width: 2.5px;

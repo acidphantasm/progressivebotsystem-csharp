@@ -1,7 +1,8 @@
 ﻿@page "/progressivebotsystem/pmc"
+@using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
-
+@attribute [Authorize(Policy = "Administrator")]
 @inject ISnackbar Snackbar
 
 <MudMainContent>
@@ -1138,7 +1139,7 @@
             config[position][classNum] = original[position][classNum];
             MainLayout.pendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
-        MainLayout.TriggerUIRefresh();
+        MainLayout.TriggerUiRefresh();
     }
 
     private void HandlePlateDefault(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, string position, Dictionary<string, double> defaults)
@@ -1147,7 +1148,7 @@
             config[position][classNum] = value;
             Utils.UpdateView(value, value, $"{keyPrefix}_{position}_Class{classNum}");
         }
-        MainLayout.TriggerUIRefresh();
+        MainLayout.TriggerUiRefresh();
     }
     #endregion
     #region SECRET

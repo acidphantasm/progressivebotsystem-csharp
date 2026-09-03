@@ -1,7 +1,8 @@
 ﻿@page "/progressivebotsystem/boss"
+@using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
-
+@attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
         <MudExpansionPanels MultiExpansion="true">
@@ -634,7 +635,7 @@
             config[position][classNum] = original[position][classNum];
             MainLayout.pendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
-        MainLayout.TriggerUIRefresh();
+        MainLayout.TriggerUiRefresh();
     }
 
     private void HandlePlateDefault(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, string position, Dictionary<string, double> defaults)
@@ -643,7 +644,7 @@
             config[position][classNum] = value;
             Utils.UpdateView(value, value, $"{keyPrefix}_{position}_Class{classNum}");
         }
-        MainLayout.TriggerUIRefresh();
+        MainLayout.TriggerUiRefresh();
     }
     #endregion
 

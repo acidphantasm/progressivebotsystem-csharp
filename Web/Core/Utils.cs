@@ -75,7 +75,7 @@ internal class Utils
             MainLayout.pendingChanges.Remove(caller);
         }
 
-        MainLayout.TriggerUIRefresh();
+        MainLayout.TriggerUiRefresh();
     }
 
     public static void UpdateView(bool holder, bool originalConfigValue, string caller)
@@ -123,6 +123,6 @@ internal class Utils
             MainLayout.pendingChanges.Add(caller);
         }
 
-        MainLayout.TriggerUIRefresh();
+        MainLayout.TriggerUiRefresh();
     }
 }

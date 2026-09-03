@@ -1,7 +1,8 @@
 ﻿@page "/progressivebotsystem/follower"
+@using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Web.Components
 @layout MainLayout
-
+@attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
         <MudExpansionPanels MultiExpansion="true">

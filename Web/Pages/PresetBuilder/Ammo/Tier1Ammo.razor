@@ -1,7 +1,8 @@
 ﻿@page "/progressivebotsystem/presets/tier1/ammo"
+@using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Helpers
 @layout MainLayout
-
+@attribute [Authorize(Policy = "Administrator")]
 @inject DataLoader Dataloader
 
 <MudMainContent Class="pa-6">

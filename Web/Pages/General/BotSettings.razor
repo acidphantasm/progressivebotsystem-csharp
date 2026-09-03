@@ -1,8 +1,11 @@
 ﻿@page "/progressivebotsystem/botsettings"
+@using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Web.Components
 @using SPTarkov.Server.Core.Models.Spt.Tables
 @layout MainLayout
 @inject BotTable BotTable
+@attribute [Authorize(Policy = "Administrator")]
+
 
 <MudMainContent>
     <MudContainer Class="mb-20">
