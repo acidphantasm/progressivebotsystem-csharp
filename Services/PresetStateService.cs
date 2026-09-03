@@ -1,5 +1,7 @@
 ﻿namespace ProgressiveBotSystem.Services;
 
+using Models;
+using Models.Enums;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using Web.Core;
@@ -84,11 +86,6 @@ public class PresetStateService
         AppearanceWeightChanges.Clear();
     }
 
-    /// <summary>
-    ///     Shared bookkeeping used by every tier-editor component: given a key that identifies
-    ///     one item slot (e.g. "Tier1_PmcUsec_Headwear_60...") and its add/remove/weight state,
-    ///     keep the tracking sets in sync and report whether the pending-changes badge needs updating.
-    /// </summary>
     public void SyncItemChange(
         string key,
         bool added,
@@ -165,10 +162,6 @@ public class PresetStateService
         }
     }
 
-    /// <summary>
-    ///     Generation "spawn count" slot weights — keyed by (botType, category, slotIndex), no item id,
-    ///     own pending-key suffix.
-    /// </summary>
     public void SyncSlotWeightChange(string slotKey, bool changed, double value)
     {
         if (changed)
@@ -240,5 +233,116 @@ public class PresetStateService
         }
 
         return changeList;
+    }
+
+    public IEnumerable<PendingSlotWeightChange> GetPendingSlotWeightChanges(
+        string tier,
+        string botType
+    )
+    {
+        var tierPrefix = $"Tier{tier}_{botType}_";
+
+        foreach (var kvp in GenerationWeightChanges)
+        {
+            if (!kvp.Key.StartsWith(tierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var remainder = kvp.Key[tierPrefix.Length..];
+            var index = remainder.LastIndexOf('_');
+            if (index < 0)
+            {
+                continue;
+            }
+
+            var category = remainder[..index];
+            var slotPart = remainder[(index + 1)..];
+
+            if (!int.TryParse(slotPart, out var slotIndex))
+            {
+                continue;
+            }
+
+            yield return new PendingSlotWeightChange(category, slotIndex, kvp.Value);
+        }
+    }
+
+    public IEnumerable<PendingItemChange> GetPendingItemChanges(
+        string tier,
+        string botType,
+        HashSet<string> addedSet,
+        HashSet<string> removedSet,
+        Dictionary<string, double> weightDict,
+        string weightSuffix
+    )
+    {
+        var tierPrefix = $"Tier{tier}_{botType}_";
+
+        foreach (var key in addedSet)
+        {
+            if (!TryParse(key, tierPrefix, out var category, out var id))
+            {
+                continue;
+            }
+            var weight = weightDict.GetValueOrDefault(key + weightSuffix, 1);
+            yield return new PendingItemChange(category, id, PendingItemAction.Add, weight);
+        }
+
+        foreach (var key in removedSet)
+        {
+            if (!TryParse(key, tierPrefix, out var category, out var id))
+            {
+                continue;
+            }
+            yield return new PendingItemChange(category, id, PendingItemAction.Remove, 0);
+        }
+
+        foreach (var kvp in weightDict)
+        {
+            if (!kvp.Key.EndsWith(weightSuffix))
+            {
+                continue;
+            }
+
+            var baseKey = kvp.Key[..^weightSuffix.Length];
+            if (addedSet.Contains(baseKey))
+            {
+                continue;
+            }
+
+            if (!TryParse(baseKey, tierPrefix, out var category, out var id))
+            {
+                continue;
+            }
+            yield return new PendingItemChange(
+                category,
+                id,
+                PendingItemAction.WeightOnly,
+                kvp.Value
+            );
+        }
+    }
+
+    private bool TryParse(string key, string tierPrefix, out string category, out string id)
+    {
+        category = string.Empty;
+        id = string.Empty;
+
+        if (!key.StartsWith(tierPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var remainder = key[tierPrefix.Length..];
+        var index = remainder.LastIndexOf('_');
+        if (index < 0)
+        {
+            return false;
+        }
+
+        category = remainder[..index];
+        id = remainder[(index + 1)..];
+        return true;
     }
 }

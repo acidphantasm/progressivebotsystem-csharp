@@ -197,6 +197,8 @@ else{
                     botType = i.botType,
                     Weight = i.Weight
                 }).ToList();
+
+                ApplyPendingOverlay(botTypeName);
             }
         }
         catch (Exception ex){
@@ -320,6 +322,40 @@ else{
         }
         catch{
             return new List<string>();
+        }
+    }
+
+    private void ApplyPendingOverlay(string botType)
+    {
+        var changes = PresetState.GetPendingItemChanges(
+        Tier, botType,
+        PresetState.EquipmentAddedItems, PresetState.EquipmentRemovedItems, PresetState.EquipmentWeightChanges,
+        "_weight");
+
+        foreach (var change in changes){
+            switch (change.Action){
+                case PendingItemAction.Add:
+                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category == change.Category)){
+                        _botTypes[botType].Add(new PresetItemView
+                        {
+                            Id = change.Id,
+                            DisplayName = GetOrAddCachedName(new MongoId(change.Id)),
+                            Category = change.Category,
+                            botType = botType,
+                            Weight = change.Weight
+                        });
+                    }
+                    break;
+
+                case PendingItemAction.Remove:
+                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category == change.Category);
+                    break;
+
+                case PendingItemAction.WeightOnly:
+                    var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category == change.Category);
+                    existing?.Weight = change.Weight;
+                    break;
+            }
         }
     }
 }

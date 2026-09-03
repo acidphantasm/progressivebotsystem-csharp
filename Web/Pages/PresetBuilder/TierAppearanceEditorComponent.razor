@@ -1,4 +1,5 @@
 ﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
 @using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
@@ -263,6 +264,8 @@ else{
                 CurrentDropZone = i.CurrentDropZone
             })
             .ToList();
+
+        ApplyPendingOverlay(botTypeName);
     }
 
 
@@ -382,6 +385,41 @@ else{
         }
         catch{
             return new List<string>();
+        }
+    }
+
+    private void ApplyPendingOverlay(string botType)
+    {
+        var changes = PresetStateService.GetPendingItemChanges(
+        Tier, botType,
+        PresetStateService.AppearanceAddedItems, PresetStateService.AppearanceRemovedItems, PresetStateService.AppearanceWeightChanges,
+        "_weight");
+
+        foreach (var change in changes){
+            switch (change.Action){
+                case PendingItemAction.Add:
+                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category.Equals(change.Category, StringComparison.OrdinalIgnoreCase))){
+                        _botTypes[botType].Add(new PresetItemView
+                        {
+                            Id = change.Id,
+                            DisplayName = GetOrAddCachedName(change.Id),
+                            Category = change.Category,
+                            CurrentDropZone = change.Category,
+                            botType = botType,
+                            Weight = change.Weight
+                        });
+                    }
+                    break;
+
+                case PendingItemAction.Remove:
+                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category.Equals(change.Category, StringComparison.OrdinalIgnoreCase));
+                    break;
+
+                case PendingItemAction.WeightOnly:
+                    var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category.Equals(change.Category, StringComparison.OrdinalIgnoreCase));
+                    existing?.Weight = change.Weight;
+                    break;
+            }
         }
     }
 }

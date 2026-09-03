@@ -108,7 +108,7 @@
                        OnClick="@(e => DrawerToggle())">Menu
             </MudButton>
             <MudSpacer/>
-            <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true">
+            <MudOverlay Visible="IsInRaid" DarkBackground="true" Absolute="true">
                 <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="RefreshPage">
                     You or someone you know is in raid. Changes cannot be made. Click to check status.
                 </MudButton>
@@ -132,7 +132,7 @@
             <NavMenu/>
         </MudDrawer>
         <MudMainContent Class="pt-3">
-            <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true"/>
+            <MudOverlay Visible="IsInRaid" DarkBackground="true" Absolute="true"/>
             <CascadingValue Value="this">
                 <div class="content">
                     @Body
@@ -214,12 +214,10 @@
     };
 
     private static MainLayout? _app;
-    private IDisposable _locationChangingRegistration;
 
-    bool _drawerOpen;
-    public bool _isInRaid;
+    private bool _drawerOpen;
+    public bool IsInRaid;
 
-    static bool _unsavedChanges;
     private static bool _isSaving;
     private static bool _isReloading;
     public static bool AlreadyCheckedForUpdate = false;
@@ -257,8 +255,6 @@
 
     protected override void OnInitialized()
     {
-        _locationChangingRegistration = NavManager.RegisterLocationChangingHandler(OnLocationChanging);
-
         _pendingChangesHandler = () => InvokeAsync(StateHasChanged);
         PresetStateService.OnPendingChangesUpdated += _pendingChangesHandler;
     }
@@ -268,15 +264,6 @@
         if (firstRender){
             StateHasChanged();
         }
-    }
-
-    private ValueTask OnLocationChanging(LocationChangingContext context)
-    {
-        if (PresetStateService.HasAnyPendingChanges()){
-            context.PreventNavigation();
-            ShowPendingChangesDialog();
-        }
-        return ValueTask.CompletedTask;
     }
 
     private async void ShowPendingChangesDialog()
@@ -301,7 +288,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        _locationChangingRegistration?.Dispose();
         if (_pendingChangesHandler != null){
             PresetStateService.OnPendingChangesUpdated -= _pendingChangesHandler;
         }
@@ -314,7 +300,6 @@
 
     public static void EnableUnsavedChangesButton()
     {
-        _unsavedChanges = true;
         _app?.StateHasChanged();
     }
 
@@ -353,12 +338,11 @@
                         PresetStateService.RaisePresetChanged();
                     }
                     PresetStateService.ClearPendingChanges();
-                    _unsavedChanges = false;
-                    _isInRaid = false;
+                    IsInRaid = false;
                     break;
                 case ConfigOperationResult.InRaid:
                     Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
-                    _isInRaid = true;
+                    IsInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
                     Snackbar.Add("Another process is already running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
@@ -380,7 +364,7 @@
 
     private async Task RefreshData()
     {
-        if (_unsavedChanges || PresetStateService.PendingChanges.Count > 0){
+        if (PresetStateService.PendingChanges.Count > 0){
             var changeCount = PresetStateService.PendingChanges.Count switch
             {
                 > 1 => $"{PresetStateService.PendingChanges.Count} unsaved changes",
@@ -416,13 +400,12 @@
             switch (result){
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
-                    _isInRaid = false;
-                    _unsavedChanges = false;
+                    IsInRaid = false;
                     PresetStateService.ClearPendingChanges();
                     break;
                 case ConfigOperationResult.InRaid:
                     Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
-                    _isInRaid = true;
+                    IsInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
                     Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
@@ -480,15 +463,14 @@
 
             switch (result){
                 case ConfigOperationResult.Success:
-                    _isInRaid = false;
+                    IsInRaid = false;
                     Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
                     PresetStateService.ClearPendingChanges();
-                    _unsavedChanges = false;
                     break;
 
                 case ConfigOperationResult.InRaid:
                     Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
-                    _isInRaid = true;
+                    IsInRaid = true;
                     break;
 
                 case ConfigOperationResult.ActiveProcess:
@@ -512,7 +494,7 @@
 
     private void RefreshPage()
     {
-        _isInRaid = RaidInformation.IsInRaid;
+        IsInRaid = RaidInformation.IsInRaid;
         StateHasChanged();
     }
 }

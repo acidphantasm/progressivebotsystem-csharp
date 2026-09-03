@@ -1,4 +1,5 @@
 ﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
 @using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
@@ -202,6 +203,8 @@ else{
                         botType = i.botType
                     })
                     .ToList();
+
+                ApplyPendingOverlay(botClass);
             }
         }
         catch (Exception ex){
@@ -306,6 +309,42 @@ else{
         }
         catch{
             return new List<string>();
+        }
+    }
+
+    private void ApplyPendingOverlay(string botType)
+    {
+        var changes = PresetStateService.GetPendingItemChanges(
+        Tier, botType,
+        PresetStateService.AmmoAddedItems, PresetStateService.AmmoRemovedItems, PresetStateService.AmmoWeightChanges,
+        "_weight"
+        );
+
+        foreach (var change in changes){
+            switch (change.Action){
+                case PendingItemAction.Add:
+                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category == change.Category)){
+                        _botTypes[botType].Add(new PresetItemView
+                        {
+                            Id = change.Id,
+                            DisplayName = GetOrAddCachedName(new MongoId(change.Id)),
+                            Category = change.Category,
+                            CurrentDropZone = change.Category,
+                            Weight = change.Weight,
+                            botType = botType
+                        });
+                    }
+                    break;
+
+                case PendingItemAction.Remove:
+                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category == change.Category);
+                    break;
+
+                case PendingItemAction.WeightOnly:
+                    var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category == change.Category);
+                    existing?.Weight = change.Weight;
+                    break;
+            }
         }
     }
 }
