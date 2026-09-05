@@ -115,3 +115,15 @@
 .custom-blur-background {
     backdrop-filter: blur(7px);
 }
+
+/* ============================================================
+   PRESET EDITOR
+   ============================================================ */
+
+.apbs-row {
+    transition: background-color 0.15s ease;
+}
+
+.apbs-row:hover {
+    background-color: rgba(245, 158, 11, 0.05);
+}

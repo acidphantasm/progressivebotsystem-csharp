@@ -1,13 +1,10 @@
-﻿@using ProgressiveBotSystem.Helpers
-@using ProgressiveBotSystem.Models
+﻿@using ProgressiveBotSystem.Models
 @using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
 @using Color = MudBlazor.Color
 @inherits LayoutComponentBase
 
 @implements IAsyncDisposable
-@inject NavigationManager NavManager
-@inject DataLoader Dataloader
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject PresetStateService PresetStateService
@@ -105,7 +102,7 @@
     <MudLayout>
         <MudAppBar Dense Elevation="1">
             <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.MenuOpen" Color="Color.Primary"
-                       OnClick="@(e => DrawerToggle())">Menu
+                       OnClick="@(_ => DrawerToggle())">Menu
             </MudButton>
             <MudSpacer/>
             <MudOverlay Visible="IsInRaid" DarkBackground="true" Absolute="true">
@@ -116,11 +113,11 @@
             <MudSpacer/>
             <div class="d-flex gap-2">
                 <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh"
-                           Color="Color.Primary" OnClick="@(e => RefreshData())" Disabled="_isReloading">Reload
+                           Color="Color.Primary" OnClick="@(_ => RefreshData())" Disabled="_isReloading">Reload
                     Config
                 </MudButton>
                 <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary"
-                           OnClick="@(e => SaveData())" Disabled="_isSaving">Save Config
+                           OnClick="@(_ => SaveData())" Disabled="_isSaving">Save Config
                 </MudButton>
             </div>
         </MudAppBar>
@@ -144,13 +141,15 @@
             <MudCheckBox @bind-Value="AppDefaultButtonToggle" Label="Show Default Button"/>
             <MudCheckBox @bind-Value="AppAllowUpdateChecks" Label="Enable Update Checks"/>
             <MudSpacer/>
-            @if (PresetStateService.PendingChanges.Count > 0){
+            @if (PresetStateService.PendingChanges.Count > 0)
+            {
                 <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="ShowPendingChanges"
                            Style="color: #0c0e10 !important;">@PresetStateService.PendingChanges.Count.ToString() Unsaved
                     changes
                 </MudButton>
             }
-            @if (PresetStateService.PendingChanges.Count == 0){
+            @if (PresetStateService.PendingChanges.Count == 0)
+            {
                 <MudButton Variant="Variant.Outlined"
                            Color="Color.Inherit">@PresetStateService.PendingChanges.Count.ToString() Unsaved
                     Changes
@@ -222,6 +221,9 @@
     private static bool _isReloading;
     public static bool AlreadyCheckedForUpdate = false;
     public static bool UpdateAvailable = false;
+    public static string? LatestReleaseVersion;
+    public static string? LatestReleaseNotesBody;
+    public static string? LatestReleaseUrl;
 
     public static bool AppUndoButtonToggle
     {
@@ -261,34 +263,16 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender){
-            StateHasChanged();
-        }
-    }
-
-    private async void ShowPendingChangesDialog()
-    {
-        var changeList = PresetStateService.BuildChangeSummary(ModConfig.Config.PresetName, ModConfig.Config.UsePreset);
-
-        var parameters = new DialogParameters<RefreshWarningDialog>
+        if (firstRender)
         {
-            { x => x.ChangeList, changeList },
-            { x => x.ButtonText, "Save Changes" },
-            { x => x.Color, Color.Primary }
-        };
-
-        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
-        var dialog = await DialogService.ShowAsync<RefreshWarningDialog>("Navigation Blocked: Unsaved Changes", parameters, options);
-        var result = await dialog.Result;
-
-        if (result is not null && !result.Canceled){
-            await SaveData();
+            StateHasChanged();
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_pendingChangesHandler != null){
+        if (_pendingChangesHandler != null)
+        {
             PresetStateService.OnPendingChangesUpdated -= _pendingChangesHandler;
         }
     }
@@ -315,7 +299,8 @@
 
     private async Task SaveData()
     {
-        try{
+        try
+        {
             _isSaving = true;
             StateHasChanged();
 
@@ -323,17 +308,20 @@
             var presetNameChange = PresetStateService.HasPendingPresetNameOrFolderChange();
             var hadPendingPresetChanges = PresetStateService.HasPendingPresetChanges();
 
-            if (hadPendingPresetChanges){
+            if (hadPendingPresetChanges)
+            {
                 PresetApplicationService.ApplyPresetChanges();
                 savePresetToDisk = true;
             }
             var result = await ModConfig.SaveConfig(savePresetToDisk, presetNameChange);
 
             StateHasChanged();
-            switch (result){
+            switch (result)
+            {
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config saved successfully.", Severity.Info, config => { config.ShowCloseIcon = false; });
-                    if (hadPendingPresetChanges){
+                    if (hadPendingPresetChanges)
+                    {
                         PresetStateService.RaisePresetSaved();
                         PresetStateService.RaisePresetChanged();
                     }
@@ -353,10 +341,12 @@
                     break;
             }
         }
-        catch (Exception ex){
+        catch (Exception ex)
+        {
             Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, config => { config.ShowCloseIcon = false; });
         }
-        finally{
+        finally
+        {
             _isSaving = false;
             StateHasChanged();
         }
@@ -364,7 +354,8 @@
 
     private async Task RefreshData()
     {
-        if (PresetStateService.PendingChanges.Count > 0){
+        if (PresetStateService.PendingChanges.Count > 0)
+        {
             var changeCount = PresetStateService.PendingChanges.Count switch
             {
                 > 1 => $"{PresetStateService.PendingChanges.Count} unsaved changes",
@@ -390,18 +381,21 @@
             return;
         }
 
-        try{
+        try
+        {
             _isReloading = true;
             StateHasChanged();
 
             var result = await ModConfig.ReloadConfig();
             StateHasChanged();
 
-            switch (result){
+            switch (result)
+            {
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
                     IsInRaid = false;
                     PresetStateService.ClearPendingChanges();
+                    PresetStateService.RaiseDataReloaded();
                     break;
                 case ConfigOperationResult.InRaid:
                     Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
@@ -416,10 +410,12 @@
                     break;
             }
         }
-        catch (Exception ex){
+        catch (Exception ex)
+        {
             Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, cfg => cfg.ShowCloseIcon = false);
         }
-        finally{
+        finally
+        {
             _isReloading = false;
             StateHasChanged();
         }
@@ -455,17 +451,20 @@
             _ => "changes"
         };
 
-        try{
+        try
+        {
             _isReloading = true;
             StateHasChanged();
 
             var result = await ModConfig.ReloadConfig();
 
-            switch (result){
+            switch (result)
+            {
                 case ConfigOperationResult.Success:
                     IsInRaid = false;
                     Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
                     PresetStateService.ClearPendingChanges();
+                    PresetStateService.RaiseDataReloaded();
                     break;
 
                 case ConfigOperationResult.InRaid:
@@ -483,10 +482,12 @@
                     break;
             }
         }
-        catch (Exception ex){
+        catch (Exception ex)
+        {
             Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, cfg => cfg.ShowCloseIcon = false);
         }
-        finally{
+        finally
+        {
             _isReloading = false;
             StateHasChanged();
         }

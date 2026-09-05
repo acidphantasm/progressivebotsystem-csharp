@@ -1,0 +1,21 @@
+﻿@if (Items != null && Items.Any())
+{
+    <div class="mb-4">
+        <MudText Typo="Typo.h6" Style="@($"color:{AccentColor};")" Class="mb-2">
+            <MudIcon Icon="@Icon" Size="Size.Small"/> @Title
+        </MudText>
+        <MudList T="string" Dense="true">
+            @foreach (var item in Items)
+            {
+                <MudListItem T="string">@item</MudListItem>
+            }
+        </MudList>
+    </div>
+}
+
+@code {
+    [Parameter] [EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] [EditorRequired] public string Icon { get; set; } = string.Empty;
+    [Parameter] [EditorRequired] public string AccentColor { get; set; } = string.Empty;
+    [Parameter] public List<string>? Items { get; set; }
+}

@@ -1,11 +1,11 @@
-﻿namespace ProgressiveBotSystem.Web.Core;
+﻿using ProgressiveBotSystem.Services;
+using ProgressiveBotSystem.Web.Shared;
 
-using Services;
-using Shared;
+namespace ProgressiveBotSystem.Web.Core;
 
 internal class Utils
 {
-    public static IEnumerable<string> StringObjectIDValidation(string value)
+    public static IEnumerable<string> StringObjectIdValidation(string value)
     {
         if (!string.IsNullOrEmpty(value) && (value.Length != 24 || !IsHex(value)))
         {
@@ -21,42 +21,31 @@ internal class Utils
         }
     }
 
-    public static bool IsHex(IEnumerable<char> chars)
+    private static bool IsHex(IEnumerable<char> chars)
     {
-        bool isHex;
         foreach (var c in chars)
         {
-            isHex = c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
+            var isHex = c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
 
-            if (!isHex)
+            if (isHex)
             {
-                Console.WriteLine(isHex);
-                return false;
+                continue;
             }
+            return false;
         }
         return true;
     }
 
     public static bool IsHexAndValidLength(string value)
     {
-        if (value.Length == 24 && IsHex(value))
-        {
-            return true;
-        }
-        return false;
+        return value.Length == 24 && IsHex(value);
     }
 
     public static bool IsStringAndValidLength(string value)
     {
-        if (value.Length <= 19)
-        {
-            return true;
-        }
-        return false;
+        return value.Length <= 19;
     }
 
-    // Still a MainLayout concern: the bottom-bar "unsaved changes" flag, which
-    // has no per-field caller key and isn't tracked in PendingChanges.
     public static void UpdateViewBool(bool holder, bool actual)
     {
         if (holder != actual)
@@ -101,11 +90,7 @@ internal class Utils
         UpdatePendingState(holder != originalConfigValue, caller);
     }
 
-    public static void UpdateView(
-        List<string> holder,
-        List<string> originalConfigValue,
-        string caller
-    )
+    public static void UpdateView(List<string> holder, List<string> originalConfigValue, string caller)
     {
         UpdatePendingState(!holder.SequenceEqual(originalConfigValue), caller);
     }
@@ -119,13 +104,9 @@ internal class Utils
     {
         var state = PresetStateService.Instance;
 
-        if (state.PendingChanges.Contains(caller))
+        if (!state.PendingChanges.Add(caller))
         {
             state.PendingChanges.Remove(caller);
-        }
-        else
-        {
-            state.PendingChanges.Add(caller);
         }
 
         state.RaisePendingChangesUpdated();

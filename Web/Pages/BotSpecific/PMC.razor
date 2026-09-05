@@ -27,7 +27,8 @@
 
                 </MudGrid>
             </MudExpansionPanel>
-            @if (PmcEnabled){
+            @if (PmcEnabled)
+            {
                 <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px"
                                    Text="PMC Specific Options" Expanded="true">
                     <MudGrid>
@@ -300,12 +301,16 @@
                             Max="100"
                             Disabled="@(!PmcAmmoTierSlideEnabled)"/>
 
-                        <MudSliderChildTT
+                        <MudSliderTT
                             Label="TUE/EOD Specific Dogtag Chance"
                             TooltipText="If the bot is Unheard or EOD, how often they should have that dogtag."
                             @bind-Value="PmcVersionDogtagChance"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcVersionDogtagChance"))"
+                            IsNonDefault="@(PmcVersionDogtagChance != 50)"
                             Min="0"
-                            Max="100"/>
+                            Max="100"
+                            OnUndo="UndoPmcDogtagChance"
+                            OnDefault="DefaultPmcDogtagChance"/>
 
                         <MudSwitchTT
                             Label="Game Version Weighting"
@@ -381,7 +386,8 @@
                             ("Tier 5 (Lv41-50)", "Pmc_PlateClass_Tier5", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier5, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier5),
                             ("Tier 6 (Lv51-60)", "Pmc_PlateClass_Tier6", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier6, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier6),
                             ("Tier 7 (Lv61-79)", "Pmc_PlateClass_Tier7", ModConfig.Config.GeneralConfig.PlateClasses.Pmc.Tier7, ModConfig.OriginalConfig.GeneralConfig.PlateClasses.Pmc.Tier7)
-                        }){
+                        })
+                        {
                             var tierTooltip = $"Adjust the plate class levels for {tier.Item1}. If a plate is selected that cannot fit in the armour, APBS will upgrade the plate level by 1 until it is valid.";
                             var tierDefaults = PmcTierDefaults[tier.Item1];
 
@@ -441,7 +447,8 @@
                                           Placeholder="Bot Name"
                                           Variant="Variant.Text"
                                           Disabled="!PmcSecretDevelopersNameMarkEnabled"
-                                          OnKeyDown="@(e => {
+                                          OnKeyDown="@(e =>
+                                                     {
                                                          if (HandleKeyDown(e)) TryAddDeveloperName();
                                                      })"
                                           Validation="@(new Func<string, IEnumerable<string>>(Utils.StringLengthValidation))"
@@ -451,10 +458,12 @@
                                           OnAdornmentClick="TryAddDeveloperName"/>
                         </MudItem>
                         <MudItem xs="6">
-                            @foreach (var item in PmcSecretDevelopersNameList){
+                            @foreach (var item in PmcSecretDevelopersNameList)
+                            {
                                 <MudChip Disabled="!PmcSecretDevelopersNameMarkEnabled" Value="@item" T="string"
                                          Color="Color.Default"
-                                         OnClose="@(() => {
+                                         OnClose="@(() =>
+                                                  {
                                                       PmcSecretDevelopersNameList.Remove(item);
                                                       Utils.UpdateView(PmcSecretDevelopersNameList, ModConfig.OriginalConfig.PmcBots.Secrets.DeveloperSettings.DevNames.NameList, "PmcSecretDevelopersNameList");
                                                   })">@item</MudChip>
@@ -505,14 +514,16 @@
                         <MudItem xs="1">
                             @if (MainLayout.AppUndoButtonToggle && (
                                 PresetStateService.PendingChanges.Contains("PmcSecretDeveloperLevelsMin") ||
-                                PresetStateService.PendingChanges.Contains("PmcSecretDeveloperLevelsMax"))){
+                                PresetStateService.PendingChanges.Contains("PmcSecretDeveloperLevelsMax")))
+                            {
                                 <MudButton @onclick="UndoSecretDeveloperLevelsMinMax" Variant="Variant.Filled"
                                            Color="Color.Inherit" Size="Size.Small">Undo
                                 </MudButton>
                             }
                             else if (MainLayout.AppDefaultButtonToggle && (
                                 PmcSecretDeveloperLevelsMin != 30 ||
-                                PmcSecretDeveloperLevelsMax != 79)){
+                                PmcSecretDeveloperLevelsMax != 79))
+                            {
                                 <MudButton @onclick="DefaultSecretDeveloperLevelsMinMax" Variant="Variant.Filled"
                                            Color="Color.Dark" Size="Size.Small">Default
                                 </MudButton>
@@ -558,7 +569,8 @@
     {
         PmcLootEnabled = ModConfig.OriginalConfig.PmcBots.LootConfig.Enable;
         PmcLootBlacklist.Clear();
-        foreach (var item in ModConfig.OriginalConfig.PmcBots.LootConfig.Blacklist){
+        foreach (var item in ModConfig.OriginalConfig.PmcBots.LootConfig.Blacklist)
+        {
             PmcLootBlacklist.Add(item);
         }
         PresetStateService.PendingChanges.Remove("PmcLootEnabled");
@@ -1041,6 +1053,14 @@
             Utils.UpdateView(value, ModConfig.OriginalConfig.PmcBots.AdditionalOptions.GameVersionDogtagChance, nameof(PmcVersionDogtagChance));
         }
     }
+    private void UndoPmcDogtagChance()
+    {
+        PmcVersionDogtagChance = ModConfig.OriginalConfig.PmcBots.AdditionalOptions.GameVersionDogtagChance;
+    }
+    private void DefaultPmcDogtagChance()
+    {
+        PmcVersionDogtagChance = 50;
+    }
 
     private bool PmcVersionWeightingEnabled
     {
@@ -1137,7 +1157,8 @@
 
     private void HandlePlateUndo(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, Dictionary<string, Dictionary<string, double>> original, string position)
     {
-        foreach (var classNum in new[] { "2", "3", "4", "5", "6" }){
+        foreach (var classNum in new[] { "2", "3", "4", "5", "6" })
+        {
             config[position][classNum] = original[position][classNum];
             PresetStateService.PendingChanges.Remove($"{keyPrefix}_{position}_Class{classNum}");
         }
@@ -1146,7 +1167,8 @@
 
     private void HandlePlateDefault(string keyPrefix, Dictionary<string, Dictionary<string, double>> config, string position, Dictionary<string, double> defaults)
     {
-        foreach (var (classNum, value) in defaults){
+        foreach (var (classNum, value) in defaults)
+        {
             config[position][classNum] = value;
             Utils.UpdateView(value, value, $"{keyPrefix}_{position}_Class{classNum}");
         }
@@ -1172,11 +1194,13 @@
     private void TryAddDeveloperName()
     {
         if (string.IsNullOrEmpty(PmcSecretDevelopersEntryHolder)) return;
-        if (PmcSecretDevelopersNameList.Contains(PmcSecretDevelopersEntryHolder)){
+        if (PmcSecretDevelopersNameList.Contains(PmcSecretDevelopersEntryHolder))
+        {
             Snackbar.Add("Name already added.", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }
-        if (!Utils.IsStringAndValidLength(PmcSecretDevelopersEntryHolder)){
+        if (!Utils.IsStringAndValidLength(PmcSecretDevelopersEntryHolder))
+        {
             Snackbar.Add("Invalid Name.", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }

@@ -1,10 +1,9 @@
-﻿namespace ProgressiveBotSystem.Services;
-
-using Models;
-using Models.Enums;
+﻿using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using Web.Core;
+
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.Preload + 10)]
 public class PresetStateService
@@ -17,55 +16,77 @@ public class PresetStateService
     public static PresetStateService Instance { get; private set; } = null!;
 
     public Dictionary<string, double> EquipmentWeightChanges { get; } = new();
-    public HashSet<string> EquipmentRemovedItems { get; } = new();
-    public HashSet<string> EquipmentAddedItems { get; } = new();
+    public HashSet<string> EquipmentRemovedItems { get; } = [];
+    public HashSet<string> EquipmentAddedItems { get; } = [];
 
     public Dictionary<string, double> AmmoWeightChanges { get; } = new();
-    public HashSet<string> AmmoRemovedItems { get; } = new();
-    public HashSet<string> AmmoAddedItems { get; } = new();
+    public HashSet<string> AmmoRemovedItems { get; } = [];
+    public HashSet<string> AmmoAddedItems { get; } = [];
 
     public Dictionary<string, double> ChancesWeightChanges { get; } = new();
     public Dictionary<string, double> GenerationWeightChanges { get; } = new();
     public Dictionary<string, double> GenerationWhitelistWeightChanges { get; } = new();
-    public HashSet<string> GenerationWhitelistRemovedItems { get; } = new();
-    public HashSet<string> GenerationWhitelistAddedItems { get; } = new();
+    public HashSet<string> GenerationWhitelistRemovedItems { get; } = [];
+    public HashSet<string> GenerationWhitelistAddedItems { get; } = [];
 
     public Dictionary<string, double> AppearanceWeightChanges { get; } = new();
-    public HashSet<string> AppearanceRemovedItems { get; } = new();
-    public HashSet<string> AppearanceAddedItems { get; } = new();
+    public HashSet<string> AppearanceRemovedItems { get; } = [];
+    public HashSet<string> AppearanceAddedItems { get; } = [];
 
-    public HashSet<string> PendingChanges { get; } = new();
+    public HashSet<string> PendingChanges { get; } = [];
     public event Action? OnPresetChanged;
     public event Action? OnPresetSaved;
     public event Action? OnPendingChangesUpdated;
 
-    public void RaisePresetChanged() => OnPresetChanged?.Invoke();
+    public void RaisePresetChanged()
+    {
+        OnPresetChanged?.Invoke();
+    }
 
-    public void RaisePresetSaved() => OnPresetSaved?.Invoke();
+    public void RaisePresetSaved()
+    {
+        OnPresetSaved?.Invoke();
+    }
 
-    public void RaisePendingChangesUpdated() => OnPendingChangesUpdated?.Invoke();
+    public void RaisePendingChangesUpdated()
+    {
+        OnPendingChangesUpdated?.Invoke();
+    }
 
-    public bool HasPendingPresetNameOrFolderChange() =>
-        PendingChanges.Contains("_presetName") || PendingChanges.Contains("_presetEnable");
+    public event Action? OnDataReloaded;
 
-    public bool HasPendingPresetChanges() =>
-        EquipmentWeightChanges.Count > 0
-        || AmmoWeightChanges.Count > 0
-        || ChancesWeightChanges.Count > 0
-        || GenerationWeightChanges.Count > 0
-        || GenerationWhitelistWeightChanges.Count > 0
-        || EquipmentAddedItems.Count > 0
-        || EquipmentRemovedItems.Count > 0
-        || AmmoAddedItems.Count > 0
-        || AmmoRemovedItems.Count > 0
-        || GenerationWhitelistAddedItems.Count > 0
-        || GenerationWhitelistRemovedItems.Count > 0
-        || AppearanceWeightChanges.Count > 0
-        || AppearanceAddedItems.Count > 0
-        || AppearanceRemovedItems.Count > 0;
+    public void RaiseDataReloaded()
+    {
+        OnDataReloaded?.Invoke();
+    }
 
-    public bool HasAnyPendingChanges() =>
-        HasPendingPresetChanges() || HasPendingPresetNameOrFolderChange();
+    public bool HasPendingPresetNameOrFolderChange()
+    {
+        return PendingChanges.Contains("_presetName") || PendingChanges.Contains("_presetEnable");
+    }
+
+    public bool HasPendingPresetChanges()
+    {
+        return EquipmentWeightChanges.Count > 0
+            || AmmoWeightChanges.Count > 0
+            || ChancesWeightChanges.Count > 0
+            || GenerationWeightChanges.Count > 0
+            || GenerationWhitelistWeightChanges.Count > 0
+            || EquipmentAddedItems.Count > 0
+            || EquipmentRemovedItems.Count > 0
+            || AmmoAddedItems.Count > 0
+            || AmmoRemovedItems.Count > 0
+            || GenerationWhitelistAddedItems.Count > 0
+            || GenerationWhitelistRemovedItems.Count > 0
+            || AppearanceWeightChanges.Count > 0
+            || AppearanceAddedItems.Count > 0
+            || AppearanceRemovedItems.Count > 0;
+    }
+
+    public bool HasAnyPendingChanges()
+    {
+        return HasPendingPresetChanges() || HasPendingPresetNameOrFolderChange();
+    }
 
     public void ClearPendingChanges()
     {
@@ -131,20 +152,15 @@ public class PresetStateService
 
         if (wasPendingItem != pendingItemNow)
         {
-            Utils.UpdateView(key);
+            Web.Core.Utils.UpdateView(key);
         }
         if (wasPendingWeight != weightChanged)
         {
-            Utils.UpdateView(weightKey);
+            Web.Core.Utils.UpdateView(weightKey);
         }
     }
 
-    public void SyncWeightOnlyChange(
-        string weightKey,
-        bool weightChanged,
-        double weight,
-        Dictionary<string, double> weightDict
-    )
+    public void SyncWeightOnlyChange(string weightKey, bool weightChanged, double weight, Dictionary<string, double> weightDict)
     {
         if (weightChanged)
         {
@@ -158,7 +174,7 @@ public class PresetStateService
         var wasPendingWeight = PendingChanges.Contains(weightKey);
         if (wasPendingWeight != weightChanged)
         {
-            Utils.UpdateView(weightKey);
+            Web.Core.Utils.UpdateView(weightKey);
         }
     }
 
@@ -177,7 +193,7 @@ public class PresetStateService
         var wasPending = PendingChanges.Contains(pendingKey);
         if (wasPending != changed)
         {
-            Utils.UpdateView(pendingKey);
+            Web.Core.Utils.UpdateView(pendingKey);
         }
     }
 
@@ -187,9 +203,7 @@ public class PresetStateService
 
         changeList.AddRange(EquipmentAddedItems.Select(x => $"Equipment Added: {x}"));
         changeList.AddRange(EquipmentRemovedItems.Select(x => $"Equipment Removed: {x}"));
-        changeList.AddRange(
-            EquipmentWeightChanges.Select(x => $"Equipment Weight Changed: {x.Key}")
-        );
+        changeList.AddRange(EquipmentWeightChanges.Select(x => $"Equipment Weight Changed: {x.Key}"));
 
         changeList.AddRange(AmmoAddedItems.Select(x => $"Ammo Added: {x}"));
         changeList.AddRange(AmmoRemovedItems.Select(x => $"Ammo Removed: {x}"));
@@ -197,26 +211,14 @@ public class PresetStateService
 
         changeList.AddRange(ChancesWeightChanges.Select(x => $"Chance Weight Changed: {x.Key}"));
 
-        changeList.AddRange(
-            GenerationWeightChanges.Select(x => $"Generation Weight Changed: {x.Key}")
-        );
-        changeList.AddRange(
-            GenerationWhitelistWeightChanges.Select(x =>
-                $"Generation Whitelist Weight Changed: {x.Key}"
-            )
-        );
-        changeList.AddRange(
-            GenerationWhitelistAddedItems.Select(x => $"Generation Whitelist Added: {x}")
-        );
-        changeList.AddRange(
-            GenerationWhitelistRemovedItems.Select(x => $"Generation Whitelist Removed: {x}")
-        );
+        changeList.AddRange(GenerationWeightChanges.Select(x => $"Generation Weight Changed: {x.Key}"));
+        changeList.AddRange(GenerationWhitelistWeightChanges.Select(x => $"Generation Whitelist Weight Changed: {x.Key}"));
+        changeList.AddRange(GenerationWhitelistAddedItems.Select(x => $"Generation Whitelist Added: {x}"));
+        changeList.AddRange(GenerationWhitelistRemovedItems.Select(x => $"Generation Whitelist Removed: {x}"));
 
         changeList.AddRange(AppearanceAddedItems.Select(x => $"Appearance Added: {x}"));
         changeList.AddRange(AppearanceRemovedItems.Select(x => $"Appearance Removed: {x}"));
-        changeList.AddRange(
-            AppearanceWeightChanges.Select(x => $"Appearance Weight Changed: {x.Key}")
-        );
+        changeList.AddRange(AppearanceWeightChanges.Select(x => $"Appearance Weight Changed: {x.Key}"));
 
         if (PendingChanges.Contains("_presetName"))
         {
@@ -235,10 +237,7 @@ public class PresetStateService
         return changeList;
     }
 
-    public IEnumerable<PendingSlotWeightChange> GetPendingSlotWeightChanges(
-        string tier,
-        string botType
-    )
+    public IEnumerable<PendingSlotWeightChange> GetPendingSlotWeightChanges(string tier, string botType)
     {
         var tierPrefix = $"Tier{tier}_{botType}_";
 
@@ -315,12 +314,7 @@ public class PresetStateService
             {
                 continue;
             }
-            yield return new PendingItemChange(
-                category,
-                id,
-                PendingItemAction.WeightOnly,
-                kvp.Value
-            );
+            yield return new PendingItemChange(category, id, PendingItemAction.WeightOnly, kvp.Value);
         }
     }
 

@@ -1,0 +1,266 @@
+﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject PresetStateService PresetStateService
+
+<MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#101316;">
+    <MudText Typo="Typo.body2" Class="mb-3" Style="color:#9ca3af;">
+        Only valid MongoIDs are accepted. Enter an item ID and press Enter (or the arrow) to blacklist it for that tier, or use Bulk Add to
+        paste several at once.
+    </MudText>
+
+    <MudTabs Rounded="true" PanelClass="pt-4">
+        @for (var t = 1; t <= 7; t++)
+        {
+            var tier = t;
+            var list = GetCurrentList(tier);
+
+            <MudTabPanel Text="@($"Tier {tier}")">
+
+                <div class="d-flex justify-center mb-4">
+                    <MudPaper Elevation="0" Class="d-flex align-center pa-2"
+                              Style="gap:0.6rem; background-color:#0a0c0e; border:1px solid #1f2328; width:fit-content;">
+                        <MudText Typo="Typo.body2" Style="color:#9ca3af; white-space:nowrap;">
+                            Copy Tier@(tier) @CategoryShortName Blacklist to
+                        </MudText>
+                        <MudSelect T="int" @bind-Value="_copyTargetTier[tier]" Dense="true" Margin="Margin.Dense"
+                                   FullWidth="false" Style="width:110px;">
+                            <MudSelectItem Value="0">All Tiers</MudSelectItem>
+                            @for (var ct = 1; ct <= 7; ct++)
+                            {
+                                if (ct == tier) continue;
+                                var targetTier = ct;
+                                <MudSelectItem Value="@targetTier">Tier @targetTier</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Small"
+                                   OnClick="@(() => ConfirmAndCopy(tier))">
+                            Copy
+                        </MudButton>
+                    </MudPaper>
+                </div>
+
+                <div class="d-flex align-center mb-2" style="gap:0.6rem;">
+                    <MudTextField T="string" @bind-Value="_singleEntryPerTier[tier]"
+                                  Placeholder="Item ID"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  FullWidth="false"
+                                  Style="width:320px;"
+                                  Immediate="true"
+                                  Validation="@(new Func<string, IEnumerable<string>>(Utils.StringObjectIdValidation))"
+                                  OnKeyDown="@(e =>
+                                             {
+                                                 if (e is { Key: "Enter", ShiftKey: false }) HandleSingleAdd(tier);
+                                             })"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.ArrowRight"
+                                  OnAdornmentClick="@(() => HandleSingleAdd(tier))"/>
+
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small"
+                               OnClick="@(() => _bulkOpenPerTier[tier] = !_bulkOpenPerTier.GetValueOrDefault(tier))">
+                        @(_bulkOpenPerTier.GetValueOrDefault(tier) ? "Hide bulk add" : "Bulk add")
+                    </MudButton>
+
+                    <MudSpacer/>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Text">
+                        @list.Count blacklisted
+                    </MudChip>
+                </div>
+
+                @if (_bulkOpenPerTier.GetValueOrDefault(tier))
+                {
+                    <div class="d-flex align-start mb-3" style="gap:0.6rem;">
+                        <MudTextField T="string" @bind-Value="_bulkInputPerTier[tier]"
+                                      Placeholder="Paste IDs separated by commas, spaces, or new lines"
+                                      Variant="Variant.Outlined"
+                                      Lines="3"
+                                      Style="flex:1 1 0;"/>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                   Style="margin-top:4px;"
+                                   OnClick="@(() => HandleBulkAdd(tier))">
+                            Add All
+                        </MudButton>
+                    </div>
+                }
+
+                <div class="rounded pa-2" style="min-height:60px; background-color:#0a0c0e; display:flex; flex-wrap:wrap; gap:0.4rem;">
+                    @if (list.Count == 0)
+                    {
+                        <MudText Typo="Typo.body2" Style="color:#6b7280;">Nothing blacklisted for this tier.</MudText>
+                    }
+                    @foreach (var item in list)
+                    {
+                        <MudChip T="string" Color="Color.Default" OnClose="@(() => RemoveItem(tier, item))">@item</MudChip>
+                    }
+                </div>
+            </MudTabPanel>
+        }
+    </MudTabs>
+</MudPaper>
+
+@code {
+    [Parameter] [EditorRequired] public string CategoryPropertyName { get; set; } = string.Empty;
+    [Parameter] [EditorRequired] public string CategoryShortName { get; set; } = string.Empty;
+
+    private readonly Dictionary<int, string> _singleEntryPerTier = new();
+    private readonly Dictionary<int, string> _bulkInputPerTier = new();
+    private readonly Dictionary<int, bool> _bulkOpenPerTier = new();
+    private readonly Dictionary<int, int> _copyTargetTier = new();
+
+    private Action? _dataReloadedHandler;
+
+    protected override void OnInitialized()
+    {
+        for (var t = 1; t <= 7; t++)
+        {
+            _singleEntryPerTier[t] = string.Empty;
+            _bulkInputPerTier[t] = string.Empty;
+            _copyTargetTier[t] = t == 1 ? 2 : 1;
+        }
+
+        _dataReloadedHandler = () => InvokeAsync(StateHasChanged);
+        PresetStateService.OnDataReloaded += _dataReloadedHandler;
+    }
+
+    public void Dispose()
+    {
+        if (_dataReloadedHandler != null)
+            PresetStateService.OnDataReloaded -= _dataReloadedHandler;
+    }
+
+    private List<string> GetCurrentList(int tier) => GetList(ModConfig.Blacklist, tier);
+    private List<string> GetOriginalList(int tier) => GetList(ModConfig.OriginalBlacklist, tier);
+
+    private List<string> GetList(ApbsBlacklistConfig root, int tier)
+    {
+        var categoryObj = typeof(ApbsBlacklistConfig).GetProperty(CategoryPropertyName)?.GetValue(root);
+        if (categoryObj == null) return [];
+
+        var tierProp = categoryObj.GetType().GetProperty($"Tier{tier}Blacklist");
+        return tierProp?.GetValue(categoryObj) as List<string> ?? [];
+    }
+
+    private string PendingKey(int tier) => $"_blacklistTier{tier}{CategoryShortName}";
+
+    private void HandleSingleAdd(int tier)
+    {
+        var value = _singleEntryPerTier.GetValueOrDefault(tier, string.Empty).Trim();
+        if (string.IsNullOrEmpty(value)) return;
+
+        var list = GetCurrentList(tier);
+
+        if (list.Contains(value))
+        {
+            Snackbar.Add("Already blacklisted.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+            return;
+        }
+
+        if (!Utils.IsHexAndValidLength(value))
+        {
+            Snackbar.Add("Invalid MongoID.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+            return;
+        }
+
+        list.Add(value);
+        Utils.UpdateView(list, GetOriginalList(tier), PendingKey(tier));
+        _singleEntryPerTier[tier] = string.Empty;
+    }
+
+    private void RemoveItem(int tier, string item)
+    {
+        var list = GetCurrentList(tier);
+        list.Remove(item);
+        Utils.UpdateView(list, GetOriginalList(tier), PendingKey(tier));
+    }
+
+    private void HandleBulkAdd(int tier)
+    {
+        var raw = _bulkInputPerTier.GetValueOrDefault(tier, string.Empty);
+        var candidates = raw
+            .Split([',', '\n', '\r', ' ', '\t'], StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .Where(s => s.Length > 0)
+            .Distinct()
+            .ToList();
+
+        if (candidates.Count == 0)
+        {
+            Snackbar.Add("Nothing to add.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+            return;
+        }
+
+        var list = GetCurrentList(tier);
+        var added = 0;
+        var duplicates = 0;
+        var invalid = 0;
+
+        foreach (var id in candidates)
+        {
+            if (!Utils.IsHexAndValidLength(id))
+            {
+                invalid++;
+                continue;
+            }
+            if (list.Contains(id))
+            {
+                duplicates++;
+                continue;
+            }
+            list.Add(id);
+            added++;
+        }
+
+        if (added > 0)
+        {
+            Utils.UpdateView(list, GetOriginalList(tier), PendingKey(tier));
+        }
+
+        _bulkInputPerTier[tier] = string.Empty;
+
+        var summary = $"Added {added}.";
+        if (duplicates > 0) summary += $" Skipped {duplicates} duplicate(s).";
+        if (invalid > 0) summary += $" Skipped {invalid} invalid.";
+
+        Snackbar.Add(summary, added > 0 ? Severity.Success : Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+    }
+
+    private async Task ConfirmAndCopy(int sourceTier)
+    {
+        var targetSelection = _copyTargetTier[sourceTier];
+        var sourceList = GetCurrentList(sourceTier);
+
+        var targetDescription = targetSelection == 0 ? "every other tier" : $"Tier {targetSelection}";
+
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+        "Copy Blacklist",
+        $"This replaces {targetDescription}'s {CategoryShortName} blacklist with Tier {sourceTier}'s ({sourceList.Count} item(s)). This can't be undone except by discarding unsaved changes. Continue?",
+        "Copy", cancelText: "Cancel");
+
+        if (confirmed != true) return;
+
+        if (targetSelection == 0)
+        {
+            for (var t = 1; t <= 7; t++)
+            {
+                if (t == sourceTier) continue;
+                ApplyCopy(sourceList, t);
+            }
+        }
+        else
+        {
+            ApplyCopy(sourceList, targetSelection);
+        }
+
+        Snackbar.Add($"Copied Tier {sourceTier}'s {CategoryShortName} blacklist to {targetDescription}.", Severity.Success, cfg => cfg.ShowCloseIcon = false);
+    }
+
+    private void ApplyCopy(List<string> sourceList, int targetTier)
+    {
+        var targetList = GetCurrentList(targetTier);
+        targetList.Clear();
+        targetList.AddRange(sourceList);
+        Utils.UpdateView(targetList, GetOriginalList(targetTier), PendingKey(targetTier));
+    }
+}

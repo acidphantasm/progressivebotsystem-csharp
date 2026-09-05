@@ -1,22 +1,22 @@
 ﻿@layout MainLayout
 
 <MudNavMenu Rounded="true" Margin="Margin.Dense" Class="pa-2">
-    <MudNavLink Href="/progressivebotsystem" Match="NavLinkMatch.All">Main</MudNavLink>
-    <MudNavGroup Title="General Config" Expanded="true">
+    <MudNavLink Href="/progressivebotsystem" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Main</MudNavLink>
+    <MudNavGroup Title="General Config" Expanded="true" Icon="@Icons.Material.Filled.Api">
         <MudNavLink Href="/progressivebotsystem/botsettings" Match="NavLinkMatch.All">Bot Settings</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/modcompatibility" Match="NavLinkMatch.All">Mod Import & Compatibility
         </MudNavLink>
         <MudNavLink Href="/progressivebotsystem/blacklisting" Match="NavLinkMatch.All">Blacklisting</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/tierdelta" Match="NavLinkMatch.All">Tier Level Deltas</MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Bot Specific Config" Expanded="true">
+    <MudNavGroup Title="Bot Specific Config" Expanded="true" Icon="@Icons.Material.Filled.Api">
         <MudNavLink Href="/progressivebotsystem/pmc" Match="NavLinkMatch.All">PMCs</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/scav" Match="NavLinkMatch.All">Scavs</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/boss" Match="NavLinkMatch.All">Bosses</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/follower" Match="NavLinkMatch.All">Followers</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/special" Match="NavLinkMatch.All">Special</MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Presets" Expanded="true">
+    <MudNavGroup Title="Presets" Expanded="true" Icon="@Icons.Material.Filled.CompareArrows">
         <MudNavLink Href="/progressivebotsystem/presets" Match="NavLinkMatch.All">Preset General</MudNavLink>
         <MudNavGroup Title="Tier 1" Expanded="false">
             <MudNavLink Href="/progressivebotsystem/presets/tier1/ammo" Match="NavLinkMatch.All">Ammo</MudNavLink>
@@ -75,4 +75,5 @@
             </MudNavLink>
         </MudNavGroup>
     </MudNavGroup>
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">SIC</MudNavLink>
 </MudNavMenu>

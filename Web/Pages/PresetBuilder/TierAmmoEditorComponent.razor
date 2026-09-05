@@ -1,37 +1,81 @@
 ﻿@using ProgressiveBotSystem.Models
 @using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
-@using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
 @using SPTarkov.Server.Core.Utils
 @inject ISnackbar Snackbar
-@inject ItemHelper ItemHelper
 @inject JsonUtil JsonUtil
-@inject PresetStateService PresetStateService
+@inject IDialogService DialogService
+@inject PresetStateService PresetState
+@inject PresetCopyService PresetCopyService
 
-@if (_loading){
+@if (_loading)
+{
     <MudOverlay Visible="true" DarkBackground="true">
         <div style="width:100vw; height:100vh;" class="d-flex justify-center align-center">
             <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
         </div>
     </MudOverlay>
 }
-else{
+else
+{
     <MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#101316;">
-        <MudTabs>
-            @foreach (var botType in _botTypes.Keys){
+        <MudTabs Rounded="true" PanelClass="pt-4">
+            @foreach (var botType in _botTypes.Keys)
+            {
                 <MudTabPanel Text="@botType">
-                    @foreach (var category in _masterItemsPerCategory.Keys){
-                        <MudDivider DividerType="DividerType.Inset"/>
-                        <div class="d-flex mb-4 pa-2 w-100" style="gap: 1rem;">
-                            <!-- Used Items -->
+                    <div class="d-flex justify-center mb-4">
+                        <MudPaper Elevation="0" Class="d-flex align-center pa-2"
+                                  Style="gap:0.6rem; background-color:#0a0c0e; border:1px solid #1f2328; width:fit-content;">
+                            <MudText Typo="Typo.body2" Style="color:#9ca3af; white-space:nowrap;">
+                                Copy Tier@(Tier) @botType to
+                            </MudText>
+                            <MudSelect T="int" @bind-Value="_copyTargetTier[botType]" Dense="true" Margin="Margin.Dense"
+                                       FullWidth="false" Style="width:110px;">
+                                <MudSelectItem Value="0">All Tiers</MudSelectItem>
+                                @for (var t = 1; t <= 7; t++)
+                                {
+                                    var tierValue = t;
+                                    <MudSelectItem Value="@tierValue">Tier @tierValue</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudSelect T="string" @bind-Value="_copyTargetBotType[botType]" Dense="true"
+                                       Margin="Margin.Dense" FullWidth="false" Style="width:130px;">
+                                @foreach (var target in _botTypes.Keys)
+                                {
+                                    <MudSelectItem Value="@target">@target</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"
+                                       OnClick="@(() => ConfirmAndCopy(botType))">
+                                Copy
+                            </MudButton>
+                        </MudPaper>
+                    </div>
+
+                    @foreach (var category in _masterItemsPerCategory.Keys)
+                    {
+                        var assignedCount = _botTypes[botType].Count(i => i.Category == category);
+
+                        <div class="d-flex align-center mb-1" style="gap:0.6rem;">
+                            <MudText Typo="Typo.subtitle1">@category</MudText>
+                            <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Text">
+                                @assignedCount assigned
+                            </MudChip>
+                        </div>
+
+                        <div class="d-flex mb-4 pa-1 w-100" style="gap: 1rem;">
+                            <!-- Assigned -->
                             <div style="flex:1 1 0; display:flex; flex-direction:column;">
-                                <MudText Typo="Typo.subtitle2" Style="height:28px;">@category</MudText>
-                                <div class="rounded pa-2 flex-grow-1"
-                                     style="height:300px; overflow-y:auto; background-color:#0a0c0e;">
-                                    @foreach (var item in _botTypes[botType].Where(i => i.Category == category)){
-                                        <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
-                                                  Style="gap:0.5rem;">
+                                <div class="d-flex align-center mb-1" style="height:32px;">
+                                    <MudText Typo="Typo.caption" Style="color:#9ca3af;">Assigned</MudText>
+                                </div>
+                                <div class="rounded flex-grow-1"
+                                     style="height:260px; overflow-y:auto; background-color:#0a0c0e;">
+                                    @foreach (var item in _botTypes[botType].Where(i => i.Category == category))
+                                    {
+                                        <div class="d-flex align-center px-2 py-1 apbs-row"
+                                             style="gap:0.6rem; border-bottom:1px solid #1f2328;">
                                             <MudNumericField T="double"
                                                              Min="0.0"
                                                              Value="item.Weight"
@@ -39,25 +83,28 @@ else{
                                                              Variant="Variant.Outlined"
                                                              HideSpinButtons="true"
                                                              Margin="Margin.None"
-                                                             Style="width:72px; height:28px; font-size:0.8rem; padding:0 4px;"/>
+                                                             FullWidth="false"
+                                                             Style="width:68px; height:28px; font-size:0.8rem; padding:0 4px;"/>
 
-                                            <MudText Typo="Typo.subtitle2"
-                                                     Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                            <MudText Typo="Typo.body2" Class="flex-grow-1"
+                                                     Style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                                 @item.DisplayName
                                             </MudText>
-                                            <MudSpacer/>
-                                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
-                                                       OnClick="@(() => MoveToAvailable(botType, category, item))">&gt;
-                                            </MudButton>
-                                        </MudPaper>
+
+                                            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small"
+                                                           Color="Color.Default"
+                                                           OnClick="@(() => MoveToAvailable(botType, category, item))"
+                                                           Style="height:28px;"/>
+                                        </div>
                                     }
                                 </div>
                             </div>
 
-                            <!-- Available Items -->
+                            <!-- Available -->
                             <div style="flex:1 1 0; display:flex; flex-direction:column;">
-                                <div class="d-flex align-center mb-2">
-                                    <MudText Typo="Typo.subtitle2">Available Items</MudText>
+                                <div class="d-flex align-center mb-1" style="height:32px; gap:0.5rem;">
+                                    <MudText Typo="Typo.caption" Style="color:#9ca3af;">Available</MudText>
+                                    <MudSpacer/>
                                     <MudTextField T="string"
                                                   Value="@(_searchTextPerCategory.GetValueOrDefault(category, string.Empty))"
                                                   ValueChanged="@(v => _searchTextPerCategory[category] = v)"
@@ -65,26 +112,26 @@ else{
                                                   Adornment="Adornment.Start"
                                                   AdornmentIcon="@Icons.Material.Filled.Search"
                                                   Immediate="true"
-                                                  Class="ml-2"
-                                                  Style="width:200px; height:20px; font-size:0.875rem;"/>
+                                                  Margin="Margin.Dense"
+                                                  FullWidth="false"
+                                                  Style="width:180px;"/>
                                 </div>
 
-                                <div class="rounded pa-2 flex-grow-1"
-                                     style="height:280px; overflow-y:auto; background-color:#0a0c0e;">
-                                    @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, ""))){
-                                        <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
-                                                  Style="gap:0.5rem;">
-                                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
-                                                       OnClick="@(() => MoveToUsed(botType, category, item))">&lt;
-                                            </MudButton>
-
-                                            <div style="flex:1; display:flex; justify-content:center;">
-                                                <MudText Typo="Typo.subtitle2"
-                                                         Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
-                                                    @item.DisplayName
-                                                </MudText>
-                                            </div>
-                                        </MudPaper>
+                                <div class="rounded flex-grow-1"
+                                     style="height:260px; overflow-y:auto; background-color:#0a0c0e;">
+                                    @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, "")))
+                                    {
+                                        <div class="d-flex align-center px-2 py-1 apbs-row"
+                                             style="gap:0.6rem; border-bottom:1px solid #1f2328;">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small"
+                                                           Color="Color.Primary"
+                                                           OnClick="@(() => MoveToUsed(botType, category, item))"
+                                                           Style="height:28px;"/>
+                                            <MudText Typo="Typo.body2"
+                                                     Style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                                @item.DisplayName
+                                            </MudText>
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -101,11 +148,16 @@ else{
     [Parameter] [EditorRequired] public string Tier { get; set; }
 
     private bool _loading = true;
-    private readonly Dictionary<string, string> _searchTextPerCategory = new();
+    private readonly Dictionary<string, string?> _searchTextPerCategory = new();
     private readonly Dictionary<string, List<PresetItemView>> _masterItemsPerCategory = new();
     private readonly Dictionary<string, List<PresetItemView>> _originalBotTypes = new();
     private readonly Dictionary<string, List<PresetItemView>> _botTypes = new();
     private readonly Dictionary<MongoId, string> _cachedItems = new();
+
+    private readonly Dictionary<string, int> _copyTargetTier = new();
+    private readonly Dictionary<string, string> _copyTargetBotType = new();
+
+    private Action? _dataReloadedHandler;
 
     private void HandlePresetChanged()
     {
@@ -114,7 +166,8 @@ else{
 
     private void HandleSaveCompleted()
     {
-        foreach (var botType in _botTypes.Keys){
+        foreach (var botType in _botTypes.Keys)
+        {
             _originalBotTypes[botType] = _botTypes[botType]
                 .Select(i => new PresetItemView
                 {
@@ -132,14 +185,18 @@ else{
 
     public void Dispose()
     {
-        PresetStateService.OnPresetChanged -= HandlePresetChanged;
-        PresetStateService.OnPresetSaved -= HandleSaveCompleted;
+        PresetState.OnPresetChanged -= HandlePresetChanged;
+        PresetState.OnPresetSaved -= HandleSaveCompleted;
+        if (_dataReloadedHandler != null)
+            PresetState.OnDataReloaded -= _dataReloadedHandler;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        PresetStateService.OnPresetChanged += HandlePresetChanged;
-        PresetStateService.OnPresetSaved += HandleSaveCompleted;
+        PresetState.OnPresetChanged += HandlePresetChanged;
+        PresetState.OnPresetSaved += HandleSaveCompleted;
+        _dataReloadedHandler = () => InvokeAsync(LoadDataAsync);
+        PresetState.OnDataReloaded += _dataReloadedHandler;
         await LoadDataAsync();
     }
 
@@ -155,30 +212,18 @@ else{
         _masterItemsPerCategory.Clear();
         _cachedItems.Clear();
 
-        try{
-            foreach (var prop in typeof(AmmoTierData).GetProperties()){
+        try
+        {
+            foreach (var prop in typeof(AmmoTierData).GetProperties())
+            {
                 var botClass = prop.Name;
                 var caliberData = prop.GetValue(AmmoData) as Dictionary<string, Dictionary<MongoId, double>>;
                 if (caliberData == null) continue;
 
-                var usedItems = new List<PresetItemView>();
-
-                foreach (var categoryKvp in caliberData){
-                    var category = categoryKvp.Key;
-
-                    foreach (var itemKvp in categoryKvp.Value){
-                        usedItems.Add(new PresetItemView
-                        {
-                            Id = itemKvp.Key,
-                            DisplayName = GetOrAddCachedName(itemKvp.Key),
-                            Category = category,
-                            CurrentDropZone = category,
-                            Weight = itemKvp.Value,
-                            botType = botClass
-                        });
-                    }
-
-                    if (!_masterItemsPerCategory.ContainsKey(category)){
+                foreach (var category in caliberData.Keys)
+                {
+                    if (!_masterItemsPerCategory.ContainsKey(category))
+                    {
                         _masterItemsPerCategory[category] = GetAvailableItemsForCategory(category)
                             .Select(id => new PresetItemView
                             {
@@ -190,6 +235,26 @@ else{
                                 Weight = 1
                             })
                             .ToList();
+                    }
+                }
+
+                var usedItems = new List<PresetItemView>();
+
+                foreach (var categoryKvp in caliberData)
+                {
+                    var category = categoryKvp.Key;
+
+                    foreach (var itemKvp in categoryKvp.Value)
+                    {
+                        usedItems.Add(new PresetItemView
+                        {
+                            Id = itemKvp.Key,
+                            DisplayName = GetOrAddCachedName(itemKvp.Key),
+                            Category = category,
+                            CurrentDropZone = category,
+                            Weight = itemKvp.Value,
+                            botType = botClass
+                        });
                     }
                 }
 
@@ -205,27 +270,125 @@ else{
                     .ToList();
 
                 ApplyPendingOverlay(botClass);
+
+                if (!_copyTargetTier.ContainsKey(botClass))
+                {
+                    _copyTargetTier[botClass] = int.Parse(Tier);
+                }
+                _copyTargetBotType.TryAdd(botClass, botClass);
             }
         }
-        catch (Exception ex){
+        catch (Exception ex)
+        {
             Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
         }
-        finally{
+        finally
+        {
             _loading = false;
             StateHasChanged();
         }
     }
 
-    private string GetOrAddCachedName(MongoId itemId)
+    private void ApplyPendingOverlay(string botType)
     {
-        if (_cachedItems.TryGetValue(itemId, out var name))
-            return string.IsNullOrEmpty(name) ? itemId : name;
+        var changes = PresetState.GetPendingItemChanges(
+        Tier, botType,
+        PresetState.AmmoAddedItems, PresetState.AmmoRemovedItems, PresetState.AmmoWeightChanges,
+        "_weight");
 
-        _cachedItems[itemId] = ItemHelper.GetItemName(itemId);
-        return _cachedItems[itemId];
+        foreach (var change in changes)
+        {
+            switch (change.Action)
+            {
+                case PendingItemAction.Add:
+                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category == change.Category))
+                    {
+                        _botTypes[botType].Add(new PresetItemView
+                        {
+                            Id = change.Id,
+                            DisplayName = GetOrAddCachedName(new MongoId(change.Id)),
+                            Category = change.Category,
+                            CurrentDropZone = change.Category,
+                            Weight = change.Weight,
+                            botType = botType
+                        });
+                    }
+                    break;
+
+                case PendingItemAction.Remove:
+                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category == change.Category);
+                    break;
+
+                case PendingItemAction.WeightOnly:
+                    var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category == change.Category);
+                    existing?.Weight = change.Weight;
+                    break;
+            }
+        }
     }
 
-    private IEnumerable<PresetItemView> GetAvailableItems(string botType, string category, string searchText)
+    private async Task ConfirmAndCopy(string sourceBotType)
+    {
+        var targetTier = _copyTargetTier[sourceBotType];
+        var targetBotType = _copyTargetBotType[sourceBotType];
+        var sourceTier = int.Parse(Tier);
+
+        if (targetTier == 0)
+        {
+            await CopyToAllTiers(sourceBotType, sourceTier, targetBotType);
+            return;
+        }
+
+        if (targetTier == sourceTier && targetBotType == sourceBotType)
+        {
+            Snackbar.Add("Source and target can't be the same bot type and tier.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+            return;
+        }
+
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+        "Copy Ammo",
+        $"This replaces ALL of {targetBotType}'s ammo (Tier {targetTier}) with {sourceBotType}'s ammo (Tier {sourceTier}). This can't be undone except by discarding unsaved changes. Continue?",
+        "Copy", cancelText: "Cancel");
+
+        if (confirmed != true) return;
+
+        var changeCount = PresetCopyService.CopyAmmoBotType(sourceTier, sourceBotType, targetTier, targetBotType);
+
+        Snackbar.Add($"Copied {sourceBotType} (Tier {sourceTier}) to {targetBotType} (Tier {targetTier}) — {changeCount} pending changes. Not yet saved.", Severity.Success, cfg => cfg.ShowCloseIcon = false);
+
+        if (targetTier == sourceTier)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task CopyToAllTiers(string sourceBotType, int sourceTier, string targetBotType)
+    {
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+        "Copy Ammo to All Tiers",
+        $"This replaces ALL of {targetBotType}'s ammo across every tier (1–7) with {sourceBotType}'s ammo from Tier {sourceTier} " +
+        (targetBotType == sourceBotType ? $"(Tier {sourceTier} itself is left untouched). " : string.Empty) +
+        "This can't be undone except by discarding unsaved changes. Continue?",
+        "Copy", cancelText: "Cancel");
+
+        if (confirmed != true) return;
+
+        var changeCount = PresetCopyService.CopyAmmoBotTypeToAllTiers(sourceTier, sourceBotType, targetBotType);
+
+        Snackbar.Add($"Copied {sourceBotType} (Tier {sourceTier}) to {targetBotType} across all tiers — {changeCount} pending changes. Not yet saved.", Severity.Success, cfg => cfg.ShowCloseIcon = false);
+
+        await LoadDataAsync();
+    }
+
+    private string GetOrAddCachedName(MongoId itemId)
+    {
+        if (_cachedItems.TryGetValue(itemId, out var name) && !string.IsNullOrEmpty(name))
+            return name;
+
+        return itemId;
+    }
+
+    private IEnumerable<PresetItemView> GetAvailableItems(string botType, string category, string? searchText)
     {
         searchText ??= string.Empty;
         var usedIds = _botTypes[botType].Where(i => i.Category == category).Select(i => i.Id).ToHashSet();
@@ -237,13 +400,19 @@ else{
     {
         PresetItemView? originalItem = null;
         if (_originalBotTypes.TryGetValue(botType, out var originalList))
+        {
             originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category);
+        }
 
         if (originalItem != null)
+        {
             item.Weight = originalItem.Weight;
+        }
 
         if (!_botTypes[botType].Any(i => i.Id == item.Id && i.Category == category))
+        {
             _botTypes[botType].Add(item);
+        }
 
         UpdatePendingChanges(botType, category, item);
     }
@@ -251,7 +420,8 @@ else{
     private void MoveToAvailable(string botType, string category, PresetItemView item)
     {
         var currentItemsInCategory = _botTypes[botType].Count(i => i.Category == category);
-        if (currentItemsInCategory <= 1){
+        if (currentItemsInCategory <= 1)
+        {
             Snackbar.Add("You cannot remove all items from an Ammo Caliber.", Severity.Error, config => { config.ShowCloseIcon = false; });
             return;
         }
@@ -274,22 +444,26 @@ else{
     {
         var key = $"Tier{Tier}_{botType}_{category}_{item.Id}";
 
-        var originalItem = _originalBotTypes.TryGetValue(botType, out var originalList)
-            ? originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category)
-            : null;
+        if (!_originalBotTypes.TryGetValue(botType, out var originalList))
+            return;
+
+        var originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category);
         var currentItem = _botTypes[botType].FirstOrDefault(i => i.Id == item.Id && i.Category == category);
 
         var added = originalItem == null && currentItem != null;
         var removed = originalItem != null && currentItem == null;
-        var weightChanged = currentItem != null &&
-                            (originalItem != null && currentItem.Weight != originalItem.Weight
-                             || originalItem == null && currentItem.Weight != 1);
 
-        PresetStateService.SyncItemChange(
+        var weightChanged =
+            currentItem != null &&
+            (
+                originalItem != null && Math.Abs(currentItem.Weight - originalItem.Weight) > 0.001 ||
+                originalItem == null && currentItem is not { Weight: 1 }
+            );
+
+        PresetState.SyncItemChange(
         key, added, removed, weightChanged, currentItem?.Weight ?? 0,
-        PresetStateService.AmmoAddedItems, PresetStateService.AmmoRemovedItems, PresetStateService.AmmoWeightChanges);
+        PresetState.AmmoAddedItems, PresetState.AmmoRemovedItems, PresetState.AmmoWeightChanges);
     }
-
 
     private List<string> GetAvailableItemsForCategory(string category) => LoadIdsForCategory(category);
 
@@ -297,54 +471,25 @@ else{
     {
         var folderPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH");
         var path = Path.Combine(folderPath, $"{category}.json");
-        if (!File.Exists(path)) return new List<string>();
+        if (!File.Exists(path))
+            return [];
 
-        try{
+        try
+        {
             var dict = JsonUtil.DeserializeFromFile<Dictionary<string, string>>(path);
-            if (dict != null){
-                foreach (var kv in dict)
-                    _cachedItems[kv.Key] = kv.Value;
+            if (dict == null)
+            {
+                return dict?.Keys.ToList() ?? [];
             }
-            return dict?.Keys.ToList() ?? new List<string>();
-        }
-        catch{
-            return new List<string>();
-        }
-    }
-
-    private void ApplyPendingOverlay(string botType)
-    {
-        var changes = PresetStateService.GetPendingItemChanges(
-        Tier, botType,
-        PresetStateService.AmmoAddedItems, PresetStateService.AmmoRemovedItems, PresetStateService.AmmoWeightChanges,
-        "_weight"
-        );
-
-        foreach (var change in changes){
-            switch (change.Action){
-                case PendingItemAction.Add:
-                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category == change.Category)){
-                        _botTypes[botType].Add(new PresetItemView
-                        {
-                            Id = change.Id,
-                            DisplayName = GetOrAddCachedName(new MongoId(change.Id)),
-                            Category = change.Category,
-                            CurrentDropZone = change.Category,
-                            Weight = change.Weight,
-                            botType = botType
-                        });
-                    }
-                    break;
-
-                case PendingItemAction.Remove:
-                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category == change.Category);
-                    break;
-
-                case PendingItemAction.WeightOnly:
-                    var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category == change.Category);
-                    existing?.Weight = change.Weight;
-                    break;
+            foreach (var kv in dict)
+            {
+                _cachedItems[kv.Key] = kv.Value;
             }
+            return dict?.Keys.ToList() ?? [];
+        }
+        catch
+        {
+            return [];
         }
     }
 }

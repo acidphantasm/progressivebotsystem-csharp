@@ -1,0 +1,36 @@
+﻿@using ProgressiveBotSystem.Models
+<MudPaper Elevation="2" Class="mb-4" Style="background-color:#0a0c0e;">
+    <MudExpansionPanels>
+        <MudExpansionPanel Expanded="@IsLatestInstalled">
+            <TitleContent>
+                <div class="d-flex align-center justify-space-between" style="width:100%;">
+                    <div class="d-flex align-center" style="gap:0.5rem;">
+                        <MudText Typo="Typo.h6" Style="color:#f5f3f0;">Version @Release.Version</MudText>
+                        @if (IsLatestInstalled)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Dark">Current</MudChip>
+                        }
+                    </div>
+                    <MudText Typo="Typo.body2" Style="color:#9ca3af;">@Release.ReleaseDate</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudDivider Class="mb-4"/>
+
+                <ReleaseNoteSection Title="New Features" Icon="@Icons.Material.Outlined.NewReleases"
+                                    AccentColor="#2dd4bf" Items="Release.NewFeatures"/>
+                <ReleaseNoteSection Title="Changes" Icon="@Icons.Material.Outlined.TrendingUp"
+                                    AccentColor="#f59e0b" Items="Release.Changes"/>
+                <ReleaseNoteSection Title="Bug Fixes" Icon="@Icons.Material.Outlined.Build"
+                                    AccentColor="#059669" Items="Release.BugFixes"/>
+                <ReleaseNoteSection Title="Known Issues" Icon="@Icons.Material.Outlined.BugReport"
+                                    AccentColor="#d97706" Items="Release.KnownIssues"/>
+            </ChildContent>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+</MudPaper>
+
+@code {
+    [Parameter] [EditorRequired] public ReleaseNote Release { get; set; } = null!;
+    [Parameter] public bool IsLatestInstalled { get; set; }
+}

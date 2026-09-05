@@ -1,6 +1,6 @@
-﻿namespace ProgressiveBotSystem.Models;
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+namespace ProgressiveBotSystem.Models;
 
 public class ReleaseInformation
 {
@@ -12,4 +12,7 @@ public class ReleaseInformation
 
     [JsonPropertyName("published_at")]
     public required DateTime ReleaseDate { get; init; }
+
+    [JsonPropertyName("body")]
+    public string? Body { get; set; }
 }

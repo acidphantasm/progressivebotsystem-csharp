@@ -2,38 +2,68 @@
 @using ProgressiveBotSystem.Models
 @using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
-@using SPTarkov.Server.Core.Helpers.Items
 @using SPTarkov.Server.Core.Models.Common
 @using SPTarkov.Server.Core.Utils
 @inject ISnackbar Snackbar
-@inject ItemHelper ItemHelper
 @inject JsonUtil JsonUtil
-@inject PresetStateService PresetStateService
+@inject IDialogService DialogService
+@inject PresetStateService PresetState
+@inject PresetCopyService PresetCopyService
 
-@if (_loading){
+@if (_loading)
+{
     <MudOverlay Visible="true" DarkBackground="true">
         <div style="width:100vw; height:100vh;" class="d-flex justify-center align-center">
             <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Size="Size.Large"/>
         </div>
     </MudOverlay>
 }
-else{
+else
+{
     <MudPaper Elevation="4" Class="pa-6 ma-4" Style="background-color:#101316;">
-        <MudTabs>
-            @foreach (var botType in _botTypes.Keys){
+        <MudTabs Rounded="true" PanelClass="pt-4">
+            @foreach (var botType in _botTypes.Keys)
+            {
                 <MudTabPanel Text="@botType">
 
+                    <div class="d-flex justify-center mb-4">
+                        <MudPaper Elevation="0" Class="d-flex align-center pa-2"
+                                  Style="gap:0.6rem; background-color:#0a0c0e; border:1px solid #1f2328; width:fit-content;">
+                            <MudText Typo="Typo.body2" Style="color:#9ca3af; white-space:nowrap;">
+                                Copy Tier@(Tier) @botType to
+                            </MudText>
+                            <MudSelect T="int" @bind-Value="_copyTargetTier[botType]" Dense="true" Margin="Margin.Dense"
+                                       FullWidth="false" Style="width:110px;">
+                                <MudSelectItem Value="0">All Tiers</MudSelectItem>
+                                @for (var t = 1; t <= 7; t++)
+                                {
+                                    var tierValue = t;
+                                    <MudSelectItem Value="@tierValue">Tier @tierValue</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudText Typo="Typo.body2" Style="color:#9ca3af; white-space:nowrap;">
+                                @botType
+                            </MudText>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Small"
+                                       OnClick="@(() => ConfirmAndCopy(botType))">
+                                Copy
+                            </MudButton>
+                        </MudPaper>
+                    </div>
+
                     <div class="d-flex flex-wrap" style="gap:1rem;">
-                        @foreach (var category in _botTypes[botType].Where(i => !i.IsGenerationItem).Select(i => i.Category).Distinct()){
+                        @foreach (var category in _botTypes[botType].Where(i => !i.IsGenerationItem).Select(i => i.Category).Distinct())
+                        {
                             <div style="flex:1 0 calc(33% - 1rem); min-width:250px;">
                                 <MudDivider DividerType="DividerType.Inset"/>
                                 <MudText Typo="Typo.subtitle2">@category</MudText>
 
                                 <div class="rounded pa-2 mb-4"
                                      style="max-height:300px; overflow-y:auto; background-color:#0a0c0e;">
-                                    @foreach (var item in _botTypes[botType].Where(i => i.Category == category && !i.IsGenerationItem)){
-                                        <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
-                                                  Style="gap:0.5rem;">
+                                    @foreach (var item in _botTypes[botType].Where(i => i.Category == category && !i.IsGenerationItem))
+                                    {
+                                        <div class="d-flex align-center px-1 py-1 apbs-row"
+                                             style="gap:0.6rem; border-bottom:1px solid #1f2328;">
                                             <MudNumericField T="double"
                                                              Min="0.0"
                                                              Max="100.0"
@@ -42,42 +72,51 @@ else{
                                                              Variant="Variant.Outlined"
                                                              HideSpinButtons="true"
                                                              Margin="Margin.None"
-                                                             Style="width:72px; height:28px; font-size:0.8rem; padding:0 4px;"/>
+                                                             FullWidth="false"
+                                                             Style="width:68px; height:28px; font-size:0.8rem; padding:0 4px;"/>
 
-                                            <MudText Typo="Typo.subtitle2"
-                                                     Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                            <MudText Typo="Typo.body2"
+                                                     Style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                                 @item.DisplayName
                                             </MudText>
-                                        </MudPaper>
+                                        </div>
                                     }
                                 </div>
                             </div>
                         }
                     </div>
 
+                    @foreach (var category in _masterItemsPerCategory.Keys)
+                    {
+                        var assignedCount = _botTypes[botType].Count(i => i.Category == category && i.IsGenerationItem);
 
-                    @foreach (var category in _masterItemsPerCategory.Keys){
                         <MudDivider DividerType="DividerType.Inset"/>
 
-                        <div class="mb-2">
+                        <div class="d-flex align-center mb-2" style="gap:0.6rem;">
                             <MudText Typo="Typo.subtitle2">@category</MudText>
+                            @if (!new[] { "BackpackLoot", "PocketLoot", "VestLoot", "Magazines", "SpecialItems" }.Contains(category))
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Text">
+                                    @assignedCount assigned
+                                </MudChip>
+                            }
                         </div>
 
                         <div class="d-flex mb-4 pa-2" style="gap:0.5rem; align-items:center;">
                             <MudText Typo="Typo.caption" Class="mt-1">Spawn Count Weights:</MudText>
 
-                            @if (_generationSlotRanges.TryGetValue(botType, out var botDict)){
-                                if (!botDict.TryGetValue(category, out var slotWeights)){
+                            @if (_generationSlotRanges.TryGetValue(botType, out var botDict))
+                            {
+                                if (!botDict.TryGetValue(category, out var slotWeights))
+                                {
                                     slotWeights = new Dictionary<double, double>();
                                     botDict[category] = slotWeights;
                                 }
 
-                                @for (var idx = 0; idx < 8; idx++){
+                                @for (var idx = 0; idx < 8; idx++)
+                                {
                                     var slotIndex = idx;
-                                    double value;
-                                    if (!slotWeights.TryGetValue(slotIndex, out value)){
-                                        value = 0;
-                                    }
+                                    var value = slotWeights.GetValueOrDefault(slotIndex, 0);
 
                                     <div style="display:flex; flex-direction:column; align-items:center;">
                                         <MudText Typo="Typo.caption">@slotIndex</MudText>
@@ -85,32 +124,38 @@ else{
                                         <MudNumericField T="double"
                                                          Min="0.0"
                                                          Value="@value"
-                                                         ValueChanged="@(v => {
+                                                         ValueChanged="@(v =>
+                                                                       {
                                                                            slotWeights[slotIndex] = v;
                                                                            OnGenerationSlotWeightChanged(botType, category, slotIndex, v);
                                                                        })"
                                                          Variant="Variant.Outlined"
                                                          HideSpinButtons="true"
                                                          Margin="Margin.None"
-                                                         Style="width:72px; height:36px; font-size:0.8rem; padding:0 6px;"/>
+                                                         FullWidth="false"
+                                                         Style="width:60px; height:32px; font-size:0.8rem; padding:0 4px;"/>
                                     </div>
                                 }
 
                             }
                         </div>
 
-                        // Skip specific loot types, we don't want users doing this and also I dont want to build lists of all items for these
-                        @if (!new[] { "BackpackLoot", "PocketLoot", "VestLoot", "Magazines", "SpecialItems" }.Contains(category)){
-                            <div class="d-flex mb-4 pa-2 w-100" style="gap: 1rem;">
-                                <!-- Used Items Column -->
+                        @if (!new[] { "BackpackLoot", "PocketLoot", "VestLoot", "Magazines", "SpecialItems" }.Contains(category))
+                        {
+                            <div class="d-flex mb-4 pa-1 w-100" style="gap: 1rem;">
+                                <!-- Assigned -->
                                 <div style="flex:1 1 0; display:flex; flex-direction:column;">
-                                    <MudText Typo="Typo.subtitle2">Assigned Items</MudText>
-                                    <div class="rounded pa-2 flex-grow-1"
-                                         style="height:300px; overflow-y:auto; background-color:#0a0c0e;">
-                                        @if (_botTypes[botType].Any(i => i.Category == category && i.IsGenerationItem)){
-                                            foreach (var item in _botTypes[botType].Where(i => i.Category == category && i.IsGenerationItem)){
-                                                <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
-                                                          Style="gap:0.5rem;">
+                                    <div class="d-flex align-center mb-1" style="height:32px;">
+                                        <MudText Typo="Typo.caption" Style="color:#9ca3af;">Assigned</MudText>
+                                    </div>
+                                    <div class="rounded flex-grow-1"
+                                         style="height:260px; overflow-y:auto; background-color:#0a0c0e;">
+                                        @if (_botTypes[botType].Any(i => i.Category == category && i.IsGenerationItem))
+                                        {
+                                            foreach (var item in _botTypes[botType].Where(i => i.Category == category && i.IsGenerationItem))
+                                            {
+                                                <div class="d-flex align-center px-2 py-1 apbs-row"
+                                                     style="gap:0.6rem; border-bottom:1px solid #1f2328;">
                                                     <MudNumericField T="double"
                                                                      Min="0.0"
                                                                      Value="item.Weight"
@@ -118,31 +163,33 @@ else{
                                                                      Variant="Variant.Outlined"
                                                                      HideSpinButtons="true"
                                                                      Margin="Margin.None"
-                                                                     Style="width:72px; height:28px; font-size:0.8rem; padding:0 4px;"/>
+                                                                     FullWidth="false"
+                                                                     Style="width:68px; height:28px; font-size:0.8rem; padding:0 4px;"/>
 
-                                                    <MudText Typo="Typo.subtitle2"
-                                                             Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
+                                                    <MudText Typo="Typo.body2" Class="flex-grow-1"
+                                                             Style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                                         @item.DisplayName
                                                     </MudText>
-                                                    <MudSpacer/>
-                                                    <MudButton Size="Size.Small" Variant="Variant.Filled"
-                                                               Color="Color.Primary"
-                                                               OnClick="@(() => MoveToAvailable(botType, category, item))">
-                                                        &gt;
-                                                    </MudButton>
-                                                </MudPaper>
+
+                                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small"
+                                                                   Color="Color.Default"
+                                                                   OnClick="@(() => MoveToAvailable(botType, category, item))"
+                                                                   Style="height:28px;"/>
+                                                </div>
                                             }
                                         }
-                                        else{
+                                        else
+                                        {
                                             <MudText Typo="Typo.body2" Class="pa-2">No items assigned yet.</MudText>
                                         }
                                     </div>
                                 </div>
 
-                                <!-- Available Items Column -->
+                                <!-- Available -->
                                 <div style="flex:1 1 0; display:flex; flex-direction:column;">
-                                    <div class="d-flex align-center mb-2">
-                                        <MudText Typo="Typo.subtitle2">Available Items</MudText>
+                                    <div class="d-flex align-center mb-1" style="height:32px; gap:0.5rem;">
+                                        <MudText Typo="Typo.caption" Style="color:#9ca3af;">Available</MudText>
+                                        <MudSpacer/>
                                         <MudTextField T="string"
                                                       Value="@(_searchTextPerCategory.GetValueOrDefault(category, string.Empty))"
                                                       ValueChanged="@(v => _searchTextPerCategory[category] = v)"
@@ -150,27 +197,26 @@ else{
                                                       Adornment="Adornment.Start"
                                                       AdornmentIcon="@Icons.Material.Filled.Search"
                                                       Immediate="true"
-                                                      Class="ml-2"
-                                                      Style="width:200px; height:20px; font-size:0.875rem;"/>
+                                                      Margin="Margin.Dense"
+                                                      FullWidth="false"
+                                                      Style="width:180px;"/>
                                     </div>
 
-                                    <div class="rounded pa-2 flex-grow-1"
-                                         style="height:280px; overflow-y:auto; background-color:#0a0c0e;">
-                                        @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, ""))){
-                                            <MudPaper Elevation="2" Class="pa-1 my-1 d-flex align-items-center"
-                                                      Style="gap:0.5rem;">
-                                                <MudButton Size="Size.Small" Variant="Variant.Filled"
-                                                           Color="Color.Primary"
-                                                           OnClick="@(() => MoveToUsed(botType, category, item))">&lt;
-                                                </MudButton>
-
-                                                <div style="flex:1; display:flex; justify-content:center;">
-                                                    <MudText Typo="Typo.subtitle2"
-                                                             Style="height:28px; overflow:hidden; text-overflow:ellipsis;">
-                                                        @item.DisplayName
-                                                    </MudText>
-                                                </div>
-                                            </MudPaper>
+                                    <div class="rounded flex-grow-1"
+                                         style="height:260px; overflow-y:auto; background-color:#0a0c0e;">
+                                        @foreach (var item in GetAvailableItems(botType, category, _searchTextPerCategory.GetValueOrDefault(category, "")))
+                                        {
+                                            <div class="d-flex align-center px-2 py-1 apbs-row"
+                                                 style="gap:0.6rem; border-bottom:1px solid #1f2328;">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small"
+                                                               Color="Color.Primary"
+                                                               OnClick="@(() => MoveToUsed(botType, category, item))"
+                                                               Style="height:28px;"/>
+                                                <MudText Typo="Typo.body2"
+                                                         Style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                                    @item.DisplayName
+                                                </MudText>
+                                            </div>
                                         }
                                     </div>
                                 </div>
@@ -188,7 +234,7 @@ else{
     [Parameter] [EditorRequired] public string Tier { get; set; }
 
     private bool _loading = true;
-    private readonly Dictionary<string, string> _searchTextPerCategory = new();
+    private readonly Dictionary<string, string?> _searchTextPerCategory = new();
     private readonly Dictionary<string, List<PresetItemView>> _masterItemsPerCategory = new();
     private readonly Dictionary<string, List<PresetItemView>> _originalBotTypes = new();
     private readonly Dictionary<string, List<PresetItemView>> _botTypes = new();
@@ -196,6 +242,10 @@ else{
 
     private readonly Dictionary<string, Dictionary<string, Dictionary<double, double>>> _originalGenerationSlotRanges = new();
     private readonly Dictionary<string, Dictionary<string, Dictionary<double, double>>> _generationSlotRanges = new();
+
+    private readonly Dictionary<string, int> _copyTargetTier = new();
+
+    private Action? _dataReloadedHandler;
 
     private void HandlePresetChanged()
     {
@@ -205,7 +255,8 @@ else{
     private void HandleSaveCompleted()
     {
         _originalBotTypes.Clear();
-        foreach (var botType in _botTypes.Keys){
+        foreach (var botType in _botTypes.Keys)
+        {
             _originalBotTypes[botType] = _botTypes[botType]
                 .Select(i => new PresetItemView
                 {
@@ -221,10 +272,12 @@ else{
         }
 
         _originalGenerationSlotRanges.Clear();
-        foreach (var botTypeKvp in _generationSlotRanges){
+        foreach (var botTypeKvp in _generationSlotRanges)
+        {
             var newSlotDict = new Dictionary<string, Dictionary<double, double>>();
 
-            foreach (var slotKvp in botTypeKvp.Value){
+            foreach (var slotKvp in botTypeKvp.Value)
+            {
                 var newRangeDict = slotKvp.Value.ToDictionary(k => k.Key, v => v.Value);
                 newSlotDict[slotKvp.Key] = newRangeDict;
             }
@@ -235,14 +288,18 @@ else{
 
     public void Dispose()
     {
-        PresetStateService.OnPresetChanged -= HandlePresetChanged;
-        PresetStateService.OnPresetSaved -= HandleSaveCompleted;
+        PresetState.OnPresetChanged -= HandlePresetChanged;
+        PresetState.OnPresetSaved -= HandleSaveCompleted;
+        if (_dataReloadedHandler != null)
+            PresetState.OnDataReloaded -= _dataReloadedHandler;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        PresetStateService.OnPresetChanged += HandlePresetChanged;
-        PresetStateService.OnPresetSaved += HandleSaveCompleted;
+        PresetState.OnPresetChanged += HandlePresetChanged;
+        PresetState.OnPresetSaved += HandleSaveCompleted;
+        _dataReloadedHandler = () => InvokeAsync(LoadDataAsync);
+        PresetState.OnDataReloaded += _dataReloadedHandler;
         await LoadDataAsync();
     }
 
@@ -259,41 +316,46 @@ else{
         _masterItemsPerCategory.Clear();
         _cachedItems.Clear();
 
-        try{
+        try
+        {
 
-            foreach (var botProp in typeof(ChancesTierData).GetProperties()){
+            foreach (var botProp in typeof(ChancesTierData).GetProperties())
+            {
                 var botTypeName = botProp.Name;
                 var botData = botProp.GetValue(ChancesData) as BotChancesData;
-                if (botData == null){
-                    _botTypes[botTypeName] = new List<PresetItemView>();
+                if (botData == null)
+                {
+                    _botTypes[botTypeName] = [];
                     continue;
                 }
 
                 var itemsList = new List<PresetItemView>();
 
-                foreach (var chanceProp in typeof(BotChancesData).GetProperties()){
+                foreach (var chanceProp in typeof(BotChancesData).GetProperties())
+                {
                     var apbsChances = chanceProp.GetValue(botData) as ApbsChances;
                     if (apbsChances == null) continue;
 
-                    foreach (var dictProp in typeof(ApbsChances).GetProperties()){
+                    foreach (var dictProp in typeof(ApbsChances).GetProperties())
+                    {
                         if (dictProp.Name.Equals("Generation", StringComparison.OrdinalIgnoreCase))
                             continue;
 
-                        var dict = dictProp.GetValue(apbsChances) as IDictionary;
-                        if (dict == null) continue;
+                        if (dictProp.GetValue(apbsChances) is not IDictionary dict) continue;
 
                         var dictCategory = dictProp.Name;
 
-                        foreach (DictionaryEntry entry in dict){
-                            if (entry.Key == null || entry.Value == null) continue;
+                        foreach (DictionaryEntry entry in dict)
+                        {
+                            if (entry.Value == null) continue;
 
                             var id = entry.Key.ToString();
                             var weight = Convert.ToDouble(entry.Value);
 
                             itemsList.Add(new PresetItemView
                             {
-                                Id = id,
-                                DisplayName = id,
+                                Id = id ?? "",
+                                DisplayName = id ?? "",
                                 Category = dictCategory,
                                 CurrentDropZone = dictCategory,
                                 Weight = weight,
@@ -303,48 +365,55 @@ else{
                         }
                     }
 
-                    var generationItems = apbsChances.Generation?.Items;
-                    if (generationItems != null){
-                        foreach (var genProp in typeof(ApbsGenerationWeightingItems).GetProperties()){
-                            var genData = genProp.GetValue(generationItems) as ApbsGenerationData;
-                            var genCategory = genProp.Name;
+                    var generationItems = apbsChances.Generation.Items;
+                    foreach (var genProp in typeof(ApbsGenerationWeightingItems).GetProperties())
+                    {
+                        var genData = genProp.GetValue(generationItems) as ApbsGenerationData;
+                        var genCategory = genProp.Name;
 
-                            if (!_masterItemsPerCategory.ContainsKey(genCategory)){
-                                var availableIds = GetAvailableItemsForCategory(genCategory);
-                                _masterItemsPerCategory[genCategory] = availableIds
-                                    .Select(id => new PresetItemView
-                                    {
-                                        Id = id,
-                                        DisplayName = GetOrAddCachedName(id),
-                                        Category = genCategory,
-                                        CurrentDropZone = $"Available-{genCategory}",
-                                        botType = botTypeName,
-                                        Weight = 1,
-                                        IsGenerationItem = true
-                                    })
-                                    .ToList();
-                            }
-
-                            if (genData?.Whitelist != null){
-                                itemsList.AddRange(genData.Whitelist.Select(kvp => new PresetItemView
+                        if (!_masterItemsPerCategory.ContainsKey(genCategory))
+                        {
+                            var availableIds = GetAvailableItemsForCategory(genCategory);
+                            _masterItemsPerCategory[genCategory] = availableIds
+                                .Select(id => new PresetItemView
                                 {
-                                    Id = kvp.Key,
-                                    DisplayName = GetOrAddCachedName(kvp.Key),
+                                    Id = id,
+                                    DisplayName = GetOrAddCachedName(id),
                                     Category = genCategory,
-                                    CurrentDropZone = genCategory,
-                                    Weight = kvp.Value,
+                                    CurrentDropZone = $"Available-{genCategory}",
                                     botType = botTypeName,
+                                    Weight = 1,
                                     IsGenerationItem = true
-                                }));
-                            }
+                                })
+                                .ToList();
+                        }
 
-                            if (!_generationSlotRanges.ContainsKey(botTypeName))
-                                _generationSlotRanges[botTypeName] = new Dictionary<string, Dictionary<double, double>>();
+                        if (genData?.Whitelist != null)
+                        {
+                            itemsList.AddRange(genData.Whitelist.Select(kvp => new PresetItemView
+                            {
+                                Id = kvp.Key,
+                                DisplayName = GetOrAddCachedName(kvp.Key),
+                                Category = genCategory,
+                                CurrentDropZone = genCategory,
+                                Weight = kvp.Value,
+                                botType = botTypeName,
+                                IsGenerationItem = true
+                            }));
+                        }
 
-                            if (genData?.Weights != null)
-                                _generationSlotRanges[botTypeName][genCategory] = new Dictionary<double, double>(genData.Weights);
-                            else
-                                _generationSlotRanges[botTypeName][genCategory] = new Dictionary<double, double>();
+                        if (!_generationSlotRanges.ContainsKey(botTypeName))
+                        {
+                            _generationSlotRanges[botTypeName] = new Dictionary<string, Dictionary<double, double>>();
+                        }
+
+                        if (genData?.Weights != null)
+                        {
+                            _generationSlotRanges[botTypeName][genCategory] = new Dictionary<double, double>(genData.Weights);
+                        }
+                        else
+                        {
+                            _generationSlotRanges[botTypeName][genCategory] = new Dictionary<double, double>();
                         }
                     }
                 }
@@ -362,44 +431,166 @@ else{
                     IsGenerationItem = i.IsGenerationItem
                 }).ToList();
 
-                if (_generationSlotRanges.TryGetValue(botTypeName, out var range)){
+                if (_generationSlotRanges.TryGetValue(botTypeName, out var range))
+                {
                     _originalGenerationSlotRanges[botTypeName] = new Dictionary<string, Dictionary<double, double>>();
-                    foreach (var categoryKvp in range){
+                    foreach (var categoryKvp in range)
+                    {
                         _originalGenerationSlotRanges[botTypeName][categoryKvp.Key] = new Dictionary<double, double>();
-                        for (var index = 0; index < 8; index++){
-                            _originalGenerationSlotRanges[botTypeName][categoryKvp.Key][index] =
-                                categoryKvp.Value.GetValueOrDefault(index, 0);
+                        for (var index = 0; index < 8; index++)
+                        {
+                            _originalGenerationSlotRanges[botTypeName][categoryKvp.Key][index] = categoryKvp.Value.GetValueOrDefault(index, 0);
                         }
                     }
                 }
 
                 ApplyPendingOverlay(botTypeName);
+
+                if (!_copyTargetTier.ContainsKey(botTypeName))
+                {
+                    _copyTargetTier[botTypeName] = int.Parse(Tier);
+                }
             }
         }
-        catch (Exception ex){
+        catch (Exception ex)
+        {
             Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
         }
-        finally{
+        finally
+        {
             _loading = false;
             StateHasChanged();
         }
     }
 
-    private string GetOrAddCachedName(MongoId itemId)
+    private void ApplyPendingOverlay(string botType)
     {
-        if (_cachedItems.TryGetValue(itemId, out var name))
-            return string.IsNullOrEmpty(name) ? itemId : name;
+        var chancesChanges = PresetState.GetPendingItemChanges(
+        Tier, botType,
+        [], [], PresetState.ChancesWeightChanges,
+        "_chancesWeight");
 
-        _cachedItems[itemId] = ItemHelper.GetItemName(itemId);
-        return _cachedItems[itemId];
+        foreach (var change in chancesChanges)
+        {
+            if (change.Action != PendingItemAction.WeightOnly) continue;
+
+            var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category == change.Category && !i.IsGenerationItem);
+            existing?.Weight = change.Weight;
+        }
+
+        var generationChanges = PresetState.GetPendingItemChanges(
+        Tier, botType,
+        PresetState.GenerationWhitelistAddedItems, PresetState.GenerationWhitelistRemovedItems, PresetState.GenerationWhitelistWeightChanges,
+        "_generationWeight");
+
+        foreach (var change in generationChanges)
+        {
+            switch (change.Action)
+            {
+                case PendingItemAction.Add:
+                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category == change.Category && i.IsGenerationItem))
+                    {
+                        _botTypes[botType].Add(new PresetItemView
+                        {
+                            Id = change.Id,
+                            DisplayName = GetOrAddCachedName(new MongoId(change.Id)),
+                            Category = change.Category,
+                            CurrentDropZone = change.Category,
+                            botType = botType,
+                            Weight = change.Weight,
+                            IsGenerationItem = true
+                        });
+                    }
+                    break;
+
+                case PendingItemAction.Remove:
+                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category == change.Category && i.IsGenerationItem);
+                    break;
+
+                case PendingItemAction.WeightOnly:
+                    var existing = _botTypes[botType].FirstOrDefault(i => i.Id == change.Id && i.Category == change.Category && i.IsGenerationItem);
+                    existing?.Weight = change.Weight;
+                    break;
+            }
+        }
+
+        if (!_generationSlotRanges.TryGetValue(botType, out var slotDict))
+        {
+            slotDict = new Dictionary<string, Dictionary<double, double>>();
+            _generationSlotRanges[botType] = slotDict;
+        }
+
+        foreach (var slotChange in PresetState.GetPendingSlotWeightChanges(Tier, botType))
+        {
+            if (!slotDict.TryGetValue(slotChange.Category, out var slotWeights))
+            {
+                slotWeights = new Dictionary<double, double>();
+                slotDict[slotChange.Category] = slotWeights;
+            }
+
+            slotWeights[slotChange.SlotIndex] = slotChange.Weight;
+        }
     }
 
-    private IEnumerable<PresetItemView> GetAvailableItems(string botType, string category, string searchText)
+    private async Task ConfirmAndCopy(string sourceBotType)
+    {
+        var targetTier = _copyTargetTier[sourceBotType];
+        var sourceTier = int.Parse(Tier);
+
+        if (targetTier == 0)
+        {
+            await CopyToAllTiers(sourceBotType, sourceTier);
+            return;
+        }
+
+        if (targetTier == sourceTier)
+        {
+            Snackbar.Add("Source and target tier can't be the same.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+            return;
+        }
+
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+        "Copy Chances",
+        $"This replaces ALL of {sourceBotType}'s chances, spawn weights, and generation whitelist on Tier {targetTier} with Tier {sourceTier}'s. This can't be undone except by discarding unsaved changes. Continue?",
+        "Copy", cancelText: "Cancel");
+
+        if (confirmed != true) return;
+
+        var changeCount = PresetCopyService.CopyChancesBotType(sourceTier, sourceBotType, targetTier, sourceBotType);
+
+        Snackbar.Add($"Copied {sourceBotType} (Tier {sourceTier}) to Tier {targetTier} — {changeCount} pending changes. Not yet saved.", Severity.Success, cfg => cfg.ShowCloseIcon = false);
+    }
+
+    private async Task CopyToAllTiers(string sourceBotType, int sourceTier)
+    {
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+        "Copy Chances to All Tiers",
+        $"This replaces ALL of {sourceBotType}'s chances, spawn weights, and generation whitelist on every other tier (1–7) with Tier {sourceTier}'s. Tier {sourceTier} itself is left untouched. This can't be undone except by discarding unsaved changes. Continue?",
+        "Copy", cancelText: "Cancel");
+
+        if (confirmed != true) return;
+
+        var changeCount = PresetCopyService.CopyChancesBotTypeToAllTiers(sourceTier, sourceBotType, sourceBotType);
+
+        Snackbar.Add($"Copied {sourceBotType} (Tier {sourceTier}) to all other tiers — {changeCount} pending changes. Not yet saved.", Severity.Success, cfg => cfg.ShowCloseIcon = false);
+
+        await LoadDataAsync();
+    }
+
+    private string GetOrAddCachedName(MongoId itemId)
+    {
+        if (_cachedItems.TryGetValue(itemId, out var name) && !string.IsNullOrEmpty(name))
+            return name;
+
+        return itemId;
+    }
+
+    private IEnumerable<PresetItemView> GetAvailableItems(string botType, string category, string? searchText)
     {
         searchText ??= string.Empty;
 
         if (!_botTypes.ContainsKey(botType) || !_masterItemsPerCategory.ContainsKey(category))
-            return Enumerable.Empty<PresetItemView>();
+            return [];
 
         var usedIds = _botTypes[botType]
             .Where(i => i.Category == category && i.IsGenerationItem)
@@ -414,13 +605,19 @@ else{
     {
         PresetItemView? originalItem = null;
         if (_originalBotTypes.TryGetValue(botType, out var originalList))
+        {
             originalItem = originalList.FirstOrDefault(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem);
+        }
 
         if (originalItem != null)
+        {
             item.Weight = originalItem.Weight;
+        }
 
         if (!_botTypes[botType].Any(i => i.Id == item.Id && i.Category == category && i.IsGenerationItem))
+        {
             _botTypes[botType].Add(item);
+        }
 
         UpdatePendingChanges(botType, category, item);
     }
@@ -450,9 +647,13 @@ else{
     private void OnGenerationSlotWeightChanged(string botType, string category, int slotIndex, double newValue)
     {
         if (!_generationSlotRanges.ContainsKey(botType))
+        {
             _generationSlotRanges[botType] = new Dictionary<string, Dictionary<double, double>>();
+        }
         if (!_generationSlotRanges[botType].ContainsKey(category))
+        {
             _generationSlotRanges[botType][category] = new Dictionary<double, double>();
+        }
 
         _generationSlotRanges[botType][category][slotIndex] = newValue;
 
@@ -461,20 +662,22 @@ else{
 
     private void UpdatePendingChanges(string botType, string category, PresetItemView? item = null, int? slotIndex = null)
     {
-        if (slotIndex.HasValue){
+        if (slotIndex.HasValue)
+        {
             var slotKey = $"Tier{Tier}_{botType}_{category}_{slotIndex.Value}";
 
             double originalValue = 0;
             if (_originalGenerationSlotRanges.TryGetValue(botType, out var origBot) &&
                 origBot.TryGetValue(category, out var origCat) &&
-                origCat.TryGetValue(slotIndex.Value, out var val)){
+                origCat.TryGetValue(slotIndex.Value, out var val))
+            {
                 originalValue = val;
             }
 
             var currentValue = _generationSlotRanges[botType][category][slotIndex.Value];
-            var changed = currentValue != originalValue;
+            var changed = Math.Abs(currentValue - originalValue) > 0.001;
 
-            PresetStateService.SyncSlotWeightChange(slotKey, changed, currentValue);
+            PresetState.SyncSlotWeightChange(slotKey, changed, currentValue);
             return;
         }
 
@@ -492,17 +695,19 @@ else{
         var added = originalItem == null && currentItem != null;
         var removed = originalItem != null && currentItem == null;
         var weightChanged = currentItem != null &&
-                            (originalItem != null && currentItem.Weight != originalItem.Weight ||
-                             originalItem == null && currentItem.Weight != 1);
+                            (originalItem != null && Math.Abs(currentItem.Weight - originalItem.Weight) > 0.001 ||
+                             originalItem == null && currentItem is not { Weight: 1 });
 
-        if (item.IsGenerationItem){
-            PresetStateService.SyncItemChange(
+        if (item.IsGenerationItem)
+        {
+            PresetState.SyncItemChange(
             key, added, removed, weightChanged, currentItem?.Weight ?? 0,
-            PresetStateService.GenerationWhitelistAddedItems, PresetStateService.GenerationWhitelistRemovedItems, PresetStateService.GenerationWhitelistWeightChanges,
+            PresetState.GenerationWhitelistAddedItems, PresetState.GenerationWhitelistRemovedItems, PresetState.GenerationWhitelistWeightChanges,
             "_generationWeight");
         }
-        else{
-            PresetStateService.SyncWeightOnlyChange(weightKey, weightChanged, currentItem?.Weight ?? 0, PresetStateService.ChancesWeightChanges);
+        else
+        {
+            PresetState.SyncWeightOnlyChange(weightKey, weightChanged, currentItem?.Weight ?? 0, PresetState.ChancesWeightChanges);
         }
     }
 
@@ -513,84 +718,24 @@ else{
         var folderPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH");
         var path = Path.Combine(folderPath, $"{category}.json");
 
-        if (!File.Exists(path)) return new List<string>();
+        if (!File.Exists(path)) return [];
 
-        try{
+        try
+        {
             var dict = JsonUtil.DeserializeFromFile<Dictionary<string, string>>(path);
-            if (dict != null){
-                foreach (var kv in dict)
-                    _cachedItems[kv.Key] = kv.Value;
+            if (dict == null)
+            {
+                return dict?.Keys.ToList() ?? [];
             }
-            return dict?.Keys.ToList() ?? new List<string>();
-        }
-        catch{
-            return new List<string>();
-        }
-    }
-
-    private void ApplyPendingOverlay(string botType)
-    {
-        var chancesChanges = PresetStateService.GetPendingItemChanges(
-        Tier, botType,
-        new HashSet<string>(), new HashSet<string>(), PresetStateService.ChancesWeightChanges,
-        "_chancesWeight");
-
-        foreach (var change in chancesChanges){
-            if (change.Action != PendingItemAction.WeightOnly) continue;
-
-            var existing = _botTypes[botType].FirstOrDefault(
-            i => i.Id == change.Id && i.Category == change.Category && !i.IsGenerationItem);
-            if (existing != null)
-                existing.Weight = change.Weight;
-        }
-
-        var generationChanges = PresetStateService.GetPendingItemChanges(
-        Tier, botType,
-        PresetStateService.GenerationWhitelistAddedItems, PresetStateService.GenerationWhitelistRemovedItems, PresetStateService.GenerationWhitelistWeightChanges,
-        "_generationWeight");
-
-        foreach (var change in generationChanges){
-            switch (change.Action){
-                case PendingItemAction.Add:
-                    if (!_botTypes[botType].Any(i => i.Id == change.Id && i.Category == change.Category && i.IsGenerationItem)){
-                        _botTypes[botType].Add(new PresetItemView
-                        {
-                            Id = change.Id,
-                            DisplayName = GetOrAddCachedName(new MongoId(change.Id)),
-                            Category = change.Category,
-                            CurrentDropZone = change.Category,
-                            botType = botType,
-                            Weight = change.Weight,
-                            IsGenerationItem = true
-                        });
-                    }
-                    break;
-
-                case PendingItemAction.Remove:
-                    _botTypes[botType].RemoveAll(i => i.Id == change.Id && i.Category == change.Category && i.IsGenerationItem);
-                    break;
-
-                case PendingItemAction.WeightOnly:
-                    var existing = _botTypes[botType].FirstOrDefault(
-                    i => i.Id == change.Id && i.Category == change.Category && i.IsGenerationItem);
-                    if (existing != null)
-                        existing.Weight = change.Weight;
-                    break;
+            foreach (var kv in dict)
+            {
+                _cachedItems[kv.Key] = kv.Value;
             }
+            return dict.Keys.ToList();
         }
-
-        if (!_generationSlotRanges.TryGetValue(botType, out var slotDict)){
-            slotDict = new Dictionary<string, Dictionary<double, double>>();
-            _generationSlotRanges[botType] = slotDict;
-        }
-
-        foreach (var slotChange in PresetStateService.GetPendingSlotWeightChanges(Tier, botType)){
-            if (!slotDict.TryGetValue(slotChange.Category, out var slotWeights)){
-                slotWeights = new Dictionary<double, double>();
-                slotDict[slotChange.Category] = slotWeights;
-            }
-
-            slotWeights[slotChange.SlotIndex] = slotChange.Weight;
+        catch
+        {
+            return [];
         }
     }
 }

@@ -1,174 +1,112 @@
 ﻿@page "/progressivebotsystem"
 @layout MainLayout
 @using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Web.Components
 @using SPTarkov.Server.Core.Utils
 @using Version=SemanticVersioning.Version
 
-@inject FileUtil FileUtil;
-@inject JsonUtil JsonUtil;
+@inject FileUtil FileUtil
+@inject JsonUtil JsonUtil
 
 <MudMainContent Style="height: 100vh">
-    <MudContainer>
-        <MudPaper Class="pa-6 ma-6" Elevation="4">
-            <MudText Align="Align.Center" Typo="Typo.h4">APBS Configuration Manager</MudText>
-        </MudPaper>
-        <MudPaper Height="150px" Class="pa-4 ma-6 d-flex flex-column justify-space-between" Elevation="1">
-            <MudText Align="Align.Center" Typo="Typo.body2">
-                You can click on the Menu button at the top left to begin
-                configuring APBS to your wants and needs.
-            </MudText>
-            <MudSpacer/>
-            <MudText Align="Align.Center" Typo="Typo.body2" Inline="false">
-                Nearly every change is tracked by the application and will notify you at the bottom right of pending
-                changes to be saved.
-                <MudText Align="Align.Center" Typo="Typo.body2" Inline="false">
-                    In addition, you can click on the button to view a list of changes that are pending.
-                    <MudText Align="Align.Center" Typo="Typo.body2" Inline="false">
-                        If you want to discard any changes that you have made, you can click on 'Reload Config' at the
-                        top right to revert everything back to it's last saved state.
-                    </MudText>
-                </MudText>
-            </MudText>
-        </MudPaper>
-        <MudPaper Height="150px" Class="pa-4 ma-6 d-flex flex-column justify-space-between" Elevation="1">
-            <MudText Align="Align.Center" Typo="Typo.body2">If you would like to provide feedback or perhaps have ideas
-                to be added to the mod, let me know in the SPT Discord or on the SPT Hub page for APBS.
-            </MudText>
-            <MudSpacer/>
-            <MudTooltip Delay="1000" Color="Color.Primary"
-                        Text="I make better mods than I do landing pages for an application...">
-                <MudText Align="Align.Center" Typo="Typo.h5">Remember to save your changes when you are done, and enjoy
-                    SPT with APBS!
-                </MudText>
-            </MudTooltip>
-            <MudSpacer/>
-        </MudPaper>
+    <MudContainer Style="padding-bottom: 96px;">
 
-        <MudPaper Class="pa-4 ma-6" Elevation="1">
-            <MudText Typo="Typo.h4" Class="mb-2">Release Notes
-                @if (MainLayout.UpdateAvailable){
-                    <MudChip T="string"
-                             Size="Size.Medium"
-                             Icon="@Icons.Material.Filled.VerifiedUser"
-                             Color="Color.Secondary"
-                             Href="https://sp-mod.com/mod/1594/apbs-acids-progressive-bot-system"
-                             Target="_blank"
-                             Rel="nofollow noopener">Update Available - Download from SPT Forge
-                    </MudChip>
+        <MudPaper Class="pa-6 ma-6" Elevation="4" Style="background-color:#101316;">
+            <MudText Align="Align.Center" Typo="Typo.h4" Style="color:#f5f3f0;">APBS Configuration Manager</MudText>
+            <MudText Align="Align.Center" Typo="Typo.body2" Class="mt-1" Style="color:#9ca3af;">
+                @if (_currentVersion != null)
+                {
+                    <text>@_currentVersion</text>
                 }
             </MudText>
 
-            @foreach (var release in FilteredReleases){
-                <MudPaper Elevation="2" Class="mb-4">
-                    <MudExpansionPanels>
-                        <MudExpansionPanel>
-                            <TitleContent>
-                                <div class="d-flex align-center justify-space-between" style="width: 100%">
-                                    <div class="d-flex align-center gap-2">
-                                        <MudText Typo="Typo.h6">Version @release.Version</MudText>
-
-                                        @if (release.IsLatest){
-                                            <MudChip T="string" Size="Size.Small" Color="Color.Dark">Latest</MudChip>
-                                        }
-
-                                    </div>
-                                    <MudText Typo="Typo.body2" Color="Color.Primary">@release.ReleaseDate</MudText>
-                                </div>
-                            </TitleContent>
-                            <ChildContent>
-                                <MudDivider Class="mb-4"/>
-
-                                @if (release.NewFeatures?.Any() ?? false){
-                                    <div class="mb-4">
-                                        <MudText Typo="Typo.h6" Style="@($"color:{Colors.LightBlue.Lighten2};")"
-                                                 Class="mb-2">
-                                            <MudIcon Icon="@Icons.Material.Outlined.NewReleases" Size="Size.Small"/>
-                                            New Features
-                                        </MudText>
-                                        <MudList T="string" Dense="true">
-                                            @foreach (var feature in release.NewFeatures){
-                                                <MudListItem T="string">
-                                                    @feature
-                                                </MudListItem>
-                                            }
-                                        </MudList>
-                                    </div>
-                                }
-
-                                @if (release.Changes?.Any() ?? false){
-                                    <div class="mb-4">
-                                        <MudText Typo="Typo.h6" Style="@($"color:{Colors.Teal.Lighten2};")"
-                                                 Class="mb-2">
-                                            <MudIcon Icon="@Icons.Material.Outlined.TrendingUp" Size="Size.Small"/>
-                                            Changes
-                                        </MudText>
-                                        <MudList T="string" Dense="true">
-                                            @foreach (var improvement in release.Changes){
-                                                <MudListItem T="string">
-                                                    @improvement
-                                                </MudListItem>
-                                            }
-                                        </MudList>
-                                    </div>
-                                }
-
-                                @if (release.BugFixes?.Any() ?? false){
-                                    <div class="mb-4">
-                                        <MudText Typo="Typo.h6" Style="@($"color:{Colors.LightGreen.Lighten2};")"
-                                                 Class="mb-2">
-                                            <MudIcon Icon="@Icons.Material.Outlined.Build" Size="Size.Small"/>
-                                            Bug Fixes
-                                        </MudText>
-                                        <MudList T="string" Dense="true">
-                                            @foreach (var bugfix in release.BugFixes){
-                                                <MudListItem T="string">
-                                                    @bugfix
-                                                </MudListItem>
-                                            }
-                                        </MudList>
-                                    </div>
-                                }
-
-                                @if (release.KnownIssues?.Any() ?? false){
-                                    <div class="mb-4">
-                                        <MudText Typo="Typo.h6" Style="@($"color:{Colors.Amber.Lighten2};")"
-                                                 Class="mb-2">
-                                            <MudIcon Icon="@Icons.Material.Outlined.BugReport" Size="Size.Small"/>
-                                            Known Issues
-                                        </MudText>
-                                        <MudList T="string" Dense="true">
-                                            @foreach (var bugfix in release.KnownIssues){
-                                                <MudListItem T="string">
-                                                    @bugfix
-                                                </MudListItem>
-                                            }
-                                        </MudList>
-                                    </div>
-                                }
-                            </ChildContent>
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
+            @if (MainLayout.UpdateAvailable)
+            {
+                <MudPaper Elevation="0" Class="d-flex align-center pa-3 mt-4"
+                          Style="gap:0.75rem; background-color:rgba(245,158,11,0.08); border:1px solid #f59e0b; border-radius:8px;">
+                    <MudIcon Icon="@Icons.Material.Filled.SystemUpdateAlt" Color="Color.Warning"/>
+                    <MudText Typo="Typo.body1" Style="color:#f5f3f0; flex:1;">
+                        Version @MainLayout.LatestReleaseVersion is available — you're on @_currentVersion.
+                    </MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Warning" Size="Size.Small"
+                               Href="https://sp-mod.com/mod/1594/apbs-acids-progressive-bot-system"
+                               Target="_blank" Rel="nofollow noopener">
+                        Get the update
+                    </MudButton>
                 </MudPaper>
             }
         </MudPaper>
+
+        <MudPaper Class="pa-4 ma-6" Elevation="1" Style="background-color:#101316;">
+            <MudText Typo="Typo.h6" Class="mb-3" Style="color:#f5f3f0;">Getting started</MudText>
+            <MudList T="string" Dense="true">
+                <MudListItem T="string" Icon="@Icons.Material.Filled.MenuOpen" IconColor="Color.Primary">
+                    Open the Menu at the top left to start configuring APBS.
+                </MudListItem>
+                <MudListItem T="string" Icon="@Icons.Material.Filled.Notifications" IconColor="Color.Primary">
+                    Most changes are tracked automatically — the bottom right shows a count of anything unsaved, and you can click it to
+                    review what's pending.
+                </MudListItem>
+                <MudListItem T="string" Icon="@Icons.Material.Filled.Refresh" IconColor="Color.Primary">
+                    Made a mistake? "Reload Config" at the top right discards unsaved changes and reverts to the last save.
+                </MudListItem>
+            </MudList>
+        </MudPaper>
+
+        <MudPaper Class="pa-4 ma-6" Elevation="1" Style="background-color:#101316;">
+            <MudText Align="Align.Center" Typo="Typo.body2" Style="color:#9ca3af;">
+                Feedback or ideas for the mod? Let me know the SPT/Fika/WTT Discord or on the Forge page for APBS.
+            </MudText>
+            <div class="d-flex justify-center mt-3">
+                <MudTooltip Delay="1000" Color="Color.Primary"
+                            Text="I make better mods than I do landing pages for an application...Stop peeking at my tooltips.">
+                    <MudText Typo="Typo.h6" Style="color:#f5f3f0;">
+                        Remember to save your changes when you're done, and enjoy SPT with APBS!
+                    </MudText>
+                </MudTooltip>
+            </div>
+        </MudPaper>
+
+        <MudPaper Class="pa-4 ma-6" Elevation="1" Style="background-color:#101316;">
+            <MudText Typo="Typo.h5" Class="mb-4" Style="color:#f5f3f0;">What's new</MudText>
+
+            @foreach (var release in RecentReleases)
+            {
+                <ReleaseNoteCard Release="release" IsLatestInstalled="@(release == RecentReleases.First())"/>
+            }
+        </MudPaper>
+
     </MudContainer>
 </MudMainContent>
 
-
-
 @code {
-    private List<ReleaseNote>? _releaseNotes;
-    private List<ReleaseNote> FilteredReleases
+    private const int modRecentReleaseCount = 5;
+
+    private List<ReleaseNote> _releaseNotes = [];
+    private string? _currentVersion;
+
+    private List<ReleaseNote> SortedReleases
     {
-        get => GetFilteredReleases();
+        get => _releaseNotes
+            .OrderByDescending(r => TryParseVersion(r.Version))
+            .ToList();
+    }
+
+    private List<ReleaseNote> RecentReleases
+    {
+        get => SortedReleases.Take(modRecentReleaseCount).ToList();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        if (MainLayout.AppAllowUpdateChecks && !MainLayout.AlreadyCheckedForUpdate){
+        _currentVersion = new ModMetadata().Version.ToString();
+
+        if (MainLayout.AppAllowUpdateChecks && !MainLayout.AlreadyCheckedForUpdate)
+        {
             await CheckForUpdate();
             MainLayout.AlreadyCheckedForUpdate = true;
         }
+
         await LoadReleaseNotes();
         await base.OnInitializedAsync();
     }
@@ -177,37 +115,50 @@
     {
         var path = Path.Combine(ModConfig._modPath, "wwwroot/files/ReleaseNotes.json");
         var text = await FileUtil.ReadFileAsync(path);
-        _releaseNotes = JsonUtil.Deserialize<List<ReleaseNote>>(text)!;
+        _releaseNotes = JsonUtil.Deserialize<List<ReleaseNote>>(text) ?? [];
     }
 
-
-    private List<ReleaseNote> GetFilteredReleases() => _releaseNotes ?? [];
+    private static Version? TryParseVersion(string? versionString)
+    {
+        if (string.IsNullOrWhiteSpace(versionString)) return null;
+        try
+        {
+            return new Version(versionString.TrimStart('v', 'V'));
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     private async Task CheckForUpdate()
     {
-        try{
+        try
+        {
             var httpClient = new HttpClient();
-
-            // These headers are _required_ by GitHub API
             httpClient.DefaultRequestHeaders.UserAgent.TryParseAdd("acidphantasm");
             httpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
 
-            // TODO: We could probably throw this into a config somewhere, for now hard code it
-            var release = await httpClient.GetFromJsonAsync<ReleaseInformation>("https://api.github.com/repos/acidphantasm/progressivebotsystem-csharp/releases/latest");
-            if (release != null){
-                Version latestVersion = new(release.Version);
-                var currentVersion = new ModMetadata().Version;
-                if (latestVersion.Major != currentVersion.Major){
-                    return;
-                }
+            var release = await httpClient.GetFromJsonAsync<ReleaseInformation>(
+            "https://api.github.com/repos/acidphantasm/progressivebotsystem-csharp/releases/latest");
 
-                if (latestVersion > currentVersion){
-                    MainLayout.UpdateAvailable = true;
-                }
+            if (release == null) return;
+
+            var latestVersion = new Version(release.Version.TrimStart('v', 'V'));
+            var currentVersion = new ModMetadata().Version;
+
+            if (latestVersion.Major != currentVersion.Major) return;
+
+            if (latestVersion > currentVersion)
+            {
+                MainLayout.UpdateAvailable = true;
+                MainLayout.LatestReleaseVersion = release.Version;
+                MainLayout.LatestReleaseNotesBody = release.Body;
+                MainLayout.LatestReleaseUrl = release.DownloadUrl;
             }
         }
-        // We ignore errors, this isn't critical to run, and we don't want to scare users
-        catch{
+        catch
+        {
             // ignored
         }
     }
