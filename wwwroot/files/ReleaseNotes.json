@@ -1,15 +1,15 @@
 ﻿[
   {
     "Version": "2.3.2",
-    "ReleaseDate": "September 3, 2026",
+    "ReleaseDate": "September 5, 2026",
     "IsLatest": true,
     "NewFeatures": [
       "Bots have 25% chance to have loose ammo in Rig/Pockets",
+      "Blacklisting got a much needed refresh",
+      "Blacklisting can now bulk import comma delimited Item IDs and copy to other tiers",
+      "Preset Builder got a much needed refresh",
       "Preset Builder can now change pages/tiers without requiring saves before navigation",
-      "Preset Builder can now copy settings for the current page & bot to another bot in the same tier or another tier",
-      "- example: can copy Ammo from Tier3 Pmcs to Tier5 Pmcs",
-      "- example: can copy Equipment from Tier1 USEC to Tier1 BEAR",
-      "- example: can copy Chances from Tier1 Tagilla to Tier7 Killa"
+      "Preset Builder can now copy information between tiers and bots"
     ],
     "Changes": [
       "Added SIC Authorization attribute to WebConfig pages (not home page)",
@@ -18,10 +18,12 @@
       "Adjusted Pmc medical loot logic, should be much better with bots having actual medkits now",
       "Adjusted loot cache handling",
       "Adjusted Normalize Bot Health Exclusion list, probably works for custom bots now, I dunno I dont use them",
+      "Adjusted the Home page",
       "Removed Disable Animations / Authorization code from WebConfig"
     ],
     "BugFixes": [
-      "Resolved outdated Forge URL for update download link"
+      "Resolved outdated Forge URL for update download link",
+      "Probably resolved instances of loot being empty on bots that should have loot, idk"
     ],
     "KnownIssues": []
   },
