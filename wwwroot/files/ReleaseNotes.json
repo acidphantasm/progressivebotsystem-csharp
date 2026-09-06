@@ -19,9 +19,11 @@
       "Adjusted loot cache handling",
       "Adjusted Normalize Bot Health Exclusion list, probably works for custom bots now, I dunno I dont use them",
       "Adjusted the Home page",
+      "Adjusted level calculation to average level of all players starting raid",
       "Removed Disable Animations / Authorization code from WebConfig"
     ],
     "BugFixes": [
+      "Resolved Highest Prestige Level handling never resetting when not restarting the server",
       "Resolved outdated Forge URL for update download link",
       "Probably resolved instances of loot being empty on bots that should have loot, idk"
     ],

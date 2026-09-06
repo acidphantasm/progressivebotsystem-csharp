@@ -90,8 +90,7 @@ public class StaticRouterHooks : StaticRouter
                         RaidInformation.CurrentSessionId = fullProfile.ProfileInfo.ProfileId;
 
                         var prestigeLevel = fullProfile.CharacterData?.PmcData?.Info?.PrestigeLevel ?? 0;
-                        RaidInformation.HighestPrestigeLevel =
-                            prestigeLevel >= RaidInformation.HighestPrestigeLevel ? prestigeLevel : RaidInformation.HighestPrestigeLevel;
+                        RaidInformation.AddOrUpdatePlayerPrestige(sessionId, prestigeLevel);
 
                         var level = fullProfile.CharacterData?.PmcData?.Info?.Level ?? 1;
                         RaidInformation.AddOrUpdatePlayerLevel(sessionId, level);
