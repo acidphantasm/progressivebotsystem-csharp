@@ -1,8 +1,6 @@
-﻿namespace ProgressiveBotSystem.Generators;
-
-using Helpers;
-using Models;
-using Models.Enums;
+﻿using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -22,6 +20,8 @@ using SPTarkov.Server.Core.Services.Bot;
 using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Services.Profile;
 using SPTarkov.Server.Core.Utils;
+
+namespace ProgressiveBotSystem.Generators;
 
 [Injectable(TypePriority = OnLoadOrder.PostLoad)]
 public class CustomBotInventoryGenerator
@@ -72,11 +72,7 @@ public class CustomBotInventoryGenerator
     private readonly RandomUtil _randomUtil;
     private readonly ServerLocalisationService _serverLocalisationService;
 
-    private readonly HashSet<string> _slotsToCheck =
-    [
-        nameof(EquipmentSlots.Pockets),
-        nameof(EquipmentSlots.SecuredContainer),
-    ];
+    private readonly HashSet<string> _slotsToCheck = [nameof(EquipmentSlots.Pockets), nameof(EquipmentSlots.SecuredContainer)];
     private readonly WeatherHelper _weatherHelper;
     private readonly WeightedRandomHelper _weightedRandomHelper;
 
@@ -144,16 +140,11 @@ public class CustomBotInventoryGenerator
             )
         )
         {
-            _logger.Error(
-                $"Bot Equipment generation failed, unable to find equipment filters for: {botGenerationDetails.RoleLowercase}"
-            );
+            _logger.Error($"Bot Equipment generation failed, unable to find equipment filters for: {botGenerationDetails.RoleLowercase}");
 
             return;
         }
-        var randomisationDetails = _botHelper.GetBotRandomizationDetails(
-            botGenerationDetails.BotLevel,
-            botEquipConfig
-        );
+        var randomisationDetails = _botHelper.GetBotRandomizationDetails(botGenerationDetails.BotLevel, botEquipConfig);
 
         // Is PMC + generating armband + armband forcing is enabled
         if (_pmcConfig.ForceArmband.Enabled && botGenerationDetails.IsPmc)
@@ -163,9 +154,7 @@ public class CustomBotInventoryGenerator
             {
                 // Get tpl based on pmc side
                 var armbandTpl =
-                    botGenerationDetails.RoleLowercase == "pmcusec"
-                        ? _pmcConfig.ForceArmband.Usec
-                        : _pmcConfig.ForceArmband.Bear;
+                    botGenerationDetails.RoleLowercase == "pmcusec" ? _pmcConfig.ForceArmband.Usec : _pmcConfig.ForceArmband.Bear;
 
                 armbands.Clear();
                 armbands.Add(armbandTpl, 1);
@@ -176,18 +165,10 @@ public class CustomBotInventoryGenerator
         }
 
         // Get profile of player generating bots, we use their level later on
-        var botEquipmentRole = _botGeneratorHelper.GetBotEquipmentRole(
-            botGenerationDetails.RoleLowercase
-        );
+        var botEquipmentRole = _botGeneratorHelper.GetBotEquipmentRole(botGenerationDetails.RoleLowercase);
 
-        var equipmentPool = _botEquipmentHelper.GetEquipmentByBotRole(
-            botGenerationDetails.RoleLowercase,
-            tierNumber
-        );
-        var modPool = _botEquipmentHelper.GetModsByBotRole(
-            botGenerationDetails.RoleLowercase,
-            tierNumber
-        );
+        var equipmentPool = _botEquipmentHelper.GetEquipmentByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
+        var modPool = _botEquipmentHelper.GetModsByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
 
         // Iterate over all equipment slots of bot, do it in specific order to reduce conflicts
         // e.g. ArmorVest should be generated after TacticalVest
@@ -305,10 +286,7 @@ public class CustomBotInventoryGenerator
 
         if (questData is not null)
         {
-            if (
-                questData.RequiredEquipmentSlots.Contains("TacticalVest")
-                || questData.RequiredEquipmentSlots.Contains("ArmorVest")
-            )
+            if (questData.RequiredEquipmentSlots.Contains("TacticalVest") || questData.RequiredEquipmentSlots.Contains("ArmorVest"))
             {
                 wornItemChances.EquipmentChances["ArmorVest"] = 100;
             }
@@ -370,20 +348,14 @@ public class CustomBotInventoryGenerator
         var weaponSlotsToFill = GetDesiredWeaponsForBot(equipmentChances);
 
         var weaponSlotsToFillAsList = weaponSlotsToFill.ToList();
-        var hasPrimary = weaponSlotsToFillAsList.Any(x =>
-            x is { ShouldSpawn: true, Slot: EquipmentSlots.FirstPrimaryWeapon }
-        );
-        var hasSecondary = weaponSlotsToFillAsList.Any(x =>
-            x is { ShouldSpawn: true, Slot: EquipmentSlots.SecondPrimaryWeapon }
-        );
+        var hasPrimary = weaponSlotsToFillAsList.Any(x => x is { ShouldSpawn: true, Slot: EquipmentSlots.FirstPrimaryWeapon });
+        var hasSecondary = weaponSlotsToFillAsList.Any(x => x is { ShouldSpawn: true, Slot: EquipmentSlots.SecondPrimaryWeapon });
         var hasBothPrimary = hasPrimary && hasSecondary;
 
         foreach (var desiredWeapons in weaponSlotsToFillAsList)
         // Add weapon to bot if true and bot json has something to put into the slot
         {
-            if (
-                desiredWeapons.ShouldSpawn && templateInventory.Equipment[desiredWeapons.Slot].Any()
-            )
+            if (desiredWeapons.ShouldSpawn && templateInventory.Equipment[desiredWeapons.Slot].Any())
             {
                 AddWeaponAndMagazinesToInventory(
                     botId,
@@ -407,26 +379,23 @@ public class CustomBotInventoryGenerator
         string chosenGameVersion,
         Dictionary<MongoId, double> equipmentPool,
         bool isPmc
-    ) =>
-        chosenGameVersion == GameEditions.UNHEARD && isPmc
+    )
+    {
+        return chosenGameVersion == GameEditions.UNHEARD && isPmc
             ? new Dictionary<MongoId, double> { [ItemTpl.POCKETS_1X4_TUE] = 1 }
             : equipmentPool;
+    }
 
     private bool GenerateEquipment(ApbsGenerateEquipmentProperties settings, QuestData? questData)
     {
         double? spawnChance = _slotsToCheck.Contains(settings.RootEquipmentSlot.ToString())
             ? 100
-            : settings.SpawnChances.EquipmentChances.GetValueOrDefault(
-                settings.RootEquipmentSlot.ToString()
-            );
+            : settings.SpawnChances.EquipmentChances.GetValueOrDefault(settings.RootEquipmentSlot.ToString());
 
         if (!spawnChance.HasValue)
         {
             _logger.Warning(
-                _serverLocalisationService.GetText(
-                    "bot-no_spawn_chance_defined_for_equipment_slot",
-                    settings.RootEquipmentSlot
-                )
+                _serverLocalisationService.GetText("bot-no_spawn_chance_defined_for_equipment_slot", settings.RootEquipmentSlot)
             );
 
             return false;
@@ -478,19 +447,12 @@ public class CustomBotInventoryGenerator
                     return false;
                 }
 
-                var chosenItemTpl = _weightedRandomHelper.GetWeightedValue(
-                    settings.RootEquipmentPool
-                );
+                var chosenItemTpl = _weightedRandomHelper.GetWeightedValue(settings.RootEquipmentPool);
                 var dbResult = _itemHelper.GetItem(chosenItemTpl);
 
                 if (!dbResult.Key)
                 {
-                    _logger.Error(
-                        _serverLocalisationService.GetText(
-                            "bot-missing_item_template",
-                            chosenItemTpl
-                        )
-                    );
+                    _logger.Error(_serverLocalisationService.GetText("bot-missing_item_template", chosenItemTpl));
                     if (_logger.IsLogEnabled(LogLevel.Debug))
                     {
                         _logger.Debug($"EquipmentSlot-> {settings.RootEquipmentSlot}");
@@ -539,11 +501,7 @@ public class CustomBotInventoryGenerator
                 Template = pickedItemDb.Id,
                 ParentId = settings.Inventory.Equipment,
                 SlotId = settings.RootEquipmentSlot.ToString(),
-                Upd = _botGeneratorHelper.GenerateExtraPropertiesForItem(
-                    pickedItemDb,
-                    settings.BotData.Role,
-                    true
-                ),
+                Upd = _botGeneratorHelper.GenerateExtraPropertiesForItem(pickedItemDb, settings.BotData.Role, true),
             };
 
             var botEquipBlacklist = _botEquipmentFilterService.GetBotEquipmentBlacklist(
@@ -555,28 +513,20 @@ public class CustomBotInventoryGenerator
             if (
                 _botConfig.Equipment.ContainsKey(settings.BotData.EquipmentRole)
                 && settings.RandomisationDetails?.RandomisedArmorSlots != null
-                && settings.RandomisationDetails.RandomisedArmorSlots.Contains(
-                    settings.RootEquipmentSlot.ToString()
-                )
+                && settings.RandomisationDetails.RandomisedArmorSlots.Contains(settings.RootEquipmentSlot.ToString())
             )
             // Filter out mods from relevant blacklist
             {
-                settings.ModPool[pickedItemDb.Id] =
-                    _botInventoryGenerator.GetFilteredDynamicModsForItem(
-                        pickedItemDb.Id,
-                        botEquipBlacklist.Equipment
-                    );
+                settings.ModPool[pickedItemDb.Id] = _botInventoryGenerator.GetFilteredDynamicModsForItem(
+                    pickedItemDb.Id,
+                    botEquipBlacklist.Equipment
+                );
             }
 
             var itemIsOnGenerateModBlacklist =
-                settings.GenerateModsBlacklist != null
-                && settings.GenerateModsBlacklist.Contains(pickedItemDb.Id);
+                settings.GenerateModsBlacklist != null && settings.GenerateModsBlacklist.Contains(pickedItemDb.Id);
             // Does item have slots for sub-mods to be inserted into
-            if (
-                pickedItemDb.Properties?.Slots is not null
-                && pickedItemDb.Properties.Slots.Any()
-                && !itemIsOnGenerateModBlacklist
-            )
+            if (pickedItemDb.Properties?.Slots is not null && pickedItemDb.Properties.Slots.Any() && !itemIsOnGenerateModBlacklist)
             {
                 var childItemsToAdd = _customBotEquipmentModGenerator.GenerateModsForEquipment(
                     [item],
@@ -596,8 +546,7 @@ public class CustomBotInventoryGenerator
             // Cache container ready for items to be added in (or pack n strap belt)
             if (
                 _equipmentSlotsWithInventory.Contains(settings.RootEquipmentSlot)
-                || settings.RootEquipmentSlot == ApbsEquipmentSlots.ArmBand
-                    && CheckIfPackNStrap(item.Template)
+                || settings.RootEquipmentSlot == ApbsEquipmentSlots.ArmBand && CheckIfPackNStrap(item.Template)
             )
             {
                 if (settings.RootEquipmentSlot == ApbsEquipmentSlots.ArmouredRig)
@@ -605,14 +554,8 @@ public class CustomBotInventoryGenerator
                     settings.RootEquipmentSlot = ApbsEquipmentSlots.TacticalVest;
                 }
 
-                var newRootEquipmentSlot = Enum.Parse<EquipmentSlots>(
-                    settings.RootEquipmentSlot.ToString()
-                );
-                _botInventoryContainerService.AddEmptyContainerToBot(
-                    settings.BotId,
-                    newRootEquipmentSlot,
-                    item
-                );
+                var newRootEquipmentSlot = Enum.Parse<EquipmentSlots>(settings.RootEquipmentSlot.ToString());
+                _botInventoryContainerService.AddEmptyContainerToBot(settings.BotId, newRootEquipmentSlot, item);
             }
 
             return true;
@@ -634,31 +577,19 @@ public class CustomBotInventoryGenerator
 
     private IEnumerable<DesiredWeapons> GetDesiredWeaponsForBot(ApbsChances equipmentChances)
     {
-        var shouldSpawnPrimary = _randomUtil.GetChance100(
-            equipmentChances.EquipmentChances["FirstPrimaryWeapon"]
-        );
+        var shouldSpawnPrimary = _randomUtil.GetChance100(equipmentChances.EquipmentChances["FirstPrimaryWeapon"]);
         return
         [
-            new DesiredWeapons
-            {
-                Slot = EquipmentSlots.FirstPrimaryWeapon,
-                ShouldSpawn = shouldSpawnPrimary,
-            },
+            new DesiredWeapons { Slot = EquipmentSlots.FirstPrimaryWeapon, ShouldSpawn = shouldSpawnPrimary },
             new DesiredWeapons
             {
                 Slot = EquipmentSlots.SecondPrimaryWeapon,
-                ShouldSpawn =
-                    shouldSpawnPrimary
-                    && _randomUtil.GetChance100(
-                        equipmentChances.EquipmentChances["SecondPrimaryWeapon"]
-                    ),
+                ShouldSpawn = shouldSpawnPrimary && _randomUtil.GetChance100(equipmentChances.EquipmentChances["SecondPrimaryWeapon"]),
             },
             new DesiredWeapons
             {
                 Slot = EquipmentSlots.Holster,
-                ShouldSpawn =
-                    !shouldSpawnPrimary
-                    || _randomUtil.GetChance100(equipmentChances.EquipmentChances["Holster"]), // No primary = force pistol
+                ShouldSpawn = !shouldSpawnPrimary || _randomUtil.GetChance100(equipmentChances.EquipmentChances["Holster"]), // No primary = force pistol
             },
         ];
     }
@@ -695,10 +626,7 @@ public class CustomBotInventoryGenerator
 
         if (questData is not null)
         {
-            if (
-                questData.QuestName == "Fishing Gear"
-                && weaponSlot.Slot == EquipmentSlots.SecondPrimaryWeapon
-            )
+            if (questData.QuestName == "Fishing Gear" && weaponSlot.Slot == EquipmentSlots.SecondPrimaryWeapon)
             {
                 return;
             }

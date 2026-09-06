@@ -1,19 +1,18 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using Globals;
-using Models;
-using Models.Enums;
+﻿using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
-using Utils;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, ApbsLogger apbsLogger)
-    : IOnLoad
+public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, ApbsLogger apbsLogger) : IOnLoad
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
@@ -36,10 +35,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         return ModConfig.Config.GeneralConfig.BlickyMode ? 0 : tierNumber;
     }
 
-    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(
-        int tierNumber,
-        bool ignoreCheck = false
-    )
+    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierMods(int tierNumber, bool ignoreCheck = false)
     {
         if (!ignoreCheck)
         {
@@ -51,9 +47,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         }
 
         apbsLogger.Error("Mods Data Unknown tier number: " + tierNumber);
-        return new Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>(
-                dataLoader.AllTierDataDirty.Tiers[1].ModsData
-            )
+        return new Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>(dataLoader.AllTierDataDirty.Tiers[1].ModsData)
             ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
@@ -70,8 +64,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         }
 
         apbsLogger.Error("Chances Unknown tier number: " + tierNumber);
-        return dataLoader.AllTierDataDirty.Tiers[1].ChancesData
-            ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].ChancesData ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
     private AmmoTierData GetTierAmmo(int tierNumber, bool ignoreCheck = false)
@@ -87,8 +80,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         }
 
         apbsLogger.Error("Ammo Data Unknown tier number: " + tierNumber);
-        return dataLoader.AllTierDataDirty.Tiers[1].AmmoData
-            ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].AmmoData ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
     private EquipmentTierData GetTierEquipment(int tierNumber, bool ignoreCheck = false)
@@ -104,8 +96,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         }
 
         apbsLogger.Error("Equipment Data Unknown tier number: " + tierNumber);
-        return dataLoader.AllTierDataDirty.Tiers[1].EquipmentData
-            ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].EquipmentData ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
     private AppearanceTierData GetTierAppearance(int tierNumber, bool ignoreCheck = false)
@@ -121,14 +112,10 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         }
 
         apbsLogger.Error("Appearance Data Unknown tier number: " + tierNumber);
-        return dataLoader.AllTierDataDirty.Tiers[1].AppearanceData
-            ?? throw new InvalidOperationException(); // fallback to tier 1
+        return dataLoader.AllTierDataDirty.Tiers[1].AppearanceData ?? throw new InvalidOperationException(); // fallback to tier 1
     }
 
-    public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetModsByBotRole(
-        string botRole,
-        int tierNumber
-    )
+    public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetModsByBotRole(string botRole, int tierNumber)
     {
         switch (botRole)
         {
@@ -171,10 +158,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         }
     }
 
-    public Dictionary<ApbsEquipmentSlots, Dictionary<MongoId, double>> GetEquipmentByBotRole(
-        string botRole,
-        int tierNumber
-    )
+    public Dictionary<ApbsEquipmentSlots, Dictionary<MongoId, double>> GetEquipmentByBotRole(string botRole, int tierNumber)
     {
         var tieredEquipmentData = GetTierEquipment(tierNumber);
         return botRole switch
@@ -187,11 +171,10 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
                 kvp => kvp.Key,
                 kvp => new Dictionary<MongoId, double>(kvp.Value)
             ),
-            "marksman" or "cursedassault" or "assault" =>
-                tieredEquipmentData.Scav.Equipment.ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => new Dictionary<MongoId, double>(kvp.Value)
-                ),
+            "marksman" or "cursedassault" or "assault" => tieredEquipmentData.Scav.Equipment.ToDictionary(
+                kvp => kvp.Key,
+                kvp => new Dictionary<MongoId, double>(kvp.Value)
+            ),
             "bossboar" => tieredEquipmentData.BossBoar.Equipment.ToDictionary(
                 kvp => kvp.Key,
                 kvp => new Dictionary<MongoId, double>(kvp.Value)
@@ -264,27 +247,22 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
                 kvp => kvp.Key,
                 kvp => new Dictionary<MongoId, double>(kvp.Value)
             ),
-            "exusec" or "arenafighterevent" or "arenafighter" =>
-                tieredEquipmentData.ExUsec.Equipment.ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => new Dictionary<MongoId, double>(kvp.Value)
-                ),
+            "exusec" or "arenafighterevent" or "arenafighter" => tieredEquipmentData.ExUsec.Equipment.ToDictionary(
+                kvp => kvp.Key,
+                kvp => new Dictionary<MongoId, double>(kvp.Value)
+            ),
             "pmcbot" => tieredEquipmentData.PmcBot.Equipment.ToDictionary(
                 kvp => kvp.Key,
                 kvp => new Dictionary<MongoId, double>(kvp.Value)
             ),
-            _ => tieredEquipmentData.Default.Equipment.ToDictionary(
-                kvp => kvp.Key,
-                kvp => new Dictionary<MongoId, double>(kvp.Value)
-            ),
+            _ => tieredEquipmentData.Default.Equipment.ToDictionary(kvp => kvp.Key, kvp => new Dictionary<MongoId, double>(kvp.Value)),
         };
     }
 
-    public Dictionary<MongoId, double> GetEquipmentByBotRoleAndSlot(
-        string botRole,
-        int tierNumber,
-        ApbsEquipmentSlots slot
-    ) => GetEquipmentByBotRole(botRole, tierNumber)[slot];
+    public Dictionary<MongoId, double> GetEquipmentByBotRoleAndSlot(string botRole, int tierNumber, ApbsEquipmentSlots slot)
+    {
+        return GetEquipmentByBotRole(botRole, tierNumber)[slot];
+    }
 
     public ApbsChances GetChancesByBotRole(string botRole, int tierNumber)
     {
@@ -318,28 +296,13 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         };
     }
 
-    public Dictionary<string, Dictionary<MongoId, double>> GetAmmoByBotRole(
-        string botRole,
-        int tierNumber
-    )
+    public Dictionary<string, Dictionary<MongoId, double>> GetAmmoByBotRole(string botRole, int tierNumber)
     {
-        if (
-            botRole is "pmcusec" or "pmcbear"
-            && ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.Enable
-        )
+        if (botRole is "pmcusec" or "pmcbear" && ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.Enable)
         {
-            if (
-                randomUtil.GetChance100(
-                    ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.SlideChance
-                )
-            )
+            if (randomUtil.GetChance100(ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.SlideChance))
             {
-                var slideAmount = ModConfig
-                    .Config
-                    .PmcBots
-                    .AdditionalOptions
-                    .AmmoTierSliding
-                    .SlideAmount;
+                var slideAmount = ModConfig.Config.PmcBots.AdditionalOptions.AmmoTierSliding.SlideAmount;
                 var minTier = tierNumber - slideAmount <= 0 ? 1 : tierNumber - slideAmount;
                 var maxTier = tierNumber - 1 <= 0 ? 1 : tierNumber - 1;
                 tierNumber = NewTierCalc(tierNumber, minTier, maxTier);
@@ -356,19 +319,12 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
         };
     }
 
-    public Appearance GetAppearanceByBotRole(
-        string botRole,
-        int tierNumber,
-        Season season,
-        bool seasonal = false
-    )
+    public Appearance GetAppearanceByBotRole(string botRole, int tierNumber, Season season, bool seasonal = false)
     {
         var tieredAppearanceData = GetTierAppearance(tierNumber);
         if (!seasonal || tierNumber == 0)
         {
-            return botRole is "pmcBEAR"
-                ? tieredAppearanceData.PmcBear["appearance"]
-                : tieredAppearanceData.PmcUsec["appearance"];
+            return botRole is "pmcBEAR" ? tieredAppearanceData.PmcBear["appearance"] : tieredAppearanceData.PmcUsec["appearance"];
         }
 
         return botRole switch
@@ -378,9 +334,7 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
                 Season.SPRING_EARLY => tieredAppearanceData.SpringEarly.PmcUsec["appearance"],
                 Season.SPRING => tieredAppearanceData.Spring.PmcUsec["appearance"],
                 Season.SUMMER or Season.STORM => tieredAppearanceData.Summer.PmcUsec["appearance"],
-                Season.AUTUMN or Season.AUTUMN_LATE => tieredAppearanceData.Autumn.PmcUsec[
-                    "appearance"
-                ],
+                Season.AUTUMN or Season.AUTUMN_LATE => tieredAppearanceData.Autumn.PmcUsec["appearance"],
                 Season.WINTER => tieredAppearanceData.Winter.PmcUsec["appearance"],
                 _ => tieredAppearanceData.Summer.PmcUsec["appearance"],
             },
@@ -389,15 +343,11 @@ public class BotEquipmentHelper(RandomUtil randomUtil, DataLoader dataLoader, Ap
                 Season.SPRING_EARLY => tieredAppearanceData.SpringEarly.PmcBear["appearance"],
                 Season.SPRING => tieredAppearanceData.Spring.PmcBear["appearance"],
                 Season.SUMMER or Season.STORM => tieredAppearanceData.Summer.PmcBear["appearance"],
-                Season.AUTUMN or Season.AUTUMN_LATE => tieredAppearanceData.Autumn.PmcBear[
-                    "appearance"
-                ],
+                Season.AUTUMN or Season.AUTUMN_LATE => tieredAppearanceData.Autumn.PmcBear["appearance"],
                 Season.WINTER => tieredAppearanceData.Winter.PmcBear["appearance"],
                 _ => tieredAppearanceData.Summer.PmcBear["appearance"],
             },
-            _ => botRole is "pmcBEAR"
-                ? tieredAppearanceData.PmcBear["appearance"]
-                : tieredAppearanceData.PmcUsec["appearance"],
+            _ => botRole is "pmcBEAR" ? tieredAppearanceData.PmcBear["appearance"] : tieredAppearanceData.PmcUsec["appearance"],
         };
     }
 

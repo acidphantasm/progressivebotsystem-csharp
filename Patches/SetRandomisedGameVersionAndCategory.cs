@@ -20,28 +20,21 @@ public class SetRandomisedGameVersionAndCategoryPatch : AbstractPatch
     private static ProfileHelper _profileHelper = default!;
     private static TierHelper _tierHelper = default!;
 
-    public SetRandomisedGameVersionAndCategoryPatch(
-        RandomUtil randomUtil,
-        ProfileHelper profileHelper,
-        TierHelper tierHelper
-    )
+    public SetRandomisedGameVersionAndCategoryPatch(RandomUtil randomUtil, ProfileHelper profileHelper, TierHelper tierHelper)
     {
         _randomUtil = randomUtil;
         _profileHelper = profileHelper;
         _tierHelper = tierHelper;
     }
 
-    protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(typeof(BotGenerator), "SetRandomisedGameVersionAndCategory");
+    protected override MethodBase GetTargetMethod() => AccessTools.Method(typeof(BotGenerator), "SetRandomisedGameVersionAndCategory");
 
     [PatchPrefix]
     public static bool Prefix(Info botInfo, string __result)
     {
         if (
             ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.Enable
-            && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(
-                botInfo.Nickname ?? "abcd1234fakename"
-            )
+            && ModConfig.Config.PmcBots.Secrets.DeveloperSettings.DevNames.NameList.Contains(botInfo.Nickname ?? "abcd1234fakename")
         )
         {
             botInfo.GameVersion = GameEditions.UNHEARD;

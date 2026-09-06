@@ -1,8 +1,7 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using System.Reflection;
-using Globals;
-using Models;
+﻿using System.Reflection;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers.Items;
@@ -12,8 +11,10 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Utils;
-using Utils;
-using Path = Path;
+
+namespace ProgressiveBotSystem.Helpers;
+
+using Path = System.IO.Path;
 
 [Injectable(TypePriority = OnLoadOrder.Preload - 1)]
 public class VanillaItemHelper(
@@ -24,7 +25,7 @@ public class VanillaItemHelper(
     ApbsLogger apbsLogger
 ) : IOnLoad
 {
-    private static readonly HashSet<MongoId> BaseClassIds = typeof(BaseClasses)
+    private static readonly HashSet<MongoId> _baseClassIds = typeof(BaseClasses)
         .GetFields(BindingFlags.Public | BindingFlags.Static)
         .Where(field => field.FieldType == typeof(MongoId))
         .Select(field => (MongoId)field.GetValue(null)!)
@@ -109,8 +110,9 @@ public class VanillaItemHelper(
 
     private Dictionary<string, Dictionary<MongoId, string>> CategoryMaps
     {
-        get =>
-            new()
+        get
+        {
+            return new Dictionary<string, Dictionary<MongoId, string>>
             {
                 { "PrimaryWeapon", _primaryWeaponMap },
                 { "Holster", _holsterMap },
@@ -171,6 +173,7 @@ public class VanillaItemHelper(
                 { "BearHands", _bearHandsMap },
                 { "BearHead", _bearHeadMap },
             };
+        }
     }
 
     public async Task OnLoadAsync(CancellationToken cancellationToken)
@@ -210,8 +213,7 @@ public class VanillaItemHelper(
         }
 
         var manifest =
-            jsonUtil.DeserializeFromFile<VanillaMappingManifest>(manifestPath)
-            ?? new VanillaMappingManifest { ManifestVersion = 0 };
+            jsonUtil.DeserializeFromFile<VanillaMappingManifest>(manifestPath) ?? new VanillaMappingManifest { ManifestVersion = 0 };
 
         return manifest.ManifestVersion != ModConfig.CurrentVanillaMappingManifestVersion;
     }
@@ -220,10 +222,7 @@ public class VanillaItemHelper(
     {
         var allItems = templateTable.Items;
 
-        var mapRules = new Dictionary<
-            Func<MongoId, TemplateItem, bool>,
-            Dictionary<MongoId, string>
-        >
+        var mapRules = new Dictionary<Func<MongoId, TemplateItem, bool>, Dictionary<MongoId, string>>
         {
             // Fuck BSG for putting the MTS255 in the revolver base class, and the MP43 in the shotgun baseclass. That makes this look stupid. Along with all the other shit that's special.
             {
@@ -242,22 +241,18 @@ public class VanillaItemHelper(
             },
             {
                 (id, _) =>
-                    itemHelper.IsOfBaseclasses(id, _holsterBaseClasses)
-                        && id != ItemTpl.REVOLVER_MTS25512_12GA_SHOTGUN
+                    itemHelper.IsOfBaseclasses(id, _holsterBaseClasses) && id != ItemTpl.REVOLVER_MTS25512_12GA_SHOTGUN
                     || id == ItemTpl.SHOTGUN_MP43_12GA_SAWEDOFF_DOUBLEBARREL,
                 _holsterMap
             },
             {
                 (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.VEST)
-                    && (item.Properties?.Slots == null || !item.Properties.Slots.Any()),
+                    itemHelper.IsOfBaseclass(id, BaseClasses.VEST) && (item.Properties?.Slots == null || !item.Properties.Slots.Any()),
                 _tacticalVestMap
             },
             {
                 (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.VEST)
-                    && item.Properties?.Slots != null
-                    && item.Properties.Slots.Any(),
+                    itemHelper.IsOfBaseclass(id, BaseClasses.VEST) && item.Properties?.Slots != null && item.Properties.Slots.Any(),
                 _armouredRigMap
             },
             {
@@ -269,10 +264,7 @@ public class VanillaItemHelper(
                 _scabbardMap
             },
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.POCKETS), _pocketMap },
-            {
-                (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.MOB_CONTAINER),
-                _secureContainerMap
-            },
+            { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.MOB_CONTAINER), _secureContainerMap },
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.ARM_BAND), _armbandMap },
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.ARMOR), _armorvestMap },
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.BACKPACK), _backpackMap },
@@ -282,29 +274,15 @@ public class VanillaItemHelper(
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.HEADWEAR), _headwearMap },
             // Ammos
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber1143x23ACP",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber1143x23ACP",
                 _caliber1143X23AcpMap
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber127x55",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber127x55",
                 _caliber127X55Map
             },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber12g",
-                _caliber12GMap
-            },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber20g",
-                _caliber20GMap
-            },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber12g", _caliber12GMap },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber20g", _caliber20GMap },
             {
                 (id, item) =>
                     itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
@@ -313,15 +291,11 @@ public class VanillaItemHelper(
                 _caliber23X75Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber366TKM",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber366TKM",
                 _caliber366TkmMap
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber40mmRU",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber40mmRU",
                 _caliber40MmRuMap
             },
             {
@@ -332,15 +306,11 @@ public class VanillaItemHelper(
                 _caliber40X46Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber46x30",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber46x30",
                 _caliber46X30Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber545x39",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber545x39",
                 _caliber545X39Map
             },
             {
@@ -351,51 +321,35 @@ public class VanillaItemHelper(
                 _caliber556X45NatoMap
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber57x28",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber57x28",
                 _caliber57X28Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber68x51",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber68x51",
                 _caliber68X51Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber762x25TT",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber762x25TT",
                 _caliber762X25TtMap
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber762x35",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber762x35",
                 _caliber762X35Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber762x39",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber762x39",
                 _caliber762X39Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber762x51",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber762x51",
                 _caliber762X51Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber762x54R",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber762x54R",
                 _caliber762X54RMap
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber86x70",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber86x70",
                 _caliber86X70Map
             },
             {
@@ -406,52 +360,27 @@ public class VanillaItemHelper(
                 _caliber9X18PmMap
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber9x19PARA",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber9x19PARA",
                 _caliber9X19ParaMap
             },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber9x21", _caliber9X21Map },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber9x21",
-                _caliber9X21Map
-            },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber9x33R",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber9x33R",
                 _caliber9X33RMap
             },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber9x39", _caliber9X39Map },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber9x39",
-                _caliber9X39Map
-            },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber127x33",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber127x33",
                 _caliber127X33Map
             },
             {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber127x99",
+                (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber127x99",
                 _caliber127X99Map
             },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.AMMO)
-                    && item.Properties?.Caliber == "Caliber725",
-                _caliber725Map
-            },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.AMMO) && item.Properties?.Caliber == "Caliber725", _caliber725Map },
             // Generation stuff
             {
-                (id, _) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.THROW_WEAP)
-                    && id != ItemTpl.GRENADE_F1_HAND_GRENADE_REDUCED_DELAY,
+                (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.THROW_WEAP) && id != ItemTpl.GRENADE_F1_HAND_GRENADE_REDUCED_DELAY,
                 _grenadesMap
             },
             {
@@ -465,25 +394,13 @@ public class VanillaItemHelper(
                     && id != ItemTpl.MEDICAL_SANITAR_KIT,
                 _healingMap
             },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.DRUGS)
-                    && item.Properties?.MedUseTime is not null,
-                _drugsMap
-            },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.DRUGS) && item.Properties?.MedUseTime is not null, _drugsMap },
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.FOOD), _foodMap },
             {
-                (id, _) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.DRINK)
-                    && id != ItemTpl.DRINK_BOTTLE_OF_TARKOVSKAYA_VODKA_BAD,
+                (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.DRINK) && id != ItemTpl.DRINK_BOTTLE_OF_TARKOVSKAYA_VODKA_BAD,
                 _drinkMap
             },
-            {
-                (id, item) =>
-                    itemHelper.IsOfBaseclass(id, BaseClasses.STIMULATOR)
-                    && item.Properties?.MedUseTime is not null,
-                _stimMap
-            },
+            { (id, item) => itemHelper.IsOfBaseclass(id, BaseClasses.STIMULATOR) && item.Properties?.MedUseTime is not null, _stimMap },
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.MONEY), _currencyMap },
             // Attachments
             { (id, _) => itemHelper.IsOfBaseclass(id, BaseClasses.ARMOR_PLATE), _armourPlates },
@@ -492,7 +409,7 @@ public class VanillaItemHelper(
 
         foreach (var (id, item) in allItems)
         {
-            if (BaseClassIds.Contains(id) || id == "684070bd2f743ae53b0b80ec")
+            if (_baseClassIds.Contains(id) || id == "684070bd2f743ae53b0b80ec")
             {
                 continue;
             }
@@ -510,51 +427,16 @@ public class VanillaItemHelper(
     {
         var allItems = templateTable.Customization;
 
-        var mapRules = new Dictionary<
-            Func<MongoId, CustomizationItem, bool>,
-            Dictionary<MongoId, string>
-        >
+        var mapRules = new Dictionary<Func<MongoId, CustomizationItem, bool>, Dictionary<MongoId, string>>
         {
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Body",
-                _usecBodyMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Feet",
-                _usecFeetMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Hands",
-                _usecHandsMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Head",
-                _usecHeadMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Body",
-                _bearBodyMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Feet",
-                _bearFeetMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Hands",
-                _bearHandsMap
-            },
-            {
-                (_, item) =>
-                    item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Head",
-                _bearHeadMap
-            },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Body", _usecBodyMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Feet", _usecFeetMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Hands", _usecHandsMap },
+            { (_, item) => item.Properties.Side.Contains("Usec") && item.Properties.BodyPart == "Head", _usecHeadMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Body", _bearBodyMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Feet", _bearFeetMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Hands", _bearHandsMap },
+            { (_, item) => item.Properties.Side.Contains("Bear") && item.Properties.BodyPart == "Head", _bearHeadMap },
         };
 
         foreach (var (id, item) in allItems)
@@ -586,9 +468,7 @@ public class VanillaItemHelper(
 
             foreach (var rule in mapRules.Where(rule => rule.Key(id, item)))
             {
-                rule.Value[id] = string.IsNullOrEmpty(itemHelper.GetItemName(id))
-                    ? item.Name
-                    : itemHelper.GetItemName(id);
+                rule.Value[id] = string.IsNullOrEmpty(itemHelper.GetItemName(id)) ? item.Name : itemHelper.GetItemName(id);
             }
         }
 
@@ -616,10 +496,7 @@ public class VanillaItemHelper(
             Directory.CreateDirectory(outputDirectory);
         }
 
-        var manifest = new VanillaMappingManifest
-        {
-            ManifestVersion = ModConfig.CurrentVanillaMappingManifestVersion,
-        };
+        var manifest = new VanillaMappingManifest { ManifestVersion = ModConfig.CurrentVanillaMappingManifestVersion };
 
         var path = Path.Combine(outputDirectory, "manifest.json");
 

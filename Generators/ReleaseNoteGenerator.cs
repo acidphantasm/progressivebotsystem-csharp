@@ -1,9 +1,9 @@
-﻿namespace ProgressiveBotSystem.Generators;
-
-using System.Text;
-using Models;
-using SemanticVersioning;
+﻿using System.Text;
+using ProgressiveBotSystem.Models;
 using SPTarkov.Server.Core.Utils;
+using Range = SemanticVersioning.Range;
+
+namespace ProgressiveBotSystem.Generators;
 
 public class ReleaseNoteGenerator
 {
@@ -27,9 +27,7 @@ public class ReleaseNoteGenerator
             await _jsonUtil.DeserializeFromFileAsync<List<ReleaseNote>>(_jsonFile)
             ?? throw new InvalidOperationException("Failed to deserialize ReleaseNotes.json");
 
-        var latestRelease =
-            allReleases.FirstOrDefault(r => r.IsLatest)
-            ?? allReleases.OrderByDescending(r => r.Version).First();
+        var latestRelease = allReleases.FirstOrDefault(r => r.IsLatest) ?? allReleases.OrderByDescending(r => r.Version).First();
 
         var txt = new StringBuilder();
 

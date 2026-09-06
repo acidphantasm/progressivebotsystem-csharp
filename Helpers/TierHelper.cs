@@ -1,8 +1,8 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using Globals;
-using Models;
+﻿using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
 using SPTarkov.DI.Annotations;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class TierHelper(TierInformation tierInformation, DateHelper dateHelper)
@@ -24,13 +24,28 @@ public class TierHelper(TierInformation tierInformation, DateHelper dateHelper)
         return ordered[invertedIndex];
     }
 
-    public int GetTierByLevel(int level) => GetTierInfo(level).Tier;
+    public int GetTierByLevel(int level)
+    {
+        return GetTierInfo(level).Tier;
+    }
 
-    public int GetTierUpperLevelDeviation(int level) => GetTierInfo(level).BotMaxLevelVariance;
+    public int GetTierUpperLevelDeviation(int level)
+    {
+        return GetTierInfo(level).BotMaxLevelVariance;
+    }
 
-    public int GetTierLowerLevelDeviation(int level) => GetTierInfo(level).BotMinLevelVariance;
+    public int GetTierLowerLevelDeviation(int level)
+    {
+        return GetTierInfo(level).BotMinLevelVariance;
+    }
 
-    public int GetScavTierUpperLevelDeviation(int level) => GetTierInfo(level).ScavMaxLevelVariance;
+    public int GetScavTierUpperLevelDeviation(int level)
+    {
+        return GetTierInfo(level).ScavMaxLevelVariance;
+    }
 
-    public int GetScavTierLowerLevelDeviation(int level) => GetTierInfo(level).ScavMinLevelVariance;
+    public int GetScavTierLowerLevelDeviation(int level)
+    {
+        return GetTierInfo(level).ScavMinLevelVariance;
+    }
 }

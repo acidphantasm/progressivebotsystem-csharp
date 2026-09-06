@@ -1,12 +1,12 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using System.Text.Json;
-using Models;
+﻿using System.Text.Json;
+using ProgressiveBotSystem.Models;
 using SPTarkov.Common.Extensions;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
@@ -25,7 +25,7 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
 
     public BotLogData GetBotDetails(BotBase? botBase)
     {
-        if (botBase is null || botBase.Info is null || botBase.Inventory?.Items is null)
+        if (botBase?.Info is null || botBase.Inventory?.Items is null)
         {
             return new BotLogData();
         }
@@ -35,17 +35,24 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
         var botInventory = botBase.Inventory.Items;
 
         // Local helper methods to reduce repeating code
-        string Tpl(Item? item) => item?.Template.ToString() ?? "Unknown";
-        Item? Slot(string slotId) => botInventory.FirstOrDefault(i => i.SlotId == slotId);
-        Item? Caliber(Item? weapon) =>
-            weapon == null
+        string Tpl(Item? item)
+        {
+            return item?.Template.ToString() ?? "Unknown";
+        }
+        Item? Slot(string slotId)
+        {
+            return botInventory.FirstOrDefault(i => i.SlotId == slotId);
+        }
+        Item? Caliber(Item? weapon)
+        {
+            return weapon == null
                 ? null
-                : botInventory.FirstOrDefault(i =>
-                    i is { SlotId: "patron_in_weapon", ParentId: not null }
-                    && i.ParentId == weapon.Id
-                );
-        Item? Plate(string slotId, string parentId) =>
-            botInventory.FirstOrDefault(i => i.SlotId == slotId && i.ParentId == parentId);
+                : botInventory.FirstOrDefault(i => i is { SlotId: "patron_in_weapon", ParentId: not null } && i.ParentId == weapon.Id);
+        }
+        Item? Plate(string slotId, string parentId)
+        {
+            return botInventory.FirstOrDefault(i => i.SlotId == slotId && i.ParentId == parentId);
+        }
 
         // Bot Information
         if (botInfo.TryGetExtensionData(out var extensionData))
@@ -67,9 +74,7 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
         returnValue.Name = botInfo.Nickname ?? "Unknown";
         returnValue.Level = botInfo.Level ?? 0;
         returnValue.Difficulty = botInfo.Settings?.BotDifficulty ?? "Unknown";
-        returnValue.GameVersion = string.IsNullOrWhiteSpace(botInfo.GameVersion)
-            ? "Unknown"
-            : botInfo.GameVersion;
+        returnValue.GameVersion = string.IsNullOrWhiteSpace(botInfo.GameVersion) ? "Unknown" : botInfo.GameVersion;
         returnValue.PrestigeLevel = botInfo.PrestigeLevel ?? 0;
         returnValue.DogTagId = Tpl(Slot("Dogtag"));
 
@@ -115,12 +120,18 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
 
     public string[] GetLogMessage(BotLogData botDetails)
     {
-        bool RemoveNoneValues(string value) =>
-            !string.IsNullOrWhiteSpace(value)
-            && !value.Contains("Unknown", StringComparison.OrdinalIgnoreCase);
-        bool RemoveNonArmouredRigs(string value) =>
-            !new[] { "Armour/Rig:" }.Any(element => value.Contains(element));
-        bool RemoveInvalidPlates(string value) => !value.Contains("69420");
+        bool RemoveNoneValues(string value)
+        {
+            return !string.IsNullOrWhiteSpace(value) && !value.Contains("Unknown", StringComparison.OrdinalIgnoreCase);
+        }
+        bool RemoveNonArmouredRigs(string value)
+        {
+            return !new[] { "Armour/Rig:" }.Any(element => value.Contains(element));
+        }
+        bool RemoveInvalidPlates(string value)
+        {
+            return !value.Contains("69420");
+        }
 
         var temporaryMessage1 = new List<string>
         {
@@ -182,9 +193,7 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
 
         temporaryMessage4 = temporaryMessage4.Where(RemoveInvalidPlates).ToList();
         var realMessage4 =
-            temporaryMessage4.Count > 1
-                ? string.Join(" ", temporaryMessage4.Where(s => !string.IsNullOrWhiteSpace(s)))
-                : " ";
+            temporaryMessage4.Count > 1 ? string.Join(" ", temporaryMessage4.Where(s => !string.IsNullOrWhiteSpace(s))) : " ";
 
         // Return all messages
         return [realMessage1, realMessage2, realMessage3, realMessage4];
@@ -192,10 +201,7 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
 
     private string ResolveName(string tpl)
     {
-        if (
-            string.IsNullOrWhiteSpace(tpl)
-            || tpl.Equals("Unknown", StringComparison.OrdinalIgnoreCase)
-        )
+        if (string.IsNullOrWhiteSpace(tpl) || tpl.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
         {
             return "Unknown";
         }
@@ -206,10 +212,7 @@ public class BotLogHelper(ItemHelper itemHelper, TierHelper tierHelper)
 
     private string ResolvePlateClass(string tpl)
     {
-        if (
-            string.IsNullOrWhiteSpace(tpl)
-            || tpl.Equals("Unknown", StringComparison.OrdinalIgnoreCase)
-        )
+        if (string.IsNullOrWhiteSpace(tpl) || tpl.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
         {
             return "69420";
         }

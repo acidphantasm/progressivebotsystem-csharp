@@ -1,39 +1,35 @@
-﻿namespace ProgressiveBotSystem.Services;
-
-using Constants;
-using Helpers;
+﻿using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using Utils;
+
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton)]
-public class BotLogService(
-    ApbsLogger apbsLogger,
-    BotLogHelper botLogHelper,
-    BotActivityHelper botActivityHelper
-)
+public class BotLogService(ApbsLogger apbsLogger, BotLogHelper botLogHelper, BotActivityHelper botActivityHelper)
 {
-    private static readonly HashSet<string> ScavRoles = typeof(ScavBots)
+    private static readonly HashSet<string> _scavRoles = typeof(ScavBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> BossRoles = typeof(BossBots)
+    private static readonly HashSet<string> _bossRoles = typeof(BossBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> FollowerRoles = typeof(FollowerBots)
+    private static readonly HashSet<string> _followerRoles = typeof(FollowerBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> SpecialRoles = typeof(SpecialBots)
+    private static readonly HashSet<string> _specialRoles = typeof(SpecialBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> PmcRoles = typeof(PmcBots)
+    private static readonly HashSet<string> _pmcRoles = typeof(PmcBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> EventRoles = typeof(EventBots)
+    private static readonly HashSet<string> _eventRoles = typeof(EventBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
@@ -46,31 +42,26 @@ public class BotLogService(
             {
                 var botLogData = botLogHelper.GetBotDetails(bot);
                 var logMessages = botLogHelper.GetLogMessage(botLogData);
-                var enabledStringText = botActivityHelper.IsBotEnabled(botLogData.Role)
-                    ? "APBS Bot"
-                    : "Vanilla Bot";
+                var enabledStringText = botActivityHelper.IsBotEnabled(botLogData.Role) ? "APBS Bot" : "Vanilla Bot";
 
                 var logType = LoggingFolders.UnhandledBots;
-                if (ScavRoles.Contains(botLogData.Role.ToLowerInvariant()))
+                if (_scavRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Scav;
                 }
-                if (
-                    BossRoles.Contains(botLogData.Role.ToLowerInvariant())
-                    || FollowerRoles.Contains(botLogData.Role.ToLowerInvariant())
-                )
+                if (_bossRoles.Contains(botLogData.Role.ToLowerInvariant()) || _followerRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Boss;
                 }
-                if (SpecialRoles.Contains(botLogData.Role.ToLowerInvariant()))
+                if (_specialRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Special;
                 }
-                if (PmcRoles.Contains(botLogData.Role.ToLowerInvariant()))
+                if (_pmcRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Pmc;
                 }
-                if (EventRoles.Contains(botLogData.Role.ToLowerInvariant()))
+                if (_eventRoles.Contains(botLogData.Role.ToLowerInvariant()))
                 {
                     logType = LoggingFolders.Event;
                 }
@@ -88,9 +79,7 @@ public class BotLogService(
         }
         catch (Exception ex)
         {
-            apbsLogger.Warning(
-                "[BotLogService] Failed logging due to an exception. This is non-critical."
-            );
+            apbsLogger.Warning("[BotLogService] Failed logging due to an exception. This is non-critical.");
             apbsLogger.Warning($"{ex}");
         }
     }

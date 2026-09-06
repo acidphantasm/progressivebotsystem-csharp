@@ -1,7 +1,6 @@
-﻿namespace ProgressiveBotSystem.Services;
-
-using System.Collections.Concurrent;
-using Helpers;
+﻿using System.Collections.Concurrent;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Generators.Loot;
@@ -12,7 +11,8 @@ using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils.Cloners;
-using Utils;
+
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton)]
 public class CustomBotLootCacheService(
@@ -159,13 +159,7 @@ public class CustomBotLootCacheService(
     /// <param name="botRole">bots role (assault / pmcBot etc)</param>
     /// <param name="isPmc">Is the bot a PMC (alters what loot is cached)</param>
     /// <param name="botJsonTemplate">db template for bot having its loot generated</param>
-    private BotLootCache BuildBotLootCache(
-        string botRole,
-        bool isPmc,
-        BotType botJsonTemplate,
-        int botLevel,
-        int tier
-    )
+    private BotLootCache BuildBotLootCache(string botRole, bool isPmc, BotType botJsonTemplate, int botLevel, int tier)
     {
         var chances = botEquipmentHelper.GetChancesByBotRole(botRole, tier);
         var realWhitelist = chances.Generation.Items;
@@ -231,10 +225,7 @@ public class CustomBotLootCacheService(
             }
 
             // If pool has items and items were going into a non-secure container pool, add to combined
-            if (
-                itemPool.Count > 0
-                && !containerType.Equals("securedcontainer", StringComparison.OrdinalIgnoreCase)
-            )
+            if (itemPool.Count > 0 && !containerType.Equals("securedcontainer", StringComparison.OrdinalIgnoreCase))
             {
                 // fill up 'combined' pool of all loot
                 AddItemsToPool(combinedLootPool, itemPool);
@@ -242,21 +233,14 @@ public class CustomBotLootCacheService(
         }
 
         // Assign whitelisted special items to bot if any exist
-        var (specialLootItems, addSpecialLootItems) = GetGenerationWeights(
-            realWhitelist.SpecialItems?.Whitelist
-        );
+        var (specialLootItems, addSpecialLootItems) = GetGenerationWeights(realWhitelist.SpecialItems?.Whitelist);
         if (addSpecialLootItems) // key = tpl, value = weight
         {
             // No whitelist, find and assign from combined item pool
             foreach (var itemKvP in specialLootPool)
             {
                 var itemTemplate = itemHelper.GetItem(itemKvP.Key).Value;
-                if (
-                    !(
-                        IsBulletOrGrenade(itemTemplate.Properties)
-                        || IsMagazine(itemTemplate.Properties)
-                    )
-                )
+                if (!(IsBulletOrGrenade(itemTemplate.Properties) || IsMagazine(itemTemplate.Properties)))
                 {
                     lock (_specialLock)
                     {
@@ -266,27 +250,13 @@ public class CustomBotLootCacheService(
             }
         }
 
-        var (healingItemsInWhitelist, addHealingItems) = GetGenerationWeights(
-            realWhitelist.Healing?.Whitelist
-        );
-        var (drugItemsInWhitelist, addDrugItems) = GetGenerationWeights(
-            realWhitelist.Drugs?.Whitelist
-        );
-        var (foodItemsInWhitelist, addFoodItems) = GetGenerationWeights(
-            realWhitelist.Food?.Whitelist
-        );
-        var (drinkItemsInWhitelist, addDrinkItems) = GetGenerationWeights(
-            realWhitelist.Drink?.Whitelist
-        );
-        var (currencyItemsInWhitelist, addCurrencyItems) = GetGenerationWeights(
-            realWhitelist.Currency?.Whitelist
-        );
-        var (stimItemsInWhitelist, addStimItems) = GetGenerationWeights(
-            realWhitelist.Stims?.Whitelist
-        );
-        var (grenadeItemsInWhitelist, addGrenadeItems) = GetGenerationWeights(
-            realWhitelist.Grenades?.Whitelist
-        );
+        var (healingItemsInWhitelist, addHealingItems) = GetGenerationWeights(realWhitelist.Healing?.Whitelist);
+        var (drugItemsInWhitelist, addDrugItems) = GetGenerationWeights(realWhitelist.Drugs?.Whitelist);
+        var (foodItemsInWhitelist, addFoodItems) = GetGenerationWeights(realWhitelist.Food?.Whitelist);
+        var (drinkItemsInWhitelist, addDrinkItems) = GetGenerationWeights(realWhitelist.Drink?.Whitelist);
+        var (currencyItemsInWhitelist, addCurrencyItems) = GetGenerationWeights(realWhitelist.Currency?.Whitelist);
+        var (stimItemsInWhitelist, addStimItems) = GetGenerationWeights(realWhitelist.Stims?.Whitelist);
+        var (grenadeItemsInWhitelist, addGrenadeItems) = GetGenerationWeights(realWhitelist.Grenades?.Whitelist);
 
         foreach (var itemKvP in combinedLootPool)
         {
@@ -314,10 +284,7 @@ public class CustomBotLootCacheService(
 
             if (addDrugItems)
             {
-                if (
-                    itemTemplate.Parent == BaseClasses.DRUGS
-                    && IsMedicalItem(itemTemplate.Properties)
-                )
+                if (itemTemplate.Parent == BaseClasses.DRUGS && IsMedicalItem(itemTemplate.Properties))
                 {
                     lock (_drugLock)
                     {
@@ -361,10 +328,7 @@ public class CustomBotLootCacheService(
 
             if (addStimItems)
             {
-                if (
-                    itemTemplate.Parent == BaseClasses.STIMULATOR
-                    && IsMedicalItem(itemTemplate.Properties)
-                )
+                if (itemTemplate.Parent == BaseClasses.STIMULATOR && IsMedicalItem(itemTemplate.Properties))
                 {
                     lock (_stimLock)
                     {
@@ -444,8 +408,7 @@ public class CustomBotLootCacheService(
         // Get secure loot (excluding magazines, bullets)
         var filteredSecureLoot = FilterItemPool(
             secureLootPool,
-            itemTemplate =>
-                IsBulletOrGrenade(itemTemplate.Properties) || IsMagazine(itemTemplate.Properties)
+            itemTemplate => IsBulletOrGrenade(itemTemplate.Properties) || IsMagazine(itemTemplate.Properties)
         );
 
         return new BotLootCache
@@ -471,10 +434,7 @@ public class CustomBotLootCacheService(
     /// <param name="lootPool">Pool to filter</param>
     /// <param name="shouldBeSkipped">Delegate to filter pool by</param>
     /// <returns></returns>
-    private Dictionary<MongoId, double> FilterItemPool(
-        Dictionary<MongoId, double> lootPool,
-        Func<TemplateItem, bool> shouldBeSkipped
-    )
+    private Dictionary<MongoId, double> FilterItemPool(Dictionary<MongoId, double> lootPool, Func<TemplateItem, bool> shouldBeSkipped)
     {
         var filteredItems = new Dictionary<MongoId, double>();
         foreach (var (itemTpl, itemWeight) in lootPool)
@@ -501,10 +461,7 @@ public class CustomBotLootCacheService(
     /// </summary>
     /// <param name="weights">Weights to return</param>
     /// <returns>Dictionary and should pool be hydrated by items in combined loot pool</returns>
-    private static (
-        Dictionary<MongoId, double>,
-        bool populateFromCombinedPool
-    ) GetGenerationWeights(Dictionary<MongoId, double>? weights)
+    private static (Dictionary<MongoId, double>, bool populateFromCombinedPool) GetGenerationWeights(Dictionary<MongoId, double>? weights)
     {
         if (weights is null || !weights.Any())
         {
@@ -520,10 +477,7 @@ public class CustomBotLootCacheService(
     /// </summary>
     /// <param name="poolToAddTo">Dictionary to add item to</param>
     /// <param name="poolOfItemsToAdd">Dictionary of items to add</param>
-    private void AddItemsToPool(
-        Dictionary<MongoId, double> poolToAddTo,
-        Dictionary<MongoId, double> poolOfItemsToAdd
-    )
+    private void AddItemsToPool(Dictionary<MongoId, double> poolToAddTo, Dictionary<MongoId, double> poolOfItemsToAdd)
     {
         foreach (var (tpl, weight) in poolOfItemsToAdd)
         {
@@ -537,35 +491,53 @@ public class CustomBotLootCacheService(
     /// </summary>
     /// <param name="properties"></param>
     /// <returns></returns>
-    private bool IsBulletOrGrenade(TemplateItemProperties properties) =>
-        properties.AmmoType is not null;
+    private bool IsBulletOrGrenade(TemplateItemProperties properties)
+    {
+        return properties.AmmoType is not null;
+    }
 
     /// <summary>
     ///     Internal and external magazine have this property
     /// </summary>
     /// <param name="properties"></param>
     /// <returns></returns>
-    private bool IsMagazine(TemplateItemProperties properties) =>
-        properties.ReloadMagType is not null;
+    private bool IsMagazine(TemplateItemProperties properties)
+    {
+        return properties.ReloadMagType is not null;
+    }
 
     /// <summary>
     ///     Medical use items (e.g. morphine/lip balm/grizzly)
     /// </summary>
     /// <param name="properties"></param>
     /// <returns></returns>
-    private bool IsMedicalItem(TemplateItemProperties properties) =>
-        properties.MedUseTime is not null;
+    private bool IsMedicalItem(TemplateItemProperties properties)
+    {
+        return properties.MedUseTime is not null;
+    }
 
     /// <summary>
     ///     Grenades have this property (e.g. smoke/frag/flash grenades)
     /// </summary>
     /// <param name="properties"></param>
     /// <returns></returns>
-    private bool IsGrenade(TemplateItemProperties properties) => properties.ThrowType is not null;
+    private bool IsGrenade(TemplateItemProperties properties)
+    {
+        return properties.ThrowType is not null;
+    }
 
-    private bool IsFood(MongoId tpl) => itemHelper.IsOfBaseclass(tpl, BaseClasses.FOOD);
+    private bool IsFood(MongoId tpl)
+    {
+        return itemHelper.IsOfBaseclass(tpl, BaseClasses.FOOD);
+    }
 
-    private bool IsDrink(MongoId tpl) => itemHelper.IsOfBaseclass(tpl, BaseClasses.DRINK);
+    private bool IsDrink(MongoId tpl)
+    {
+        return itemHelper.IsOfBaseclass(tpl, BaseClasses.DRINK);
+    }
 
-    private bool IsCurrency(MongoId tpl) => itemHelper.IsOfBaseclass(tpl, BaseClasses.MONEY);
+    private bool IsCurrency(MongoId tpl)
+    {
+        return itemHelper.IsOfBaseclass(tpl, BaseClasses.MONEY);
+    }
 }

@@ -22,8 +22,7 @@ public class GeneratePlayerScavPatch : AbstractPatch
         _randomUtil = randomUtil;
     }
 
-    protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(typeof(BotGenerator), "GeneratePlayerScav");
+    protected override MethodBase GetTargetMethod() => AccessTools.Method(typeof(BotGenerator), "GeneratePlayerScav");
 
     [PatchPrefix]
     public static void Prefix(ref string role, out string __state)
@@ -56,9 +55,7 @@ public class GeneratePlayerScavPatch : AbstractPatch
             return;
         }
 
-        var selectedRole = _randomUtil.GetRandomElement(
-            ModConfig.Config.PlayerScavConfig.AllowedBosses
-        );
+        var selectedRole = _randomUtil.GetRandomElement(ModConfig.Config.PlayerScavConfig.AllowedBosses);
         role = selectedRole;
         __state = selectedRole.ToLowerInvariant();
     }

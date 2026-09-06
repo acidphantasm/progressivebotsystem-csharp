@@ -1,25 +1,20 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using System.Reflection;
+﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Globals;
-using Models;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Utils;
-using Utils;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.Preload + 10)]
-public class DataLoader(
-    ModHelper modHelper,
-    TierInformation tierInformation,
-    JsonUtil jsonUtil,
-    ApbsLogger apbsLogger
-) : IOnLoad
+public class DataLoader(ModHelper modHelper, TierInformation tierInformation, JsonUtil jsonUtil, ApbsLogger apbsLogger) : IOnLoad
 {
     private readonly Dictionary<string, string[]> _expectedPresetStructure = new()
     {
@@ -109,9 +104,7 @@ public class DataLoader(
         }
         catch
         {
-            apbsLogger.Error(
-                "Data has been tampered with. If you have any issues you did this to yourself. No support."
-            );
+            apbsLogger.Error("Data has been tampered with. If you have any issues you did this to yourself. No support.");
         }
 
         AllTierDataDirty = ModConfig.DeepClone(AllTierDataClean);
@@ -127,10 +120,7 @@ public class DataLoader(
             var relativePath = kvp.Key;
             var expectedHash = kvp.Value;
 
-            var fullPath = Path.Combine(
-                dataDir,
-                relativePath.Replace("/", Path.DirectorySeparatorChar.ToString())
-            );
+            var fullPath = Path.Combine(dataDir, relativePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
 
             if (!File.Exists(fullPath))
             {
@@ -171,21 +161,17 @@ public class DataLoader(
         {
             tiers[tier] = new TierInnerData
             {
-                AmmoData = await DeserializeRequired<AmmoTierData>(
-                    Path.Combine(dataRoot, "Ammo", $"Tier{tier}_ammo.json")
-                ),
+                AmmoData = await DeserializeRequired<AmmoTierData>(Path.Combine(dataRoot, "Ammo", $"Tier{tier}_ammo.json")),
                 AppearanceData = await DeserializeRequired<AppearanceTierData>(
                     Path.Combine(dataRoot, "Appearance", $"Tier{tier}_appearance.json")
                 ),
-                ChancesData = await DeserializeRequired<ChancesTierData>(
-                    Path.Combine(dataRoot, "Chances", $"Tier{tier}_chances.json")
-                ),
+                ChancesData = await DeserializeRequired<ChancesTierData>(Path.Combine(dataRoot, "Chances", $"Tier{tier}_chances.json")),
                 EquipmentData = await DeserializeRequired<EquipmentTierData>(
                     Path.Combine(dataRoot, "Equipment", $"Tier{tier}_equipment.json")
                 ),
-                ModsData = await DeserializeRequired<
-                    Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>
-                >(Path.Combine(dataRoot, "Mods", $"Tier{tier}_mods.json")),
+                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(
+                    Path.Combine(dataRoot, "Mods", $"Tier{tier}_mods.json")
+                ),
             };
         }
 
@@ -201,18 +187,17 @@ public class DataLoader(
         return int.Parse(tierPart.Replace("Tier", ""));
     }
 
-    private async Task<T> DeserializeRequired<T>(string path) =>
-        await jsonUtil.DeserializeFromFileAsync<T>(path)
-        ?? throw new InvalidDataException($"Failed to deserialize: {path}");
+    private async Task<T> DeserializeRequired<T>(string path)
+    {
+        return await jsonUtil.DeserializeFromFileAsync<T>(path) ?? throw new InvalidDataException($"Failed to deserialize: {path}");
+    }
 
     public async Task AssignJsonDataFromPreset(string pathToMod)
     {
         var fullPathToPreset = Path.Combine(pathToMod, "Presets", $"{ModConfig.Config.PresetName}");
         if (!ValidatePresetFolder(fullPathToPreset, out var errorMessage))
         {
-            apbsLogger.Error(
-                $"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}"
-            );
+            apbsLogger.Error($"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}");
             apbsLogger.Error($"{errorMessage}");
             ModConfig.Config.UsePreset = false;
             ModConfig.Config.PresetName = string.Empty;
@@ -237,21 +222,15 @@ public class DataLoader(
 
             tiers[tier] = new TierInnerData
             {
-                AmmoData = await DeserializeRequired<AmmoTierData>(
-                    Path.Combine(root, "Ammo", $"Tier{tier}_ammo.json")
-                ),
+                AmmoData = await DeserializeRequired<AmmoTierData>(Path.Combine(root, "Ammo", $"Tier{tier}_ammo.json")),
                 AppearanceData = await DeserializeRequired<AppearanceTierData>(
                     Path.Combine(root, "Appearance", $"Tier{tier}_appearance.json")
                 ),
-                ChancesData = await DeserializeRequired<ChancesTierData>(
-                    Path.Combine(root, "Chances", $"Tier{tier}_chances.json")
+                ChancesData = await DeserializeRequired<ChancesTierData>(Path.Combine(root, "Chances", $"Tier{tier}_chances.json")),
+                EquipmentData = await DeserializeRequired<EquipmentTierData>(Path.Combine(root, "Equipment", $"Tier{tier}_equipment.json")),
+                ModsData = await DeserializeRequired<Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>>(
+                    Path.Combine(root, "Mods", $"Tier{tier}_mods.json")
                 ),
-                EquipmentData = await DeserializeRequired<EquipmentTierData>(
-                    Path.Combine(root, "Equipment", $"Tier{tier}_equipment.json")
-                ),
-                ModsData = await DeserializeRequired<
-                    Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>>
-                >(Path.Combine(root, "Mods", $"Tier{tier}_mods.json")),
             };
         }
 
@@ -263,9 +242,8 @@ public class DataLoader(
     private async Task AssignTierData(string pathToMod)
     {
         tierInformation.Tiers =
-            await jsonUtil.DeserializeFromFileAsync<List<TierData>>(
-                pathToMod + "/Data/Tiers/TierData.json"
-            ) ?? throw new ArgumentNullException();
+            await jsonUtil.DeserializeFromFileAsync<List<TierData>>(pathToMod + "/Data/Tiers/TierData.json")
+            ?? throw new ArgumentNullException();
     }
 
     private bool ValidatePresetFolder(string fullPathToPresetRoot, out string errorMessage)
@@ -279,19 +257,13 @@ public class DataLoader(
 
         if (NeedsANewPreset(fullPathToPresetRoot))
         {
-            errorMessage =
-                "Preset is no longer valid. Make a new preset. This is rarely required but it is for you.";
+            errorMessage = "Preset is no longer valid. Make a new preset. This is rarely required but it is for you.";
             return false;
         }
 
-        var subFolders = Directory
-            .GetDirectories(fullPathToPresetRoot)
-            .Select(Path.GetFileName)
-            .ToArray();
+        var subFolders = Directory.GetDirectories(fullPathToPresetRoot).Select(Path.GetFileName).ToArray();
 
-        if (
-            !subFolders.OrderBy(f => f).SequenceEqual(_expectedPresetStructure.Keys.OrderBy(f => f))
-        )
+        if (!subFolders.OrderBy(f => f).SequenceEqual(_expectedPresetStructure.Keys.OrderBy(f => f)))
         {
             errorMessage =
                 $"Expected folders: [{string.Join(", ", _expectedPresetStructure.Keys)}], but found: [{string.Join(", ", subFolders)}]";
@@ -339,9 +311,7 @@ public class DataLoader(
         }
         if (!ValidatePresetFolder(fullPathToPreset, out var errorMessage))
         {
-            apbsLogger.Error(
-                $"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}"
-            );
+            apbsLogger.Error($"Loading original APBS Database instead...Configured Preset Is Invalid: {ModConfig.Config.PresetName}");
             apbsLogger.Error($"{errorMessage}");
             ModConfig.Config.UsePreset = false;
             ModConfig.Config.PresetName = string.Empty;
@@ -375,17 +345,9 @@ public class DataLoader(
                 continue;
             }
 
-            await SerializeAndWrite(
-                "Equipment",
-                $"Tier{tier}_equipment.json",
-                tierData.EquipmentData
-            );
+            await SerializeAndWrite("Equipment", $"Tier{tier}_equipment.json", tierData.EquipmentData);
             await SerializeAndWrite("Ammo", $"Tier{tier}_ammo.json", tierData.AmmoData);
-            await SerializeAndWrite(
-                "Appearance",
-                $"Tier{tier}_appearance.json",
-                tierData.AppearanceData
-            );
+            await SerializeAndWrite("Appearance", $"Tier{tier}_appearance.json", tierData.AppearanceData);
             await SerializeAndWrite("Chances", $"Tier{tier}_chances.json", tierData.ChancesData);
             await SerializeAndWrite("Mods", $"Tier{tier}_mods.json", tierData.ModsData);
         }
@@ -402,9 +364,7 @@ public class DataLoader(
             return true;
         }
 
-        var manifest =
-            jsonUtil.DeserializeFromFile<PresetManifest>(manifestPath)
-            ?? new PresetManifest { Version = 0 };
+        var manifest = jsonUtil.DeserializeFromFile<PresetManifest>(manifestPath) ?? new PresetManifest { Version = 0 };
         return manifest.Version != ModConfig.CurrentPresetManifestVersion;
     }
 }

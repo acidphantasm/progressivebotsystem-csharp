@@ -1,8 +1,8 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using Globals;
+﻿using ProgressiveBotSystem.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class DateHelper : IOnLoad
@@ -22,7 +22,10 @@ public class DateHelper : IOnLoad
         return Task.CompletedTask;
     }
 
-    public bool IsAprilFoolsEnabled() => !_initialized ? CalculateAprilFools() : AprilFoolsEnabled;
+    public bool IsAprilFoolsEnabled()
+    {
+        return !_initialized ? CalculateAprilFools() : AprilFoolsEnabled;
+    }
 
     private bool CalculateAprilFools()
     {
@@ -35,7 +38,10 @@ public class DateHelper : IOnLoad
         return now is { Month: 4, Day: 1 };
     }
 
-    public bool IsHalloweenEnabled() => !_initialized ? CalculateHalloween() : HalloweenEnabled;
+    public bool IsHalloweenEnabled()
+    {
+        return !_initialized ? CalculateHalloween() : HalloweenEnabled;
+    }
 
     private bool CalculateHalloween()
     {
@@ -48,7 +54,10 @@ public class DateHelper : IOnLoad
         return now is { Month: 10, Day: 31 };
     }
 
-    public bool IsChristmasEnabled() => !_initialized ? CalculateChristmas() : ChristmasEnabled;
+    public bool IsChristmasEnabled()
+    {
+        return !_initialized ? CalculateChristmas() : ChristmasEnabled;
+    }
 
     private bool CalculateChristmas()
     {

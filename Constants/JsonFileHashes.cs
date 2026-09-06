@@ -1,5 +1,6 @@
 // Auto-generated file. Do not edit manually.
 using System.Collections.Generic;
+
 public static class JsonFileHashes
 {
     public static readonly Dictionary<string, string> Hashes = new Dictionary<string, string>

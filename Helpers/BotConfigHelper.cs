@@ -1,9 +1,8 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using Constants;
-using Globals;
-using Models;
-using Models.Enums;
+﻿using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers.Items;
@@ -11,7 +10,8 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Spt.Tables;
-using Utils;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad + 90010)]
 public class BotConfigHelper(
@@ -27,23 +27,23 @@ public class BotConfigHelper(
     DateHelper dateHelper
 ) : IOnLoad
 {
-    private static readonly HashSet<string> ScavRoles = typeof(ScavBots)
+    private static readonly HashSet<string> _scavRoles = typeof(ScavBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> BossRoles = typeof(BossBots)
+    private static readonly HashSet<string> _bossRoles = typeof(BossBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> FollowerRoles = typeof(FollowerBots)
+    private static readonly HashSet<string> _followerRoles = typeof(FollowerBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> SpecialRoles = typeof(SpecialBots)
+    private static readonly HashSet<string> _specialRoles = typeof(SpecialBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
-    private static readonly HashSet<string> PmcRoles = typeof(PmcBots)
+    private static readonly HashSet<string> _pmcRoles = typeof(PmcBots)
         .GetFields()
         .Select(x => (string)x.GetValue(null)!)
         .ToHashSet(StringComparer.Ordinal);
@@ -281,12 +281,7 @@ public class BotConfigHelper(
         // Grenade Launcher
         pmcEquipment.WeaponSightWhitelist.TryAdd(
             "5447bedf4bdc2d87278b4568",
-            [
-                "55818ad54bdc2ddc698b4569",
-                "55818add4bdc2d5b648b456f",
-                "55818ac54bdc2d5b648b456e",
-                "55818aeb4bdc2ddc698b456a",
-            ]
+            ["55818ad54bdc2ddc698b4569", "55818add4bdc2d5b648b456f", "55818ac54bdc2d5b648b456e", "55818aeb4bdc2ddc698b456a"]
         );
         // MachineGun
         pmcEquipment.WeaponSightWhitelist.TryAdd(
@@ -333,12 +328,7 @@ public class BotConfigHelper(
         //Sniper Rifle
         pmcEquipment.WeaponSightWhitelist.TryAdd(
             "5447b6254bdc2dc3278b4568",
-            [
-                "55818ae44bdc2dde698b456c",
-                "55818ac54bdc2d5b648b456e",
-                "55818aeb4bdc2ddc698b456a",
-                "55818add4bdc2d5b648b456f",
-            ]
+            ["55818ae44bdc2dde698b456c", "55818ac54bdc2d5b648b456e", "55818aeb4bdc2ddc698b456a", "55818add4bdc2d5b648b456f"]
         );
     }
 
@@ -366,36 +356,16 @@ public class BotConfigHelper(
             return;
         }
         apbsLogger.Debug("Setting Pmc Game Version Weights");
-        pmcConfig.GameVersionWeight["standard"] = ModConfig
-            .Config
-            .PmcBots
-            .AdditionalOptions
-            .GameVersionWeighting
-            .Standard;
-        pmcConfig.GameVersionWeight["left_behind"] = ModConfig
-            .Config
-            .PmcBots
-            .AdditionalOptions
-            .GameVersionWeighting
-            .LeftBehind;
+        pmcConfig.GameVersionWeight["standard"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.Standard;
+        pmcConfig.GameVersionWeight["left_behind"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.LeftBehind;
         pmcConfig.GameVersionWeight["prepare_for_escape"] = ModConfig
             .Config
             .PmcBots
             .AdditionalOptions
             .GameVersionWeighting
             .PrepareForEscape;
-        pmcConfig.GameVersionWeight["edge_of_darkness"] = ModConfig
-            .Config
-            .PmcBots
-            .AdditionalOptions
-            .GameVersionWeighting
-            .EdgeOfDarkness;
-        pmcConfig.GameVersionWeight["unheard_edition"] = ModConfig
-            .Config
-            .PmcBots
-            .AdditionalOptions
-            .GameVersionWeighting
-            .UnheardEdition;
+        pmcConfig.GameVersionWeight["edge_of_darkness"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.EdgeOfDarkness;
+        pmcConfig.GameVersionWeight["unheard_edition"] = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionWeighting.UnheardEdition;
     }
 
     private void PmcPlateClasses()
@@ -408,7 +378,7 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (!PmcRoles.Contains(botType))
+            if (!_pmcRoles.Contains(botType))
             {
                 continue;
             }
@@ -449,11 +419,7 @@ public class BotConfigHelper(
     {
         var keyConfig = ModConfig.Config.ScavBots.KeyConfig;
 
-        if (
-            !keyConfig.AddAllKeysToScavs
-            && !keyConfig.AddOnlyKeyCardsToScavs
-            && !keyConfig.AddOnlyMechanicalKeysToScavs
-        )
+        if (!keyConfig.AddAllKeysToScavs && !keyConfig.AddOnlyKeyCardsToScavs && !keyConfig.AddOnlyMechanicalKeysToScavs)
         {
             return;
         }
@@ -461,24 +427,19 @@ public class BotConfigHelper(
         var bots = botTable.Types;
         if (!bots.TryGetValue("assault", out var assaultBot) || assaultBot is null)
         {
-            apbsLogger.Warning(
-                "[ScavKeyConfig] Assault bot type not found. Key assignment aborted."
-            );
+            apbsLogger.Warning("[ScavKeyConfig] Assault bot type not found. Key assignment aborted.");
             return;
         }
 
         var filteredKeyItems = templateTable
             .Items.Values.Where(item =>
-                itemHelper.IsOfBaseclass(item.Id, GetKeyConfig())
-                && !VanillaItemConstants.LabyrinthKeys.Contains(item.Id)
+                itemHelper.IsOfBaseclass(item.Id, GetKeyConfig()) && !VanillaItemConstants.LabyrinthKeys.Contains(item.Id)
             )
             .ToList();
 
         if (filteredKeyItems.Count == 0)
         {
-            apbsLogger.Warning(
-                "[ScavKeyConfig] No matching key items found. Key assignment aborted."
-            );
+            apbsLogger.Warning("[ScavKeyConfig] No matching key items found. Key assignment aborted.");
             return;
         }
 
@@ -487,18 +448,13 @@ public class BotConfigHelper(
         var keyProbability = keyConfig.KeyProbability;
         if (keyProbability > 0.5)
         {
-            apbsLogger.Warning(
-                $"[ScavKeyConfig] KeyProbability of {keyProbability} exceeds max of 0.5. Capping to 0.5."
-            );
+            apbsLogger.Warning($"[ScavKeyConfig] KeyProbability of {keyProbability} exceeds max of 0.5. Capping to 0.5.");
             keyProbability = 0.5;
         }
 
-        var nonKeyWeight = assaultBot
-            .BotInventory.Items.Backpack.Where(kvp => !filteredKeyIds.Contains(kvp.Key))
-            .Sum(kvp => kvp.Value);
+        var nonKeyWeight = assaultBot.BotInventory.Items.Backpack.Where(kvp => !filteredKeyIds.Contains(kvp.Key)).Sum(kvp => kvp.Value);
 
-        var totalKeyWeight = (int)
-            Math.Ceiling(nonKeyWeight * keyProbability / (1 - keyProbability));
+        var totalKeyWeight = (int)Math.Ceiling(nonKeyWeight * keyProbability / (1 - keyProbability));
 
         var assaultBotCount = 0;
         var assaultBotTotalWeight = 0;
@@ -515,26 +471,26 @@ public class BotConfigHelper(
         }
 
         var totalBackpackWeight = nonKeyWeight + assaultBotTotalWeight;
-        var actualKeyChance =
-            totalBackpackWeight > 0 ? assaultBotTotalWeight / totalBackpackWeight : 0;
+        var actualKeyChance = totalBackpackWeight > 0 ? assaultBotTotalWeight / totalBackpackWeight : 0;
 
         apbsLogger.Debug(
             $"Added {assaultBotCount} key types to Scavs, Key Class Config: {GetKeyConfig()}, Target Key Probability: {keyProbability:P2} - Actual Key Chance (per item roll): {actualKeyChance:P2}"
         );
     }
 
-    private MongoId GetKeyConfig() =>
-        ModConfig.Config.ScavBots.KeyConfig.AddAllKeysToScavs ? BaseClasses.KEY
-        : ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs
-            ? BaseClasses.KEY_MECHANICAL
-        : BaseClasses.KEYCARD;
+    private MongoId GetKeyConfig()
+    {
+        return ModConfig.Config.ScavBots.KeyConfig.AddAllKeysToScavs ? BaseClasses.KEY
+            : ModConfig.Config.ScavBots.KeyConfig.AddOnlyMechanicalKeysToScavs ? BaseClasses.KEY_MECHANICAL
+            : BaseClasses.KEYCARD;
+    }
 
     private void ScavLoot()
     {
         if (!ModConfig.Config.ScavBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Scav Loot");
-            foreach (var bot in ScavRoles)
+            foreach (var bot in _scavRoles)
             {
                 botConfig.DisableLootOnBotTypes.Add(bot);
             }
@@ -544,7 +500,7 @@ public class BotConfigHelper(
             var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
-                if (!ScavRoles.Contains(botType))
+                if (!_scavRoles.Contains(botType))
                 {
                     continue;
                 }
@@ -594,82 +550,26 @@ public class BotConfigHelper(
         }
 
         apbsLogger.Debug("Setting Scav Level Deltas");
-        tierInformation.Tiers[0].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier1
-            .Min;
-        tierInformation.Tiers[0].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier1
-            .Max;
+        tierInformation.Tiers[0].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Min;
+        tierInformation.Tiers[0].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Max;
 
-        tierInformation.Tiers[1].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier2
-            .Min;
-        tierInformation.Tiers[1].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier2
-            .Max;
+        tierInformation.Tiers[1].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier2.Min;
+        tierInformation.Tiers[1].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier2.Max;
 
-        tierInformation.Tiers[2].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier3
-            .Min;
-        tierInformation.Tiers[2].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier3
-            .Max;
+        tierInformation.Tiers[2].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier3.Min;
+        tierInformation.Tiers[2].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier3.Max;
 
-        tierInformation.Tiers[3].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier4
-            .Min;
-        tierInformation.Tiers[3].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier4
-            .Max;
+        tierInformation.Tiers[3].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier4.Min;
+        tierInformation.Tiers[3].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier4.Max;
 
-        tierInformation.Tiers[4].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier5
-            .Min;
-        tierInformation.Tiers[4].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier5
-            .Max;
+        tierInformation.Tiers[4].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier5.Min;
+        tierInformation.Tiers[4].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier5.Max;
 
-        tierInformation.Tiers[5].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier6
-            .Min;
-        tierInformation.Tiers[5].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier6
-            .Max;
+        tierInformation.Tiers[5].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier6.Min;
+        tierInformation.Tiers[5].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier6.Max;
 
-        tierInformation.Tiers[6].ScavMinLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier7
-            .Min;
-        tierInformation.Tiers[6].ScavMaxLevelVariance = ModConfig
-            .Config
-            .CustomScavLevelDeltas
-            .Tier7
-            .Max;
+        tierInformation.Tiers[6].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier7.Min;
+        tierInformation.Tiers[6].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier7.Max;
     }
 
     private void ScavPlateClasses()
@@ -682,7 +582,7 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (!ScavRoles.Contains(botType))
+            if (!_scavRoles.Contains(botType))
             {
                 continue;
             }
@@ -768,7 +668,7 @@ public class BotConfigHelper(
         if (!ModConfig.Config.BossBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Boss Loot");
-            foreach (var botType in BossRoles)
+            foreach (var botType in _bossRoles)
             {
                 botConfig.DisableLootOnBotTypes.Add(botType);
             }
@@ -778,7 +678,7 @@ public class BotConfigHelper(
             var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
-                if (!BossRoles.Contains(botType))
+                if (!_bossRoles.Contains(botType))
                 {
                     continue;
                 }
@@ -807,7 +707,7 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (!BossRoles.Contains(botType))
+            if (!_bossRoles.Contains(botType))
             {
                 continue;
             }
@@ -848,7 +748,7 @@ public class BotConfigHelper(
         if (!ModConfig.Config.FollowerBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Follower Loot");
-            foreach (var botType in FollowerRoles)
+            foreach (var botType in _followerRoles)
             {
                 botConfig.DisableLootOnBotTypes.Add(botType);
             }
@@ -858,7 +758,7 @@ public class BotConfigHelper(
             var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
-                if (!FollowerRoles.Contains(botType))
+                if (!_followerRoles.Contains(botType))
                 {
                     continue;
                 }
@@ -886,7 +786,7 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (!FollowerRoles.Contains(botType))
+            if (!_followerRoles.Contains(botType))
             {
                 continue;
             }
@@ -927,7 +827,7 @@ public class BotConfigHelper(
         if (!ModConfig.Config.SpecialBots.LootConfig.Enable)
         {
             apbsLogger.Debug("Disabling Special Bot Loot");
-            foreach (var botType in SpecialRoles)
+            foreach (var botType in _specialRoles)
             {
                 botConfig.DisableLootOnBotTypes.Add(botType);
             }
@@ -937,7 +837,7 @@ public class BotConfigHelper(
             var bots = botTable.Types;
             foreach (var (botType, data) in bots)
             {
-                if (!SpecialRoles.Contains(botType))
+                if (!_specialRoles.Contains(botType))
                 {
                     continue;
                 }
@@ -965,7 +865,7 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (!SpecialRoles.Contains(botType))
+            if (!_specialRoles.Contains(botType))
             {
                 continue;
             }
@@ -1035,8 +935,7 @@ public class BotConfigHelper(
                 continue;
             }
             botConfigEquipment[botType]!.Randomisation = new List<RandomisationDetails>();
-            botConfigEquipment[botType]!.WeightingAdjustmentsByBotLevel =
-                new List<WeightingAdjustmentDetails>();
+            botConfigEquipment[botType]!.WeightingAdjustmentsByBotLevel = new List<WeightingAdjustmentDetails>();
         }
     }
 
@@ -1061,120 +960,40 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.WeaponDurability.Enable)
+            if (_scavRoles.Contains(botType) && ModConfig.Config.ScavBots.WeaponDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig
-                    .Config
-                    .ScavBots
-                    .WeaponDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig
-                    .Config
-                    .ScavBots
-                    .WeaponDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig
-                    .Config
-                    .ScavBots
-                    .WeaponDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig
-                    .Config
-                    .ScavBots
-                    .WeaponDurability
-                    .MinDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig
-                    .Config
-                    .ScavBots
-                    .WeaponDurability
-                    .MinLimitPercent;
+                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.ScavBots.WeaponDurability.Max;
+                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.ScavBots.WeaponDurability.Min;
+                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.ScavBots.WeaponDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.ScavBots.WeaponDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.ScavBots.WeaponDurability.MinLimitPercent;
             }
-            else if (
-                BossRoles.Contains(botType) && ModConfig.Config.BossBots.WeaponDurability.Enable
-            )
+            else if (_bossRoles.Contains(botType) && ModConfig.Config.BossBots.WeaponDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig
-                    .Config
-                    .BossBots
-                    .WeaponDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig
-                    .Config
-                    .BossBots
-                    .WeaponDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig
-                    .Config
-                    .BossBots
-                    .WeaponDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig
-                    .Config
-                    .BossBots
-                    .WeaponDurability
-                    .MinDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig
-                    .Config
-                    .BossBots
-                    .WeaponDurability
-                    .MinLimitPercent;
+                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.BossBots.WeaponDurability.Max;
+                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.BossBots.WeaponDurability.Min;
+                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.BossBots.WeaponDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.BossBots.WeaponDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig.Config.BossBots.WeaponDurability.MinLimitPercent;
             }
-            else if (
-                FollowerRoles.Contains(botType)
-                && ModConfig.Config.FollowerBots.WeaponDurability.Enable
-            )
+            else if (_followerRoles.Contains(botType) && ModConfig.Config.FollowerBots.WeaponDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig
-                    .Config
-                    .FollowerBots
-                    .WeaponDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig
-                    .Config
-                    .FollowerBots
-                    .WeaponDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig
-                    .Config
-                    .FollowerBots
-                    .WeaponDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig
-                    .Config
-                    .FollowerBots
-                    .WeaponDurability
-                    .MinDelta;
+                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.FollowerBots.WeaponDurability.Max;
+                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.FollowerBots.WeaponDurability.Min;
+                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.FollowerBots.WeaponDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.FollowerBots.WeaponDurability.MinDelta;
                 botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig
                     .Config
                     .FollowerBots
                     .WeaponDurability
                     .MinLimitPercent;
             }
-            else if (
-                SpecialRoles.Contains(botType)
-                && ModConfig.Config.SpecialBots.WeaponDurability.Enable
-            )
+            else if (_specialRoles.Contains(botType) && ModConfig.Config.SpecialBots.WeaponDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig
-                    .Config
-                    .SpecialBots
-                    .WeaponDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig
-                    .Config
-                    .SpecialBots
-                    .WeaponDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig
-                    .Config
-                    .SpecialBots
-                    .WeaponDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig
-                    .Config
-                    .SpecialBots
-                    .WeaponDurability
-                    .MinDelta;
+                botDurability.BotDurabilities[botType].Weapon.HighestMax = ModConfig.Config.SpecialBots.WeaponDurability.Max;
+                botDurability.BotDurabilities[botType].Weapon.LowestMax = ModConfig.Config.SpecialBots.WeaponDurability.Min;
+                botDurability.BotDurabilities[botType].Weapon.MaxDelta = ModConfig.Config.SpecialBots.WeaponDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Weapon.MinDelta = ModConfig.Config.SpecialBots.WeaponDurability.MinDelta;
                 botDurability.BotDurabilities[botType].Weapon.MinLimitPercent = ModConfig
                     .Config
                     .SpecialBots
@@ -1192,11 +1011,7 @@ public class BotConfigHelper(
         botDurability.Pmc.Weapon.LowestMax = ModConfig.Config.PmcBots.WeaponDurability.Min;
         botDurability.Pmc.Weapon.MaxDelta = ModConfig.Config.PmcBots.WeaponDurability.MaxDelta;
         botDurability.Pmc.Weapon.MinDelta = ModConfig.Config.PmcBots.WeaponDurability.MinDelta;
-        botDurability.Pmc.Weapon.MinLimitPercent = ModConfig
-            .Config
-            .PmcBots
-            .WeaponDurability
-            .MinLimitPercent;
+        botDurability.Pmc.Weapon.MinLimitPercent = ModConfig.Config.PmcBots.WeaponDurability.MinLimitPercent;
     }
 
     private void SetArmourDurability()
@@ -1209,120 +1024,40 @@ public class BotConfigHelper(
             {
                 continue;
             }
-            if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.ArmourDurability.Enable)
+            if (_scavRoles.Contains(botType) && ModConfig.Config.ScavBots.ArmourDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig
-                    .Config
-                    .ScavBots
-                    .ArmourDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig
-                    .Config
-                    .ScavBots
-                    .ArmourDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig
-                    .Config
-                    .ScavBots
-                    .ArmourDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig
-                    .Config
-                    .ScavBots
-                    .ArmourDurability
-                    .MinDelta;
-                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig
-                    .Config
-                    .ScavBots
-                    .ArmourDurability
-                    .MinLimitPercent;
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.ScavBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.ScavBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.ScavBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.ScavBots.ArmourDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig.Config.ScavBots.ArmourDurability.MinLimitPercent;
             }
-            else if (
-                BossRoles.Contains(botType) && ModConfig.Config.BossBots.ArmourDurability.Enable
-            )
+            else if (_bossRoles.Contains(botType) && ModConfig.Config.BossBots.ArmourDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig
-                    .Config
-                    .BossBots
-                    .ArmourDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig
-                    .Config
-                    .BossBots
-                    .ArmourDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig
-                    .Config
-                    .BossBots
-                    .ArmourDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig
-                    .Config
-                    .BossBots
-                    .ArmourDurability
-                    .MinDelta;
-                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig
-                    .Config
-                    .BossBots
-                    .ArmourDurability
-                    .MinLimitPercent;
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.BossBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.BossBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.BossBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.BossBots.ArmourDurability.MinDelta;
+                botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig.Config.BossBots.ArmourDurability.MinLimitPercent;
             }
-            else if (
-                FollowerRoles.Contains(botType)
-                && ModConfig.Config.FollowerBots.ArmourDurability.Enable
-            )
+            else if (_followerRoles.Contains(botType) && ModConfig.Config.FollowerBots.ArmourDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig
-                    .Config
-                    .FollowerBots
-                    .ArmourDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig
-                    .Config
-                    .FollowerBots
-                    .ArmourDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig
-                    .Config
-                    .FollowerBots
-                    .ArmourDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig
-                    .Config
-                    .FollowerBots
-                    .ArmourDurability
-                    .MinDelta;
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.FollowerBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.FollowerBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.FollowerBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.FollowerBots.ArmourDurability.MinDelta;
                 botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig
                     .Config
                     .FollowerBots
                     .ArmourDurability
                     .MinLimitPercent;
             }
-            else if (
-                SpecialRoles.Contains(botType)
-                && ModConfig.Config.SpecialBots.ArmourDurability.Enable
-            )
+            else if (_specialRoles.Contains(botType) && ModConfig.Config.SpecialBots.ArmourDurability.Enable)
             {
-                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig
-                    .Config
-                    .SpecialBots
-                    .ArmourDurability
-                    .Max;
-                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig
-                    .Config
-                    .SpecialBots
-                    .ArmourDurability
-                    .Min;
-                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig
-                    .Config
-                    .SpecialBots
-                    .ArmourDurability
-                    .MaxDelta;
-                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig
-                    .Config
-                    .SpecialBots
-                    .ArmourDurability
-                    .MinDelta;
+                botDurability.BotDurabilities[botType].Armor.HighestMaxPercent = ModConfig.Config.SpecialBots.ArmourDurability.Max;
+                botDurability.BotDurabilities[botType].Armor.LowestMaxPercent = ModConfig.Config.SpecialBots.ArmourDurability.Min;
+                botDurability.BotDurabilities[botType].Armor.MaxDelta = ModConfig.Config.SpecialBots.ArmourDurability.MaxDelta;
+                botDurability.BotDurabilities[botType].Armor.MinDelta = ModConfig.Config.SpecialBots.ArmourDurability.MinDelta;
                 botDurability.BotDurabilities[botType].Armor.MinLimitPercent = ModConfig
                     .Config
                     .SpecialBots
@@ -1340,11 +1075,7 @@ public class BotConfigHelper(
         botDurability.Pmc.Armor.LowestMaxPercent = ModConfig.Config.PmcBots.ArmourDurability.Min;
         botDurability.Pmc.Armor.MaxDelta = ModConfig.Config.PmcBots.ArmourDurability.MaxDelta;
         botDurability.Pmc.Armor.MinDelta = ModConfig.Config.PmcBots.ArmourDurability.MinDelta;
-        botDurability.Pmc.Armor.MinLimitPercent = ModConfig
-            .Config
-            .PmcBots
-            .ArmourDurability
-            .MinLimitPercent;
+        botDurability.Pmc.Armor.MinLimitPercent = ModConfig.Config.PmcBots.ArmourDurability.MinLimitPercent;
     }
 
     private void AdjustNvGs()
@@ -1403,33 +1134,27 @@ public class BotConfigHelper(
 
     private ResourceRandomizationConfig? GetResourceRandomizationConfig(string botType)
     {
-        if (PmcRoles.Contains(botType) && ModConfig.Config.PmcBots.ResourceRandomization.Enable)
+        if (_pmcRoles.Contains(botType) && ModConfig.Config.PmcBots.ResourceRandomization.Enable)
         {
             return ModConfig.Config.PmcBots.ResourceRandomization;
         }
 
-        if (ScavRoles.Contains(botType) && ModConfig.Config.ScavBots.ResourceRandomization.Enable)
+        if (_scavRoles.Contains(botType) && ModConfig.Config.ScavBots.ResourceRandomization.Enable)
         {
             return ModConfig.Config.ScavBots.ResourceRandomization;
         }
 
-        if (BossRoles.Contains(botType) && ModConfig.Config.BossBots.ResourceRandomization.Enable)
+        if (_bossRoles.Contains(botType) && ModConfig.Config.BossBots.ResourceRandomization.Enable)
         {
             return ModConfig.Config.BossBots.ResourceRandomization;
         }
 
-        if (
-            FollowerRoles.Contains(botType)
-            && ModConfig.Config.FollowerBots.ResourceRandomization.Enable
-        )
+        if (_followerRoles.Contains(botType) && ModConfig.Config.FollowerBots.ResourceRandomization.Enable)
         {
             return ModConfig.Config.FollowerBots.ResourceRandomization;
         }
 
-        if (
-            SpecialRoles.Contains(botType)
-            && ModConfig.Config.SpecialBots.ResourceRandomization.Enable
-        )
+        if (_specialRoles.Contains(botType) && ModConfig.Config.SpecialBots.ResourceRandomization.Enable)
         {
             return ModConfig.Config.SpecialBots.ResourceRandomization;
         }
@@ -1463,24 +1188,15 @@ public class BotConfigHelper(
             data.WeaponModLimits.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
         }
 
-        botConfigEquipment["pmc"]!.WeaponModLimits!.ScopeLimit = ModConfig
-            .Config
-            .GeneralConfig
-            .ScopeLimit;
-        botConfigEquipment["pmc"]!.WeaponModLimits!.LightLaserLimit = ModConfig
-            .Config
-            .GeneralConfig
-            .TacticalLimit;
+        botConfigEquipment["pmc"]!.WeaponModLimits!.ScopeLimit = ModConfig.Config.GeneralConfig.ScopeLimit;
+        botConfigEquipment["pmc"]!.WeaponModLimits!.LightLaserLimit = ModConfig.Config.GeneralConfig.TacticalLimit;
     }
 
     private void AmmoStackCompatibility()
     {
         apbsLogger.Debug("Setting Bot Secure Container Ammo Stack Compatibility");
 
-        botConfig.SecureContainerAmmoStackCount = ModConfig
-            .Config
-            .CompatibilityConfig
-            .GeneralSecureContainerAmmoStacks;
+        botConfig.SecureContainerAmmoStackCount = ModConfig.Config.CompatibilityConfig.GeneralSecureContainerAmmoStacks;
     }
 
     private void EnableHalloweenEvent()
@@ -1534,17 +1250,9 @@ public class BotConfigHelper(
             }
 
             var modsData = GetTierModsData(i);
-            if (
-                modsData.TryGetValue(
-                    ItemTpl.HEADWEAR_MASKA1SCH_BULLETPROOF_HELMET_CHRISTMAS_EDITION,
-                    out var killaChristmasHelmet
-                )
-            )
+            if (modsData.TryGetValue(ItemTpl.HEADWEAR_MASKA1SCH_BULLETPROOF_HELMET_CHRISTMAS_EDITION, out var killaChristmasHelmet))
             {
-                killaChristmasHelmet["mod_equipment"] =
-                [
-                    ItemTpl.ARMOREDEQUIPMENT_MASKA1SCH_FACE_SHIELD_KILLA_EDITION,
-                ];
+                killaChristmasHelmet["mod_equipment"] = [ItemTpl.ARMOREDEQUIPMENT_MASKA1SCH_FACE_SHIELD_KILLA_EDITION];
             }
 
             var chanceData = GetTierChancesData(i);
@@ -1583,10 +1291,7 @@ public class BotConfigHelper(
             var isBear = botType == "bear";
             var isUsec = botType == "usec";
 
-            var shouldSkip =
-                excluded.Contains(botType)
-                || isBear && excluded.Contains("pmcbear")
-                || isUsec && excluded.Contains("pmcusec");
+            var shouldSkip = excluded.Contains(botType) || isBear && excluded.Contains("pmcbear") || isUsec && excluded.Contains("pmcusec");
 
             if (shouldSkip)
             {
@@ -1604,46 +1309,30 @@ public class BotConfigHelper(
                 if (ModConfig.Config.NormalizedHealthPool.SetHead)
                 {
                     bodyPart.Head.Min =
-                        ModConfig.Config.NormalizedHealthPool.HealthHead > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthHead
-                            : 35;
+                        ModConfig.Config.NormalizedHealthPool.HealthHead > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 35;
                     bodyPart.Head.Max =
-                        ModConfig.Config.NormalizedHealthPool.HealthHead > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthHead
-                            : 35;
+                        ModConfig.Config.NormalizedHealthPool.HealthHead > 0 ? ModConfig.Config.NormalizedHealthPool.HealthHead : 35;
                 }
                 if (ModConfig.Config.NormalizedHealthPool.SetChest)
                 {
                     bodyPart.Chest.Min =
-                        ModConfig.Config.NormalizedHealthPool.HealthChest > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthChest
-                            : 85;
+                        ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthChest : 85;
                     bodyPart.Chest.Max =
-                        ModConfig.Config.NormalizedHealthPool.HealthChest > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthChest
-                            : 85;
+                        ModConfig.Config.NormalizedHealthPool.HealthChest > 0 ? ModConfig.Config.NormalizedHealthPool.HealthChest : 85;
                 }
                 if (ModConfig.Config.NormalizedHealthPool.SetStomach)
                 {
                     bodyPart.Stomach.Min =
-                        ModConfig.Config.NormalizedHealthPool.HealthStomach > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthStomach
-                            : 70;
+                        ModConfig.Config.NormalizedHealthPool.HealthStomach > 0 ? ModConfig.Config.NormalizedHealthPool.HealthStomach : 70;
                     bodyPart.Stomach.Max =
-                        ModConfig.Config.NormalizedHealthPool.HealthStomach > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthStomach
-                            : 70;
+                        ModConfig.Config.NormalizedHealthPool.HealthStomach > 0 ? ModConfig.Config.NormalizedHealthPool.HealthStomach : 70;
                 }
                 if (ModConfig.Config.NormalizedHealthPool.SetLeftArm)
                 {
                     bodyPart.LeftArm.Min =
-                        ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm
-                            : 60;
+                        ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm : 60;
                     bodyPart.LeftArm.Max =
-                        ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm
-                            : 60;
+                        ModConfig.Config.NormalizedHealthPool.HealthLeftArm > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftArm : 60;
                 }
                 if (ModConfig.Config.NormalizedHealthPool.SetRightArm)
                 {
@@ -1659,13 +1348,9 @@ public class BotConfigHelper(
                 if (ModConfig.Config.NormalizedHealthPool.SetLeftLeg)
                 {
                     bodyPart.LeftLeg.Min =
-                        ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg
-                            : 65;
+                        ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg : 65;
                     bodyPart.LeftLeg.Max =
-                        ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0
-                            ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg
-                            : 65;
+                        ModConfig.Config.NormalizedHealthPool.HealthLeftLeg > 0 ? ModConfig.Config.NormalizedHealthPool.HealthLeftLeg : 65;
                 }
                 if (ModConfig.Config.NormalizedHealthPool.SetRightLeg)
                 {
@@ -1709,9 +1394,7 @@ public class BotConfigHelper(
                 }
                 if (skill is "BotReload" or "BotSound")
                 {
-                    apbsLogger.Debug(
-                        $"[SKILL NORMALIZATION] Removed Skill: {skill} from {botType}"
-                    );
+                    apbsLogger.Debug($"[SKILL NORMALIZATION] Removed Skill: {skill} from {botType}");
                     data.BotSkills.Common.Remove(skill);
                 }
 
@@ -1728,22 +1411,14 @@ public class BotConfigHelper(
         apbsLogger.Debug("Removing T7 Thermals from Database");
         for (var i = 1; i <= 7; i++)
         {
-            if (
-                ModConfig.Config.GeneralConfig.EnableT7Thermals
-                && i >= ModConfig.Config.GeneralConfig.StartTier
-            )
+            if (ModConfig.Config.GeneralConfig.EnableT7Thermals && i >= ModConfig.Config.GeneralConfig.StartTier)
             {
                 continue;
             }
 
             var modsData = GetTierModsData(i);
 
-            if (
-                !modsData.TryGetValue(
-                    ItemTpl.MOUNT_NOROTOS_TITANIUM_ADVANCED_TACTICAL,
-                    out var tatmMods
-                )
-            )
+            if (!modsData.TryGetValue(ItemTpl.MOUNT_NOROTOS_TITANIUM_ADVANCED_TACTICAL, out var tatmMods))
             {
                 continue;
             }
@@ -1789,8 +1464,7 @@ public class BotConfigHelper(
                         continue;
                     }
 
-                    var chancesDict =
-                        chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
+                    var chancesDict = chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
                     if (chancesDict == null)
                     {
                         continue;
@@ -1800,37 +1474,25 @@ public class BotConfigHelper(
                     {
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.PmcMainPlateChance[indexPosition],
                             ["back_plate", "front_plate"]
                         );
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.PmcSidePlateChance[indexPosition],
                             ["left_side_plate", "right_side_plate"]
                         );
                     }
-                    if (
-                        botType == "followerbirdeye"
-                        || botType == "followerbigpipe"
-                        || botType.Contains("boss")
-                    )
+                    if (botType == "followerbirdeye" || botType == "followerbigpipe" || botType.Contains("boss"))
                     {
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.BossMainPlateChance[indexPosition],
                             ["back_plate", "front_plate"]
                         );
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.BossSidePlateChance[indexPosition],
                             ["left_side_plate", "right_side_plate"]
                         );
                     }
@@ -1838,16 +1500,12 @@ public class BotConfigHelper(
                     {
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.ScavMainPlateChance[indexPosition],
                             ["back_plate", "front_plate"]
                         );
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.ScavSidePlateChance[indexPosition],
                             ["left_side_plate", "right_side_plate"]
                         );
                     }
@@ -1855,16 +1513,12 @@ public class BotConfigHelper(
                     {
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.SpecialMainPlateChance[indexPosition],
                             ["back_plate", "front_plate"]
                         );
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.SpecialSidePlateChance[indexPosition],
                             ["left_side_plate", "right_side_plate"]
                         );
                     }
@@ -1872,16 +1526,12 @@ public class BotConfigHelper(
                     {
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.FollowerMainPlateChance[indexPosition],
                             ["back_plate", "front_plate"]
                         );
                         SetModChance(
                             chancesDict,
-                            ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance[
-                                indexPosition
-                            ],
+                            ModConfig.Config.GeneralConfig.PlateChances.FollowerSidePlateChance[indexPosition],
                             ["left_side_plate", "right_side_plate"]
                         );
                     }
@@ -1912,32 +1562,18 @@ public class BotConfigHelper(
                 foreach (var chanceProp in typeof(ApbsChances).GetProperties())
                 {
                     var keyName = chanceProp.Name;
-                    if (
-                        keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase)
-                        || keyName == "Generation"
-                    )
+                    if (keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase) || keyName == "Generation")
                     {
                         continue;
                     }
 
-                    var chancesDict =
-                        chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
+                    var chancesDict = chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
                     if (chancesDict == null)
                     {
                         continue;
                     }
 
-                    SetModChance(
-                        chancesDict,
-                        100,
-                        [
-                            "mod_stock",
-                            "mod_stock_000",
-                            "mod_stock_001",
-                            "mod_stock_akms",
-                            "mod_stock_axis",
-                        ]
-                    );
+                    SetModChance(chancesDict, 100, ["mod_stock", "mod_stock_000", "mod_stock_001", "mod_stock_akms", "mod_stock_axis"]);
                 }
             }
         }
@@ -1965,16 +1601,12 @@ public class BotConfigHelper(
                 foreach (var chanceProp in typeof(ApbsChances).GetProperties())
                 {
                     var keyName = chanceProp.Name;
-                    if (
-                        keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase)
-                        || keyName == "Generation"
-                    )
+                    if (keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase) || keyName == "Generation")
                     {
                         continue;
                     }
 
-                    var chancesDict =
-                        chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
+                    var chancesDict = chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
                     if (chancesDict == null)
                     {
                         continue;
@@ -2008,16 +1640,12 @@ public class BotConfigHelper(
                 foreach (var chanceProp in typeof(ApbsChances).GetProperties())
                 {
                     var keyName = chanceProp.Name;
-                    if (
-                        keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase)
-                        || keyName == "Generation"
-                    )
+                    if (keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase) || keyName == "Generation")
                     {
                         continue;
                     }
 
-                    var chancesDict =
-                        chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
+                    var chancesDict = chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
                     if (chancesDict == null)
                     {
                         continue;
@@ -2052,27 +1680,19 @@ public class BotConfigHelper(
                 foreach (var chanceProp in typeof(ApbsChances).GetProperties())
                 {
                     var keyName = chanceProp.Name;
-                    if (
-                        keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase)
-                        || keyName == "Generation"
-                    )
+                    if (keyName.Contains("Equipment", StringComparison.OrdinalIgnoreCase) || keyName == "Generation")
                     {
                         continue;
                     }
 
-                    var chancesDict =
-                        chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
+                    var chancesDict = chanceProp.GetValue(data.Chances) as Dictionary<string, double>;
                     if (chancesDict == null)
                     {
                         continue;
                     }
 
                     var muzzleChance = ModConfig.Config.GeneralConfig.MuzzleChance[indexPosition];
-                    SetModChance(
-                        chancesDict,
-                        muzzleChance,
-                        ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"]
-                    );
+                    SetModChance(chancesDict, muzzleChance, ["mod_muzzle", "mod_muzzle_000", "mod_muzzle_001"]);
                 }
             }
         }
@@ -2092,36 +1712,44 @@ public class BotConfigHelper(
     ///     Returns the ChancesTierData for the given tier.
     ///     Throws if the tier is not between 1 and 7.
     /// </summary>
-    private ChancesTierData GetTierChancesData(int tier) =>
-        !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+    private ChancesTierData GetTierChancesData(int tier)
+    {
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
             ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.")
             : tierData.ChancesData;
+    }
 
     /// <summary>
     ///     Returns the AmmoTierData for the given tier.
     ///     Throws if the tier is not between 1 and 7.
     /// </summary>
-    private AmmoTierData GetTierAmmoData(int tier) =>
-        !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+    private AmmoTierData GetTierAmmoData(int tier)
+    {
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
             ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.")
             : tierData.AmmoData;
+    }
 
     /// <summary>
     ///     Returns the Mods dictionary for the given tier.
     ///     Throws if the tier is not between 1 and 7.
     /// </summary>
-    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierModsData(int tier) =>
-        !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+    private Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetTierModsData(int tier)
+    {
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
             ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.")
             : tierData.ModsData;
+    }
 
     /// <summary>
     ///     Returns the EquipmentTierData for the given tier.
     ///     Throws if the tier is not between 1 and 7.
     /// </summary>
-    private EquipmentTierData GetTierEquipmentData(int tier) =>
-        !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+    private EquipmentTierData GetTierEquipmentData(int tier)
+    {
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
             ? throw new ArgumentOutOfRangeException(nameof(tier), $"Tier {tier} is invalid.")
             : tierData.EquipmentData;
+    }
     #endregion
 }

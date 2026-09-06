@@ -1,11 +1,8 @@
-﻿using Path = System.IO.Path;
-
-namespace ProgressiveBotSystem.Helpers;
-
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Frozen;
-using Globals;
-using Models.Enums;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
@@ -13,7 +10,10 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Utils;
-using Utils;
+using Path = System.IO.Path;
+
+namespace ProgressiveBotSystem.Helpers;
+
 using Path = Path;
 
 [Injectable(InjectionType.Singleton)]
@@ -27,7 +27,7 @@ public class ItemImportHelper(
 )
 {
     // Custom Base classes
-    private static readonly MongoId BaseClassPackNStrapBelt = "6815465859b8c6ff13f94026";
+    private static readonly MongoId _baseClassPackNStrapBelt = "6815465859b8c6ff13f94026";
 
     private readonly FrozenSet<MongoId> _allImportableEquipmentBaseClasses =
     [
@@ -39,7 +39,7 @@ public class ItemImportHelper(
         BaseClasses.FACE_COVER,
         BaseClasses.HEADWEAR,
         BaseClasses.VEST,
-        BaseClassPackNStrapBelt,
+        _baseClassPackNStrapBelt,
     ];
 
     private readonly FrozenSet<MongoId> _allImportableWeaponBaseClasses =
@@ -321,43 +321,36 @@ public class ItemImportHelper(
     private Dictionary<string, HashSet<MongoId>> _vanillaAmmoDictionary = new();
     private HashSet<MongoId> _vanillaAmmoLookup = new();
     private HashSet<MongoId> _vanillaAttachmentLookup = new();
-    private Dictionary<
-        string,
-        Dictionary<string, HashSet<MongoId>>
-    > _vanillaClothingBotSlotDictionary = new();
+    private Dictionary<string, Dictionary<string, HashSet<MongoId>>> _vanillaClothingBotSlotDictionary = new();
     private HashSet<MongoId> _vanillaClothingLookup = new();
 
     private HashSet<MongoId> _vanillaEquipmentLookup = new();
 
-    private Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> _vanillaEquipmentSlotDictionary =
-        new();
+    private Dictionary<ApbsEquipmentSlots, HashSet<MongoId>> _vanillaEquipmentSlotDictionary = new();
 
     /// <summary>
     ///     Helper to skip importing entirely
     /// </summary>
-    public bool ShouldSkipImport() =>
-        !ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
-        && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments
-        && !ModConfig.Config.CompatibilityConfig.EnableModdedWeapons
-        && (
-            !ModConfig.Config.CompatibilityConfig.EnableModdedClothing
-            || ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance
-        );
+    public bool ShouldSkipImport()
+    {
+        return !ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
+            && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments
+            && !ModConfig.Config.CompatibilityConfig.EnableModdedWeapons
+            && (
+                !ModConfig.Config.CompatibilityConfig.EnableModdedClothing
+                || ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance
+            );
+    }
 
     /// <summary>
     ///     Validates any configuration options, corrects them if needed and logs if they're invalid
     /// </summary>
     public void ValidateConfig()
     {
-        if (
-            ModConfig.Config.CompatibilityConfig.InitalTierAppearance < 1
-            || ModConfig.Config.CompatibilityConfig.InitalTierAppearance > 7
-        )
+        if (ModConfig.Config.CompatibilityConfig.InitalTierAppearance < 1 || ModConfig.Config.CompatibilityConfig.InitalTierAppearance > 7)
         {
             ModConfig.Config.CompatibilityConfig.InitalTierAppearance = 3;
-            apbsLogger.Error(
-                "Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp."
-            );
+            apbsLogger.Error("Compatibility Config -> InitialTierAppearance is invalid. Defaulting to 3. Fix your config in the WebApp.");
         }
 
         _fullModConfigBlacklist = BuildFullModConfigBlacklistByTier();
@@ -419,16 +412,11 @@ public class ItemImportHelper(
         _vanillaAttachmentLookup = attachmentTask.Result;
         _vanillaClothingBotSlotDictionary = clothingTask.Result;
 
-        _vanillaEquipmentLookup = _vanillaEquipmentSlotDictionary
-            .SelectMany(x => x.Value)
-            .ToHashSet();
+        _vanillaEquipmentLookup = _vanillaEquipmentSlotDictionary.SelectMany(x => x.Value).ToHashSet();
 
         _vanillaAmmoLookup = _vanillaAmmoDictionary.SelectMany(x => x.Value).ToHashSet();
 
-        _vanillaClothingLookup = _vanillaClothingBotSlotDictionary
-            .SelectMany(x => x.Value)
-            .SelectMany(x => x.Value)
-            .ToHashSet();
+        _vanillaClothingLookup = _vanillaClothingBotSlotDictionary.SelectMany(x => x.Value).SelectMany(x => x.Value).ToHashSet();
 
         _alreadyRan = true;
     }
@@ -436,18 +424,11 @@ public class ItemImportHelper(
     /// <summary>
     ///     Deserializes all the weapon / equipment JSON's from the VanillaMappings and adds those items to the dictionary
     /// </summary>
-    private async Task<
-        Dictionary<ApbsEquipmentSlots, HashSet<MongoId>>
-    > ValidateVanillaEquipmentDatabase()
+    private async Task<Dictionary<ApbsEquipmentSlots, HashSet<MongoId>>> ValidateVanillaEquipmentDatabase()
     {
-        var returnDictionary = Enum.GetValues<ApbsEquipmentSlots>()
-            .ToDictionary(slot => slot, _ => new HashSet<MongoId>());
+        var returnDictionary = Enum.GetValues<ApbsEquipmentSlots>().ToDictionary(slot => slot, _ => new HashSet<MongoId>());
 
-        var primaryPath = Path.Combine(
-            ModConfig._modPath,
-            "GeneratedVanillaMappings-DO_NOT_TOUCH",
-            "PrimaryWeapon.json"
-        );
+        var primaryPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", "PrimaryWeapon.json");
         var primary =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(primaryPath)
             ?? throw new ArgumentNullException(nameof(primaryPath));
@@ -577,11 +558,7 @@ public class ItemImportHelper(
     ///     Adds item to the vanilla dictionary, this is a helper method
     ///     Called from ValidateVanillaAmmoDatabase
     /// </summary>
-    private async Task AddAmmoToCaliberAsync(
-        Dictionary<string, HashSet<MongoId>> dictionary,
-        string fileName,
-        string caliber
-    )
+    private async Task AddAmmoToCaliberAsync(Dictionary<string, HashSet<MongoId>> dictionary, string fileName, string caliber)
     {
         var items =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
@@ -644,9 +621,7 @@ public class ItemImportHelper(
     /// <summary>
     ///     Deserializes all the clothing JSON's from the VanillaMappings and adds those items to the dictionary
     /// </summary>
-    private async Task<
-        Dictionary<string, Dictionary<string, HashSet<MongoId>>>
-    > ValidateVanillaClothingDatabase()
+    private async Task<Dictionary<string, Dictionary<string, HashSet<MongoId>>>> ValidateVanillaClothingDatabase()
     {
         var returnDictionary = new Dictionary<string, Dictionary<string, HashSet<MongoId>>>();
 
@@ -671,9 +646,7 @@ public class ItemImportHelper(
         {
             foreach (var (slot, items) in slotDict)
             {
-                apbsLogger.Debug(
-                    $"[VANILLA] Clothing Side: {side}, Slot: {slot} contains {items.Count} items"
-                );
+                apbsLogger.Debug($"[VANILLA] Clothing Side: {side}, Slot: {slot} contains {items.Count} items");
             }
         }
 
@@ -723,10 +696,7 @@ public class ItemImportHelper(
     ///     Dry-run classification of which slot an item would be routed to during import.
     ///     Returns null if the item would be skipped (mountable headphones, unrecognized, etc.)
     /// </summary>
-    public ApbsEquipmentSlots? ClassifyEquipmentSlot(
-        TemplateItem templateItem,
-        ConcurrentDictionary<MongoId, byte> mountedHeadphones
-    )
+    public ApbsEquipmentSlots? ClassifyEquipmentSlot(TemplateItem templateItem, ConcurrentDictionary<MongoId, byte> mountedHeadphones)
     {
         var itemId = templateItem.Id;
 
@@ -773,9 +743,7 @@ public class ItemImportHelper(
 
         if (IsRigSlot(itemId))
         {
-            return IsArmouredRig(templateItem)
-                ? ApbsEquipmentSlots.ArmouredRig
-                : ApbsEquipmentSlots.TacticalVest;
+            return IsArmouredRig(templateItem) ? ApbsEquipmentSlots.ArmouredRig : ApbsEquipmentSlots.TacticalVest;
         }
 
         if (IsHeadphones(itemId))
@@ -797,10 +765,12 @@ public class ItemImportHelper(
     /// <summary>
     ///     Return the proper slot types for specific weapon base classes
     /// </summary>
-    private IReadOnlyList<ApbsEquipmentSlots> GetSlotsForPrimaryWeapon(MongoId itemId) =>
-        itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses) ? _shortRangeSlots
-        : itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses) ? _longRangeSlots
-        : [];
+    private IReadOnlyList<ApbsEquipmentSlots> GetSlotsForPrimaryWeapon(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses) ? _shortRangeSlots
+            : itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses) ? _longRangeSlots
+            : [];
+    }
 
     /// <summary>
     ///     Check if the item is banned from import
@@ -818,10 +788,7 @@ public class ItemImportHelper(
 
         if (_vanillaEquipmentLookup.Contains(itemId))
         {
-            var isVanillaWeapon = itemHelper.IsOfBaseclasses(
-                itemId,
-                _allImportableWeaponBaseClasses
-            );
+            var isVanillaWeapon = itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
             if (isVanillaWeapon && !ModConfig.Config.CompatibilityConfig.EnableModdedAttachments)
             {
                 return false;
@@ -831,17 +798,13 @@ public class ItemImportHelper(
         }
 
         var isWeapon =
-            ModConfig.Config.CompatibilityConfig.EnableModdedWeapons
-            && itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
+            ModConfig.Config.CompatibilityConfig.EnableModdedWeapons && itemHelper.IsOfBaseclasses(itemId, _allImportableWeaponBaseClasses);
 
         var isEquipment =
             ModConfig.Config.CompatibilityConfig.EnableModdedEquipment
             && itemHelper.IsOfBaseclasses(itemId, _allImportableEquipmentBaseClasses);
 
-        if (
-            itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR)
-            && dateHelper.IsHalloweenEnabled()
-        )
+        if (itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR) && dateHelper.IsHalloweenEnabled())
         {
             return false;
         }
@@ -870,15 +833,7 @@ public class ItemImportHelper(
             return false;
         }
 
-        if (templateItem.Properties?.Side is null)
-        {
-            return false;
-        }
-
-        if (
-            !templateItem.Properties.Side.Contains("Bear")
-            && !templateItem.Properties.Side.Contains("Usec")
-        )
+        if (!templateItem.Properties.Side.Contains("Bear") && !templateItem.Properties.Side.Contains("Usec"))
         {
             return false;
         }
@@ -889,8 +844,10 @@ public class ItemImportHelper(
     /// <summary>
     ///     Check if the weapon is vanilla
     /// </summary>
-    public bool WeaponOrEquipmentIsVanilla(MongoId itemId) =>
-        _vanillaEquipmentLookup.Contains(itemId);
+    public bool WeaponOrEquipmentIsVanilla(MongoId itemId)
+    {
+        return _vanillaEquipmentLookup.Contains(itemId);
+    }
 
     /// <summary>
     ///     Check if the item is banned from import
@@ -922,12 +879,7 @@ public class ItemImportHelper(
             return false;
         }
         // Skip these calibers as they are for things we don't spawn on bots (or we already have like the disks)
-        if (
-            caliber == "Caliber127x108"
-            || caliber == "Caliber30x29"
-            || caliber == "Caliber26x75"
-            || caliber == "Caliber20x1mm"
-        )
+        if (caliber == "Caliber127x108" || caliber == "Caliber30x29" || caliber == "Caliber26x75" || caliber == "Caliber20x1mm")
         {
             return false;
         }
@@ -949,8 +901,10 @@ public class ItemImportHelper(
     ///     If all of these pass, go ahead and check if the vanilla dictionary contains the item, if it does then skip it
     ///     If all checks are completed, go ahead and mark the item for import
     /// </summary>
-    public bool AmmoCaliberNeedsAdded(string caliber) =>
-        !_vanillaAmmoDictionary.ContainsKey(caliber);
+    public bool AmmoCaliberNeedsAdded(string caliber)
+    {
+        return !_vanillaAmmoDictionary.ContainsKey(caliber);
+    }
 
     /// <summary>
     ///     Get the cartridge ids from a weapon's magazine template that work with the weapon
@@ -960,32 +914,23 @@ public class ItemImportHelper(
     /// <exception cref="ArgumentNullException">Thrown when weaponTemplate is null.</exception>
     public HashSet<MongoId> GetCompatibleCartridgesFromMagazineTemplate(TemplateItem weaponTemplate)
     {
-        var magazineSlot = weaponTemplate.Properties?.Slots?.FirstOrDefault(slot =>
-            slot.Name == "mod_magazine"
-        );
+        var magazineSlot = weaponTemplate.Properties?.Slots?.FirstOrDefault(slot => slot.Name == "mod_magazine");
         if (magazineSlot is null)
         {
             return [];
         }
 
         var magazineTemplate = itemHelper.GetItem(
-            magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault()
-                ?? MongoId.Empty()
+            magazineSlot.Properties?.Filters?.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty()
         );
         if (magazineTemplate.Value?.Properties == null)
         {
-            return new HashSet<MongoId>();
+            return [];
         }
 
         var cartridges =
-            magazineTemplate
-                .Value.Properties.Slots.FirstOrDefault()
-                ?.Properties?.Filters?.FirstOrDefault()
-                ?.Filter
-            ?? magazineTemplate
-                .Value.Properties.Cartridges.FirstOrDefault()
-                ?.Properties?.Filters?.FirstOrDefault()
-                ?.Filter;
+            magazineTemplate.Value.Properties.Slots.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter
+            ?? magazineTemplate.Value.Properties.Cartridges.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter;
 
         return cartridges ?? [];
     }
@@ -1026,86 +971,113 @@ public class ItemImportHelper(
     {
         EnsureHolsterCacheExistsFirst();
 
-        return _holsterAllowedItems?.Contains(itemId) == true
-            || itemHelper.IsOfBaseclasses(itemId, _holsterBaseClasses);
+        return _holsterAllowedItems?.Contains(itemId) == true || itemHelper.IsOfBaseclasses(itemId, _holsterBaseClasses);
     }
 
     /// <summary>
     ///     Is the item supposed to go in the Primary slot?
     /// </summary>
-    public bool IsPrimaryWeapon(MongoId itemId) =>
-        itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses)
-        || itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
+    public bool IsPrimaryWeapon(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclasses(itemId, _shortRangeBaseClasses) || itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the PrimaryLongRange slot?
     /// </summary>
-    public bool IsLongRangePrimaryWeapon(MongoId itemId) =>
-        itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
+    public bool IsLongRangePrimaryWeapon(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclasses(itemId, _longRangeBaseClasses);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Backpack slot?
     /// </summary>
-    public bool IsBackpack(MongoId itemId) =>
-        itemHelper.IsOfBaseclass(itemId, BaseClasses.BACKPACK);
+    public bool IsBackpack(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.BACKPACK);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Face cover slot?
     /// </summary>
-    public bool IsFacecover(MongoId itemId) =>
-        itemHelper.IsOfBaseclass(itemId, BaseClasses.FACE_COVER);
+    public bool IsFacecover(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.FACE_COVER);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Tactical Rig slot?
     /// </summary>
-    public bool IsRigSlot(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.VEST);
+    public bool IsRigSlot(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.VEST);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the ArmouredRig Data slot?
     /// </summary>
-    public bool IsArmouredRig(TemplateItem? itemDetails) =>
+    public bool IsArmouredRig(TemplateItem? itemDetails)
+    {
         // Armoured Rigs have Slots, Tactical Rigs do not
-        itemDetails?.Properties?.Slots != null
-        && itemDetails.Properties.Slots.Any();
+        return itemDetails?.Properties?.Slots != null && itemDetails.Properties.Slots.Any();
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the ArmourVest slot?
     /// </summary>
-    public bool IsArmourVest(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.ARMOR);
+    public bool IsArmourVest(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.ARMOR);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Armband slot?
     /// </summary>
-    public bool IsArmband(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.ARM_BAND);
+    public bool IsArmband(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.ARM_BAND);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Headphones slot?
     /// </summary>
-    public bool IsHeadphones(MongoId itemId) =>
-        itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADPHONES);
+    public bool IsHeadphones(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADPHONES);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Headwear slot?
     /// </summary>
-    public bool IsHeadwear(MongoId itemId) =>
-        itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR);
+    public bool IsHeadwear(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.HEADWEAR);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Knife slot?
     /// </summary>
-    public bool IsScabbard(MongoId itemId) => itemHelper.IsOfBaseclass(itemId, BaseClasses.KNIFE);
+    public bool IsScabbard(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.KNIFE);
+    }
 
     /// <summary>
     ///     Is the item supposed to go in the Eyeglasses slot?
     /// </summary>
-    public bool IsEyeglasses(MongoId itemId) =>
-        itemHelper.IsOfBaseclass(itemId, BaseClasses.VISORS);
+    public bool IsEyeglasses(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, BaseClasses.VISORS);
+    }
 
     /// <summary>
     ///     Is the item a pack n strap belt?
     /// </summary>
-    public bool IsPackNStrapBelt(MongoId itemId) =>
-        itemHelper.IsOfBaseclass(itemId, BaseClassPackNStrapBelt);
+    public bool IsPackNStrapBelt(MongoId itemId)
+    {
+        return itemHelper.IsOfBaseclass(itemId, _baseClassPackNStrapBelt);
+    }
 
     /// <summary>
     ///     Marks the pack n strap belts as unlootable
@@ -1118,12 +1090,7 @@ public class ItemImportHelper(
             return;
         }
 
-        var unlootableFromSide = new List<PlayerSideMask>
-        {
-            PlayerSideMask.Bear,
-            PlayerSideMask.Usec,
-            PlayerSideMask.Savage,
-        };
+        var unlootableFromSide = new List<PlayerSideMask> { PlayerSideMask.Bear, PlayerSideMask.Usec, PlayerSideMask.Savage };
         itemDetails.Properties.Unlootable = true;
         itemDetails.Properties.UnlootableFromSide = unlootableFromSide;
         itemDetails.Properties.UnlootableFromSlot = "ArmBand";
@@ -1135,22 +1102,11 @@ public class ItemImportHelper(
     ///     At multiplier 1.0 each modded weapon has the same individual selection chance as the average vanilla weapon.
     ///     Below 1.0 = modded less likely than average vanilla, above 1.0 = modded more likely than average vanilla.
     /// </summary>
-    public double GetWeaponSlotWeight(
-        ApbsEquipmentSlots slot,
-        string botType,
-        double vanillaWeightSum = 0,
-        int vanillaCount = 0
-    )
+    public double GetWeaponSlotWeight(ApbsEquipmentSlots slot, string botType, double vanillaWeightSum = 0, int vanillaCount = 0)
     {
-        var staticWeight = IsPrimary(slot)
-            ? GetPrimaryWeaponWeight(botType)
-            : GetStaticNonPrimaryWeight(slot, botType);
+        var staticWeight = IsPrimary(slot) ? GetPrimaryWeaponWeight(botType) : GetStaticNonPrimaryWeight(slot, botType);
 
-        if (
-            !ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights
-            || vanillaCount == 0
-            || vanillaWeightSum == 0
-        )
+        if (!ModConfig.Config.CompatibilityConfig.UseDynamicWeaponWeights || vanillaCount == 0 || vanillaWeightSum == 0)
         {
             return staticWeight;
         }
@@ -1191,12 +1147,14 @@ public class ItemImportHelper(
     /// <summary>
     ///     Is the slot being checked a primary weapon slot?
     /// </summary>
-    private bool IsPrimary(ApbsEquipmentSlots slot) =>
-        slot
+    private bool IsPrimary(ApbsEquipmentSlots slot)
+    {
+        return slot
             is ApbsEquipmentSlots.FirstPrimaryWeapon_LongRange
                 or ApbsEquipmentSlots.FirstPrimaryWeapon_ShortRange
                 or ApbsEquipmentSlots.SecondPrimaryWeapon_LongRange
                 or ApbsEquipmentSlots.SecondPrimaryWeapon_ShortRange;
+    }
 
     /// <summary>
     ///     Returns the Mod Config values for the imported weapon weights
@@ -1231,11 +1189,7 @@ public class ItemImportHelper(
             return ModConfig.Config.CompatibilityConfig.ForceScavEquipmentWeightValue;
         }
 
-        if (
-            !ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights
-            || vanillaCount == 0
-            || vanillaWeightSum == 0
-        )
+        if (!ModConfig.Config.CompatibilityConfig.UseDynamicEquipmentWeights || vanillaCount == 0 || vanillaWeightSum == 0)
         {
             return GetStaticGearSlotWeight(slot, templateItem);
         }
@@ -1254,56 +1208,33 @@ public class ItemImportHelper(
         {
             ApbsEquipmentSlots.ArmBand => ModConfig.Config.CompatibilityConfig.ArmBandWeight,
             ApbsEquipmentSlots.ArmorVest => ModConfig.Config.CompatibilityConfig.ArmourVestWeight,
-            ApbsEquipmentSlots.ArmouredRig => ModConfig
-                .Config
-                .CompatibilityConfig
-                .ArmouredRigWeight,
+            ApbsEquipmentSlots.ArmouredRig => ModConfig.Config.CompatibilityConfig.ArmouredRigWeight,
             ApbsEquipmentSlots.Backpack => ModConfig.Config.CompatibilityConfig.BackpackWeight,
             ApbsEquipmentSlots.Eyewear => ModConfig.Config.CompatibilityConfig.EyewearWeight,
             ApbsEquipmentSlots.Earpiece => ModConfig.Config.CompatibilityConfig.EarpieceWeight,
-            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig
-                .Config
-                .CompatibilityConfig
-                .FaceCoverAc2Weight,
-            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig
-                .Config
-                .CompatibilityConfig
-                .FaceCoverAc0Weight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 2 => ModConfig.Config.CompatibilityConfig.FaceCoverAc2Weight,
+            ApbsEquipmentSlots.FaceCover when armorClass > 0 => ModConfig.Config.CompatibilityConfig.FaceCoverAc0Weight,
             ApbsEquipmentSlots.FaceCover => ModConfig.Config.CompatibilityConfig.FaceCoverWeight,
-            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig
-                .Config
-                .CompatibilityConfig
-                .HeadwearESlotWeight,
+            ApbsEquipmentSlots.Headwear when equipmentSlotsLength > 0 => ModConfig.Config.CompatibilityConfig.HeadwearESlotWeight,
             ApbsEquipmentSlots.Headwear => ModConfig.Config.CompatibilityConfig.HeadwearWeight,
-            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig
-                .Config
-                .CompatibilityConfig
-                .TacticalVestGLengthWeight,
-            ApbsEquipmentSlots.TacticalVest => ModConfig
-                .Config
-                .CompatibilityConfig
-                .TacticalVestWeight,
+            ApbsEquipmentSlots.TacticalVest when gridLength > 10 => ModConfig.Config.CompatibilityConfig.TacticalVestGLengthWeight,
+            ApbsEquipmentSlots.TacticalVest => ModConfig.Config.CompatibilityConfig.TacticalVestWeight,
             _ => 15,
         };
     }
 
-    public double GetEquipmentSlotMultiplierPublic(
-        ApbsEquipmentSlots slot,
-        TemplateItem? templateItem = null
-    ) => GetEquipmentSlotMultiplier(slot, templateItem);
+    public double GetEquipmentSlotMultiplierPublic(ApbsEquipmentSlots slot, TemplateItem? templateItem = null)
+    {
+        return GetEquipmentSlotMultiplier(slot, templateItem);
+    }
 
-    private double GetEquipmentSlotMultiplier(
-        ApbsEquipmentSlots slot,
-        TemplateItem? templateItem = null
-    )
+    private double GetEquipmentSlotMultiplier(ApbsEquipmentSlots slot, TemplateItem? templateItem = null)
     {
         var config = ModConfig.Config.CompatibilityConfig.DynamicEquipmentWeightMultipliers;
 
         return slot switch
         {
-            ApbsEquipmentSlots.Headwear => templateItem?.Properties?.Slots?.Any() == true
-                ? config.HeadwearWithSlots
-                : config.Headwear,
+            ApbsEquipmentSlots.Headwear => templateItem?.Properties?.Slots?.Any() == true ? config.HeadwearWithSlots : config.Headwear,
             ApbsEquipmentSlots.FaceCover => (templateItem?.Properties?.ArmorClass ?? 0) switch
             {
                 > 2 => config.FaceCoverAc2,
@@ -1345,8 +1276,7 @@ public class ItemImportHelper(
             {
                 foreach (var itemId in filter.Filter ?? [])
                 {
-                    var childArmorClass =
-                        itemHelper.GetItem(itemId).Value?.Properties?.ArmorClass ?? 0;
+                    var childArmorClass = itemHelper.GetItem(itemId).Value?.Properties?.ArmorClass ?? 0;
                     if (childArmorClass >= 4)
                     {
                         return true;
@@ -1358,15 +1288,12 @@ public class ItemImportHelper(
         return false;
     }
 
-    public bool AreHeadphonesMountable(TemplateItem headphoneTemplateItem) =>
-        headphoneTemplateItem.Properties?.BlocksEarpiece != null
-        && (bool)headphoneTemplateItem.Properties?.BlocksEarpiece.Value;
+    public bool AreHeadphonesMountable(TemplateItem headphoneTemplateItem)
+    {
+        return headphoneTemplateItem.Properties?.BlocksEarpiece != null && (bool)headphoneTemplateItem.Properties?.BlocksEarpiece.Value;
+    }
 
-    public bool AttachmentNeedsImporting(
-        TemplateItem parentItem,
-        TemplateItem itemToAdd,
-        string slot
-    )
+    public bool AttachmentNeedsImporting(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
         if (_bannedAttachments.Contains(itemToAdd.Id))
         {
@@ -1375,10 +1302,7 @@ public class ItemImportHelper(
 
         if (ModConfig.Config.CompatibilityConfig.EnableSafeGuard)
         {
-            if (
-                (IsVanillaAttachment(parentItem.Id) || WeaponOrEquipmentIsVanilla(parentItem.Id))
-                && IsVanillaAttachment(itemToAdd.Id)
-            )
+            if ((IsVanillaAttachment(parentItem.Id) || WeaponOrEquipmentIsVanilla(parentItem.Id)) && IsVanillaAttachment(itemToAdd.Id))
             {
                 return false;
             }
@@ -1417,33 +1341,41 @@ public class ItemImportHelper(
         return true;
     }
 
-    public bool IsVanillaAttachment(MongoId itemId) => _vanillaAttachmentLookup.Contains(itemId);
+    public bool IsVanillaAttachment(MongoId itemId)
+    {
+        return _vanillaAttachmentLookup.Contains(itemId);
+    }
 
-    private bool VssValCheck(TemplateItem parentItem, string slot) =>
-        (
-            parentItem.Id == ItemTpl.MARKSMANRIFLE_VSS_VINTOREZ_9X39_SPECIAL_SNIPER_RIFLE
-            || parentItem.Id == ItemTpl.ASSAULTCARBINE_AS_VAL_9X39_SPECIAL_ASSAULT_RIFLE
-        )
-        && slot == "mod_mount_000";
+    private bool VssValCheck(TemplateItem parentItem, string slot)
+    {
+        return (
+                parentItem.Id == ItemTpl.MARKSMANRIFLE_VSS_VINTOREZ_9X39_SPECIAL_SNIPER_RIFLE
+                || parentItem.Id == ItemTpl.ASSAULTCARBINE_AS_VAL_9X39_SPECIAL_ASSAULT_RIFLE
+            )
+            && slot == "mod_mount_000";
+    }
 
-    private bool Ar15Mod1Check(TemplateItem parentItem, string slot) =>
-        parentItem.Id == ItemTpl.HANDGUARD_AR15_AB_ARMS_MOD1 && slot == "mod_scope";
+    private bool Ar15Mod1Check(TemplateItem parentItem, string slot)
+    {
+        return parentItem.Id == ItemTpl.HANDGUARD_AR15_AB_ARMS_MOD1 && slot == "mod_scope";
+    }
 
-    private bool MagazineWithNoCount(TemplateItem itemToAdd, string slot) =>
-        slot == "mod_magazine"
-        && !(itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount.HasValue ?? false);
+    private bool MagazineWithNoCount(TemplateItem itemToAdd, string slot)
+    {
+        return slot == "mod_magazine" && !(itemToAdd.Properties?.Cartridges?.FirstOrDefault()?.MaxCount.HasValue ?? false);
+    }
 
-    private bool IsFrontOrRearSightAndVanillaItem(TemplateItem parentItem, string slot) =>
-        slot.StartsWith("mod_sight_") && _vanillaAttachmentLookup.Contains(parentItem.Id);
+    private bool IsFrontOrRearSightAndVanillaItem(TemplateItem parentItem, string slot)
+    {
+        return slot.StartsWith("mod_sight_") && _vanillaAttachmentLookup.Contains(parentItem.Id);
+    }
 
-    private bool IsBannedModScope000(TemplateItem itemToAdd, string slot) =>
-        slot == "mod_scope_000" && !_modScope000Whitelist.Contains(itemToAdd.Id);
+    private bool IsBannedModScope000(TemplateItem itemToAdd, string slot)
+    {
+        return slot == "mod_scope_000" && !_modScope000Whitelist.Contains(itemToAdd.Id);
+    }
 
-    private bool IsFrontOrRearSightAndDoesntFold(
-        TemplateItem parentItem,
-        TemplateItem itemToAdd,
-        string slot
-    )
+    private bool IsFrontOrRearSightAndDoesntFold(TemplateItem parentItem, TemplateItem itemToAdd, string slot)
     {
         if (!slot.StartsWith("mod_sight_") || _foldingModSights.Contains(itemToAdd.Id))
         {
@@ -1463,15 +1395,9 @@ public class ItemImportHelper(
         return true;
     }
 
-    public bool AttachmentShouldBeInTier(
-        TemplateItem parentItem,
-        TemplateItem itemToAdd,
-        string slot,
-        int tier
-    )
+    public bool AttachmentShouldBeInTier(TemplateItem parentItem, TemplateItem itemToAdd, string slot, int tier)
     {
-        var isRequired =
-            parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false;
+        var isRequired = parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Required ?? false;
         if (isRequired)
         {
             return true;
@@ -1616,11 +1542,7 @@ public class ItemImportHelper(
 
     private List<double> GetSortedErgoValues(TemplateItem parentItem, string slot)
     {
-        if (
-            VssValCheck(parentItem, slot)
-            || Ar15Mod1Check(parentItem, slot)
-            || IsFrontOrRearSightAndVanillaItem(parentItem, slot)
-        )
+        if (VssValCheck(parentItem, slot) || Ar15Mod1Check(parentItem, slot) || IsFrontOrRearSightAndVanillaItem(parentItem, slot))
         {
             return [];
         }
@@ -1672,11 +1594,7 @@ public class ItemImportHelper(
 
     private HashSet<MongoId> GetItemFilters(TemplateItem parentItem, string slot)
     {
-        return parentItem
-                .Properties?.Slots?.FirstOrDefault(x => x.Name == slot)
-                ?.Properties?.Filters?.FirstOrDefault()
-                ?.Filter
-            ?? [];
+        return parentItem.Properties?.Slots?.FirstOrDefault(x => x.Name == slot)?.Properties?.Filters?.FirstOrDefault()?.Filter ?? [];
     }
 
     private double GetPercentile(List<double> sortedValues, double stat)
@@ -1700,8 +1618,9 @@ public class ItemImportHelper(
         return null;
     }
 
-    private bool IsInPercentileBandForTier(double percentile, int tier) =>
-        tier switch
+    private bool IsInPercentileBandForTier(double percentile, int tier)
+    {
+        return tier switch
         {
             1 => percentile <= 0.35, // bottom 35%
             2 => percentile <= 0.50, // bottom 50%
@@ -1712,9 +1631,11 @@ public class ItemImportHelper(
             7 => percentile >= 0.70, // top 30%
             _ => true,
         };
+    }
 
-    private int GetMagazineTierForCount(int count) =>
-        count switch
+    private int GetMagazineTierForCount(int count)
+    {
+        return count switch
         {
             <= 10 => 1,
             <= 20 => 2,
@@ -1722,6 +1643,7 @@ public class ItemImportHelper(
             <= 45 => 5,
             _ => 7,
         };
+    }
 
     public void LogErgoSlotSummary(TemplateItem parentItem, string slot)
     {
@@ -1735,16 +1657,12 @@ public class ItemImportHelper(
         for (var tier = 1; tier <= 7; tier++)
         {
             var t = tier;
-            tierBands[tier] = sortedValues
-                .Where(v => IsInPercentileBandForTier(GetPercentile(sortedValues, v), t))
-                .ToList();
+            tierBands[tier] = sortedValues.Where(v => IsInPercentileBandForTier(GetPercentile(sortedValues, v), t)).ToList();
         }
 
         var bandSummary = string.Join(
             " | ",
-            tierBands.Select(kv =>
-                $"T{kv.Key}:{kv.Value.Count}({(kv.Value.Count > 0 ? $"{kv.Value.Min()}-{kv.Value.Max()}" : "empty")})"
-            )
+            tierBands.Select(kv => $"T{kv.Key}:{kv.Value.Count}({(kv.Value.Count > 0 ? $"{kv.Value.Min()}-{kv.Value.Max()}" : "empty")})")
         );
 
         apbsLogger.Warning(
@@ -1755,13 +1673,18 @@ public class ItemImportHelper(
     /// <summary>
     ///     Check if the item is banned from import
     /// </summary>
-    public bool IsBlacklistedViaModConfig(MongoId itemId, int tier) =>
-        _fullModConfigBlacklist[tier].Contains(itemId);
+    public bool IsBlacklistedViaModConfig(MongoId itemId, int tier)
+    {
+        return _fullModConfigBlacklist[tier].Contains(itemId);
+    }
 
-    public bool IsWttBossWeapon(MongoId itemId) =>
-        ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses
-        && _armouryBossVariantWeapons.Contains(itemId);
+    public bool IsWttBossWeapon(MongoId itemId)
+    {
+        return ModConfig.Config.CompatibilityConfig.WttArmouryAddBossVariantsToBosses && _armouryBossVariantWeapons.Contains(itemId);
+    }
 
-    public string[] BossAssignmentPerWtt(MongoId itemId) =>
-        _bossWeaponLookup.TryGetValue(itemId, out var bossList) ? bossList : [];
+    public string[] BossAssignmentPerWtt(MongoId itemId)
+    {
+        return _bossWeaponLookup.TryGetValue(itemId, out var bossList) ? bossList : [];
+    }
 }

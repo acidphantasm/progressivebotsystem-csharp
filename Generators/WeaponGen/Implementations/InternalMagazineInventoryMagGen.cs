@@ -1,10 +1,10 @@
-namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
-
-using Helpers;
+using ProgressiveBotSystem.Helpers;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Bot;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Utils;
+
+namespace ProgressiveBotSystem.Generators.WeaponGen.Implementations;
 
 [Injectable]
 public class ApbsInternalMagazineInventoryMagGen(
@@ -14,11 +14,15 @@ public class ApbsInternalMagazineInventoryMagGen(
     InventoryMagGenHelper inventoryMagGenHelper
 ) : ApbsInventoryMagGen, IApbsInventoryMagGen
 {
-    public int GetPriority() => 0;
+    public int GetPriority()
+    {
+        return 0;
+    }
 
-    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen) =>
-        inventoryMagGen.GetMagazineTemplate().Properties.ReloadMagType
-        == ReloadMode.InternalMagazine;
+    public bool CanHandleInventoryMagGen(ApbsInventoryMagGen inventoryMagGen)
+    {
+        return inventoryMagGen.GetMagazineTemplate().Properties.ReloadMagType == ReloadMode.InternalMagazine;
+    }
 
     public void Process(ApbsInventoryMagGen inventoryMagGen)
     {
@@ -31,14 +35,8 @@ public class ApbsInternalMagazineInventoryMagGen(
         if (rerollConfig.Enable && randomUtil.GetChance100(rerollConfig.Chance))
         {
             var weapon = inventoryMagGen.GetWeaponTemplate();
-            var ammoTable = botEquipmentHelper.GetAmmoByBotRole(
-                inventoryMagGen.GetBotRole(),
-                inventoryMagGen.GetTier()
-            );
-            var rerolledAmmoTpl = inventoryMagGenHelper.GetWeightedCompatibleAmmo(
-                ammoTable,
-                weapon
-            );
+            var ammoTable = botEquipmentHelper.GetAmmoByBotRole(inventoryMagGen.GetBotRole(), inventoryMagGen.GetTier());
+            var rerolledAmmoTpl = inventoryMagGenHelper.GetWeightedCompatibleAmmo(ammoTable, weapon);
 
             if (bulletCount > 20)
             {

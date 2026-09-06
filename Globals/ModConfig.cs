@@ -67,18 +67,8 @@ public class ModConfig : IOnLoad
     {
         var configPath = Path.Combine(_modPath, "config.json");
         var blacklistPath = Path.Combine(_modPath, "blacklists.json");
-        var defaultConfigPath = Path.Combine(
-            _modPath,
-            "Data",
-            "DefaultConfigs",
-            "config.default.json"
-        );
-        var defaultBlacklistPath = Path.Combine(
-            _modPath,
-            "Data",
-            "DefaultConfigs",
-            "blacklists.default.json"
-        );
+        var defaultConfigPath = Path.Combine(_modPath, "Data", "DefaultConfigs", "config.default.json");
+        var defaultBlacklistPath = Path.Combine(_modPath, "Data", "DefaultConfigs", "blacklists.default.json");
 
         if (!File.Exists(configPath))
         {
@@ -93,41 +83,25 @@ public class ModConfig : IOnLoad
         var rawConfig = await _fileUtil.ReadFileAsync(configPath, cancellationToken);
         var rawBlacklist = await _fileUtil.ReadFileAsync(blacklistPath, cancellationToken);
         var rawDefaultConfig = await _fileUtil.ReadFileAsync(defaultConfigPath, cancellationToken);
-        var rawDefaultBlacklist = await _fileUtil.ReadFileAsync(
-            defaultBlacklistPath,
-            cancellationToken
-        );
+        var rawDefaultBlacklist = await _fileUtil.ReadFileAsync(defaultBlacklistPath, cancellationToken);
 
-        Config =
-            _jsonUtil.Deserialize<ApbsServerConfig>(rawConfig) ?? throw new ArgumentNullException();
+        Config = _jsonUtil.Deserialize<ApbsServerConfig>(rawConfig) ?? throw new ArgumentNullException();
 
         if (ConfigHelper.IsJsonOutdated(rawConfig, rawDefaultConfig, Config))
         {
-            await _fileUtil.WriteFileAsync(
-                configPath,
-                _jsonUtil.Serialize(Config, true)!,
-                cancellationToken
-            );
+            await _fileUtil.WriteFileAsync(configPath, _jsonUtil.Serialize(Config, true)!, cancellationToken);
             _apbsLogger.Success("Config updated and/or repaired.");
         }
 
         OriginalConfig = DeepClone(Config);
 
-        Blacklist =
-            _jsonUtil.Deserialize<ApbsBlacklistConfig>(rawBlacklist)
-            ?? throw new ArgumentNullException();
+        Blacklist = _jsonUtil.Deserialize<ApbsBlacklistConfig>(rawBlacklist) ?? throw new ArgumentNullException();
 
         if (ConfigHelper.IsJsonOutdated(rawBlacklist, rawDefaultBlacklist))
         {
             _apbsLogger.Warning("Blacklist is missing new properties, updating...");
-            await _fileUtil.WriteFileAsync(
-                blacklistPath,
-                _jsonUtil.Serialize(Blacklist, true)!,
-                cancellationToken
-            );
-            _apbsLogger.Success(
-                "Blacklist updated with new default values for missing properties."
-            );
+            await _fileUtil.WriteFileAsync(blacklistPath, _jsonUtil.Serialize(Blacklist, true)!, cancellationToken);
+            _apbsLogger.Success("Blacklist updated with new default values for missing properties.");
         }
 
         OriginalBlacklist = DeepClone(Blacklist);
@@ -138,9 +112,7 @@ public class ModConfig : IOnLoad
         _apbsLogger.Debug("ModConfig.OnLoad()");
     }
 
-    public static async Task<ConfigOperationResult> ReloadConfig(
-        CancellationToken cancellationToken = default
-    )
+    public static async Task<ConfigOperationResult> ReloadConfig(CancellationToken cancellationToken = default)
     {
         if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
         {
@@ -157,14 +129,8 @@ public class ModConfig : IOnLoad
             var configPath = Path.Combine(_modPath, "config.json");
             var blacklistPath = Path.Combine(_modPath, "blacklists.json");
 
-            var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(
-                configPath,
-                cancellationToken
-            );
-            var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(
-                blacklistPath,
-                cancellationToken
-            );
+            var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(configPath, cancellationToken);
+            var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(blacklistPath, cancellationToken);
 
             await Task.WhenAll(configTask, blacklistTask);
 
@@ -226,26 +192,12 @@ public class ModConfig : IOnLoad
             var configPath = Path.Combine(pathToMod, "config.json");
             var blacklistPath = Path.Combine(pathToMod, "blacklists.json");
 
-            var serializedConfigTask = Task.Run(
-                () => _jsonUtil.Serialize(Config, true),
-                cancellationToken
-            );
-            var serializedBlacklistTask = Task.Run(
-                () => _jsonUtil.Serialize(Blacklist, true),
-                cancellationToken
-            );
+            var serializedConfigTask = Task.Run(() => _jsonUtil.Serialize(Config, true), cancellationToken);
+            var serializedBlacklistTask = Task.Run(() => _jsonUtil.Serialize(Blacklist, true), cancellationToken);
             await Task.WhenAll(serializedConfigTask, serializedBlacklistTask);
 
-            var writeConfigTask = _fileUtil.WriteFileAsync(
-                configPath,
-                serializedConfigTask.Result!,
-                cancellationToken
-            );
-            var writeBlacklistTask = _fileUtil.WriteFileAsync(
-                blacklistPath,
-                serializedBlacklistTask.Result!,
-                cancellationToken
-            );
+            var writeConfigTask = _fileUtil.WriteFileAsync(configPath, serializedConfigTask.Result!, cancellationToken);
+            var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!, cancellationToken);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
 
             if (Config.UsePreset)

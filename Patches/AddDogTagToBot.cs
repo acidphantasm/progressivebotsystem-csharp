@@ -20,10 +20,7 @@ public class AddDogTagToBotPatch : AbstractPatch
     private static WeightedRandomHelper _weightedRandomHelper = default!;
     private static RandomUtil _randomUtil = default!;
 
-    private static readonly Dictionary<
-        string,
-        Dictionary<MongoId, double>
-    > BackportDogtagDictionary = new()
+    private static readonly Dictionary<string, Dictionary<MongoId, double>> BackportDogtagDictionary = new()
     {
         {
             "usec",
@@ -59,8 +56,7 @@ public class AddDogTagToBotPatch : AbstractPatch
         _randomUtil = randomUtil;
     }
 
-    protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(typeof(BotGenerator), "AddDogtagToBot");
+    protected override MethodBase GetTargetMethod() => AccessTools.Method(typeof(BotGenerator), "AddDogtagToBot");
 
     [PatchPrefix]
     public static bool Prefix(BotBase bot)
@@ -77,11 +73,7 @@ public class AddDogTagToBotPatch : AbstractPatch
         Item inventoryItem = new()
         {
             Id = new MongoId(),
-            Template = GetDogtagTplByGameVersionAndSide(
-                bot.Info!.Side!,
-                bot.Info!.GameVersion!,
-                bot.Info.PrestigeLevel
-            ),
+            Template = GetDogtagTplByGameVersionAndSide(bot.Info!.Side!, bot.Info!.GameVersion!, bot.Info.PrestigeLevel),
             ParentId = bot.Inventory!.Equipment,
             SlotId = Slots.Dogtag,
             Upd = new Upd { SpawnedInSession = true },
@@ -91,16 +83,11 @@ public class AddDogTagToBotPatch : AbstractPatch
         return false;
     }
 
-    private static MongoId GetDogtagTplByGameVersionAndSide(
-        string side,
-        string gameVersion,
-        int? prestigeLevel
-    )
+    private static MongoId GetDogtagTplByGameVersionAndSide(string side, string gameVersion, int? prestigeLevel)
     {
         side = side.ToLowerInvariant();
         var prestigeLevelRequested = prestigeLevel ?? 0;
-        var canUseWttBackportDogtags =
-            ModConfig.WttBackport && ModConfig.Config.CompatibilityConfig.WttBackPortAllowDogtags;
+        var canUseWttBackportDogtags = ModConfig.WttBackport && ModConfig.Config.CompatibilityConfig.WttBackPortAllowDogtags;
 
         var rollNonPrestigeDogtag = prestigeLevelRequested != 0 && _randomUtil.GetChance100(25);
 
@@ -117,12 +104,8 @@ public class AddDogTagToBotPatch : AbstractPatch
                 2 => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_2,
                 3 => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_3,
                 4 => ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
-                5 => canUseWttBackportDogtags
-                    ? new MongoId("68f0f64f183146ea530330aa")
-                    : ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
-                >= 6 => canUseWttBackportDogtags
-                    ? new MongoId("68f0f662859ebec8d501b76a")
-                    : ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
+                5 => canUseWttBackportDogtags ? new MongoId("68f0f64f183146ea530330aa") : ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
+                >= 6 => canUseWttBackportDogtags ? new MongoId("68f0f662859ebec8d501b76a") : ItemTpl.BARTER_DOGTAG_USEC_PRESTIGE_4,
                 _ => GetNonPrestigeDogTag(side, gameVersion, canUseWttBackportDogtags),
             },
             "bear" => prestigeLevelRequested switch
@@ -131,46 +114,32 @@ public class AddDogTagToBotPatch : AbstractPatch
                 2 => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_2,
                 3 => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_3,
                 4 => ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
-                5 => canUseWttBackportDogtags
-                    ? new MongoId("68f0f60a121d878a2303eedb")
-                    : ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
-                >= 6 => canUseWttBackportDogtags
-                    ? new MongoId("68f0f63c645c14a02104142a")
-                    : ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
+                5 => canUseWttBackportDogtags ? new MongoId("68f0f60a121d878a2303eedb") : ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
+                >= 6 => canUseWttBackportDogtags ? new MongoId("68f0f63c645c14a02104142a") : ItemTpl.BARTER_DOGTAG_BEAR_PRESTIGE_4,
                 _ => GetNonPrestigeDogTag(side, gameVersion, canUseWttBackportDogtags),
             },
             _ => throw new ArgumentException($"Unknown side: {side}"),
         };
     }
 
-    private static MongoId GetNonPrestigeDogTag(
-        string side,
-        string gameVersion,
-        bool wttBackportAvailable
-    )
+    private static MongoId GetNonPrestigeDogTag(string side, string gameVersion, bool wttBackportAvailable)
     {
-        var hasEditionWithDogtag =
-            gameVersion is GameEditions.UNHEARD or GameEditions.EDGE_OF_DARKNESS;
+        var hasEditionWithDogtag = gameVersion is GameEditions.UNHEARD or GameEditions.EDGE_OF_DARKNESS;
         var editionChance = ModConfig.Config.PmcBots.AdditionalOptions.GameVersionDogtagChance;
 
         if (hasEditionWithDogtag && _randomUtil.GetChance100(editionChance))
         {
             return gameVersion switch
             {
-                GameEditions.UNHEARD => side == "usec"
-                    ? ItemTpl.BARTER_DOGTAG_USEC_TUE
-                    : ItemTpl.BARTER_DOGTAG_BEAR_TUE,
+                GameEditions.UNHEARD => side == "usec" ? ItemTpl.BARTER_DOGTAG_USEC_TUE : ItemTpl.BARTER_DOGTAG_BEAR_TUE,
 
-                GameEditions.EDGE_OF_DARKNESS => side == "usec"
-                    ? ItemTpl.BARTER_DOGTAG_USEC_EOD
-                    : ItemTpl.BARTER_DOGTAG_BEAR_EOD,
+                GameEditions.EDGE_OF_DARKNESS => side == "usec" ? ItemTpl.BARTER_DOGTAG_USEC_EOD : ItemTpl.BARTER_DOGTAG_BEAR_EOD,
 
                 _ => throw new ArgumentException($"Unknown game edition: {gameVersion}"),
             };
         }
 
-        return wttBackportAvailable
-                ? _weightedRandomHelper.GetWeightedValue(BackportDogtagDictionary[side])
+        return wttBackportAvailable ? _weightedRandomHelper.GetWeightedValue(BackportDogtagDictionary[side])
             : side == "usec" ? ItemTpl.BARTER_DOGTAG_USEC
             : ItemTpl.BARTER_DOGTAG_BEAR;
     }

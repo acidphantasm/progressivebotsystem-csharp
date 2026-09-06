@@ -1,7 +1,6 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using System.Collections.Frozen;
-using Models;
+﻿using System.Collections.Frozen;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Helpers.Items;
@@ -10,16 +9,13 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils;
-using Utils;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable]
 public class InventoryMagGenHelper
 {
-    private static readonly FrozenSet<string> MagCheck =
-    [
-        "CylinderMagazine",
-        "SpringDrivenCylinder",
-    ];
+    private static readonly FrozenSet<string> _magCheck = ["CylinderMagazine", "SpringDrivenCylinder"];
     private readonly ApbsLogger _apbsLogger;
     private readonly ItemHelper _itemHelper;
     private readonly RandomUtil _randomUtil;
@@ -41,8 +37,10 @@ public class InventoryMagGenHelper
         _serverLocalisationService = serverLocalisationService;
     }
 
-    public int GetRandomizedMagazineCount(ApbsGenerationData magCounts) =>
-        (int)_weightedRandomHelper.GetWeightedValue(magCounts.Weights);
+    public int GetRandomizedMagazineCount(ApbsGenerationData magCounts)
+    {
+        return (int)_weightedRandomHelper.GetWeightedValue(magCounts.Weights);
+    }
 
     public double? GetRandomizedBulletCount(ApbsGenerationData magCounts, TemplateItem magTemplate)
     {
@@ -50,9 +48,7 @@ public class InventoryMagGenHelper
         var parentItem = _itemHelper.GetItem(magTemplate.Parent).Value;
         if (parentItem is null)
         {
-            _apbsLogger.Error(
-                $"Parent item null when trying to get randomized bullet count for: {magTemplate.Id}"
-            );
+            _apbsLogger.Error($"Parent item null when trying to get randomized bullet count for: {magTemplate.Id}");
             return null;
         }
 
@@ -60,13 +56,9 @@ public class InventoryMagGenHelper
         if (MagazineIsCylinderRelated(parentItem.Name ?? string.Empty))
         {
             var firstSlotAmmoTpl =
-                magTemplate
-                    .Properties?.Cartridges?.FirstOrDefault()
-                    ?.Properties?.Filters?.First()
-                    .Filter?.FirstOrDefault()
+                magTemplate.Properties?.Cartridges?.FirstOrDefault()?.Properties?.Filters?.First().Filter?.FirstOrDefault()
                 ?? MongoId.Empty();
-            var ammoMaxStackSize =
-                _itemHelper.GetItem(firstSlotAmmoTpl).Value?.Properties?.StackMaxSize ?? 1;
+            var ammoMaxStackSize = _itemHelper.GetItem(firstSlotAmmoTpl).Value?.Properties?.StackMaxSize ?? 1;
             chamberBulletCount =
                 ammoMaxStackSize == 1
                     ? 1 // Rotating grenade launcher
@@ -87,8 +79,10 @@ public class InventoryMagGenHelper
         return chamberBulletCount * randomizedMagazineCount;
     }
 
-    private bool MagazineIsCylinderRelated(string magazineParentName) =>
-        MagCheck.Contains(magazineParentName);
+    private bool MagazineIsCylinderRelated(string magazineParentName)
+    {
+        return _magCheck.Contains(magazineParentName);
+    }
 
     public List<Item> CreateMagazineWithAmmo(
         MongoId magazineTpl,
@@ -101,14 +95,7 @@ public class InventoryMagGenHelper
     {
         List<Item> magazine = [new() { Id = new MongoId(), Template = magazineTpl }];
 
-        FillMagazineWithCartridge(
-            magazine,
-            magTemplate,
-            ammoTpl,
-            ammoPool,
-            ammoCaliber,
-            percentOfMag
-        );
+        FillMagazineWithCartridge(magazine, magTemplate, ammoTpl, ammoPool, ammoCaliber, percentOfMag);
 
         return magazine;
     }
@@ -131,24 +118,17 @@ public class InventoryMagGenHelper
         var cartridgeDetails = _itemHelper.GetItem(cartridgeTpl);
         if (!cartridgeDetails.Key)
         {
-            _apbsLogger.Error(
-                _serverLocalisationService.GetText("item-invalid_tpl_item", cartridgeTpl)
-            );
+            _apbsLogger.Error(_serverLocalisationService.GetText("item-invalid_tpl_item", cartridgeTpl));
         }
 
         var cartridgeMaxStackSize = cartridgeDetails.Value?.Properties?.StackMaxSize;
         if (cartridgeMaxStackSize is null)
         {
-            _apbsLogger.Error(
-                $"Item with tpl: {cartridgeTpl} lacks a _props or StackMaxSize property"
-            );
+            _apbsLogger.Error($"Item with tpl: {cartridgeTpl} lacks a _props or StackMaxSize property");
         }
 
         var magProperties = magTemplate.Properties;
-        var magazineCartridgeMaxCount = _itemHelper.IsOfBaseclass(
-            magTemplate.Id,
-            BaseClasses.SPRING_DRIVEN_CYLINDER
-        )
+        var magazineCartridgeMaxCount = _itemHelper.IsOfBaseclass(magTemplate.Id, BaseClasses.SPRING_DRIVEN_CYLINDER)
             ? magProperties?.Slots?.Count() // Edge case for rotating grenade launcher magazine
             : magProperties?.Cartridges?.FirstOrDefault()?.MaxCount;
 
@@ -181,17 +161,12 @@ public class InventoryMagGenHelper
         }
 
         var desiredMaxStackCount = (int)magazineCartridgeMaxCount.Value;
-        var desiredTopLoadAmount = (int)
-            Math.Round(
-                Math.Max(1, _randomUtil.GetPercentOfValue(percentOfMag, desiredMaxStackCount, 0))
-            );
+        var desiredTopLoadAmount = (int)Math.Round(Math.Max(1, _randomUtil.GetPercentOfValue(percentOfMag, desiredMaxStackCount, 0)));
         var desiredBottomLoadAmount = desiredMaxStackCount - desiredTopLoadAmount;
 
         if (magazineWithChildCartridges.Count > 1)
         {
-            _apbsLogger.Warning(
-                $"Magazine {magTemplate.Name} already has cartridges defined,  this may cause issues"
-            );
+            _apbsLogger.Warning($"Magazine {magTemplate.Name} already has cartridges defined,  this may cause issues");
         }
 
         // Loop over cartridge count and add stacks to magazine
@@ -208,9 +183,7 @@ public class InventoryMagGenHelper
             {
                 cartridgeTplToAdd = bottomLoadTpl;
                 cartridgeCountToAdd =
-                    desiredBottomLoadAmount <= cartridgeMaxStackSize.Value
-                        ? desiredBottomLoadAmount
-                        : cartridgeMaxStackSize.Value;
+                    desiredBottomLoadAmount <= cartridgeMaxStackSize.Value ? desiredBottomLoadAmount : cartridgeMaxStackSize.Value;
                 if (cartridgeCountToAdd > remainingMagSpace - desiredTopLoadAmount)
                 {
                     cartridgeCountToAdd = remainingMagSpace - desiredTopLoadAmount;
@@ -220,9 +193,7 @@ public class InventoryMagGenHelper
             {
                 cartridgeTplToAdd = topLoadTpl;
                 cartridgeCountToAdd =
-                    desiredTopLoadAmount <= cartridgeMaxStackSize.Value
-                        ? desiredTopLoadAmount
-                        : cartridgeMaxStackSize.Value;
+                    desiredTopLoadAmount <= cartridgeMaxStackSize.Value ? desiredTopLoadAmount : cartridgeMaxStackSize.Value;
             }
 
             // Ensure we don't go over the max stackCount size
@@ -234,12 +205,7 @@ public class InventoryMagGenHelper
 
             // Add cartridge item object into items array
             magazineWithChildCartridges.Add(
-                _itemHelper.CreateCartridges(
-                    magazineWithChildCartridges[0].Id,
-                    cartridgeTplToAdd,
-                    cartridgeCountToAdd,
-                    location
-                )
+                _itemHelper.CreateCartridges(magazineWithChildCartridges[0].Id, cartridgeTplToAdd, cartridgeCountToAdd, location)
             );
 
             currentStoredCartridgeCount += cartridgeCountToAdd;
@@ -253,13 +219,7 @@ public class InventoryMagGenHelper
         }
     }
 
-    public List<MongoId> GetCustomFilteredMagazinePoolByCapacity(
-        int tier,
-        TemplateItem weapon,
-        HashSet<MongoId> modPool,
-        int min,
-        int max
-    )
+    public List<MongoId> GetCustomFilteredMagazinePoolByCapacity(int tier, TemplateItem weapon, HashSet<MongoId> modPool, int min, int max)
     {
         var weaponTpl = weapon.Id;
         var desiredMagazineTpls = modPool
@@ -290,10 +250,7 @@ public class InventoryMagGenHelper
         int tier
     )
     {
-        if (
-            !modPool.TryGetValue(weapon.Id, out var weaponModPool)
-            || !weaponModPool.TryGetValue("mod_magazine", out var magazinePool)
-        )
+        if (!modPool.TryGetValue(weapon.Id, out var weaponModPool) || !weaponModPool.TryGetValue("mod_magazine", out var magazinePool))
         {
             return magTemplate;
         }
@@ -303,13 +260,7 @@ public class InventoryMagGenHelper
             return magTemplate;
         }
 
-        var filteredPool = GetCustomFilteredMagazinePoolByCapacity(
-            tier,
-            weapon,
-            magazinePool,
-            10,
-            31
-        );
+        var filteredPool = GetCustomFilteredMagazinePoolByCapacity(tier, weapon, magazinePool, 10, 31);
 
         if (filteredPool.Count > 0)
         {
@@ -329,21 +280,15 @@ public class InventoryMagGenHelper
     public bool DoesMagazineFitWeapon(TemplateItem weapon, TemplateItem magTemplate)
     {
         return weapon
-                ?.Properties?.Slots?.FirstOrDefault(s => s.Name == "mod_magazine")
+                .Properties?.Slots?.FirstOrDefault(s => s.Name == "mod_magazine")
                 ?.Properties?.Filters?.SelectMany(f => f?.Filter ?? Enumerable.Empty<MongoId>())
                 .Contains(magTemplate.Id) == true;
     }
 
-    public MongoId GetWeightedCompatibleAmmo(
-        Dictionary<string, Dictionary<MongoId, double>> cartridgePool,
-        TemplateItem weaponTemplate
-    )
+    public MongoId GetWeightedCompatibleAmmo(Dictionary<string, Dictionary<MongoId, double>> cartridgePool, TemplateItem weaponTemplate)
     {
         var desiredCaliber = GetWeaponCaliber(weaponTemplate);
-        if (
-            !cartridgePool.TryGetValue(desiredCaliber, out var cartridgePoolForWeapon)
-            || cartridgePoolForWeapon?.Count == 0
-        )
+        if (!cartridgePool.TryGetValue(desiredCaliber, out var cartridgePoolForWeapon) || cartridgePoolForWeapon?.Count == 0)
         {
             _apbsLogger.Debug(
                 _serverLocalisationService.GetText(
@@ -363,16 +308,11 @@ public class InventoryMagGenHelper
             }
 
             // last ditch attempt to get default ammo tpl
-            return weaponTemplate
-                .Properties.Chambers.FirstOrDefault()
-                .Properties.Filters.FirstOrDefault()
-                .Filter.FirstOrDefault();
+            return weaponTemplate.Properties.Chambers.FirstOrDefault().Properties.Filters.FirstOrDefault().Filter.FirstOrDefault();
         }
 
         // Get cartridges the weapons first chamber allow
-        var compatibleCartridgesInTemplate = GetCompatibleCartridgesFromWeaponTemplate(
-            weaponTemplate
-        );
+        var compatibleCartridgesInTemplate = GetCompatibleCartridgesFromWeaponTemplate(weaponTemplate);
         if (compatibleCartridgesInTemplate.Count == 0)
         // No chamber data found in weapon, send default
         {
@@ -393,9 +333,7 @@ public class InventoryMagGenHelper
         if (!compatibleCartridges.Any())
         {
             // Get cartridges from the weapons first magazine in filters
-            var compatibleCartridgesInMagazine = GetCompatibleCartridgesFromMagazineTemplate(
-                weaponTemplate
-            );
+            var compatibleCartridgesInMagazine = GetCompatibleCartridgesFromMagazineTemplate(weaponTemplate);
             if (compatibleCartridgesInMagazine.Count == 0)
             {
                 // No compatible cartridges found in magazine, use default
@@ -403,9 +341,7 @@ public class InventoryMagGenHelper
             }
 
             // Get the caliber data from the first compatible round in the magazine
-            var magazineCaliberData = _itemHelper
-                .GetItem(compatibleCartridgesInMagazine.FirstOrDefault())
-                .Value.Properties.Caliber;
+            var magazineCaliberData = _itemHelper.GetItem(compatibleCartridgesInMagazine.FirstOrDefault()).Value.Properties.Caliber;
             cartridgePoolForWeapon = cartridgePool[magazineCaliberData];
 
             foreach (var cartridgeKvP in cartridgePoolForWeapon)
@@ -436,18 +372,13 @@ public class InventoryMagGenHelper
         if (!string.IsNullOrEmpty(weaponTemplate.Properties.AmmoCaliber))
         // 9x18pmm has a typo, should be Caliber9x18PM
         {
-            return weaponTemplate.Properties.AmmoCaliber == "Caliber9x18PMM"
-                ? "Caliber9x18PM"
-                : weaponTemplate.Properties.AmmoCaliber;
+            return weaponTemplate.Properties.AmmoCaliber == "Caliber9x18PMM" ? "Caliber9x18PM" : weaponTemplate.Properties.AmmoCaliber;
         }
 
         if (!string.IsNullOrEmpty(weaponTemplate.Properties.LinkedWeapon))
         {
             var ammoInChamber = _itemHelper.GetItem(
-                weaponTemplate
-                    .Properties.Chambers.First()
-                    .Properties.Filters.First()
-                    .Filter.FirstOrDefault()
+                weaponTemplate.Properties.Chambers.First().Properties.Filters.First().Filter.FirstOrDefault()
             );
             return !ammoInChamber.Key ? null : ammoInChamber.Value.Properties.Caliber;
         }
@@ -459,10 +390,7 @@ public class InventoryMagGenHelper
     {
         ArgumentNullException.ThrowIfNull(weaponTemplate);
 
-        var cartridges = weaponTemplate
-            .Properties?.Chambers?.FirstOrDefault()
-            ?.Properties?.Filters?.First()
-            .Filter;
+        var cartridges = weaponTemplate.Properties?.Chambers?.FirstOrDefault()?.Properties?.Filters?.First().Filter;
         if (cartridges is not null)
         {
             return cartridges;
@@ -472,24 +400,19 @@ public class InventoryMagGenHelper
         return GetCompatibleCartridgesFromMagazineTemplate(weaponTemplate);
     }
 
-    private HashSet<MongoId> GetCompatibleCartridgesFromMagazineTemplate(
-        TemplateItem weaponTemplate
-    )
+    private HashSet<MongoId> GetCompatibleCartridgesFromMagazineTemplate(TemplateItem weaponTemplate)
     {
         ArgumentNullException.ThrowIfNull(weaponTemplate);
 
         // Get the first magazine's template from the weapon
-        var magazineSlot = weaponTemplate.Properties.Slots?.FirstOrDefault(slot =>
-            slot.Name == "mod_magazine"
-        );
+        var magazineSlot = weaponTemplate.Properties.Slots?.FirstOrDefault(slot => slot.Name == "mod_magazine");
         if (magazineSlot is null)
         {
             return [];
         }
 
         var magazineTemplate = _itemHelper.GetItem(
-            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault()
-                ?? MongoId.Empty()
+            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty()
         );
         if (!magazineTemplate.Key)
         {
@@ -498,14 +421,8 @@ public class InventoryMagGenHelper
 
         // Try to get cartridges from slots array first, if none found, try Cartridges array
         var cartridges =
-            magazineTemplate
-                .Value.Properties.Slots.FirstOrDefault()
-                ?.Properties?.Filters?.FirstOrDefault()
-                ?.Filter
-            ?? magazineTemplate
-                .Value.Properties.Cartridges.FirstOrDefault()
-                ?.Properties?.Filters?.FirstOrDefault()
-                ?.Filter;
+            magazineTemplate.Value.Properties.Slots.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter
+            ?? magazineTemplate.Value.Properties.Cartridges.FirstOrDefault()?.Properties?.Filters?.FirstOrDefault()?.Filter;
 
         return cartridges ?? [];
     }

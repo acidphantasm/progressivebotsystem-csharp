@@ -1,8 +1,8 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using Models;
+﻿using ProgressiveBotSystem.Models;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
+
+namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
 public class ItemImportTierHelper(DataLoader dataLoader)
@@ -17,16 +17,9 @@ public class ItemImportTierHelper(DataLoader dataLoader)
     /// </summary>
     public EquipmentTierData GetEquipmentTierData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(tier),
-                tier,
-                "ModConfig - Initial Tier Appearance must be between 1 and 7."
-            );
-        }
-
-        return tierData.EquipmentData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+            ? throw new ArgumentOutOfRangeException(nameof(tier), tier, "ModConfig - Initial Tier Appearance must be between 1 and 7.")
+            : tierData.EquipmentData;
     }
 
     /// <summary>
@@ -38,16 +31,9 @@ public class ItemImportTierHelper(DataLoader dataLoader)
     /// </summary>
     public Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> GetModsTierData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(tier),
-                tier,
-                "ModConfig - Initial Tier Appearance must be between 1 and 7."
-            );
-        }
-
-        return tierData.ModsData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+            ? throw new ArgumentOutOfRangeException(nameof(tier), tier, "ModConfig - Initial Tier Appearance must be between 1 and 7.")
+            : tierData.ModsData;
     }
 
     /// <summary>
@@ -59,16 +45,9 @@ public class ItemImportTierHelper(DataLoader dataLoader)
     /// </summary>
     public AmmoTierData GetAmmoTierData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(tier),
-                tier,
-                "ModConfig - Initial Tier Appearance must be between 1 and 7."
-            );
-        }
-
-        return tierData.AmmoData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+            ? throw new ArgumentOutOfRangeException(nameof(tier), tier, "ModConfig - Initial Tier Appearance must be between 1 and 7.")
+            : tierData.AmmoData;
     }
 
     /// <summary>
@@ -81,15 +60,8 @@ public class ItemImportTierHelper(DataLoader dataLoader)
     /// </summary>
     public AppearanceTierData GetAppearanceTierData(int tier)
     {
-        if (!dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(tier),
-                tier,
-                "ModConfig - Initial Tier Appearance must be between 1 and 7."
-            );
-        }
-
-        return tierData.AppearanceData;
+        return !dataLoader.AllTierDataDirty.Tiers.TryGetValue(tier, out var tierData)
+            ? throw new ArgumentOutOfRangeException(nameof(tier), tier, "ModConfig - Initial Tier Appearance must be between 1 and 7.")
+            : tierData.AppearanceData;
     }
 }

@@ -1,18 +1,18 @@
-﻿namespace ProgressiveBotSystem.Services;
-
-using System.Collections;
-using Helpers;
-using Models;
-using Models.Enums;
+﻿using System.Collections;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 
+namespace ProgressiveBotSystem.Services;
+
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.Preload + 10)]
 public class PresetApplicationService(DataLoader dataLoader, PresetStateService presetState)
 {
-    private static readonly Dictionary<string, ApbsEquipmentSlots> StringToSlot = new()
+    private static readonly Dictionary<string, ApbsEquipmentSlots> _stringToSlot = new()
     {
         { "Headwear", ApbsEquipmentSlots.Headwear },
         { "Earpiece", ApbsEquipmentSlots.Earpiece },
@@ -75,7 +75,7 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
                 {
                     return;
                 }
-                if (!StringToSlot.TryGetValue(categoryStr, out var slot))
+                if (!_stringToSlot.TryGetValue(categoryStr, out var slot))
                 {
                     return;
                 }
@@ -102,12 +102,7 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
                     key,
                     (items, id) =>
                     {
-                        if (
-                            presetState.EquipmentWeightChanges.TryGetValue(
-                                weightKey,
-                                out var weight
-                            )
-                        )
+                        if (presetState.EquipmentWeightChanges.TryGetValue(weightKey, out var weight))
                         {
                             items[id] = weight;
                             presetState.EquipmentWeightChanges.Remove(weightKey);
@@ -274,19 +269,10 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
                 {
                     continue;
                 }
-                ApplyWeightChanges(
-                    dict,
-                    dictProp.Name,
-                    presetState.ChancesWeightChanges,
-                    "_chancesWeight"
-                );
+                ApplyWeightChanges(dict, dictProp.Name, presetState.ChancesWeightChanges, "_chancesWeight");
             }
 
-            var genItems = chances.Generation?.Items;
-            if (genItems == null)
-            {
-                continue;
-            }
+            var genItems = chances.Generation.Items;
 
             foreach (var genProp in typeof(ApbsGenerationWeightingItems).GetProperties())
             {
@@ -297,19 +283,10 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
 
                 var genCategory = genProp.Name;
 
-                foreach (
-                    var key in presetState.GenerationWhitelistAddedItems.Concat(
-                        presetState.GenerationWhitelistRemovedItems
-                    )
-                )
+                foreach (var key in presetState.GenerationWhitelistAddedItems.Concat(presetState.GenerationWhitelistRemovedItems))
                 {
                     var parts = key.Split('_', 4);
-                    if (
-                        parts.Length != 4
-                        || parts[0] != $"Tier{tier}"
-                        || parts[1] != botType
-                        || parts[2] != genCategory
-                    )
+                    if (parts.Length != 4 || parts[0] != $"Tier{tier}" || parts[1] != botType || parts[2] != genCategory)
                     {
                         continue;
                     }
@@ -318,17 +295,10 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
 
                     if (presetState.GenerationWhitelistAddedItems.Contains(key))
                     {
-                        if (
-                            presetState.GenerationWhitelistWeightChanges.TryGetValue(
-                                key + "_generationWeight",
-                                out var weight
-                            )
-                        )
+                        if (presetState.GenerationWhitelistWeightChanges.TryGetValue(key + "_generationWeight", out var weight))
                         {
                             genData.Whitelist[mongoId] = weight;
-                            presetState.GenerationWhitelistWeightChanges.Remove(
-                                key + "_generationWeight"
-                            );
+                            presetState.GenerationWhitelistWeightChanges.Remove(key + "_generationWeight");
                         }
                         else
                         {
@@ -341,24 +311,14 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
                     }
                 }
 
-                ApplyWeightChanges(
-                    genData.Whitelist,
-                    genCategory,
-                    presetState.GenerationWhitelistWeightChanges,
-                    "_generationWeight"
-                );
+                ApplyWeightChanges(genData.Whitelist, genCategory, presetState.GenerationWhitelistWeightChanges, "_generationWeight");
 
                 for (var slotIndex = 0; slotIndex < 8; slotIndex++)
                 {
                     var slotKey = $"Tier{tier}_{botType}_{genCategory}_{slotIndex}";
                     var value =
-                        presetState.GenerationWeightChanges.TryGetValue(
-                            slotKey,
-                            out var changedValue
-                        )
-                            ? changedValue
-                        : genData.Weights.TryGetValue(slotIndex, out var existingValue)
-                            ? existingValue
+                        presetState.GenerationWeightChanges.TryGetValue(slotKey, out var changedValue) ? changedValue
+                        : genData.Weights.TryGetValue(slotIndex, out var existingValue) ? existingValue
                         : 0;
 
                     genData.Weights[slotIndex] = value;
@@ -394,13 +354,15 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
             var mongoId = new MongoId(idStr);
             Dictionary<MongoId, double>? dict;
 
-            Dictionary<string, Appearance>? GetBotAppearances() =>
-                botType switch
+            Dictionary<string, Appearance>? GetBotAppearances()
+            {
+                return botType switch
                 {
                     "PmcUsec" => tierData.PmcUsec,
                     "PmcBear" => tierData.PmcBear,
                     _ => null,
                 };
+            }
 
             if (botType.Contains('-'))
             {
@@ -477,12 +439,7 @@ public class PresetApplicationService(DataLoader dataLoader, PresetStateService 
                 key,
                 (dict, id) =>
                 {
-                    var weight = presetState.AppearanceWeightChanges.TryGetValue(
-                        key + "_weight",
-                        out var w
-                    )
-                        ? w
-                        : 1;
+                    var weight = presetState.AppearanceWeightChanges.TryGetValue(key + "_weight", out var w) ? w : 1;
                     dict[id] = weight;
                     presetState.AppearanceWeightChanges.Remove(key + "_weight");
                 }

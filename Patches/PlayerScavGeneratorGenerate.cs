@@ -19,19 +19,14 @@ public class PlayerScavGeneratorGeneratePatch : AbstractPatch
     private static SaveServer _saveServer = default!;
     private static CustomBotLootCacheService _customBotLootCacheService = default!;
 
-    public PlayerScavGeneratorGeneratePatch(
-        ICloner cloner,
-        SaveServer saveServer,
-        CustomBotLootCacheService customBotLootCacheService
-    )
+    public PlayerScavGeneratorGeneratePatch(ICloner cloner, SaveServer saveServer, CustomBotLootCacheService customBotLootCacheService)
     {
         _cloner = cloner;
         _saveServer = saveServer;
         _customBotLootCacheService = customBotLootCacheService;
     }
 
-    protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(typeof(PlayerScavGenerator), "Generate");
+    protected override MethodBase GetTargetMethod() => AccessTools.Method(typeof(PlayerScavGenerator), "Generate");
 
     [PatchPostfix]
     public static void Postfix(MongoId sessionID, ref PmcData __result)

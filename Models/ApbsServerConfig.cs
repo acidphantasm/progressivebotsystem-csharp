@@ -1,6 +1,6 @@
-﻿namespace ProgressiveBotSystem.Models;
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+namespace ProgressiveBotSystem.Models;
 
 public class ApbsServerConfig
 {
@@ -562,8 +562,9 @@ public class MapRangeWeights
         }
     }
 
-    private Dictionary<string, LongShortRange> ToDictionary() =>
-        new()
+    private Dictionary<string, LongShortRange> ToDictionary()
+    {
+        return new Dictionary<string, LongShortRange>
         {
             ["bigmap"] = Bigmap,
             ["RezervBase"] = RezervBase,
@@ -579,6 +580,7 @@ public class MapRangeWeights
             ["TarkovStreets"] = TarkovStreets,
             ["Labyrinth"] = Labyrinth,
         };
+    }
 }
 
 public class LongShortRange
@@ -589,8 +591,10 @@ public class LongShortRange
     [JsonPropertyName("ShortRange")]
     public double ShortRange { get; set; } = 80;
 
-    public Dictionary<string, double> ToDictionary() =>
-        new(2) { ["LongRange"] = LongRange, ["ShortRange"] = ShortRange };
+    public Dictionary<string, double> ToDictionary()
+    {
+        return new Dictionary<string, double>(2) { ["LongRange"] = LongRange, ["ShortRange"] = ShortRange };
+    }
 }
 
 public class PlateWeightConfig
@@ -733,19 +737,20 @@ public class PlateClasses
             Tier7 = DefaultBossTier(),
         };
 
-    private static Dictionary<string, Dictionary<string, double>> DefaultPmcTier(
-        Dictionary<string, double> weights
-    ) =>
-        new()
+    private static Dictionary<string, Dictionary<string, double>> DefaultPmcTier(Dictionary<string, double> weights)
+    {
+        return new Dictionary<string, Dictionary<string, double>>
         {
             ["front_plate"] = weights,
             ["back_plate"] = weights,
             ["left_side_plate"] = weights,
             ["right_side_plate"] = weights,
         };
+    }
 
-    private static Dictionary<string, Dictionary<string, double>> DefaultScavTier() =>
-        DefaultPmcTier(
+    private static Dictionary<string, Dictionary<string, double>> DefaultScavTier()
+    {
+        return DefaultPmcTier(
             new Dictionary<string, double>
             {
                 ["2"] = 0,
@@ -755,9 +760,11 @@ public class PlateClasses
                 ["6"] = 1,
             }
         );
+    }
 
-    private static Dictionary<string, Dictionary<string, double>> DefaultBossTier() =>
-        DefaultPmcTier(
+    private static Dictionary<string, Dictionary<string, double>> DefaultBossTier()
+    {
+        return DefaultPmcTier(
             new Dictionary<string, double>
             {
                 ["2"] = 0,
@@ -767,6 +774,7 @@ public class PlateClasses
                 ["6"] = 5,
             }
         );
+    }
 }
 
 public class PlateClassList
@@ -1145,18 +1153,7 @@ public class DeveloperNames
 
     [JsonPropertyName("nameList")]
     public List<string> NameList { get; set; } =
-    [
-        "Chomp",
-        "Dirtbikercj",
-        "Clodan",
-        "CWX",
-        "DrakiaXYZ",
-        "Kaeno",
-        "Refringe",
-        "Waffle",
-        "AcidPhantasm",
-        "Archangel",
-    ];
+    ["Chomp", "Dirtbikercj", "Clodan", "CWX", "DrakiaXYZ", "Kaeno", "Refringe", "Waffle", "AcidPhantasm", "Archangel"];
 }
 
 public class DeveloperLevels

@@ -40,15 +40,10 @@ public class SetBotAppearancePatch : AbstractPatch
         _tierHelper = tierHelper;
     }
 
-    protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(typeof(BotGenerator), "SetBotAppearance");
+    protected override MethodBase GetTargetMethod() => AccessTools.Method(typeof(BotGenerator), "SetBotAppearance");
 
     [PatchPrefix]
-    public static bool Prefix(
-        BotBase bot,
-        Appearance appearance,
-        BotGenerationDetails botGenerationDetails
-    )
+    public static bool Prefix(BotBase bot, Appearance appearance, BotGenerationDetails botGenerationDetails)
     {
         if (!botGenerationDetails.IsPmc)
         {
@@ -56,17 +51,10 @@ public class SetBotAppearancePatch : AbstractPatch
         }
 
         var botLevel = bot.Info?.Level ?? 0;
-        var tier = ModConfig.Config.GeneralConfig.BlickyMode
-            ? 0
-            : _tierHelper.GetTierByLevel(botLevel);
+        var tier = ModConfig.Config.GeneralConfig.BlickyMode ? 0 : _tierHelper.GetTierByLevel(botLevel);
         var weatherSeason = _seasonalEventService.GetActiveWeatherSeason();
         var getSeasonalData = ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance;
-        var appearanceData = _botEquipmentHelper.GetAppearanceByBotRole(
-            botGenerationDetails.Role,
-            tier,
-            weatherSeason,
-            getSeasonalData
-        );
+        var appearanceData = _botEquipmentHelper.GetAppearanceByBotRole(botGenerationDetails.Role, tier, weatherSeason, getSeasonalData);
 
         bot.Customization.Head = _weightedRandomHelper.GetWeightedValue(appearanceData.Head);
         bot.Customization.Feet = _weightedRandomHelper.GetWeightedValue(appearanceData.Feet);
@@ -76,9 +64,7 @@ public class SetBotAppearancePatch : AbstractPatch
         var chosenBodyTemplate = _templateTable.Customization[bot.Customization.Body.Value];
 
         // Some bodies have matching hands, look up body to see if this is the case
-        var chosenBody = bodyGlobalDictDb.FirstOrDefault(c =>
-            c.Key == chosenBodyTemplate?.Name.Trim()
-        );
+        var chosenBody = bodyGlobalDictDb.FirstOrDefault(c => c.Key == chosenBodyTemplate?.Name.Trim());
         bot.Customization.Hands =
             chosenBody.Value?.IsNotRandom ?? false
                 ? chosenBody.Value.Hands // Has fixed hands for chosen body, update to match

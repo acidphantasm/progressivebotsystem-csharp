@@ -25,12 +25,7 @@ public class GenerateBotLevel : AbstractPatch
     private static ProfileHelper _profileHelper = default!;
     private static TierHelper _tierHelper = default!;
 
-    public GenerateBotLevel(
-        GlobalTable globalTable,
-        RandomUtil randomUtil,
-        ProfileHelper profileHelper,
-        TierHelper tierHelper
-    )
+    public GenerateBotLevel(GlobalTable globalTable, RandomUtil randomUtil, ProfileHelper profileHelper, TierHelper tierHelper)
     {
         _globalTable = globalTable;
         _randomUtil = randomUtil;
@@ -66,11 +61,7 @@ public class GenerateBotLevel : AbstractPatch
         }
 
         var expTable = _globalTable.Configuration.Exp.Level.ExperienceTable;
-        var botLevelRange = GetRelativePmcBotLevelRange(
-            botGenerationDetails,
-            levelDetails,
-            expTable.Length
-        );
+        var botLevelRange = GetRelativePmcBotLevelRange(botGenerationDetails, levelDetails, expTable.Length);
 
         var level = ChooseBotLevel(botLevelRange.Min, botLevelRange.Max, 1, 1.15);
         var maxLevelIndex = expTable.Length - 1;
@@ -82,8 +73,7 @@ public class GenerateBotLevel : AbstractPatch
         botGenerationDetails.AddToExtensionData("Tier", _tierHelper.GetTierByLevel(level));
 
         var baseExp = expTable.Take(level).Sum(entry => entry.Experience);
-        var fractionalExp =
-            level < maxLevelIndex ? _randomUtil.GetInt(0, expTable[level].Experience - 1) : 0;
+        var fractionalExp = level < maxLevelIndex ? _randomUtil.GetInt(0, expTable[level].Experience - 1) : 0;
 
         __result = new RandomisedBotLevelResult { Exp = baseExp + fractionalExp, Level = level };
         return false;
@@ -113,11 +103,7 @@ public class GenerateBotLevel : AbstractPatch
         var maxLevel = playerLevel + _tierHelper.GetTierUpperLevelDeviation(playerLevel);
 
         if (
-            !botGenerationDetails.IsPmc
-            && (
-                botGenerationDetails.Role.Contains("assault")
-                || botGenerationDetails.Role.Contains("marksman")
-            )
+            !botGenerationDetails.IsPmc && (botGenerationDetails.Role.Contains("assault") || botGenerationDetails.Role.Contains("marksman"))
         )
         {
             minLevel = playerLevel - _tierHelper.GetScavTierLowerLevelDeviation(playerLevel);
@@ -158,9 +144,7 @@ public class GenerateBotLevel : AbstractPatch
         var maxPrestige = ModConfig.PrestigeBackport ? 6 : 4;
 
         var botCanPrestige =
-            playerLevel >= minPlayerLevelForBotsToPrestige
-            || playerLevel >= level - 15 && isPlayerPrestiged
-            || isPlayerPrestiged;
+            playerLevel >= minPlayerLevelForBotsToPrestige || playerLevel >= level - 15 && isPlayerPrestiged || isPlayerPrestiged;
 
         if (botCanPrestige)
         {
@@ -169,9 +153,7 @@ public class GenerateBotLevel : AbstractPatch
             if (playerLevel >= level - 15 && isPlayerPrestiged)
             {
                 botPrestigeLevel =
-                    playerPrestigeLevel >= maxPrestige
-                        ? _randomUtil.GetInt(0, maxPrestige)
-                        : _randomUtil.GetInt(0, playerPrestigeLevel);
+                    playerPrestigeLevel >= maxPrestige ? _randomUtil.GetInt(0, maxPrestige) : _randomUtil.GetInt(0, playerPrestigeLevel);
                 hasBotTriedAlready = true;
             }
 
@@ -180,10 +162,7 @@ public class GenerateBotLevel : AbstractPatch
                 botPrestigeLevel =
                     playerPrestigeLevel >= maxPrestige
                         ? _randomUtil.GetInt(0, maxPrestige)
-                        : _randomUtil.GetInt(
-                            botPrestigeLevel,
-                            Math.Min(playerPrestigeLevel + 1, 4)
-                        );
+                        : _randomUtil.GetInt(botPrestigeLevel, Math.Min(playerPrestigeLevel + 1, 4));
                 hasBotTriedAlready = true;
             }
 

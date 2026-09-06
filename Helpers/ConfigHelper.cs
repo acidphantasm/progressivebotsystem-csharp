@@ -1,8 +1,8 @@
-﻿namespace ProgressiveBotSystem.Helpers;
-
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using Models;
+using ProgressiveBotSystem.Models;
+
+namespace ProgressiveBotSystem.Helpers;
 
 public static class ConfigHelper
 {
@@ -21,85 +21,44 @@ public static class ConfigHelper
         ["generalConfig.plateChances.specialSidePlateChance"] = 7,
     };
 
-    private static void RepairArrays(
-        ApbsServerConfig config,
-        Dictionary<string, int> diskArrayLengths
-    )
+    private static void RepairArrays(ApbsServerConfig config, Dictionary<string, int> diskArrayLengths)
     {
         var defaults = new ApbsServerConfig();
         var repairActions = new Dictionary<string, Action>
         {
-            ["generalConfig.muzzleChance"] = () =>
-                config.GeneralConfig.MuzzleChance = defaults.GeneralConfig.MuzzleChance,
+            ["generalConfig.muzzleChance"] = () => config.GeneralConfig.MuzzleChance = defaults.GeneralConfig.MuzzleChance,
             ["generalConfig.plateChances.pmcMainPlateChance"] = () =>
-                config.GeneralConfig.PlateChances.PmcMainPlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .PmcMainPlateChance,
+                config.GeneralConfig.PlateChances.PmcMainPlateChance = defaults.GeneralConfig.PlateChances.PmcMainPlateChance,
             ["generalConfig.plateChances.pmcSidePlateChance"] = () =>
-                config.GeneralConfig.PlateChances.PmcSidePlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .PmcSidePlateChance,
+                config.GeneralConfig.PlateChances.PmcSidePlateChance = defaults.GeneralConfig.PlateChances.PmcSidePlateChance,
             ["generalConfig.plateChances.scavMainPlateChance"] = () =>
-                config.GeneralConfig.PlateChances.ScavMainPlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .ScavMainPlateChance,
+                config.GeneralConfig.PlateChances.ScavMainPlateChance = defaults.GeneralConfig.PlateChances.ScavMainPlateChance,
             ["generalConfig.plateChances.scavSidePlateChance"] = () =>
-                config.GeneralConfig.PlateChances.ScavSidePlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .ScavSidePlateChance,
+                config.GeneralConfig.PlateChances.ScavSidePlateChance = defaults.GeneralConfig.PlateChances.ScavSidePlateChance,
             ["generalConfig.plateChances.bossMainPlateChance"] = () =>
-                config.GeneralConfig.PlateChances.BossMainPlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .BossMainPlateChance,
+                config.GeneralConfig.PlateChances.BossMainPlateChance = defaults.GeneralConfig.PlateChances.BossMainPlateChance,
             ["generalConfig.plateChances.bossSidePlateChance"] = () =>
-                config.GeneralConfig.PlateChances.BossSidePlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .BossSidePlateChance,
+                config.GeneralConfig.PlateChances.BossSidePlateChance = defaults.GeneralConfig.PlateChances.BossSidePlateChance,
             ["generalConfig.plateChances.followerMainPlateChance"] = () =>
-                config.GeneralConfig.PlateChances.FollowerMainPlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .FollowerMainPlateChance,
+                config.GeneralConfig.PlateChances.FollowerMainPlateChance = defaults.GeneralConfig.PlateChances.FollowerMainPlateChance,
             ["generalConfig.plateChances.followerSidePlateChance"] = () =>
-                config.GeneralConfig.PlateChances.FollowerSidePlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .FollowerSidePlateChance,
+                config.GeneralConfig.PlateChances.FollowerSidePlateChance = defaults.GeneralConfig.PlateChances.FollowerSidePlateChance,
             ["generalConfig.plateChances.specialMainPlateChance"] = () =>
-                config.GeneralConfig.PlateChances.SpecialMainPlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .SpecialMainPlateChance,
+                config.GeneralConfig.PlateChances.SpecialMainPlateChance = defaults.GeneralConfig.PlateChances.SpecialMainPlateChance,
             ["generalConfig.plateChances.specialSidePlateChance"] = () =>
-                config.GeneralConfig.PlateChances.SpecialSidePlateChance = defaults
-                    .GeneralConfig
-                    .PlateChances
-                    .SpecialSidePlateChance,
+                config.GeneralConfig.PlateChances.SpecialSidePlateChance = defaults.GeneralConfig.PlateChances.SpecialSidePlateChance,
         };
 
         foreach (var kvp in RequiredArrayLengths)
         {
-            if (
-                diskArrayLengths.TryGetValue(kvp.Key, out var diskLength)
-                && diskLength != kvp.Value
-            )
+            if (diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value)
             {
                 repairActions[kvp.Key]();
             }
         }
     }
 
-    public static bool IsJsonOutdated(
-        string rawJson,
-        string rawDefaultJson,
-        ApbsServerConfig? config = null
-    )
+    public static bool IsJsonOutdated(string rawJson, string rawDefaultJson, ApbsServerConfig? config = null)
     {
         var (diskKeys, diskArrayLengths) = ParseDiskJson(rawJson);
         var defaultKeys = ParseDefaultJson(rawDefaultJson);
@@ -123,9 +82,7 @@ public static class ConfigHelper
     ///     https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/use-utf8jsonreader
     /// </summary>
     /// <param name="json"></param>
-    private static (HashSet<string> keyPaths, Dictionary<string, int> arrayLengths) ParseDiskJson(
-        string json
-    )
+    private static (HashSet<string> keyPaths, Dictionary<string, int> arrayLengths) ParseDiskJson(string json)
     {
         var keyPaths = new HashSet<string>();
         var arrayLengths = new Dictionary<string, int>();
@@ -140,10 +97,7 @@ public static class ConfigHelper
             {
                 case JsonTokenType.PropertyName:
                     currentProperty = reader.GetString()!;
-                    var path =
-                        pathStack.Count > 0
-                            ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
-                            : currentProperty;
+                    var path = pathStack.Count > 0 ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}" : currentProperty;
                     keyPaths.Add(path);
                     break;
                 case JsonTokenType.StartObject:
@@ -163,9 +117,7 @@ public static class ConfigHelper
                     if (currentProperty != null)
                     {
                         var arrayPath =
-                            pathStack.Count > 0
-                                ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
-                                : currentProperty;
+                            pathStack.Count > 0 ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}" : currentProperty;
                         if (RequiredArrayLengths.ContainsKey(arrayPath))
                         {
                             arrayCountStack.Push((arrayPath, 0));
@@ -214,10 +166,7 @@ public static class ConfigHelper
             {
                 case JsonTokenType.PropertyName:
                     currentProperty = reader.GetString()!;
-                    var path =
-                        pathStack.Count > 0
-                            ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}"
-                            : currentProperty;
+                    var path = pathStack.Count > 0 ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}" : currentProperty;
                     keyPaths.Add(path);
                     break;
                 case JsonTokenType.StartObject:

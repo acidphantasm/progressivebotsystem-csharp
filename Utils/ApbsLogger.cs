@@ -1,12 +1,12 @@
-﻿namespace ProgressiveBotSystem.Utils;
-
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
-using Constants;
-using Globals;
+using ProgressiveBotSystem.Constants;
+using ProgressiveBotSystem.Globals;
 using Spectre.Console;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
+
+namespace ProgressiveBotSystem.Utils;
 
 [Injectable(InjectionType.Singleton)]
 public class ApbsLogger
@@ -19,9 +19,7 @@ public class ApbsLogger
 
     public ApbsLogger(ISptLogger<ApbsLogger> logger)
     {
-        _pathToModFolder =
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-            ?? throw new InvalidOperationException();
+        _pathToModFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidOperationException();
         _logger = logger;
         _task = Task.Run(() => ProcessLogQueue(_cts.Token));
     }
@@ -50,17 +48,7 @@ public class ApbsLogger
                 Timestamp = DateTime.Now,
                 Level = "DEBUG",
                 FilePath = logFilePath,
-                Message = CreateMessage(
-                    Logging.Debug,
-                    message1,
-                    message2,
-                    message3,
-                    message4,
-                    message5,
-                    message6,
-                    message7,
-                    message8
-                ),
+                Message = CreateMessage(Logging.Debug, message1, message2, message3, message4, message5, message6, message7, message8),
             }
         );
     }
@@ -84,17 +72,7 @@ public class ApbsLogger
                 Timestamp = DateTime.Now,
                 Level = "WARNING",
                 FilePath = logFilePath,
-                Message = CreateMessage(
-                    Logging.Warning,
-                    message1,
-                    message2,
-                    message3,
-                    message4,
-                    message5,
-                    message6,
-                    message7,
-                    message8
-                ),
+                Message = CreateMessage(Logging.Warning, message1, message2, message3, message4, message5, message6, message7, message8),
             }
         );
     }
@@ -118,17 +96,7 @@ public class ApbsLogger
                 Timestamp = DateTime.Now,
                 Level = "ERROR",
                 FilePath = logFilePath,
-                Message = CreateMessage(
-                    Logging.Error,
-                    message1,
-                    message2,
-                    message3,
-                    message4,
-                    message5,
-                    message6,
-                    message7,
-                    message8
-                ),
+                Message = CreateMessage(Logging.Error, message1, message2, message3, message4, message5, message6, message7, message8),
             }
         );
     }
@@ -152,17 +120,7 @@ public class ApbsLogger
                 Timestamp = DateTime.Now,
                 Level = "SUCCESS",
                 FilePath = logFilePath,
-                Message = CreateMessage(
-                    Logging.Success,
-                    message1,
-                    message2,
-                    message3,
-                    message4,
-                    message5,
-                    message6,
-                    message7,
-                    message8
-                ),
+                Message = CreateMessage(Logging.Success, message1, message2, message3, message4, message5, message6, message7, message8),
             }
         );
     }
@@ -187,17 +145,7 @@ public class ApbsLogger
                 Timestamp = DateTime.Now,
                 Level = "BOT",
                 FilePath = logFilePath,
-                Message = CreateMessage(
-                    string.Empty,
-                    message1,
-                    message2,
-                    message3,
-                    message4,
-                    message5,
-                    message6,
-                    message7,
-                    message8
-                ),
+                Message = CreateMessage(string.Empty, message1, message2, message3, message4, message5, message6, message7, message8),
             }
         );
     }
@@ -250,17 +198,7 @@ public class ApbsLogger
         string message8 = ""
     )
     {
-        var messageList = new List<string>
-        {
-            message1,
-            message2,
-            message3,
-            message4,
-            message5,
-            message6,
-            message7,
-            message8,
-        };
+        var messageList = new List<string> { message1, message2, message3, message4, message5, message6, message7, message8 };
 
         var messages = string.Empty;
         var textFlag = string.Empty;

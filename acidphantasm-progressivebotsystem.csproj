@@ -60,21 +60,12 @@
 
     <MakeDir Directories="$(ProjectDir)release" Condition="!Exists('$(ProjectDir)release')" />
     <MakeDir Directories="$(ReleaseOutputDir)" Condition="!Exists('$(ReleaseOutputDir)')" />
-    <MakeDir
-      Directories="$(ReleaseOutputDir)Presets"
-      Condition="!Exists('$(ReleaseOutputDir)Presets')"
-    />
+    <MakeDir Directories="$(ReleaseOutputDir)Presets" Condition="!Exists('$(ReleaseOutputDir)Presets')" />
     <MakeDir Directories="$(ReleaseOutputDir)logs" Condition="!Exists('$(ReleaseOutputDir)logs')" />
 
-    <Copy
-      SourceFiles="@(ServerComponents)"
-      DestinationFolder="$(ReleaseOutputDir)%(RecursiveDir)"
-    />
+    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ReleaseOutputDir)%(RecursiveDir)" />
     <Copy SourceFiles="@(Data)" DestinationFolder="$(ReleaseOutputDir)Data\%(RecursiveDir)" />
-    <Copy
-      SourceFiles="@(WebAssets)"
-      DestinationFolder="$(ReleaseOutputDir)wwwroot\%(RecursiveDir)"
-    />
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ReleaseOutputDir)wwwroot\%(RecursiveDir)" />
 
     <Delete Files="$(ZipFile)" Condition="Exists('$(ZipFile)')" />
 
@@ -99,10 +90,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None
-      Include="$(MSBuildProjectFullPath).user"
-      Condition="Exists('$(MSBuildProjectFullPath).user')"
-    />
+    <None Include="$(MSBuildProjectFullPath).user" Condition="Exists('$(MSBuildProjectFullPath).user')" />
   </ItemGroup>
 
   <ItemGroup>
@@ -110,21 +98,13 @@
     <_ContentIncludedByDefault Remove="DefaultConfigs\config.default.json" />
   </ItemGroup>
 
-  <Target
-    Name="CopyToSPT"
-    AfterTargets="AfterBuild"
-    Condition="'$(Configuration)' == 'Debug' AND '$(SPTPath)' != ''"
-  >
+  <Target Name="CopyToSPT" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug' AND '$(SPTPath)' != ''">
     <Message Importance="high" Text="Copying mods to $(ModOutputDir)" />
     <ItemGroup>
       <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)" />
       <FilesToCopy Include="$(OutputPath)$(TargetName).pdb" />
     </ItemGroup>
-    <Copy
-      SourceFiles="@(FilesToCopy)"
-      DestinationFolder="$(ModOutputDir)"
-      ContinueOnError="false"
-    />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ModOutputDir)" ContinueOnError="false" />
     <Message Text="Files copied" />
   </Target>
 </Project>

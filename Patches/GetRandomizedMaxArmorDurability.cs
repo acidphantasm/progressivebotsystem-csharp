@@ -58,17 +58,10 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
     }
 
     protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(
-            typeof(DurabilityLimitsHelper),
-            nameof(DurabilityLimitsHelper.GetRandomizedMaxArmorDurability)
-        );
+        AccessTools.Method(typeof(DurabilityLimitsHelper), nameof(DurabilityLimitsHelper.GetRandomizedMaxArmorDurability));
 
     [PatchPrefix]
-    public static bool Prefix(
-        ref double __result,
-        TemplateItem? itemTemplate,
-        string? botRole = null
-    )
+    public static bool Prefix(ref double __result, TemplateItem? itemTemplate, string? botRole = null)
     {
         if (
             RaidInformation.FreshProfile
@@ -87,10 +80,7 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
         {
             return true;
         }
-        if (
-            FollowerRoles.Contains(botRole)
-            && !ModConfig.Config.FollowerBots.ArmourDurability.Enable
-        )
+        if (FollowerRoles.Contains(botRole) && !ModConfig.Config.FollowerBots.ArmourDurability.Enable)
         {
             return true;
         }
@@ -106,8 +96,7 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
         var itemMaxDurability = itemTemplate?.Properties?.MaxDurability;
         if (!itemMaxDurability.HasValue)
         {
-            const string message =
-                "Item max durability amount is null when trying to get max armor durability";
+            const string message = "Item max durability amount is null when trying to get max armor durability";
             _logger.Error(message);
             throw new DurabilityHelperException(message);
         }
@@ -142,9 +131,7 @@ public class GetRandomizedMaxArmorDurabilityPatch : AbstractPatch
 
         if (range is null)
         {
-            _logger.Error(
-                $"[ARMOUR DURABILITY] {botRole} <- REPORT THIS PLEASE | Defaulting to 90 - 100 Durability"
-            );
+            _logger.Error($"[ARMOUR DURABILITY] {botRole} <- REPORT THIS PLEASE | Defaulting to 90 - 100 Durability");
             range = (90, 100);
         }
 

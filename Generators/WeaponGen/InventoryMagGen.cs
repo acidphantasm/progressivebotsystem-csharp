@@ -1,9 +1,9 @@
-﻿namespace ProgressiveBotSystem.Generators.WeaponGen;
-
-using Models;
+﻿using ProgressiveBotSystem.Models;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+
+namespace ProgressiveBotSystem.Generators.WeaponGen;
 
 [Injectable]
 public class ApbsInventoryMagGen()
@@ -48,25 +48,58 @@ public class ApbsInventoryMagGen()
         _rerollDetails = rerollDetails;
     }
 
-    public ApbsGenerationData GetMagCount() => _magCounts!;
+    public ApbsGenerationData GetMagCount()
+    {
+        return _magCounts!;
+    }
 
-    public TemplateItem GetMagazineTemplate() => _magazineTemplate!;
+    public TemplateItem GetMagazineTemplate()
+    {
+        return _magazineTemplate!;
+    }
 
-    public TemplateItem GetWeaponTemplate() => _weaponTemplate!;
+    public TemplateItem GetWeaponTemplate()
+    {
+        return _weaponTemplate!;
+    }
 
-    public TemplateItem GetAmmoTemplate() => _ammoTemplate!;
+    public TemplateItem GetAmmoTemplate()
+    {
+        return _ammoTemplate!;
+    }
 
-    public BotBaseInventory GetPmcInventory() => _pmcInventory!;
+    public BotBaseInventory GetPmcInventory()
+    {
+        return _pmcInventory!;
+    }
 
-    public MongoId GetBotId() => _botId!;
+    public MongoId GetBotId()
+    {
+        return _botId!;
+    }
 
-    public string GetBotRole() => _botRole!;
+    public string GetBotRole()
+    {
+        return _botRole!;
+    }
 
-    public int GetBotLevel() => _botLevel!;
+    public int GetBotLevel()
+    {
+        return _botLevel!;
+    }
 
-    public int GetTier() => _tier!;
+    public int GetTier()
+    {
+        return _tier!;
+    }
 
-    public ToploadConfig GetToploadConfig() => _toploadConfig!;
+    public ToploadConfig GetToploadConfig()
+    {
+        return _toploadConfig!;
+    }
 
-    public EnableChance GetRerollDetails() => _rerollDetails!;
+    public EnableChance GetRerollDetails()
+    {
+        return _rerollDetails!;
+    }
 }

@@ -1,20 +1,17 @@
-﻿namespace ProgressiveBotSystem.Services;
-
-using Helpers;
-using Models;
-using Models.Enums;
+﻿using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using Utils;
+
+namespace ProgressiveBotSystem.Services;
 
 [Injectable(InjectionType.Singleton, TypePriority = OnLoadOrder.PostLoad + 70)]
-public class BotBlacklistService(
-    ApbsLogger apbsLogger,
-    BotBlacklistHelper botBlacklistHelper,
-    ItemImportTierHelper itemImportTierHelper
-) : IOnLoad
+public class BotBlacklistService(ApbsLogger apbsLogger, BotBlacklistHelper botBlacklistHelper, ItemImportTierHelper itemImportTierHelper)
+    : IOnLoad
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
@@ -64,10 +61,7 @@ public class BotBlacklistService(
 
                     foreach (var slot in slotsToRemove)
                     {
-                        if (
-                            !data.Equipment.TryGetValue(slot, out var weaponList)
-                            || weaponList.Count == 0
-                        )
+                        if (!data.Equipment.TryGetValue(slot, out var weaponList) || weaponList.Count == 0)
                         {
                             continue;
                         }
@@ -138,10 +132,7 @@ public class BotBlacklistService(
 
                     foreach (var slot in slotsToRemove)
                     {
-                        if (
-                            !data.Equipment.TryGetValue(slot, out var equipmentList)
-                            || equipmentList.Count == 0
-                        )
+                        if (!data.Equipment.TryGetValue(slot, out var equipmentList) || equipmentList.Count == 0)
                         {
                             continue;
                         }
@@ -244,11 +235,7 @@ public class BotBlacklistService(
         }
     }
 
-    private void RemoveAttachment(
-        Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> dictionary,
-        MongoId itemToRemove,
-        int tier
-    )
+    private void RemoveAttachment(Dictionary<MongoId, Dictionary<string, HashSet<MongoId>>> dictionary, MongoId itemToRemove, int tier)
     {
         var removedFrom = new List<string>();
         var blockedRemovals = new List<string>();
@@ -315,12 +302,7 @@ public class BotBlacklistService(
         }
     }
 
-    private void ProcessAppearanceDict(
-        Dictionary<string, Appearance> dictionary,
-        MongoId item,
-        int tier,
-        string label
-    )
+    private void ProcessAppearanceDict(Dictionary<string, Appearance> dictionary, MongoId item, int tier, string label)
     {
         var removedFrom = new List<string>();
         var blockedRemovals = new List<string>();
@@ -332,9 +314,7 @@ public class BotBlacklistService(
 
         if (removedFrom.Count > 0)
         {
-            apbsLogger.Debug(
-                $"[CLOTHING BLACKLIST] Removed {item} from Tier {tier}: {string.Join(", ", removedFrom)}"
-            );
+            apbsLogger.Debug($"[CLOTHING BLACKLIST] Removed {item} from Tier {tier}: {string.Join(", ", removedFrom)}");
         }
 
         if (blockedRemovals.Count > 0)
@@ -353,34 +333,10 @@ public class BotBlacklistService(
         List<string> blockedRemovals
     )
     {
-        RemoveAppearanceItem(
-            appearance.Body,
-            itemToRemove,
-            $"{context}:Body",
-            removedFrom,
-            blockedRemovals
-        );
-        RemoveAppearanceItem(
-            appearance.Feet,
-            itemToRemove,
-            $"{context}:Feet",
-            removedFrom,
-            blockedRemovals
-        );
-        RemoveAppearanceItem(
-            appearance.Hands,
-            itemToRemove,
-            $"{context}:Hands",
-            removedFrom,
-            blockedRemovals
-        );
-        RemoveAppearanceItem(
-            appearance.Head,
-            itemToRemove,
-            $"{context}:Head",
-            removedFrom,
-            blockedRemovals
-        );
+        RemoveAppearanceItem(appearance.Body, itemToRemove, $"{context}:Body", removedFrom, blockedRemovals);
+        RemoveAppearanceItem(appearance.Feet, itemToRemove, $"{context}:Feet", removedFrom, blockedRemovals);
+        RemoveAppearanceItem(appearance.Hands, itemToRemove, $"{context}:Hands", removedFrom, blockedRemovals);
+        RemoveAppearanceItem(appearance.Head, itemToRemove, $"{context}:Head", removedFrom, blockedRemovals);
     }
 
     private void RemoveAppearanceItem(

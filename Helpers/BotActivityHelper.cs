@@ -13,30 +13,12 @@ public class BotActivityHelper(ApbsLogger apbsLogger) : IOnLoad
         .GetFields()
         .Select(x => x.GetValue(null))
         .Cast<string>();
-    private readonly IEnumerable<string> _bosses = typeof(BossBots)
-        .GetFields()
-        .Select(x => x.GetValue(null))
-        .Cast<string>();
-    private readonly IEnumerable<string> _events = typeof(EventBots)
-        .GetFields()
-        .Select(x => x.GetValue(null))
-        .Cast<string>();
-    private readonly IEnumerable<string> _followers = typeof(FollowerBots)
-        .GetFields()
-        .Select(x => x.GetValue(null))
-        .Cast<string>();
-    private readonly IEnumerable<string> _pmcs = typeof(PmcBots)
-        .GetFields()
-        .Select(x => x.GetValue(null))
-        .Cast<string>();
-    private readonly IEnumerable<string> _scavs = typeof(ScavBots)
-        .GetFields()
-        .Select(x => x.GetValue(null))
-        .Cast<string>();
-    private readonly IEnumerable<string> _specials = typeof(SpecialBots)
-        .GetFields()
-        .Select(x => x.GetValue(null))
-        .Cast<string>();
+    private readonly IEnumerable<string> _bosses = typeof(BossBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _events = typeof(EventBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _followers = typeof(FollowerBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+    private readonly IEnumerable<string> _specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
 
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {

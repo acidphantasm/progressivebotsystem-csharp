@@ -51,10 +51,7 @@ public class GenerateInventoryPatch : AbstractPatch
     }
 
     protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(
-            typeof(BotInventoryGenerator),
-            nameof(BotInventoryGenerator.GenerateInventory)
-        );
+        AccessTools.Method(typeof(BotInventoryGenerator), nameof(BotInventoryGenerator.GenerateInventory));
 
     [PatchPrefix]
     public static bool Prefix(
@@ -86,19 +83,14 @@ public class GenerateInventoryPatch : AbstractPatch
         var shouldQuest = _botQuestHelper.ShouldBotHaveQuest(botGenerationDetails.IsPmc);
         if (shouldQuest)
         {
-            questData = _botQuestHelper.SelectQuest(
-                botGenerationDetails.BotLevel,
-                RaidInformation.RaidLocation
-            );
+            questData = _botQuestHelper.SelectQuest(botGenerationDetails.BotLevel, RaidInformation.RaidLocation);
             if (questData is null)
             {
                 shouldQuest = false;
             }
             else
             {
-                _apbsLogger.Debug(
-                    $"[QUEST] Level{botGenerationDetails.BotLevel} PMC was assigned quest: {questData.QuestName}"
-                );
+                _apbsLogger.Debug($"[QUEST] Level{botGenerationDetails.BotLevel} PMC was assigned quest: {questData.QuestName}");
             }
         }
 
@@ -123,18 +115,13 @@ public class GenerateInventoryPatch : AbstractPatch
         }
 
         // Pull chances and generation by the tier number - this follows poverty to ensure you get the right data
-        var chancesData = _botEquipmentHelper.GetChancesByBotRole(
-            botGenerationDetails.RoleLowercase,
-            tierNumber
-        );
+        var chancesData = _botEquipmentHelper.GetChancesByBotRole(botGenerationDetails.RoleLowercase, tierNumber);
         var chances = new ApbsChances
         {
             EquipmentChances = new Dictionary<string, double>(chancesData.EquipmentChances),
             EquipmentModsChances = new Dictionary<string, double>(chancesData.EquipmentModsChances),
             WeaponModsChances = new Dictionary<string, double>(chancesData.WeaponModsChances),
-            AssaultCarbineChances = new Dictionary<string, double>(
-                chancesData.AssaultCarbineChances
-            ),
+            AssaultCarbineChances = new Dictionary<string, double>(chancesData.AssaultCarbineChances),
             SniperRifleChances = new Dictionary<string, double>(chancesData.SniperRifleChances),
             MarksmanRifleChances = new Dictionary<string, double>(chancesData.MarksmanRifleChances),
             AssaultRifleChances = new Dictionary<string, double>(chancesData.AssaultRifleChances),
