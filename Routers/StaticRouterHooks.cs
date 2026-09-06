@@ -5,6 +5,7 @@ using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers.Profile;
+using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Bot;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
@@ -53,22 +54,23 @@ public class StaticRouterHooks : StaticRouter
                 "/client/game/bot/generate",
                 async (url, info, sessionId, output, token) =>
                 {
-                    if (ModConfig.Config.Debug.EnableBotEquipmentLog)
+                    if (!ModConfig.Config.Debug.EnableBotEquipmentLog)
                     {
-                        try
-                        {
-                            var outputData = _jsonUtil.Deserialize<GetBodyResponseData<IEnumerable<BotBase?>>>(output);
+                        return output!;
+                    }
+                    try
+                    {
+                        var outputData = _jsonUtil.Deserialize<GetBodyResponseData<IEnumerable<BotBase?>>>(output);
 
-                            if (outputData?.Data != null)
-                            {
-                                // Fire and forget
-                                _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data), token);
-                            }
-                        }
-                        catch (Exception ex)
+                        if (outputData?.Data != null)
                         {
-                            _apbsLogger.Error($"Failed to deserialize bots: {ex}");
+                            // Fire and forget
+                            _ = Task.Run(() => _botLogService.StartBotLogging(outputData.Data), token);
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        _apbsLogger.Error($"Failed to deserialize bots: {ex}");
                     }
                     return output!;
                 }
@@ -87,7 +89,7 @@ public class StaticRouterHooks : StaticRouter
 
                         var profileActivityRaidData = _profileActivityService.GetProfileActivityRaidData(sessionId);
 
-                        RaidInformation.CurrentSessionId = fullProfile.ProfileInfo.ProfileId;
+                        RaidInformation.CurrentSessionId = fullProfile.ProfileInfo?.ProfileId ?? new MongoId();
 
                         var prestigeLevel = fullProfile.CharacterData?.PmcData?.Info?.PrestigeLevel ?? 0;
                         RaidInformation.AddOrUpdatePlayerPrestige(sessionId, prestigeLevel);
@@ -96,7 +98,7 @@ public class StaticRouterHooks : StaticRouter
                         RaidInformation.AddOrUpdatePlayerLevel(sessionId, level);
 
                         RaidInformation.RaidLocation = info.Location;
-                        RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration.IsNightRaid;
+                        RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration?.IsNightRaid ?? false;
                         RaidInformation.IsInRaid = true;
 
                         _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
