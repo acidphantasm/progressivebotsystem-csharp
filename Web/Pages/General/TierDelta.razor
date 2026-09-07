@@ -40,7 +40,7 @@
                         ValueChanged="@(x => LevelPickingMode = x)"
                         Items="@_levelPickingModes"
                         HasPendingChanges="@(PresetStateService.PendingChanges.Contains(nameof(LevelPickingMode)))"
-                        IsNonDefault="@(LevelPickingMode != "Delta")"
+                        IsNonDefault="@(LevelPickingMode != "Weighted Selection")"
                         OnUndo="UndoLevelPickingMode"
                         OnDefault="DefaultLevelPickingMode"/>
                 </MudGrid>
