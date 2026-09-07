@@ -1177,7 +1177,7 @@
     "skipBackPlateIfMissingFrontPlate": false,
     "limitPlateClassToFrontPlateClass": false
   },
-  "levelPickingMode": 0,
+  "levelPickingMode": 1,
   "customLevelDeltas": {
     "enable": false,
     "tier1": {

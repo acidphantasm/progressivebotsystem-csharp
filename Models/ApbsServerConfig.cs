@@ -39,7 +39,7 @@ public class ApbsServerConfig
     public GeneralBotData SpecialBots { get; set; } = new();
 
     [JsonPropertyName("levelPickingMode")]
-    public BotLevelPickingMode LevelPickingMode { get; set; } = BotLevelPickingMode.Delta;
+    public BotLevelPickingMode LevelPickingMode { get; set; } = BotLevelPickingMode.Weighted;
 
     [JsonPropertyName("customLevelDeltas")]
     public CustomLevelDelta CustomLevelDeltas { get; set; } = new();
