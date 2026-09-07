@@ -968,7 +968,8 @@
         "prepareForEscape": 10,
         "edgeOfDarkness": 30,
         "unheardEdition": 20
-      }
+      },
+      "useGroundZeroSplit": true
     },
     "secrets": {
       "developerSettings": {

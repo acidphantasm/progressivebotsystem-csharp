@@ -312,6 +312,9 @@ public class PmcSpecificConfig
 
     [JsonPropertyName("gameVersionWeighting")]
     public GameVersionWeightConfig GameVersionWeighting { get; set; } = new();
+
+    [JsonPropertyName("useGroundZeroSplit")]
+    public bool UseGroundZeroSplit { get; set; } = true;
 }
 
 public class EnableChance

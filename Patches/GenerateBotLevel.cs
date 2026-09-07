@@ -1,10 +1,8 @@
-﻿namespace ProgressiveBotSystem.Patches;
-
-using System.Reflection;
-using Globals;
+﻿using System.Reflection;
 using HarmonyLib;
-using Helpers;
-using Models;
+using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
 using SPTarkov.Common.Extensions;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Reflection.Patching;
@@ -16,6 +14,8 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Utils;
+
+namespace ProgressiveBotSystem.Patches;
 
 [Injectable]
 public class GenerateBotLevel : AbstractPatch
@@ -33,8 +33,10 @@ public class GenerateBotLevel : AbstractPatch
         _tierHelper = tierHelper;
     }
 
-    protected override MethodBase GetTargetMethod() =>
-        AccessTools.Method(typeof(BotLevelGenerator), nameof(BotLevelGenerator.GenerateBotLevel));
+    protected override MethodBase GetTargetMethod()
+    {
+        return AccessTools.Method(typeof(BotLevelGenerator), nameof(BotLevelGenerator.GenerateBotLevel));
+    }
 
     [PatchPrefix]
     public static bool Prefix(
@@ -79,8 +81,10 @@ public class GenerateBotLevel : AbstractPatch
         return false;
     }
 
-    private static int ChooseBotLevel(double min, double max, int shift, double number) =>
-        (int)_randomUtil.GetBiasedRandomNumber(min, max, shift, number);
+    private static int ChooseBotLevel(double min, double max, int shift, double number)
+    {
+        return (int)_randomUtil.GetBiasedRandomNumber(min, max, shift, number);
+    }
 
     private static MinMax<int> GetRelativePmcBotLevelRange(
         BotGenerationDetails botGenerationDetails,
@@ -88,7 +92,9 @@ public class GenerateBotLevel : AbstractPatch
         int maxAvailableLevel
     )
     {
-        var levelOverride = botGenerationDetails.LocationSpecificPmcLevelOverride;
+        var levelOverride = ModConfig.Config.PmcBots.AdditionalOptions.UseGroundZeroSplit
+            ? botGenerationDetails.LocationSpecificPmcLevelOverride
+            : null;
         var playerLevel = Math.Max(1, RaidInformation.CurrentRaidLevel);
 
         var minPossibleLevel = levelOverride is not null

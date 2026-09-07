@@ -371,6 +371,15 @@
                             Max="100"
                             Disabled="@(!PmcVersionWeightingEnabled)"/>
 
+                        <MudSwitchTT
+                            Label="Use Ground Zero Lv Split"
+                            TooltipText="Enabling this limits Pmc Levels on Ground Zero to 1-20 and Ground Zero High 21+."
+                            @bind-Value="PmcUseGroundZeroSplit"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PmcUseGroundZeroSplit"))"
+                            IsNonDefault="@(!PmcUseGroundZeroSplit)"
+                            OnUndo="UndoPmcUseGroundZeroSplit"
+                            OnDefault="DefaultPmcUseGroundZeroSplit"/>
+
                     </MudGrid>
                 </MudExpansionPanel>
 
@@ -1133,6 +1142,24 @@
         PmcPrepareForEscapeVersionWeight = 10;
         PmcEdgeOfDarknessVersionWeight = 40;
         PmcUnheardVersionWeight = 20;
+    }
+
+    private bool PmcUseGroundZeroSplit
+    {
+        get => ModConfig.Config.PmcBots.AdditionalOptions.UseGroundZeroSplit;
+        set
+        {
+            ModConfig.Config.PmcBots.AdditionalOptions.UseGroundZeroSplit = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcBots.AdditionalOptions.UseGroundZeroSplit, nameof(PmcUseGroundZeroSplit));
+        }
+    }
+    private void UndoPmcUseGroundZeroSplit()
+    {
+        PmcVersionWeightingEnabled = ModConfig.OriginalConfig.PmcBots.AdditionalOptions.UseGroundZeroSplit;
+    }
+    private void DefaultPmcUseGroundZeroSplit()
+    {
+        PmcVersionWeightingEnabled = true;
     }
     #endregion
     #region PLATE CLASSES
