@@ -11,7 +11,6 @@ public class RaidInformation
     public static string? CurrentSessionId { get; set; }
     public static string? RaidLocation { get; set; }
     public static bool NightTime { get; set; } = false;
-    public static bool IsInRaid { get; set; } = false;
 
     public static int PlayerCount
     {

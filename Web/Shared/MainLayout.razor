@@ -1,5 +1,4 @@
-﻿@using ProgressiveBotSystem.Models
-@using ProgressiveBotSystem.Models.Enums
+﻿@using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
 @using Color = MudBlazor.Color
 @inherits LayoutComponentBase
@@ -105,12 +104,6 @@
                        OnClick="@(_ => DrawerToggle())">Menu
             </MudButton>
             <MudSpacer/>
-            <MudOverlay Visible="IsInRaid" DarkBackground="true" Absolute="true">
-                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="RefreshPage">
-                    You or someone you know is in raid. Changes cannot be made. Click to check status.
-                </MudButton>
-            </MudOverlay>
-            <MudSpacer/>
             <div class="d-flex gap-2">
                 <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh"
                            Color="Color.Primary" OnClick="@(_ => RefreshData())" Disabled="_isReloading">Reload
@@ -129,7 +122,6 @@
             <NavMenu/>
         </MudDrawer>
         <MudMainContent Class="pt-3">
-            <MudOverlay Visible="IsInRaid" DarkBackground="true" Absolute="true"/>
             <CascadingValue Value="this">
                 <div class="content">
                     @Body
@@ -215,7 +207,6 @@
     private static MainLayout? _app;
 
     private bool _drawerOpen;
-    public bool IsInRaid;
 
     private static bool _isSaving;
     private static bool _isReloading;
@@ -326,11 +317,6 @@
                         PresetStateService.RaisePresetChanged();
                     }
                     PresetStateService.ClearPendingChanges();
-                    IsInRaid = false;
-                    break;
-                case ConfigOperationResult.InRaid:
-                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
-                    IsInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
                     Snackbar.Add("Another process is already running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
@@ -393,13 +379,8 @@
             {
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
-                    IsInRaid = false;
                     PresetStateService.ClearPendingChanges();
                     PresetStateService.RaiseDataReloaded();
-                    break;
-                case ConfigOperationResult.InRaid:
-                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
-                    IsInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
                     Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
@@ -461,15 +442,9 @@
             switch (result)
             {
                 case ConfigOperationResult.Success:
-                    IsInRaid = false;
                     Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
                     PresetStateService.ClearPendingChanges();
                     PresetStateService.RaiseDataReloaded();
-                    break;
-
-                case ConfigOperationResult.InRaid:
-                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
-                    IsInRaid = true;
                     break;
 
                 case ConfigOperationResult.ActiveProcess:
@@ -495,7 +470,6 @@
 
     private void RefreshPage()
     {
-        IsInRaid = RaidInformation.IsInRaid;
         StateHasChanged();
     }
 }

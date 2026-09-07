@@ -99,13 +99,11 @@ public class StaticRouterHooks : StaticRouter
 
                         RaidInformation.RaidLocation = info.Location;
                         RaidInformation.NightTime = profileActivityRaidData.RaidConfiguration?.IsNightRaid ?? false;
-                        RaidInformation.IsInRaid = true;
 
                         _apbsLogger.Debug($"Current SessionID: {RaidInformation.CurrentSessionId}");
                         _apbsLogger.Debug($"Highest Prestige Level: {RaidInformation.HighestPrestigeLevel}");
                         _apbsLogger.Debug($"Current Raid Level: {RaidInformation.CurrentRaidLevel}");
                         _apbsLogger.Debug($"Night Raid: {RaidInformation.NightTime}");
-                        _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     }
                     catch (Exception ex)
                     {
@@ -118,11 +116,9 @@ public class StaticRouterHooks : StaticRouter
                 "/client/match/local/end",
                 async (url, info, sessionId, output, token) =>
                 {
-                    RaidInformation.IsInRaid = false;
                     RaidInformation.ClearRaidLevels();
                     _customBotLootCacheService.ClearApbsCache();
 
-                    _apbsLogger.Debug($"In Raid: {RaidInformation.IsInRaid}");
                     return output!;
                 }
             ),
