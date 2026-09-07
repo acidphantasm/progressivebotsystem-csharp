@@ -14,7 +14,7 @@ public record ModMetadata : IModMetadata, IModBlazorMetadata
     public string Name { get; init; } = "Acid's Progressive Bot System";
     public string Author { get; init; } = "acidphantasm";
     public List<string>? Contributors { get; init; }
-    public Version Version { get; init; } = new("2.3.2");
+    public Version Version { get; init; } = new("2.4.0");
     public Range SptVersion { get; init; } = new("~4.1.0");
     public List<string>? Incompatibilities { get; init; } = ["li.barlog.andern"];
     public Dictionary<string, Range>? ModDependencies { get; init; }
