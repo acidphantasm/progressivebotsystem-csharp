@@ -122,7 +122,7 @@
                             TooltipText="Will skip backplates when the front plate is missing, if they had one it would be in the front right?"
                             @bind-Value="SkipBackPlateIfMissingFrontPlate"
                             HasPendingChanges="@(PresetStateService.PendingChanges.Contains("SkipBackPlateIfMissingFrontPlate"))"
-                            IsNonDefault="@(SkipBackPlateIfMissingFrontPlate)"
+                            IsNonDefault="@(!SkipBackPlateIfMissingFrontPlate)"
                             OnUndo="UndoSkipBackPlateIfMissingFrontPlate"
                             OnDefault="DefaultSkipBackPlateIfMissingFrontPlate"/>
 
@@ -131,7 +131,7 @@
                             TooltipText="Tries to limit the plate class of all plates to the class of the front plate, if possible."
                             @bind-Value="LimitPlateClassToFrontPlateClass"
                             HasPendingChanges="@(PresetStateService.PendingChanges.Contains("LimitPlateClassToFrontPlateClass"))"
-                            IsNonDefault="@(LimitPlateClassToFrontPlateClass)"
+                            IsNonDefault="@(!LimitPlateClassToFrontPlateClass)"
                             OnUndo="UndoLimitPlateClassToFrontPlateClass"
                             OnDefault="DefaultLimitPlateClassToFrontPlateClass"/>
 
@@ -326,7 +326,7 @@
                                           PmcStandardVersionWeight != 20 ||
                                           PmcLeftBehindVersionWeight != 10 ||
                                           PmcPrepareForEscapeVersionWeight != 10 ||
-                                          PmcEdgeOfDarknessVersionWeight != 40 ||
+                                          PmcEdgeOfDarknessVersionWeight != 30 ||
                                           PmcUnheardVersionWeight != 20)"
                             OnUndo="UndoPmcVersionWeighting"
                             OnDefault="DefaultPmcVersionWeighting"/>
