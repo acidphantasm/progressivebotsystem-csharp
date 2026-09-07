@@ -1,38 +1,38 @@
-﻿namespace ProgressiveBotSystem.Globals;
-
-using System.Reflection;
-using Helpers;
-using Models;
-using Models.Enums;
-using Services;
+﻿using System.Reflection;
+using ProgressiveBotSystem.Helpers;
+using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Services;
+using ProgressiveBotSystem.Utils;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Utils;
-using Utils;
+
+namespace ProgressiveBotSystem.Globals;
 
 [Injectable(TypePriority = OnLoadOrder.Preload)]
 public class ModConfig : IOnLoad
 {
-    private static ApbsLogger _apbsLogger;
-    private static ModHelper _modHelper;
-    private static JsonUtil _jsonUtil;
-    private static FileUtil _fileUtil;
-    private static BotConfigHelper _botConfigHelper;
-    private static DataLoader _dataLoader;
-    private static BotBlacklistService _botBlacklistService;
-    private static ItemImportService _itemImportService;
-    private static DateHelper _dateHelper;
+    private static ApbsLogger _apbsLogger = null!;
+    private static ModHelper _modHelper = null!;
+    private static JsonUtil _jsonUtil = null!;
+    private static FileUtil _fileUtil = null!;
+    private static BotConfigHelper _botConfigHelper = null!;
+    private static DataLoader _dataLoader = null!;
+    private static BotBlacklistService _botBlacklistService = null!;
+    private static ItemImportService _itemImportService = null!;
+    private static DateHelper _dateHelper = null!;
 
     private static int _isActivelyProcessingFlag;
-    public static string _modPath = string.Empty;
+    public static string ModPath = string.Empty;
 
     public static bool WttBackport;
     public static bool PrestigeBackport;
     public static bool WttPackNStrap;
 
-    public static int CurrentVanillaMappingManifestVersion = 2;
-    public static int CurrentPresetManifestVersion = 1;
+    public static readonly int CurrentVanillaMappingManifestVersion = 2;
+    public static readonly int CurrentPresetManifestVersion = 1;
 
     public ModConfig(
         ModHelper modHelper,
@@ -55,7 +55,7 @@ public class ModConfig : IOnLoad
         _botBlacklistService = botBlacklistService;
         _itemImportService = itemImportService;
         _dateHelper = dateHelper;
-        _modPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
+        ModPath = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
     }
 
     public static ApbsServerConfig Config { get; private set; } = null!;
@@ -65,10 +65,10 @@ public class ModConfig : IOnLoad
 
     public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
-        var configPath = Path.Combine(_modPath, "config.json");
-        var blacklistPath = Path.Combine(_modPath, "blacklists.json");
-        var defaultConfigPath = Path.Combine(_modPath, "Data", "DefaultConfigs", "config.default.json");
-        var defaultBlacklistPath = Path.Combine(_modPath, "Data", "DefaultConfigs", "blacklists.default.json");
+        var configPath = Path.Combine(ModPath, "config.json");
+        var blacklistPath = Path.Combine(ModPath, "blacklists.json");
+        var defaultConfigPath = Path.Combine(ModPath, "Data", "DefaultConfigs", "config.default.json");
+        var defaultBlacklistPath = Path.Combine(ModPath, "Data", "DefaultConfigs", "blacklists.default.json");
 
         if (!File.Exists(configPath))
         {
@@ -121,13 +121,8 @@ public class ModConfig : IOnLoad
 
         try
         {
-            if (RaidInformation.IsInRaid)
-            {
-                return ConfigOperationResult.InRaid;
-            }
-
-            var configPath = Path.Combine(_modPath, "config.json");
-            var blacklistPath = Path.Combine(_modPath, "blacklists.json");
+            var configPath = Path.Combine(ModPath, "config.json");
+            var blacklistPath = Path.Combine(ModPath, "blacklists.json");
 
             var configTask = _jsonUtil.DeserializeFromFileAsync<ApbsServerConfig>(configPath, cancellationToken);
             var blacklistTask = _jsonUtil.DeserializeFromFileAsync<ApbsBlacklistConfig>(blacklistPath, cancellationToken);
@@ -139,13 +134,15 @@ public class ModConfig : IOnLoad
             Blacklist = blacklistTask.Result ?? throw new ArgumentNullException(nameof(Blacklist));
             OriginalBlacklist = DeepClone(Blacklist);
 
+            await _dataLoader.AssignTierData(ModPath);
+
             if (Config.UsePreset)
             {
-                await _dataLoader.AssignJsonDataFromPreset(_modPath);
+                await _dataLoader.AssignJsonDataFromPreset(ModPath);
             }
             else
             {
-                await _dataLoader.AssignJsonData(_modPath);
+                await _dataLoader.AssignJsonData(ModPath);
             }
 
             // DeepClone the Clean data into the Dirty data for use
@@ -183,11 +180,6 @@ public class ModConfig : IOnLoad
 
         try
         {
-            if (RaidInformation.IsInRaid)
-            {
-                return ConfigOperationResult.InRaid;
-            }
-
             var pathToMod = _modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
             var configPath = Path.Combine(pathToMod, "config.json");
             var blacklistPath = Path.Combine(pathToMod, "blacklists.json");
@@ -200,24 +192,26 @@ public class ModConfig : IOnLoad
             var writeBlacklistTask = _fileUtil.WriteFileAsync(blacklistPath, serializedBlacklistTask.Result!, cancellationToken);
             await Task.WhenAll(writeConfigTask, writeBlacklistTask);
 
+            await _dataLoader.AssignTierData(ModPath);
+
             if (Config.UsePreset)
             {
                 var goodToReassignPreset = false;
                 if (savePresetToDisk)
                 {
-                    if (await _dataLoader.SavePresetChangesToDisk(_modPath))
+                    if (await _dataLoader.SavePresetChangesToDisk(ModPath))
                     {
                         goodToReassignPreset = true;
                     }
                 }
                 if (presetNameChange || goodToReassignPreset)
                 {
-                    await _dataLoader.AssignJsonDataFromPreset(_modPath);
+                    await _dataLoader.AssignJsonDataFromPreset(ModPath);
                 }
             }
             else
             {
-                await _dataLoader.AssignJsonData(_modPath);
+                await _dataLoader.AssignJsonData(ModPath);
             }
 
             // DeepClone the Clean data into the Dirty data for use

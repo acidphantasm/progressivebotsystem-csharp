@@ -113,7 +113,7 @@
 
     private async Task LoadReleaseNotes()
     {
-        var path = Path.Combine(ModConfig._modPath, "wwwroot/files/ReleaseNotes.json");
+        var path = Path.Combine(ModConfig.ModPath, "wwwroot/files/ReleaseNotes.json");
         var text = await FileUtil.ReadFileAsync(path);
         _releaseNotes = JsonUtil.Deserialize<List<ReleaseNote>>(text) ?? [];
     }

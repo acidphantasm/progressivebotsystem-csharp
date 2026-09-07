@@ -1,11 +1,14 @@
 ﻿using ProgressiveBotSystem.Globals;
 using ProgressiveBotSystem.Models;
+using ProgressiveBotSystem.Models.Enums;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Utils;
 
 namespace ProgressiveBotSystem.Helpers;
 
 [Injectable(InjectionType.Singleton)]
-public class TierHelper(TierInformation tierInformation, DateHelper dateHelper)
+public class TierHelper(TierInformation tierInformation, DateHelper dateHelper, RandomUtil randomUtil)
 {
     private TierData GetTierInfo(int level)
     {
@@ -29,23 +32,53 @@ public class TierHelper(TierInformation tierInformation, DateHelper dateHelper)
         return GetTierInfo(level).Tier;
     }
 
-    public int GetTierUpperLevelDeviation(int level)
+    public MinMax<int> GetBotLevelRange(int playerLevel, bool isScav)
     {
-        return GetTierInfo(level).BotMaxLevelVariance;
+        var tierData = GetTierInfo(playerLevel);
+        if (ModConfig.Config.LevelPickingMode == BotLevelPickingMode.Weighted)
+        {
+            var weights = isScav ? tierData.ScavLevelWeights : tierData.PmcLevelWeights;
+            if (weights is { Count: > 0 })
+            {
+                var targetTier = PickWeightedTier(weights);
+                var targetTierData = tierInformation.Tiers.FirstOrDefault(t => t.Tier == targetTier);
+
+                if (targetTierData is not null)
+                {
+                    return new MinMax<int>(targetTierData.PlayerMinLevel, targetTierData.PlayerMaxLevel);
+                }
+            }
+        }
+
+        var lowerDeviation = isScav ? tierData.ScavMinLevelVariance : tierData.BotMinLevelVariance;
+        var upperDeviation = isScav ? tierData.ScavMaxLevelVariance : tierData.BotMaxLevelVariance;
+
+        var minLevel = playerLevel - lowerDeviation;
+        var maxLevel = playerLevel + upperDeviation;
+
+        return new MinMax<int>(minLevel, maxLevel);
     }
 
-    public int GetTierLowerLevelDeviation(int level)
+    private int PickWeightedTier(List<WeightedTierChance> weights)
     {
-        return GetTierInfo(level).BotMinLevelVariance;
-    }
+        var totalWeight = weights.Sum(w => w.Weight);
+        if (totalWeight <= 0)
+        {
+            return weights[0].Tier;
+        }
 
-    public int GetScavTierUpperLevelDeviation(int level)
-    {
-        return GetTierInfo(level).ScavMaxLevelVariance;
-    }
+        var roll = randomUtil.GetInt(1, totalWeight);
+        var cumulative = 0;
 
-    public int GetScavTierLowerLevelDeviation(int level)
-    {
-        return GetTierInfo(level).ScavMinLevelVariance;
+        foreach (var entry in weights)
+        {
+            cumulative += entry.Weight;
+            if (roll <= cumulative)
+            {
+                return entry.Tier;
+            }
+        }
+
+        return weights[^1].Tier;
     }
 }

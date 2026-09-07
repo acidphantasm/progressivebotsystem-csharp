@@ -239,7 +239,7 @@ public class DataLoader(ModHelper modHelper, TierInformation tierInformation, Js
         apbsLogger.Success($"Preset Loaded: {ModConfig.Config.PresetName}");
     }
 
-    private async Task AssignTierData(string pathToMod)
+    public async Task AssignTierData(string pathToMod)
     {
         tierInformation.Tiers =
             await jsonUtil.DeserializeFromFileAsync<List<TierData>>(pathToMod + "/Data/Tiers/TierData.json")

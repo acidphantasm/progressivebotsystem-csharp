@@ -1,0 +1,57 @@
+﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
+@inject PresetStateService PresetStateService
+
+<MudGrid>
+    @for (var i = 0; i < 7; i++)
+    {
+        var targetTier = i + 1;
+        var index = i;
+        var (_, targetMin, targetMax) = TierDefaults.Ranges[i];
+        var entry = GetOrAddEntry(Entries, targetTier);
+        var originalEntry = GetOrAddEntry(Original, targetTier);
+        <MudSliderDisabledTT
+            Label="@($"Levels {targetMin}-{targetMax}")"
+            TooltipText="@($"Relative chance that bots roll a level from the {targetMin}-{targetMax} range.")"
+            @bind-Value:get="entry.Weight"
+            @bind-Value:set="@(v => OnWeightChanged(targetTier, v, originalEntry.Weight))"
+            Disabled="@(!Enabled)"
+            Min="0"
+            Max="200"
+            HasPendingChanges="@HasPendingChange(targetTier)"
+            IsNonDefault="@(entry.Weight != DefaultWeights[index])"
+            OnUndo="@(() => OnWeightChanged(targetTier, originalEntry.Weight, originalEntry.Weight))"
+            OnDefault="@(() => OnWeightChanged(targetTier, DefaultWeights[index], originalEntry.Weight))"/>
+    }
+</MudGrid>
+
+@code {
+    [Parameter] public int Tier { get; set; }
+    [Parameter] public bool Enabled { get; set; }
+    [Parameter] public List<WeightedTierChance> Entries { get; set; } = null!;
+    [Parameter] public List<WeightedTierChance> Original { get; set; } = null!;
+    [Parameter] public int[] DefaultWeights { get; set; } = null!;
+    [Parameter] public string PendingKeyPrefix { get; set; } = "";
+
+    private static WeightedTierChance GetOrAddEntry(List<WeightedTierChance> weightedList, int targetTier)
+    {
+        var existing = weightedList.FirstOrDefault(e => e.Tier == targetTier);
+        if (existing is not null)
+        {
+            return existing;
+        }
+
+        var created = new WeightedTierChance { Tier = targetTier, Weight = 0 };
+        weightedList.Add(created);
+        return created;
+    }
+
+    private bool HasPendingChange(int targetTier) =>
+        PresetStateService.PendingChanges.Contains($"{PendingKeyPrefix}T{targetTier}");
+
+    private void OnWeightChanged(int targetTier, int value, int originalValue)
+    {
+        Utils.UpdateView(value, originalValue, $"{PendingKeyPrefix}T{targetTier}");
+        GetOrAddEntry(Entries, targetTier).Weight = value;
+    }
+}

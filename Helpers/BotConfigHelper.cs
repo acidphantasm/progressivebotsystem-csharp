@@ -131,7 +131,6 @@ public class BotConfigHelper(
         ScavPushKeyConfig();
         ScavLoot();
         ScavIdenticalWeightConfig();
-        ScavLevelDeltas();
         ScavPlateClasses();
         ScavOmegaLolRoubleStack();
     }
@@ -173,6 +172,7 @@ public class BotConfigHelper(
     {
         apbsLogger.Debug("--Configuring Remainder of Bot Configs");
         SetLevelDeltas();
+        SetLevelWeights();
         RemoveRandomization();
         SetBotLevels();
         SetWeaponDurability();
@@ -542,36 +542,6 @@ public class BotConfigHelper(
         }
     }
 
-    private void ScavLevelDeltas()
-    {
-        if (!ModConfig.Config.CustomScavLevelDeltas.Enable)
-        {
-            return;
-        }
-
-        apbsLogger.Debug("Setting Scav Level Deltas");
-        tierInformation.Tiers[0].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Min;
-        tierInformation.Tiers[0].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Max;
-
-        tierInformation.Tiers[1].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier2.Min;
-        tierInformation.Tiers[1].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier2.Max;
-
-        tierInformation.Tiers[2].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier3.Min;
-        tierInformation.Tiers[2].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier3.Max;
-
-        tierInformation.Tiers[3].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier4.Min;
-        tierInformation.Tiers[3].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier4.Max;
-
-        tierInformation.Tiers[4].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier5.Min;
-        tierInformation.Tiers[4].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier5.Max;
-
-        tierInformation.Tiers[5].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier6.Min;
-        tierInformation.Tiers[5].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier6.Max;
-
-        tierInformation.Tiers[6].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier7.Min;
-        tierInformation.Tiers[6].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier7.Max;
-    }
-
     private void ScavPlateClasses()
     {
         var botConfigEquipment = botConfig.Equipment;
@@ -903,25 +873,70 @@ public class BotConfigHelper(
     #region AllBotConfigs
     private void SetLevelDeltas()
     {
-        if (!ModConfig.Config.CustomLevelDeltas.Enable)
+        if (ModConfig.Config.CustomLevelDeltas.Enable)
         {
-            return;
+            apbsLogger.Debug("Setting Custom Level Deltas");
+            tierInformation.Tiers[0].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier1.Min;
+            tierInformation.Tiers[0].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier1.Max;
+            tierInformation.Tiers[1].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier2.Min;
+            tierInformation.Tiers[1].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier2.Max;
+            tierInformation.Tiers[2].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier3.Min;
+            tierInformation.Tiers[2].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier3.Max;
+            tierInformation.Tiers[3].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier4.Min;
+            tierInformation.Tiers[3].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier4.Max;
+            tierInformation.Tiers[4].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier5.Min;
+            tierInformation.Tiers[4].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier5.Max;
+            tierInformation.Tiers[5].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier6.Min;
+            tierInformation.Tiers[5].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier6.Max;
+            tierInformation.Tiers[6].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier7.Min;
+            tierInformation.Tiers[6].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier7.Max;
         }
-        apbsLogger.Debug("Setting Custom Level Deltas");
-        tierInformation.Tiers[0].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier1.Min;
-        tierInformation.Tiers[0].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier1.Max;
-        tierInformation.Tiers[1].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier2.Min;
-        tierInformation.Tiers[1].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier2.Max;
-        tierInformation.Tiers[2].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier3.Min;
-        tierInformation.Tiers[2].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier3.Max;
-        tierInformation.Tiers[3].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier4.Min;
-        tierInformation.Tiers[3].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier4.Max;
-        tierInformation.Tiers[4].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier5.Min;
-        tierInformation.Tiers[4].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier5.Max;
-        tierInformation.Tiers[5].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier6.Min;
-        tierInformation.Tiers[5].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier6.Max;
-        tierInformation.Tiers[6].BotMinLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier7.Min;
-        tierInformation.Tiers[6].BotMaxLevelVariance = ModConfig.Config.CustomLevelDeltas.Tier7.Max;
+
+        if (ModConfig.Config.CustomScavLevelDeltas.Enable)
+        {
+            apbsLogger.Debug("Setting Custom Scav Level Deltas");
+            tierInformation.Tiers[0].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Min;
+            tierInformation.Tiers[0].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier1.Max;
+            tierInformation.Tiers[1].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier2.Min;
+            tierInformation.Tiers[1].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier2.Max;
+            tierInformation.Tiers[2].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier3.Min;
+            tierInformation.Tiers[2].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier3.Max;
+            tierInformation.Tiers[3].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier4.Min;
+            tierInformation.Tiers[3].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier4.Max;
+            tierInformation.Tiers[4].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier5.Min;
+            tierInformation.Tiers[4].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier5.Max;
+            tierInformation.Tiers[5].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier6.Min;
+            tierInformation.Tiers[5].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier6.Max;
+            tierInformation.Tiers[6].ScavMinLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier7.Min;
+            tierInformation.Tiers[6].ScavMaxLevelVariance = ModConfig.Config.CustomScavLevelDeltas.Tier7.Max;
+        }
+    }
+
+    private void SetLevelWeights()
+    {
+        if (ModConfig.Config.CustomLevelWeights.Enable)
+        {
+            apbsLogger.Debug("Setting Custom Level Weights");
+            tierInformation.Tiers[0].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier1;
+            tierInformation.Tiers[1].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier2;
+            tierInformation.Tiers[2].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier3;
+            tierInformation.Tiers[3].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier4;
+            tierInformation.Tiers[4].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier5;
+            tierInformation.Tiers[5].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier6;
+            tierInformation.Tiers[6].PmcLevelWeights = ModConfig.Config.CustomLevelWeights.Tier7;
+        }
+
+        if (ModConfig.Config.CustomScavLevelWeights.Enable)
+        {
+            apbsLogger.Debug("Setting Custom Scav Level Weights");
+            tierInformation.Tiers[0].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier1;
+            tierInformation.Tiers[1].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier2;
+            tierInformation.Tiers[2].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier3;
+            tierInformation.Tiers[3].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier4;
+            tierInformation.Tiers[4].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier5;
+            tierInformation.Tiers[5].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier6;
+            tierInformation.Tiers[6].ScavLevelWeights = ModConfig.Config.CustomScavLevelWeights.Tier7;
+        }
     }
 
     private void RemoveRandomization()

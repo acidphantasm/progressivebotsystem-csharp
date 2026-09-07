@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ProgressiveBotSystem.Models.Enums;
 
 namespace ProgressiveBotSystem.Models;
 
@@ -37,11 +38,20 @@ public class ApbsServerConfig
     [JsonPropertyName("specialBots")]
     public GeneralBotData SpecialBots { get; set; } = new();
 
+    [JsonPropertyName("levelPickingMode")]
+    public BotLevelPickingMode LevelPickingMode { get; set; } = BotLevelPickingMode.Delta;
+
     [JsonPropertyName("customLevelDeltas")]
     public CustomLevelDelta CustomLevelDeltas { get; set; } = new();
 
     [JsonPropertyName("customScavLevelDeltas")]
     public CustomLevelDelta CustomScavLevelDeltas { get; set; } = new();
+
+    [JsonPropertyName("customLevelWeights")]
+    public CustomLevelWeight CustomLevelWeights { get; set; } = new();
+
+    [JsonPropertyName("customScavLevelWeights")]
+    public CustomLevelWeight CustomScavLevelWeights { get; set; } = new();
 
     [JsonPropertyName("debug")]
     public DebugSettings Debug { get; set; } = new();
@@ -915,6 +925,104 @@ public class TierBlacklistConfig
     public List<string> Tier7Blacklist { get; set; } = [];
 }
 
+public class CustomLevelWeight
+{
+    private static readonly int[][] _weightDefaults =
+    [
+        [100, 40, 10, 0, 0, 0, 0],
+        [40, 100, 40, 10, 0, 0, 0],
+        [10, 40, 100, 40, 10, 0, 0],
+        [0, 10, 40, 100, 40, 10, 0],
+        [0, 0, 10, 40, 100, 40, 10],
+        [0, 0, 0, 10, 40, 100, 40],
+        [0, 0, 0, 0, 10, 40, 100],
+    ];
+
+    [JsonPropertyName("enable")]
+    public bool Enable { get; set; } = false;
+
+    [JsonPropertyName("tier1")]
+    public List<WeightedTierChance> Tier1 { get; set; } = BuildDefaultWeights(1);
+
+    [JsonPropertyName("tier2")]
+    public List<WeightedTierChance> Tier2 { get; set; } = BuildDefaultWeights(2);
+
+    [JsonPropertyName("tier3")]
+    public List<WeightedTierChance> Tier3 { get; set; } = BuildDefaultWeights(3);
+
+    [JsonPropertyName("tier4")]
+    public List<WeightedTierChance> Tier4 { get; set; } = BuildDefaultWeights(4);
+
+    [JsonPropertyName("tier5")]
+    public List<WeightedTierChance> Tier5 { get; set; } = BuildDefaultWeights(5);
+
+    [JsonPropertyName("tier6")]
+    public List<WeightedTierChance> Tier6 { get; set; } = BuildDefaultWeights(6);
+
+    [JsonPropertyName("tier7")]
+    public List<WeightedTierChance> Tier7 { get; set; } = BuildDefaultWeights(7);
+
+    public List<WeightedTierChance> this[int tier]
+    {
+        get
+        {
+            return tier switch
+            {
+                1 => Tier1,
+                2 => Tier2,
+                3 => Tier3,
+                4 => Tier4,
+                5 => Tier5,
+                6 => Tier6,
+                7 => Tier7,
+                _ => throw new KeyNotFoundException($"Tier '{tier}' not found."),
+            };
+        }
+        set
+        {
+            switch (tier)
+            {
+                case 1:
+                    Tier1 = value;
+                    break;
+                case 2:
+                    Tier2 = value;
+                    break;
+                case 3:
+                    Tier3 = value;
+                    break;
+                case 4:
+                    Tier4 = value;
+                    break;
+                case 5:
+                    Tier5 = value;
+                    break;
+                case 6:
+                    Tier6 = value;
+                    break;
+                case 7:
+                    Tier7 = value;
+                    break;
+                default:
+                    throw new KeyNotFoundException($"Tier '{tier}' not found.");
+            }
+        }
+    }
+
+    private static List<WeightedTierChance> BuildDefaultWeights(int sourceTier)
+    {
+        var weights = _weightDefaults[sourceTier - 1];
+        var result = new List<WeightedTierChance>(7);
+
+        for (var targetTier = 1; targetTier <= 7; targetTier++)
+        {
+            result.Add(new WeightedTierChance { Tier = targetTier, Weight = weights[targetTier - 1] });
+        }
+
+        return result;
+    }
+}
+
 public class CustomLevelDelta
 {
     [JsonPropertyName("enable")]
@@ -940,6 +1048,53 @@ public class CustomLevelDelta
 
     [JsonPropertyName("tier7")]
     public MinMax Tier7 { get; set; } = new() { Min = 50, Max = 20 };
+
+    public MinMax this[int tier]
+    {
+        get
+        {
+            return tier switch
+            {
+                1 => Tier1,
+                2 => Tier2,
+                3 => Tier3,
+                4 => Tier4,
+                5 => Tier5,
+                6 => Tier6,
+                7 => Tier7,
+                _ => throw new KeyNotFoundException($"Tier '{tier}' not found."),
+            };
+        }
+        set
+        {
+            switch (tier)
+            {
+                case 1:
+                    Tier1 = value;
+                    break;
+                case 2:
+                    Tier2 = value;
+                    break;
+                case 3:
+                    Tier3 = value;
+                    break;
+                case 4:
+                    Tier4 = value;
+                    break;
+                case 5:
+                    Tier5 = value;
+                    break;
+                case 6:
+                    Tier6 = value;
+                    break;
+                case 7:
+                    Tier7 = value;
+                    break;
+                default:
+                    throw new KeyNotFoundException($"Tier '{tier}' not found.");
+            }
+        }
+    }
 }
 
 public class MinMax

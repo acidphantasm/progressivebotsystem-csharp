@@ -1,4 +1,15 @@
-﻿namespace ProgressiveBotSystem.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace ProgressiveBotSystem.Models;
+
+public class WeightedTierChance
+{
+    [JsonPropertyName("tier")]
+    public int Tier { get; set; }
+
+    [JsonPropertyName("weight")]
+    public int Weight { get; set; }
+}
 
 public class TierData
 {
@@ -9,4 +20,7 @@ public class TierData
     public int BotMaxLevelVariance { get; set; }
     public int ScavMinLevelVariance { get; set; }
     public int ScavMaxLevelVariance { get; set; }
+
+    public List<WeightedTierChance> PmcLevelWeights { get; set; } = [];
+    public List<WeightedTierChance> ScavLevelWeights { get; set; } = [];
 }

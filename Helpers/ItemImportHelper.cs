@@ -428,7 +428,7 @@ public class ItemImportHelper(
     {
         var returnDictionary = Enum.GetValues<ApbsEquipmentSlots>().ToDictionary(slot => slot, _ => new HashSet<MongoId>());
 
-        var primaryPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", "PrimaryWeapon.json");
+        var primaryPath = Path.Combine(ModConfig.ModPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", "PrimaryWeapon.json");
         var primary =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(primaryPath)
             ?? throw new ArgumentNullException(nameof(primaryPath));
@@ -488,7 +488,7 @@ public class ItemImportHelper(
     {
         var items =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
-                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+                Path.Combine(ModConfig.ModPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
             ) ?? throw new ArgumentNullException(fileName);
         foreach (var itemId in items.Keys)
         {
@@ -562,7 +562,7 @@ public class ItemImportHelper(
     {
         var items =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
-                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+                Path.Combine(ModConfig.ModPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
             ) ?? throw new ArgumentNullException(fileName);
         foreach (var itemId in items.Keys)
         {
@@ -604,7 +604,7 @@ public class ItemImportHelper(
     {
         var items =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
-                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+                Path.Combine(ModConfig.ModPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
             ) ?? throw new ArgumentNullException(fileName);
         foreach (var itemId in items.Keys)
         {
@@ -665,7 +665,7 @@ public class ItemImportHelper(
     {
         var clothingData =
             await jsonUtil.DeserializeFromFileAsync<Dictionary<MongoId, string>>(
-                Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
+                Path.Combine(ModConfig.ModPath, "GeneratedVanillaMappings-DO_NOT_TOUCH", fileName)
             ) ?? throw new ArgumentNullException(fileName);
 
         if (!dictionary.TryGetValue(side, out var slotDict))

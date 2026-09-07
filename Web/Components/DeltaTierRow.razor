@@ -1,0 +1,62 @@
+﻿@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Services
+@inject PresetStateService PresetStateService
+
+<TierDeltaRow
+    Label="@($"Tier {Tier} Deltas")"
+    TooltipText="@($"While your PMC is level {PlayerMin}-{PlayerMax}, AI will spawn within the levels you configure here.")"
+    MinValue="Current.Min"
+    MinValueChanged="OnMinChanged"
+    MaxValue="Current.Max"
+    MaxValueChanged="OnMaxChanged"
+    MinAllowedMax="MinAllowedMax"
+    Disabled="@(!Enabled)"
+    HasPendingChanges="@(HasPendingMin || HasPendingMax)"
+    IsNonDefault="@(Current.Min != DefaultValue.Min || Current.Max != DefaultValue.Max)"
+    OnUndo="OnUndoBoth"
+    OnDefault="OnDefaultBoth"/>
+
+@code {
+    [Parameter] public int Tier { get; set; }
+    [Parameter] public int PlayerMin { get; set; }
+    [Parameter] public int PlayerMax { get; set; }
+    [Parameter] public bool Enabled { get; set; }
+    [Parameter] public MinMax Current { get; set; } = null!;
+    [Parameter] public MinMax Original { get; set; } = null!;
+    [Parameter] public MinMax DefaultValue { get; set; } = null!;
+    [Parameter] public string PendingKeyPrefix { get; set; } = "";
+    [Parameter] public int MinAllowedMax { get; set; }
+
+    private bool HasPendingMin
+    {
+        get => PresetStateService.PendingChanges.Contains($"{PendingKeyPrefix}Min");
+    }
+    private bool HasPendingMax
+    {
+        get => PresetStateService.PendingChanges.Contains($"{PendingKeyPrefix}Max");
+    }
+
+    private void OnMinChanged(int value)
+    {
+        Utils.UpdateView(value, Original.Min, $"{PendingKeyPrefix}Min");
+        Current.Min = value;
+    }
+
+    private void OnMaxChanged(int value)
+    {
+        Utils.UpdateView(value, Original.Max, $"{PendingKeyPrefix}Max");
+        Current.Max = value;
+    }
+
+    private void OnUndoBoth()
+    {
+        OnMinChanged(Original.Min);
+        OnMaxChanged(Original.Max);
+    }
+
+    private void OnDefaultBoth()
+    {
+        OnMinChanged(DefaultValue.Min);
+        OnMaxChanged(DefaultValue.Max);
+    }
+}

@@ -92,9 +92,12 @@ public class GenerateBotLevel : AbstractPatch
         int maxAvailableLevel
     )
     {
-        var levelOverride = ModConfig.Config.PmcBots.AdditionalOptions.UseGroundZeroSplit
-            ? botGenerationDetails.LocationSpecificPmcLevelOverride
-            : null;
+        var isPmc = botGenerationDetails.IsPmc;
+
+        var levelOverride =
+            !isPmc || ModConfig.Config.PmcBots.AdditionalOptions.UseGroundZeroSplit
+                ? botGenerationDetails.LocationSpecificPmcLevelOverride
+                : null;
         var playerLevel = Math.Max(1, RaidInformation.CurrentRaidLevel);
 
         var minPossibleLevel = levelOverride is not null
@@ -105,16 +108,13 @@ public class GenerateBotLevel : AbstractPatch
             ? Math.Min(levelOverride.Max, maxAvailableLevel)
             : Math.Min(levelDetails.Max, maxAvailableLevel);
 
-        var minLevel = playerLevel - _tierHelper.GetTierLowerLevelDeviation(playerLevel);
-        var maxLevel = playerLevel + _tierHelper.GetTierUpperLevelDeviation(playerLevel);
+        var isScavRole =
+            !botGenerationDetails.IsPmc
+            && (botGenerationDetails.Role.Contains("assault") || botGenerationDetails.Role.Contains("marksman"));
 
-        if (
-            !botGenerationDetails.IsPmc && (botGenerationDetails.Role.Contains("assault") || botGenerationDetails.Role.Contains("marksman"))
-        )
-        {
-            minLevel = playerLevel - _tierHelper.GetScavTierLowerLevelDeviation(playerLevel);
-            maxLevel = playerLevel + _tierHelper.GetScavTierUpperLevelDeviation(playerLevel);
-        }
+        var levelRange = _tierHelper.GetBotLevelRange(playerLevel, isScavRole);
+        var minLevel = levelRange.Min;
+        var maxLevel = levelRange.Max;
 
         if (
             ModConfig.Config.PmcBots.AdditionalOptions.EnablePrestiging

@@ -1,0 +1,57 @@
+﻿<MudItem xs="1"/>
+<MudItem xs="4" Style="margin-top: 20px;">
+    <MudTooltip Text="@TooltipText" Color="Color.Dark" Placement="Placement.Right" Arrow="true">
+        <MudText>@Label</MudText>
+    </MudTooltip>
+</MudItem>
+<MudItem xs="6">
+    <MudPaper Class="d-flex align-start mud-width-full" Elevation="0">
+        <MudTooltip Text="Levels below you that bots can spawn at." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
+            <MudNumericField T="int" Margin="Margin.Dense" HideSpinButtons="true"
+                             Value="MinValue"
+                             ValueChanged="@(v =>
+                                           {
+                                               MinValueChanged.InvokeAsync(v);
+                                               StateHasChanged();
+                                           })"
+                             Label="Levels" HelperText="Below You" Variant="Variant.Filled" Min="0" Max="79"
+                             Disabled="@Disabled"/>
+        </MudTooltip>
+        <MudTooltip Text="Levels above you that bots can spawn at." Color="Color.Dark" Placement="Placement.Bottom" Arrow="true">
+            <MudNumericField T="int" Margin="Margin.Dense" HideSpinButtons="true"
+                             Value="MaxValue"
+                             ValueChanged="@(v =>
+                                           {
+                                               MaxValueChanged.InvokeAsync(v);
+                                               StateHasChanged();
+                                           })"
+                             Label="Levels" HelperText="Above You" Variant="Variant.Filled" Min="MinAllowedMax" Max="79"
+                             Disabled="@Disabled"/>
+        </MudTooltip>
+    </MudPaper>
+</MudItem>
+<MudItem xs="1">
+    @if (HasPendingChanges && MainLayout.AppUndoButtonToggle)
+    {
+        <MudButton @onclick="OnUndo" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+    }
+    else if (IsNonDefault && MainLayout.AppDefaultButtonToggle)
+    {
+        <MudButton @onclick="OnDefault" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+    }
+</MudItem>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string TooltipText { get; set; } = "";
+    [Parameter] public int MinValue { get; set; }
+    [Parameter] public EventCallback<int> MinValueChanged { get; set; }
+    [Parameter] public int MaxValue { get; set; }
+    [Parameter] public EventCallback<int> MaxValueChanged { get; set; }
+    [Parameter] public int MinAllowedMax { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool HasPendingChanges { get; set; }
+    [Parameter] public bool IsNonDefault { get; set; }
+    [Parameter] public EventCallback OnUndo { get; set; }
+    [Parameter] public EventCallback OnDefault { get; set; }
+}

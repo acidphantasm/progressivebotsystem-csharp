@@ -1,4 +1,5 @@
-﻿using ProgressiveBotSystem.Services;
+﻿using ProgressiveBotSystem.Models.Enums;
+using ProgressiveBotSystem.Services;
 using ProgressiveBotSystem.Web.Shared;
 
 namespace ProgressiveBotSystem.Web.Core;
@@ -98,6 +99,11 @@ internal class Utils
     public static void UpdateView(List<int> holder, List<int> originalConfigValue, string caller)
     {
         UpdatePendingState(!holder.SequenceEqual(originalConfigValue), caller);
+    }
+
+    public static void UpdateView(BotLevelPickingMode holder, BotLevelPickingMode originalConfigValue, string caller)
+    {
+        UpdatePendingState(holder != originalConfigValue, caller);
     }
 
     public static void UpdateView(string caller)

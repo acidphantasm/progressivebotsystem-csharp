@@ -565,7 +565,7 @@ else
 
     private List<string> LoadIdsForCategory(string category)
     {
-        var folderPath = Path.Combine(ModConfig._modPath, "GeneratedVanillaMappings-DO_NOT_TOUCH");
+        var folderPath = Path.Combine(ModConfig.ModPath, "GeneratedVanillaMappings-DO_NOT_TOUCH");
         var path = Path.Combine(folderPath, $"{category}.json");
         if (!File.Exists(path)) return [];
 

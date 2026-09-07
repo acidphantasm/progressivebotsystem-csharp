@@ -1177,6 +1177,433 @@
     "skipBackPlateIfMissingFrontPlate": false,
     "limitPlateClassToFrontPlateClass": false
   },
+  "levelPickingMode": 0,
+  "customLevelWeights": {
+    "enable": false,
+    "tier1": [
+      {
+        "tier": 1,
+        "weight": 100
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier2": [
+      {
+        "tier": 1,
+        "weight": 40
+      },
+      {
+        "tier": 2,
+        "weight": 100
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier3": [
+      {
+        "tier": 1,
+        "weight": 10
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 100
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier4": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 10
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 100
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 10
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier5": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 100
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 10
+      }
+    ],
+    "tier6": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 100
+      },
+      {
+        "tier": 7,
+        "weight": 40
+      }
+    ],
+    "tier7": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 100
+      }
+    ]
+  },
+  "customScavLevelWeights": {
+    "enable": false,
+    "tier1": [
+      {
+        "tier": 1,
+        "weight": 100
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier2": [
+      {
+        "tier": 1,
+        "weight": 40
+      },
+      {
+        "tier": 2,
+        "weight": 100
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier3": [
+      {
+        "tier": 1,
+        "weight": 10
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 100
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier4": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 10
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 100
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 10
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "tier5": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 100
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 10
+      }
+    ],
+    "tier6": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 100
+      },
+      {
+        "tier": 7,
+        "weight": 40
+      }
+    ],
+    "tier7": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 100
+      }
+    ]
+  },
   "customLevelDeltas": {
     "enable": false,
     "tier1": {

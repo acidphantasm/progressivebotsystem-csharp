@@ -6,7 +6,67 @@
     "BotMinLevelVariance": 10,
     "BotMaxLevelVariance": 5,
     "ScavMinLevelVariance": 10,
-    "ScavMaxLevelVariance": 5
+    "ScavMaxLevelVariance": 5,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 100
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 100
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ]
   },
   {
     "Tier": 2,
@@ -15,7 +75,67 @@
     "BotMinLevelVariance": 10,
     "BotMaxLevelVariance": 5,
     "ScavMinLevelVariance": 10,
-    "ScavMaxLevelVariance": 5
+    "ScavMaxLevelVariance": 5,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 40
+      },
+      {
+        "tier": 2,
+        "weight": 100
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 40
+      },
+      {
+        "tier": 2,
+        "weight": 100
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 0
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ]
   },
   {
     "Tier": 3,
@@ -24,7 +144,67 @@
     "BotMinLevelVariance": 15,
     "BotMaxLevelVariance": 7,
     "ScavMinLevelVariance": 15,
-    "ScavMaxLevelVariance": 7
+    "ScavMaxLevelVariance": 7,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 10
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 100
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 10
+      },
+      {
+        "tier": 2,
+        "weight": 40
+      },
+      {
+        "tier": 3,
+        "weight": 100
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 0
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ]
   },
   {
     "Tier": 4,
@@ -33,7 +213,67 @@
     "BotMinLevelVariance": 20,
     "BotMaxLevelVariance": 10,
     "ScavMinLevelVariance": 20,
-    "ScavMaxLevelVariance": 10
+    "ScavMaxLevelVariance": 10,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 10
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 100
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 10
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 10
+      },
+      {
+        "tier": 3,
+        "weight": 40
+      },
+      {
+        "tier": 4,
+        "weight": 100
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 10
+      },
+      {
+        "tier": 7,
+        "weight": 0
+      }
+    ]
   },
   {
     "Tier": 5,
@@ -42,7 +282,67 @@
     "BotMinLevelVariance": 30,
     "BotMaxLevelVariance": 15,
     "ScavMinLevelVariance": 30,
-    "ScavMaxLevelVariance": 15
+    "ScavMaxLevelVariance": 15,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 100
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 10
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 10
+      },
+      {
+        "tier": 4,
+        "weight": 40
+      },
+      {
+        "tier": 5,
+        "weight": 100
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 10
+      }
+    ]
   },
   {
     "Tier": 6,
@@ -51,7 +351,67 @@
     "BotMinLevelVariance": 40,
     "BotMaxLevelVariance": 20,
     "ScavMinLevelVariance": 40,
-    "ScavMaxLevelVariance": 20
+    "ScavMaxLevelVariance": 20,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 100
+      },
+      {
+        "tier": 7,
+        "weight": 40
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 10
+      },
+      {
+        "tier": 5,
+        "weight": 40
+      },
+      {
+        "tier": 6,
+        "weight": 100
+      },
+      {
+        "tier": 7,
+        "weight": 40
+      }
+    ]
   },
   {
     "Tier": 7,
@@ -60,6 +420,66 @@
     "BotMinLevelVariance": 79,
     "BotMaxLevelVariance": 20,
     "ScavMinLevelVariance": 50,
-    "ScavMaxLevelVariance": 20
+    "ScavMaxLevelVariance": 20,
+    "PmcLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 100
+      }
+    ],
+    "ScavLevelWeights": [
+      {
+        "tier": 1,
+        "weight": 0
+      },
+      {
+        "tier": 2,
+        "weight": 0
+      },
+      {
+        "tier": 3,
+        "weight": 0
+      },
+      {
+        "tier": 4,
+        "weight": 0
+      },
+      {
+        "tier": 5,
+        "weight": 10
+      },
+      {
+        "tier": 6,
+        "weight": 40
+      },
+      {
+        "tier": 7,
+        "weight": 100
+      }
+    ]
   }
 ]

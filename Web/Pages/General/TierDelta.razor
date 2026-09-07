@@ -1,640 +1,177 @@
 ﻿@page "/progressivebotsystem/tierdelta"
 @using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
+@using ProgressiveBotSystem.Web.Components
 @layout MainLayout
 @inject PresetStateService PresetStateService
 @attribute [Authorize(Policy = "Administrator")]
 <MudMainContent>
     <MudContainer Class="mb-20">
+
         <MudExpansionPanels MultiExpansion="true">
 
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="AI Level Deltas" Expanded="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="AI Level Picking Mode" Expanded="true">
+                <MudText Align="Align.Center" Class="mt-4">
+                    <b>Level Picking Mode</b> determines how APBS selects the level range for bots.
+                </MudText>
+
+                <MudText Align="Align.Center" Class="mt-2">
+                    <b>Delta</b> mode selects a level range relative to your current level.
+                </MudText>
+
+                <MudText Align="Align.Center" Class="mt-2">
+                    <b>Weighted</b> mode rolls for a tier using the configured weights, then uses that tier's level range.
+                </MudText>
+
+                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mt-4">
+                    <b>Tip:</b> You only need to change the values below if you want to customize the default level ranges,
+                    variances, or weighted chances. The default values are shown below.
+                </MudAlert>
+
+                <MudDivider Class="my-4"/>
+
                 <MudGrid>
-
-                    <MudItem xs="1">
-                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Color="Color.Dark" Placement="Placement.Right" Arrow="true">
-                                <ChildContent>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small"/>
-                                </ChildContent>
-                                <TooltipContent>
-                                    <MudText Typo="Typo.caption">Applies to all AI.</MudText>
-                                    <MudSpacer/>
-                                    <MudText Typo="Typo.caption">Hint: Hover over numeric field, shift + scroll wheel to
-                                        change value.
-                                    </MudText>
-                                </TooltipContent>
-                            </MudTooltip>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip
-                                Text="Configure your own level deltas. These are the levels that bots can spawn while YOU are in the specific tier."
-                                Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Custom Level Deltas</MudText>
-                            </MudTooltip>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="TierDeltaCustomEnabled" Color="Color.Tertiary"
-                                       UncheckedColor="Color.Default"
-                                       LabelPlacement="Placement.End">@TierDeltaCustomEnabled</MudSwitch>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && PresetStateService.PendingChanges.Contains("_tierDeltaCustomEnabled")){
-                            <MudButton @onclick="UndoTierDeltaCustomEnabled" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && TierDeltaCustomEnabled){
-                            <MudButton @onclick="DefaultTierDeltaCustomEnabled" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 1-10, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 1 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier1Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier1Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier1Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier1Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier1" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier1Min != 10 ||
-                            TierDeltaCustomTier1Max != 5)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier1" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 11-20, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 2 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier2Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier2Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier2Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier2Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier2" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier2Min != 10 ||
-                            TierDeltaCustomTier2Max != 5)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier2" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 21-30, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 3 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier3Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier3Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier3Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier3Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier3" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier3Min != 15 ||
-                            TierDeltaCustomTier3Max != 7)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier3" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 31-40, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 4 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier4Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier4Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier4Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier4Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier4" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier4Min != 20 ||
-                            TierDeltaCustomTier4Max != 10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier4" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 41-50, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 5 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier5Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier5Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier5Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier5Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier5" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier5Min != 30 ||
-                            TierDeltaCustomTier5Max != 15)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier5" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 51-60, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 6 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier6Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier6Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier6Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier6Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier6" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier6Min != 40 ||
-                            TierDeltaCustomTier6Max != 20)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier6" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 61-79, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 7 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier7Min"
-                                             Label="Levels Below You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons @bind-Value="TierDeltaCustomTier7Max"
-                                             Label="Levels Above You" Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier7Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomTier7Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomTier7" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomTier7Min != 50 ||
-                            TierDeltaCustomTier7Max != 20)){
-                            <MudButton @onclick="DefaultTierDeltaCustomTier7" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
+                    <MudSelectUndoDefaultTT
+                        Label="Level Picking Mode"
+                        TooltipText="Delta = bots spawn within a level range above/below you. Weighted = bots roll which tier's level range to spawn from, by weighted chance."
+                        Value="@LevelPickingMode"
+                        ValueChanged="@(x => LevelPickingMode = x)"
+                        Items="@_levelPickingModes"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains(nameof(LevelPickingMode)))"
+                        IsNonDefault="@(LevelPickingMode != "Delta")"
+                        OnUndo="UndoLevelPickingMode"
+                        OnDefault="DefaultLevelPickingMode"/>
                 </MudGrid>
             </MudExpansionPanel>
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Scav Level Deltas" Expanded="true">
-                <MudGrid>
 
-                    <MudItem xs="1">
-                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Color="Color.Dark" Placement="Placement.Right" Arrow="true">
-                                <ChildContent>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small"/>
-                                </ChildContent>
-                                <TooltipContent>
-                                    <MudText Typo="Typo.caption">Applies to all Scavs. Overrides above level deltas for
-                                        Scavs ONLY. Useful if you want Scavs to always be levels & tiers below you.
-                                    </MudText>
-                                    <MudSpacer/>
-                                    <MudText Typo="Typo.caption">Hint: Hover over numeric field, shift + scroll wheel to
-                                        change value.
-                                    </MudText>
-                                </TooltipContent>
-                            </MudTooltip>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip
-                                Text="Configure your own level deltas specifically for Scavs. These are the levels that Scavs can spawn while YOU are in the specific tier."
-                                Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Custom Scav Level Deltas</MudText>
-                            </MudTooltip>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
-                            <MudSwitch T="bool" @bind-Value="TierDeltaCustomScavEnabled" Color="Color.Tertiary"
-                                       UncheckedColor="Color.Default"
-                                       LabelPlacement="Placement.End">@TierDeltaCustomScavEnabled</MudSwitch>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavEnabled")){
-                            <MudButton @onclick="UndoTierDeltaCustomScavEnabled" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && TierDeltaCustomScavEnabled){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavEnabled" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
+            @if (LevelPickingMode == "Delta")
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Level Deltas" Expanded="true">
+                    <MudGrid>
+                        <MudSwitchTT
+                            Label="Custom Level Deltas"
+                            TooltipText="Configure your own level deltas. These are the levels that bots can spawn while YOU are in the specific tier."
+                            @bind-Value="TierDeltaCustomEnabled"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("TierDeltaCustomEnabled"))"
+                            IsNonDefault="@(TierDeltaCustomEnabled)"
+                            OnUndo="UndoTierDeltaCustomEnabled"
+                            OnDefault="DefaultTierDeltaCustomEnabled"/>
 
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 1-10, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 1 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier1Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="10"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier1Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier1Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier1Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier1" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
+                        @foreach (var (tier, playerMin, playerMax) in TierDefaults.Ranges)
+                        {
+                            <DeltaTierRow Tier="tier" PlayerMin="playerMin" PlayerMax="playerMax"
+                                          Enabled="TierDeltaCustomEnabled"
+                                          Current="ModConfig.Config.CustomLevelDeltas[tier]"
+                                          Original="ModConfig.OriginalConfig.CustomLevelDeltas[tier]"
+                                          DefaultValue="TierDefaults.PmcDeltaDefaults[tier - 1]"
+                                          PendingKeyPrefix="@($"TierDeltaCustomTier{tier}")"/>
                         }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier1Min != 10 ||
-                            TierDeltaCustomScavTier1Max != 0)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier1" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
 
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 11-20, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 2 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier2Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="20"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier2Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="-TierDeltaCustomScavTier2Min" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier2Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier2Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier2" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier2Min != 10 ||
-                            TierDeltaCustomScavTier2Max != -10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier2" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Scav Level Deltas" Expanded="true">
+                    <MudGrid>
+                        <MudSwitchTT
+                            Label="Custom Scav Level Deltas"
+                            TooltipText="Configure your own level deltas specifically for Scavs. Overrides above level deltas for Scavs ONLY."
+                            @bind-Value="TierDeltaCustomScavEnabled"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("TierDeltaCustomScavEnabled"))"
+                            IsNonDefault="@(TierDeltaCustomScavEnabled)"
+                            OnUndo="UndoTierDeltaCustomScavEnabled"
+                            OnDefault="DefaultTierDeltaCustomScavEnabled"/>
 
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 21-30, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 3 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier3Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="30"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier3Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="-TierDeltaCustomScavTier3Min" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier3Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier3Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier3" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
+                        @foreach (var (tier, playerMin, playerMax) in TierDefaults.Ranges)
+                        {
+                            <DeltaTierRow Tier="tier" PlayerMin="playerMin" PlayerMax="playerMax"
+                                          Enabled="TierDeltaCustomScavEnabled"
+                                          Current="ModConfig.Config.CustomScavLevelDeltas[tier]"
+                                          Original="ModConfig.OriginalConfig.CustomScavLevelDeltas[tier]"
+                                          DefaultValue="TierDefaults.ScavDeltaDefaults[tier - 1]"
+                                          PendingKeyPrefix="@($"TierDeltaCustomScavTier{tier}")"
+                                          MinAllowedMax="-79"/>
                         }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier3Min != 15 ||
-                            TierDeltaCustomScavTier3Max != -10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier3" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+            else
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Level Weights" Expanded="true">
+                    <MudGrid>
+                        <MudSwitchTT
+                            Label="Custom Level Weights"
+                            TooltipText="Configure your own weighted chances. Determines which tier's level range bots pull from while YOU are in the specific tier."
+                            @bind-Value="TierWeightCustomEnabled"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("TierWeightCustomEnabled"))"
+                            IsNonDefault="@(TierWeightCustomEnabled)"
+                            OnUndo="UndoTierWeightCustomEnabled"
+                            OnDefault="DefaultTierWeightCustomEnabled"/>
+                    </MudGrid>
 
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 31-40, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 4 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier4Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="40"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier4Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="-TierDeltaCustomScavTier4Min" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier4Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier4Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier4" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier4Min != 20 ||
-                            TierDeltaCustomScavTier4Max != -10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier4" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
+                    @foreach (var tier in Enumerable.Range(1, 7))
+                    {
+                        <MudExpansionPanel Class="mud-expansion-panels-borders ma-2 pa-3" Text="@($"Tier {tier}")">
+                            <WeightTierPanel Tier="tier"
+                                             Enabled="TierWeightCustomEnabled"
+                                             Entries="ModConfig.Config.CustomLevelWeights[tier]"
+                                             Original="ModConfig.OriginalConfig.CustomLevelWeights[tier]"
+                                             DefaultWeights="TierDefaults.WeightDefaults[tier - 1]"
+                                             PendingKeyPrefix="@($"TierWeightCustomTier{tier}_")"/>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanel>
 
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 41-50, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 5 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier5Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="50"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier5Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="-TierDeltaCustomScavTier5Min" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier5Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier5Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier5" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier5Min != 30 ||
-                            TierDeltaCustomScavTier5Max != -10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier5" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Scav Level Weights" Expanded="true">
+                    <MudGrid>
+                        <MudSwitchTT
+                            Label="Custom Scav Level Weights"
+                            TooltipText="Configure your own weighted chances specifically for Scavs. Overrides above level weights for Scavs ONLY."
+                            @bind-Value="TierWeightCustomScavEnabled"
+                            HasPendingChanges="@(PresetStateService.PendingChanges.Contains("TierWeightCustomScavEnabled"))"
+                            IsNonDefault="@(TierWeightCustomScavEnabled)"
+                            OnUndo="UndoTierWeightCustomScavEnabled"
+                            OnDefault="DefaultTierWeightCustomScavEnabled"/>
+                    </MudGrid>
 
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 51-60, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 6 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier6Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="60"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier6Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="-TierDeltaCustomScavTier6Min" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier6Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier6Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier6" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier6Min != 40 ||
-                            TierDeltaCustomScavTier6Max != -10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier6" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                    <MudItem xs="2"/>
-                    <MudItem xs="3">
-                        <MudTooltip
-                            Text="While your PMC is level 61-79, AI will spawn within the levels you configure here."
-                            Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                            <MudText>Tier 7 Deltas</MudText>
-                        </MudTooltip>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -20px;" Elevation="0">
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier7Min" Label="Levels Below You"
-                                             Variant="Variant.Filled" Min="0" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                            <MudSpacer/>
-                            <MudNumericField Margin="Margin.Dense" HideSpinButtons
-                                             @bind-Value="TierDeltaCustomScavTier7Max" Label="Levels Above You"
-                                             Variant="Variant.Filled" Min="-TierDeltaCustomScavTier7Min" Max="79"
-                                             Disabled="!TierDeltaCustomScavEnabled"/>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="1">
-                        @if (MainLayout.AppUndoButtonToggle && (
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier7Min") ||
-                            PresetStateService.PendingChanges.Contains("_tierDeltaCustomScavTier7Max"))){
-                            <MudButton @onclick="UndoTierDeltaCustomScavTier7" Variant="Variant.Filled"
-                                       Color="Color.Inherit" Size="Size.Small">Undo
-                            </MudButton>
-                        }
-                        else if (MainLayout.AppDefaultButtonToggle && (
-                            TierDeltaCustomScavTier7Min != 50 ||
-                            TierDeltaCustomScavTier7Max != -10)){
-                            <MudButton @onclick="DefaultTierDeltaCustomScavTier7" Variant="Variant.Filled"
-                                       Color="Color.Dark" Size="Size.Small">Default
-                            </MudButton>
-                        }
-                    </MudItem>
-
-                </MudGrid>
-            </MudExpansionPanel>
+                    @foreach (var tier in Enumerable.Range(1, 7))
+                    {
+                        <MudExpansionPanel Class="mud-expansion-panels-borders ma-2 pa-3" Text="@($"Tier {tier}")">
+                            <WeightTierPanel Tier="tier"
+                                             Enabled="TierWeightCustomScavEnabled"
+                                             Entries="ModConfig.Config.CustomScavLevelWeights[tier]"
+                                             Original="ModConfig.OriginalConfig.CustomScavLevelWeights[tier]"
+                                             DefaultWeights="TierDefaults.WeightDefaults[tier - 1]"
+                                             PendingKeyPrefix="@($"TierWeightCustomScavTier{tier}_")"/>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanel>
+            }
         </MudExpansionPanels>
     </MudContainer>
 </MudMainContent>
 
 @code
 {
-    #region CUSTOM LEVEL DELTA
+    #region LEVEL PICKING MODE
+    private readonly string[] _levelPickingModes = ["Delta", "Weighted Selection"];
+
+    private string LevelPickingMode
+    {
+        get => ModConfig.Config.LevelPickingMode == BotLevelPickingMode.Weighted ? "Weighted Selection" : "Delta";
+        set
+        {
+            var enumValue = value == "Weighted Selection" ? BotLevelPickingMode.Weighted : BotLevelPickingMode.Delta;
+            var originalString = ModConfig.OriginalConfig.LevelPickingMode == BotLevelPickingMode.Weighted ? "Weighted Selection" : "Delta";
+            Utils.UpdateView(value, originalString, nameof(LevelPickingMode));
+            ModConfig.Config.LevelPickingMode = enumValue;
+        }
+    }
+    private void UndoLevelPickingMode() => LevelPickingMode = ModConfig.OriginalConfig.LevelPickingMode == BotLevelPickingMode.Weighted ? "Weighted Selection" : "Delta";
+    private void DefaultLevelPickingMode() => LevelPickingMode = "Delta";
+    #endregion
+
+    #region CUSTOM LEVEL DELTA ENABLE
     private bool TierDeltaCustomEnabled
     {
         get => ModConfig.Config.CustomLevelDeltas.Enable;
@@ -647,211 +184,6 @@
     private void UndoTierDeltaCustomEnabled() => TierDeltaCustomEnabled = ModConfig.OriginalConfig.CustomLevelDeltas.Enable;
     private void DefaultTierDeltaCustomEnabled() => TierDeltaCustomEnabled = false;
 
-    private int TierDeltaCustomTier1Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier1.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Min, nameof(TierDeltaCustomTier1Min));
-            ModConfig.Config.CustomLevelDeltas.Tier1.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier1Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier1.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Max, nameof(TierDeltaCustomTier1Max));
-            ModConfig.Config.CustomLevelDeltas.Tier1.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier1()
-    {
-        TierDeltaCustomTier1Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Min;
-        TierDeltaCustomTier1Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier1.Max;
-    }
-    private void DefaultTierDeltaCustomTier1()
-    {
-        TierDeltaCustomTier1Min = 10;
-        TierDeltaCustomTier1Max = 5;
-    }
-
-    private int TierDeltaCustomTier2Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier2.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Min, nameof(TierDeltaCustomTier2Min));
-            ModConfig.Config.CustomLevelDeltas.Tier2.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier2Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier2.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Max, nameof(TierDeltaCustomTier2Max));
-            ModConfig.Config.CustomLevelDeltas.Tier2.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier2()
-    {
-        TierDeltaCustomTier2Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Min;
-        TierDeltaCustomTier2Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier2.Max;
-    }
-    private void DefaultTierDeltaCustomTier2()
-    {
-        TierDeltaCustomTier2Min = 10;
-        TierDeltaCustomTier2Max = 5;
-    }
-
-    private int TierDeltaCustomTier3Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier3.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Min, nameof(TierDeltaCustomTier3Min));
-            ModConfig.Config.CustomLevelDeltas.Tier3.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier3Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier3.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Max, nameof(TierDeltaCustomTier3Max));
-            ModConfig.Config.CustomLevelDeltas.Tier3.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier3()
-    {
-        TierDeltaCustomTier3Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Min;
-        TierDeltaCustomTier3Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier3.Max;
-    }
-    private void DefaultTierDeltaCustomTier3()
-    {
-        TierDeltaCustomTier3Min = 15;
-        TierDeltaCustomTier3Max = 7;
-    }
-
-    private int TierDeltaCustomTier4Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier4.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Min, nameof(TierDeltaCustomTier4Min));
-            ModConfig.Config.CustomLevelDeltas.Tier4.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier4Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier4.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Max, nameof(TierDeltaCustomTier4Max));
-            ModConfig.Config.CustomLevelDeltas.Tier4.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier4()
-    {
-        TierDeltaCustomTier4Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Min;
-        TierDeltaCustomTier4Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier4.Max;
-    }
-    private void DefaultTierDeltaCustomTier4()
-    {
-        TierDeltaCustomTier4Min = 20;
-        TierDeltaCustomTier4Max = 10;
-    }
-
-    private int TierDeltaCustomTier5Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier5.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Min, nameof(TierDeltaCustomTier5Min));
-            ModConfig.Config.CustomLevelDeltas.Tier5.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier5Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier5.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Max, nameof(TierDeltaCustomTier5Max));
-            ModConfig.Config.CustomLevelDeltas.Tier5.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier5()
-    {
-        TierDeltaCustomTier5Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Min;
-        TierDeltaCustomTier5Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier5.Max;
-    }
-    private void DefaultTierDeltaCustomTier5()
-    {
-        TierDeltaCustomTier5Min = 30;
-        TierDeltaCustomTier5Max = 15;
-    }
-
-    private int TierDeltaCustomTier6Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier6.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Min, nameof(TierDeltaCustomTier6Min));
-            ModConfig.Config.CustomLevelDeltas.Tier6.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier6Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier6.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Max, nameof(TierDeltaCustomTier6Max));
-            ModConfig.Config.CustomLevelDeltas.Tier6.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier6()
-    {
-        TierDeltaCustomTier6Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Min;
-        TierDeltaCustomTier6Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier6.Max;
-    }
-    private void DefaultTierDeltaCustomTier6()
-    {
-        TierDeltaCustomTier6Min = 40;
-        TierDeltaCustomTier6Max = 20;
-    }
-
-    private int TierDeltaCustomTier7Min
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier7.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Min, nameof(TierDeltaCustomTier7Min));
-            ModConfig.Config.CustomLevelDeltas.Tier7.Min = value;
-        }
-    }
-    private int TierDeltaCustomTier7Max
-    {
-        get => ModConfig.Config.CustomLevelDeltas.Tier7.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Max, nameof(TierDeltaCustomTier7Max));
-            ModConfig.Config.CustomLevelDeltas.Tier7.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomTier7()
-    {
-        TierDeltaCustomTier7Min = ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Min;
-        TierDeltaCustomTier7Max = ModConfig.OriginalConfig.CustomLevelDeltas.Tier7.Max;
-    }
-    private void DefaultTierDeltaCustomTier7()
-    {
-        TierDeltaCustomTier7Min = 50;
-        TierDeltaCustomTier7Max = 20;
-    }
-    #endregion
-
-    #region CUSTOM SCAV LEVEL DELTA
     private bool TierDeltaCustomScavEnabled
     {
         get => ModConfig.Config.CustomScavLevelDeltas.Enable;
@@ -863,209 +195,32 @@
     }
     private void UndoTierDeltaCustomScavEnabled() => TierDeltaCustomScavEnabled = ModConfig.OriginalConfig.CustomScavLevelDeltas.Enable;
     private void DefaultTierDeltaCustomScavEnabled() => TierDeltaCustomScavEnabled = false;
+    #endregion
 
-    private int TierDeltaCustomScavTier1Min
+    #region CUSTOM LEVEL WEIGHT ENABLE
+    private bool TierWeightCustomEnabled
     {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier1.Min;
+        get => ModConfig.Config.CustomLevelWeights.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Min, nameof(TierDeltaCustomScavTier1Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier1.Min = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomLevelWeights.Enable, nameof(TierWeightCustomEnabled));
+            ModConfig.Config.CustomLevelWeights.Enable = value;
         }
     }
-    private int TierDeltaCustomScavTier1Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier1.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Max, nameof(TierDeltaCustomScavTier1Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier1.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier1()
-    {
-        TierDeltaCustomScavTier1Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Min;
-        TierDeltaCustomScavTier1Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier1.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier1()
-    {
-        TierDeltaCustomScavTier1Min = 10;
-        TierDeltaCustomScavTier1Max = 0;
-    }
+    private void UndoTierWeightCustomEnabled() => TierWeightCustomEnabled = ModConfig.OriginalConfig.CustomLevelWeights.Enable;
+    private void DefaultTierWeightCustomEnabled() => TierWeightCustomEnabled = false;
 
-    private int TierDeltaCustomScavTier2Min
+    private bool TierWeightCustomScavEnabled
     {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier2.Min;
+        get => ModConfig.Config.CustomScavLevelWeights.Enable;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Min, nameof(TierDeltaCustomScavTier2Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier2.Min = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelWeights.Enable, nameof(TierWeightCustomScavEnabled));
+            ModConfig.Config.CustomScavLevelWeights.Enable = value;
         }
     }
-    private int TierDeltaCustomScavTier2Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier2.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Max, nameof(TierDeltaCustomScavTier2Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier2.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier2()
-    {
-        TierDeltaCustomScavTier2Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Min;
-        TierDeltaCustomScavTier2Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier2.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier2()
-    {
-        TierDeltaCustomScavTier2Min = 10;
-        TierDeltaCustomScavTier2Max = -10;
-    }
-
-    private int TierDeltaCustomScavTier3Min
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier3.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Min, nameof(TierDeltaCustomScavTier3Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier3.Min = value;
-        }
-    }
-    private int TierDeltaCustomScavTier3Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier3.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Max, nameof(TierDeltaCustomScavTier3Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier3.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier3()
-    {
-        TierDeltaCustomScavTier3Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Min;
-        TierDeltaCustomScavTier3Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier3.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier3()
-    {
-        TierDeltaCustomScavTier3Min = 15;
-        TierDeltaCustomScavTier3Max = -10;
-    }
-
-    private int TierDeltaCustomScavTier4Min
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier4.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Min, nameof(TierDeltaCustomScavTier4Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier4.Min = value;
-        }
-    }
-    private int TierDeltaCustomScavTier4Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier4.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Max, nameof(TierDeltaCustomScavTier4Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier4.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier4()
-    {
-        TierDeltaCustomScavTier4Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Min;
-        TierDeltaCustomScavTier4Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier4.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier4()
-    {
-        TierDeltaCustomScavTier4Min = 20;
-        TierDeltaCustomScavTier4Max = -10;
-    }
-
-    private int TierDeltaCustomScavTier5Min
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier5.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Min, nameof(TierDeltaCustomScavTier5Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier5.Min = value;
-        }
-    }
-    private int TierDeltaCustomScavTier5Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier5.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Max, nameof(TierDeltaCustomScavTier5Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier5.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier5()
-    {
-        TierDeltaCustomScavTier5Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Min;
-        TierDeltaCustomScavTier5Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier5.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier5()
-    {
-        TierDeltaCustomScavTier5Min = 30;
-        TierDeltaCustomScavTier5Max = -10;
-    }
-
-    private int TierDeltaCustomScavTier6Min
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier6.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Min, nameof(TierDeltaCustomScavTier6Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier6.Min = value;
-        }
-    }
-    private int TierDeltaCustomScavTier6Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier6.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Max, nameof(TierDeltaCustomScavTier6Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier6.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier6()
-    {
-        TierDeltaCustomScavTier6Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Min;
-        TierDeltaCustomScavTier6Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier6.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier6()
-    {
-        TierDeltaCustomScavTier6Min = 40;
-        TierDeltaCustomScavTier6Max = -10;
-    }
-
-    private int TierDeltaCustomScavTier7Min
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier7.Min;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Min, nameof(TierDeltaCustomScavTier7Min));
-            ModConfig.Config.CustomScavLevelDeltas.Tier7.Min = value;
-        }
-    }
-    private int TierDeltaCustomScavTier7Max
-    {
-        get => ModConfig.Config.CustomScavLevelDeltas.Tier7.Max;
-        set
-        {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Max, nameof(TierDeltaCustomScavTier7Max));
-            ModConfig.Config.CustomScavLevelDeltas.Tier7.Max = value;
-        }
-    }
-    private void UndoTierDeltaCustomScavTier7()
-    {
-        TierDeltaCustomScavTier7Min = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Min;
-        TierDeltaCustomScavTier7Max = ModConfig.OriginalConfig.CustomScavLevelDeltas.Tier7.Max;
-    }
-    private void DefaultTierDeltaCustomScavTier7()
-    {
-        TierDeltaCustomScavTier7Min = 50;
-        TierDeltaCustomScavTier7Max = -10;
-    }
+    private void UndoTierWeightCustomScavEnabled() => TierWeightCustomScavEnabled = ModConfig.OriginalConfig.CustomScavLevelWeights.Enable;
+    private void DefaultTierWeightCustomScavEnabled() => TierWeightCustomScavEnabled = false;
     #endregion
 
     #region CASCADING PARAMETERS
