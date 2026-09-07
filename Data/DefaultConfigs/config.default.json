@@ -1205,7 +1205,7 @@
       "max": 20
     },
     "tier7": {
-      "min": 50,
+      "min": 75,
       "max": 20
     }
   },
@@ -1236,7 +1236,7 @@
       "max": -10
     },
     "tier7": {
-      "min": 50,
+      "min": 75,
       "max": -10
     }
   },
@@ -1249,11 +1249,11 @@
       },
       {
         "tier": 2,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 3,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 4,
@@ -1283,11 +1283,11 @@
       },
       {
         "tier": 3,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 4,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 5,
@@ -1317,11 +1317,11 @@
       },
       {
         "tier": 4,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 5,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 6,
@@ -1335,7 +1335,7 @@
     "tier4": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
@@ -1351,11 +1351,11 @@
       },
       {
         "tier": 5,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 6,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 7,
@@ -1365,11 +1365,11 @@
     "tier5": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
@@ -1385,25 +1385,25 @@
       },
       {
         "tier": 6,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 7,
-        "weight": 10
+        "weight": 5
       }
     ],
     "tier6": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
@@ -1419,25 +1419,25 @@
       },
       {
         "tier": 7,
-        "weight": 40
+        "weight": 20
       }
     ],
     "tier7": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 5,
@@ -1462,11 +1462,11 @@
       },
       {
         "tier": 2,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 3,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 4,
@@ -1496,11 +1496,11 @@
       },
       {
         "tier": 3,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 4,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 5,
@@ -1530,11 +1530,11 @@
       },
       {
         "tier": 4,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 5,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 6,
@@ -1548,7 +1548,7 @@
     "tier4": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
@@ -1564,11 +1564,11 @@
       },
       {
         "tier": 5,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 6,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 7,
@@ -1578,11 +1578,11 @@
     "tier5": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
@@ -1598,25 +1598,25 @@
       },
       {
         "tier": 6,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 7,
-        "weight": 10
+        "weight": 5
       }
     ],
     "tier6": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
@@ -1632,25 +1632,25 @@
       },
       {
         "tier": 7,
-        "weight": 40
+        "weight": 20
       }
     ],
     "tier7": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 5,

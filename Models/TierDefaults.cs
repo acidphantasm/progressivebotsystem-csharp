@@ -21,7 +21,7 @@ public static class TierDefaults
         new() { Min = 20, Max = 10 },
         new() { Min = 30, Max = 15 },
         new() { Min = 40, Max = 20 },
-        new() { Min = 50, Max = 20 },
+        new() { Min = 75, Max = 20 },
     ];
 
     public static readonly MinMax[] ScavDeltaDefaults =
@@ -32,17 +32,17 @@ public static class TierDefaults
         new() { Min = 20, Max = -10 },
         new() { Min = 30, Max = -10 },
         new() { Min = 40, Max = -10 },
-        new() { Min = 50, Max = -10 },
+        new() { Min = 75, Max = -10 },
     ];
 
     public static readonly int[][] WeightDefaults =
     [
-        [100, 40, 10, 0, 0, 0, 0],
-        [40, 100, 40, 10, 0, 0, 0],
-        [10, 40, 100, 40, 10, 0, 0],
-        [0, 10, 40, 100, 40, 10, 0],
-        [0, 0, 10, 40, 100, 40, 10],
-        [0, 0, 0, 10, 40, 100, 40],
-        [0, 0, 0, 0, 10, 40, 100],
+        [100, 20, 5, 0, 0, 0, 0],
+        [40, 100, 20, 5, 0, 0, 0],
+        [10, 40, 100, 20, 5, 0, 0],
+        [5, 10, 40, 100, 20, 5, 0],
+        [5, 5, 10, 40, 100, 20, 5],
+        [5, 5, 5, 10, 40, 100, 20],
+        [5, 5, 5, 5, 10, 40, 100],
     ];
 }

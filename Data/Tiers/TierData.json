@@ -14,11 +14,11 @@
       },
       {
         "tier": 2,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 3,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 4,
@@ -44,11 +44,11 @@
       },
       {
         "tier": 2,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 3,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 4,
@@ -87,11 +87,11 @@
       },
       {
         "tier": 3,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 4,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 5,
@@ -117,11 +117,11 @@
       },
       {
         "tier": 3,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 4,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 5,
@@ -160,11 +160,11 @@
       },
       {
         "tier": 4,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 5,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 6,
@@ -190,11 +190,11 @@
       },
       {
         "tier": 4,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 5,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 6,
@@ -217,7 +217,7 @@
     "PmcLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
@@ -233,11 +233,11 @@
       },
       {
         "tier": 5,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 6,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 7,
@@ -247,7 +247,7 @@
     "ScavLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
@@ -263,11 +263,11 @@
       },
       {
         "tier": 5,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 6,
-        "weight": 10
+        "weight": 5
       },
       {
         "tier": 7,
@@ -286,11 +286,11 @@
     "PmcLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
@@ -306,21 +306,21 @@
       },
       {
         "tier": 6,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 7,
-        "weight": 10
+        "weight": 5
       }
     ],
     "ScavLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
@@ -336,11 +336,11 @@
       },
       {
         "tier": 6,
-        "weight": 40
+        "weight": 20
       },
       {
         "tier": 7,
-        "weight": 10
+        "weight": 5
       }
     ]
   },
@@ -355,15 +355,15 @@
     "PmcLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
@@ -379,21 +379,21 @@
       },
       {
         "tier": 7,
-        "weight": 40
+        "weight": 20
       }
     ],
     "ScavLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
@@ -409,7 +409,7 @@
       },
       {
         "tier": 7,
-        "weight": 40
+        "weight": 20
       }
     ]
   },
@@ -417,26 +417,26 @@
     "Tier": 7,
     "PlayerMinLevel": 61,
     "PlayerMaxLevel": 100,
-    "BotMinLevelVariance": 79,
+    "BotMinLevelVariance": 75,
     "BotMaxLevelVariance": 20,
-    "ScavMinLevelVariance": 50,
+    "ScavMinLevelVariance": 75,
     "ScavMaxLevelVariance": 20,
     "PmcLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 5,
@@ -454,19 +454,19 @@
     "ScavLevelWeights": [
       {
         "tier": 1,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 2,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 3,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 4,
-        "weight": 0
+        "weight": 5
       },
       {
         "tier": 5,
