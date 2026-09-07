@@ -1,12 +1,11 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using ProgressiveBotSystem.Models;
 
 namespace ProgressiveBotSystem.Helpers;
 
 public static class ConfigHelper
 {
-    private static readonly Dictionary<string, int> RequiredArrayLengths = new()
+    private static readonly Dictionary<string, int> _requiredArrayLengths = new()
     {
         ["generalConfig.muzzleChance"] = 7,
         ["generalConfig.plateChances.pmcMainPlateChance"] = 7,
@@ -49,7 +48,7 @@ public static class ConfigHelper
                 config.GeneralConfig.PlateChances.SpecialSidePlateChance = defaults.GeneralConfig.PlateChances.SpecialSidePlateChance,
         };
 
-        foreach (var kvp in RequiredArrayLengths)
+        foreach (var kvp in _requiredArrayLengths)
         {
             if (diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value)
             {
@@ -65,7 +64,7 @@ public static class ConfigHelper
 
         var hasMissingKeys = defaultKeys.Any(k => !diskKeys.Contains(k));
         var hasExtraKeys = diskKeys.Any(k => !defaultKeys.Contains(k));
-        var hasInvalidArrays = RequiredArrayLengths.Any(kvp =>
+        var hasInvalidArrays = _requiredArrayLengths.Any(kvp =>
             diskArrayLengths.TryGetValue(kvp.Key, out var diskLength) && diskLength != kvp.Value
         );
 
@@ -86,104 +85,54 @@ public static class ConfigHelper
     {
         var keyPaths = new HashSet<string>();
         var arrayLengths = new Dictionary<string, int>();
-        var pathStack = new Stack<string>();
-        string? currentProperty = null;
-        var arrayCountStack = new Stack<(string path, int count)>();
-        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+        using var document = JsonDocument.Parse(json);
 
-        while (reader.Read())
-        {
-            switch (reader.TokenType)
-            {
-                case JsonTokenType.PropertyName:
-                    currentProperty = reader.GetString()!;
-                    var path = pathStack.Count > 0 ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}" : currentProperty;
-                    keyPaths.Add(path);
-                    break;
-                case JsonTokenType.StartObject:
-                    if (currentProperty != null)
-                    {
-                        pathStack.Push(currentProperty);
-                        currentProperty = null;
-                    }
-                    break;
-                case JsonTokenType.EndObject:
-                    if (pathStack.Count > 0)
-                    {
-                        pathStack.Pop();
-                    }
-                    break;
-                case JsonTokenType.StartArray:
-                    if (currentProperty != null)
-                    {
-                        var arrayPath =
-                            pathStack.Count > 0 ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}" : currentProperty;
-                        if (RequiredArrayLengths.ContainsKey(arrayPath))
-                        {
-                            arrayCountStack.Push((arrayPath, 0));
-                        }
-                        currentProperty = null;
-                    }
-                    break;
-                case JsonTokenType.EndArray:
-                    if (arrayCountStack.Count > 0)
-                    {
-                        var (p, count) = arrayCountStack.Pop();
-                        arrayLengths[p] = count;
-                    }
-                    break;
-                case JsonTokenType.String:
-                case JsonTokenType.Number:
-                case JsonTokenType.True:
-                case JsonTokenType.False:
-                case JsonTokenType.Null:
-                    if (arrayCountStack.Count > 0)
-                    {
-                        var (p, count) = arrayCountStack.Pop();
-                        arrayCountStack.Push((p, count + 1));
-                    }
-                    break;
-            }
-        }
+        ParseJsonElement(document.RootElement, string.Empty, keyPaths, arrayLengths);
+
         return (keyPaths, arrayLengths);
     }
 
-    /// <summary>
-    ///     Bruh this is confusing as shit and I re-read this doc like 6 times, but it finally works
-    ///     https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/use-utf8jsonreader
-    /// </summary>
-    /// <param name="json"></param>
     private static HashSet<string> ParseDefaultJson(string json)
     {
         var keyPaths = new HashSet<string>();
-        var pathStack = new Stack<string>();
-        string? currentProperty = null;
-        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+        using var document = JsonDocument.Parse(json);
 
-        while (reader.Read())
+        ParseJsonElement(document.RootElement, string.Empty, keyPaths, null);
+
+        return keyPaths;
+    }
+
+    private static void ParseJsonElement(JsonElement element, string path, HashSet<string> keyPaths, Dictionary<string, int>? arrayLengths)
+    {
+        foreach (var property in element.EnumerateObject())
         {
-            switch (reader.TokenType)
+            var propertyPath = string.IsNullOrEmpty(path) ? property.Name : $"{path}.{property.Name}";
+
+            switch (property.Value.ValueKind)
             {
-                case JsonTokenType.PropertyName:
-                    currentProperty = reader.GetString()!;
-                    var path = pathStack.Count > 0 ? $"{string.Join(".", pathStack.Reverse())}.{currentProperty}" : currentProperty;
-                    keyPaths.Add(path);
+                case JsonValueKind.Object:
+                    ParseJsonElement(property.Value, propertyPath, keyPaths, arrayLengths);
                     break;
-                case JsonTokenType.StartObject:
-                    if (currentProperty != null)
+
+                case JsonValueKind.Array:
+                    keyPaths.Add(propertyPath);
+                    if (arrayLengths != null && _requiredArrayLengths.ContainsKey(propertyPath))
                     {
-                        pathStack.Push(currentProperty);
-                        currentProperty = null;
+                        arrayLengths[propertyPath] = property.Value.GetArrayLength();
+                    }
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        if (item.ValueKind == JsonValueKind.Object)
+                        {
+                            ParseJsonElement(item, propertyPath, keyPaths, arrayLengths);
+                        }
                     }
                     break;
-                case JsonTokenType.EndObject:
-                    if (pathStack.Count > 0)
-                    {
-                        pathStack.Pop();
-                    }
+
+                default:
+                    keyPaths.Add(propertyPath);
                     break;
             }
         }
-        return keyPaths;
     }
 }
