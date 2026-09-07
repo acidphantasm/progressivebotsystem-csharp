@@ -1178,6 +1178,68 @@
     "limitPlateClassToFrontPlateClass": false
   },
   "levelPickingMode": 0,
+  "customLevelDeltas": {
+    "enable": false,
+    "tier1": {
+      "min": 10,
+      "max": 5
+    },
+    "tier2": {
+      "min": 10,
+      "max": 5
+    },
+    "tier3": {
+      "min": 15,
+      "max": 7
+    },
+    "tier4": {
+      "min": 20,
+      "max": 10
+    },
+    "tier5": {
+      "min": 30,
+      "max": 15
+    },
+    "tier6": {
+      "min": 40,
+      "max": 20
+    },
+    "tier7": {
+      "min": 50,
+      "max": 20
+    }
+  },
+  "customScavLevelDeltas": {
+    "enable": false,
+    "tier1": {
+      "min": 10,
+      "max": 0
+    },
+    "tier2": {
+      "min": 10,
+      "max": -10
+    },
+    "tier3": {
+      "min": 15,
+      "max": -10
+    },
+    "tier4": {
+      "min": 20,
+      "max": -10
+    },
+    "tier5": {
+      "min": 30,
+      "max": -10
+    },
+    "tier6": {
+      "min": 40,
+      "max": -10
+    },
+    "tier7": {
+      "min": 50,
+      "max": -10
+    }
+  },
   "customLevelWeights": {
     "enable": false,
     "tier1": [
@@ -1603,68 +1665,6 @@
         "weight": 100
       }
     ]
-  },
-  "customLevelDeltas": {
-    "enable": false,
-    "tier1": {
-      "min": 10,
-      "max": 5
-    },
-    "tier2": {
-      "min": 10,
-      "max": 5
-    },
-    "tier3": {
-      "min": 15,
-      "max": 7
-    },
-    "tier4": {
-      "min": 20,
-      "max": 10
-    },
-    "tier5": {
-      "min": 30,
-      "max": 15
-    },
-    "tier6": {
-      "min": 40,
-      "max": 20
-    },
-    "tier7": {
-      "min": 50,
-      "max": 20
-    }
-  },
-  "customScavLevelDeltas": {
-    "enable": false,
-    "tier1": {
-      "min": 10,
-      "max": 0
-    },
-    "tier2": {
-      "min": 10,
-      "max": -10
-    },
-    "tier3": {
-      "min": 15,
-      "max": -10
-    },
-    "tier4": {
-      "min": 20,
-      "max": -10
-    },
-    "tier5": {
-      "min": 30,
-      "max": -10
-    },
-    "tier6": {
-      "min": 40,
-      "max": -10
-    },
-    "tier7": {
-      "min": 50,
-      "max": -10
-    }
   },
   "debug": {
     "enableBotEquipmentLog": true,
