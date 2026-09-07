@@ -28,7 +28,7 @@
                         @bind-Value="UseDynamicWeaponWeights"
                         Disabled="@(!ModCustomWeaponsEnabled)"
                         HasPendingChanges="@(PresetStateService.PendingChanges.Contains("UseDynamicWeaponWeights"))"
-                        IsNonDefault="@(!UseDynamicWeaponWeights)"
+                        IsNonDefault="@(UseDynamicWeaponWeights)"
                         OnUndo="UndoUseDynamicWeaponWeights"
                         OnDefault="DefaultUseDynamicWeaponWeights"/>
 
@@ -126,7 +126,7 @@
                         @bind-Value="ForceScavEquipmentWeight"
                         Disabled="@(!ModCustomEquipmentEnabled)"
                         HasPendingChanges="@(PresetStateService.PendingChanges.Contains("ForceScavEquipmentWeight"))"
-                        IsNonDefault="@(!ForceScavEquipmentWeight)"
+                        IsNonDefault="@(ForceScavEquipmentWeight)"
                         OnUndo="UndoForceScavEquipmentWeights"
                         OnDefault="DefaultForceScavEquipmentWeights"/>
 
@@ -149,7 +149,7 @@
                         @bind-Value="UseDynamicEquipmentWeights"
                         Disabled="@(!ModCustomEquipmentEnabled)"
                         HasPendingChanges="@(PresetStateService.PendingChanges.Contains("UseDynamicEquipmentWeights"))"
-                        IsNonDefault="@(!UseDynamicEquipmentWeights)"
+                        IsNonDefault="@(UseDynamicEquipmentWeights)"
                         OnUndo="UndoUseDynamicEquipmentWeights"
                         OnDefault="DefaultUseDynamicEquipmentWeights"/>
 
