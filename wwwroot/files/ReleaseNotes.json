@@ -30,6 +30,7 @@
       "Resolved Custom Tier Deltas not being removed when disabling them without restarting the server",
       "Resolved Highest Prestige Level handling never resetting when not restarting the server",
       "Resolved outdated Forge URL for update download link",
+      "Resolved various default values not being correct in WebConfig",
       "Probably resolved instances of loot being empty on bots that should have loot, idk"
     ],
     "KnownIssues": []
