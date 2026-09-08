@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Globalization;
 using ProgressiveBotSystem.Constants;
 using ProgressiveBotSystem.Globals;
@@ -97,6 +98,78 @@ public class CustomBotEquipmentModGenerator(
     private readonly IEnumerable<string> _pmcs = typeof(PmcBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
     private readonly IEnumerable<string> _scavs = typeof(ScavBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
     private readonly IEnumerable<string> _specials = typeof(SpecialBots).GetFields().Select(x => x.GetValue(null)).Cast<string>();
+
+    private readonly FrozenSet<MongoId> GloballyBlacklistedMods =
+    [
+        "686a5a6247c881f613196f91", // canted aiming attachment from echos of tarkov
+        "b098f4d751ddc6246acdf160", // B-22 Attachment from EpicRangeTime-Weapons
+        "b2d57758abe9bb9345c58e4a", // 34mm gieselle mount from EpicRangeTime-Weapons
+        "67ea8b32e0d7701fc6bfc5bf", // 34mm gieselle mount from EpicRangeTime-Weapons
+        "6cec33dd595d9c2d4e531eb7", // Weird split handguard from EpicRangeTime-Weapons
+        "7422ca92107da0fc0e26f7d9", // Weird split handguard from EpicRangeTime-Weapons
+        "cbba369e0fbb09a1eda36c83", // Weird split handguard from EpicRangeTime-Weapons
+        "672e2e75c7c7c5232e513062", // Transparent dust cover from MoxoPixel-TGC
+        "672e37d178e24689d6ff50ce", // Range finder from Black-Core
+        "5c110624d174af029e69734c", // NVG/Thermals
+        "6478641c19d732620e045e17", // ECHO1
+        "5ae30e795acfc408fb139a0b", // M4A1 Dumb Gasblock
+        "5c11046cd174af02a012e42b", // PVS-7
+        "544a3f024bdc2d1d388b4568", // Bugged optics
+        "544a3d0a4bdc2d1b388b4567", // NXS Scope
+        "5cf638cbd7f00c06595bc936",
+        "576fd4ec2459777f0b518431",
+        "5c82343a2e221644f31c0611",
+        "5d0a29ead7ad1a0026013f27",
+        "5dfe6104585a0c3e995c7b82",
+        "618b9643526131765025ab35",
+        "618bab21526131765025ab3f",
+        "6171407e50224f204c1da3c5",
+        "5aa66a9be5b5b0214e506e89", // 34mm optic mounts
+        "5aa66be6e5b5b0214e506e97",
+        "5aa66c72e5b5b00016327c93",
+        "5c86592b2e2216000e69e77c",
+        "61713cc4d8e3106d9806c109",
+        "62811f461d5df4475f46a332",
+        "6761759e7ee06333f108bf86",
+        "676175789dcee773150c6925",
+        "5648b62b4bdc2d9d488b4585", // General Attachments
+        "5c0e2ff6d174af02a1659d4a",
+        "5c0e2f5cd174af02a012cfc9",
+        "5c6592372e221600133e47d7",
+        "544a378f4bdc2d30388b4567",
+        "5d1340bdd7ad1a0e8d245aab",
+        "6764139c44b3c96e7b0e2f7b",
+        "67641a851b2899700609901a",
+        "67641b461c2eb66ade05dba6",
+        "676176a162e0497044079f46",
+        "67641bec4ad898aa100c1079",
+        "628120f210e26c1f344e6558", // AXMC .308 conversion part
+        "62811d61578c54356d6d67ea", // AXMC .308 conversion part
+        "628120415631d45211793c99", // AXMC .308 conversion part
+        "6281214c1d5df4475f46a33a", // AXMC .308 conversion part
+        "6281215b4fa03b6b6c35dc6c", // AXMC .308 conversion part
+        "628121651d5df4475f46a33c", // AXMC .308 conversion part
+        "6761765f1f08ed5e8800b7a6",
+        "671d85439ae8365d69117ba6",
+        "6241c2c2117ad530666a5108", // airsoft mag
+        "670e8eab8c1bb0e5a7075acf",
+        "671d8617a3e45c1f5908278c",
+        "671d8ac8a3e45c1f59082799",
+        "671d8b38b769f0d88c0950f8",
+        "671d8b8c0959c721a50ca838",
+        "55d5f46a4bdc2d1b198b4567",
+        "57ffb0062459777a045af529",
+        "5926d2be86f774134d668e4e",
+        "5a37cb10c4a282329a73b4e7",
+        "5d0a29fed7ad1a002769ad08",
+        "57dc334d245977597164366f",
+        "618a75c9a3884f56c957ca1b",
+        "59e5f5a486f7746c530b3ce2",
+        "55d481904bdc2d8c2f8b456a",
+        "5b1fb3e15acfc4001637f068",
+        "564ca9df4bdc2d35148b4569",
+        "61a4cda622af7f4f6a3ce617", // Rhino speedloader
+    ];
 
     /// <summary>
     ///     Check mods are compatible and add to array
@@ -1096,12 +1169,23 @@ public class CustomBotEquipmentModGenerator(
         return spawnMod ? ModSpawn.SPAWN : ModSpawn.SKIP;
     }
 
+    private HashSet<MongoId> ApplyGlobalModBlacklist(HashSet<MongoId> pool)
+    {
+        if (GloballyBlacklistedMods.Count == 0)
+        {
+            return pool;
+        }
+
+        pool.ExceptWith(GloballyBlacklistedMods);
+        return pool;
+    }
+
     /// <summary>
     ///     Choose a mod to fit into the desired slot
     /// </summary>
     /// <param name="request">Data used to choose an appropriate mod with</param>
     /// <returns>itemHelper.getItem() result</returns>
-    public KeyValuePair<bool, TemplateItem>? ChooseModToPutIntoSlot(ModToSpawnRequest request, QuestData? questData, string weaponTpl)
+    private KeyValuePair<bool, TemplateItem>? ChooseModToPutIntoSlot(ModToSpawnRequest request, QuestData? questData, string weaponTpl)
     {
         // Slot mod will fill
         var parentSlot = request.ParentTemplate.Properties.Slots?.FirstOrDefault(i => i.Name == request.ModSlot);
@@ -1330,7 +1414,7 @@ public class CustomBotEquipmentModGenerator(
                     }
                 }
 
-                return result;
+                return ApplyGlobalModBlacklist(result);
             }
         );
     }
@@ -1347,7 +1431,7 @@ public class CustomBotEquipmentModGenerator(
 
                 if (modSlot == null)
                 {
-                    return result;
+                    return ApplyGlobalModBlacklist(result);
                 }
 
                 foreach (var slotFilter in modSlot.Properties?.Filters ?? [])
@@ -1388,7 +1472,7 @@ public class CustomBotEquipmentModGenerator(
                     }
                 }
 
-                return result;
+                return ApplyGlobalModBlacklist(result);
             }
         );
     }
@@ -1535,7 +1619,7 @@ public class CustomBotEquipmentModGenerator(
             }
         }
 
-        return modPoolToReturn.ToHashSet();
+        return ApplyGlobalModBlacklist(modPoolToReturn.ToHashSet());
     }
 
     private bool ContainsRequiredMod(TemplateItem item, QuestData questData, int callCount = 0)
