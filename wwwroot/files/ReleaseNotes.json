@@ -6,9 +6,11 @@
     "NewFeatures": [],
     "Changes": [
       "Moved Loose Ammo chances and limits to the WebConfig for people who run massive ammo stack sizes",
-      "Added limits on new bot generation json since they no longer delete on server start"
+      "Added entry limits on new bot generation json since they no longer delete on server start"
     ],
-    "BugFixes": [],
+    "BugFixes": [
+      "Resolved mod clothing import not functioning properly"
+    ],
     "KnownIssues": []
   },
   {

@@ -823,10 +823,19 @@ public class ItemImportHelper(
             return false;
         }
 
+        var allowedParents = new List<MongoId>
+        {
+            "5cc0868e14c02e000c6bea68",
+            "5cc0869814c02e000a4cad94",
+            "5cc086a314c02e000c6bea69",
+            "5cc085e214c02e000c6bea67",
+        };
+
         var isCustomization =
             ModConfig.Config.CompatibilityConfig.EnableModdedClothing
             && !ModConfig.Config.PmcBots.AdditionalOptions.SeasonalPmcAppearance
-            && !_vanillaClothingLookup.Contains(templateItem.Id);
+            && !_vanillaClothingLookup.Contains(templateItem.Id)
+            && allowedParents.Contains(templateItem.Parent);
 
         if (!isCustomization)
         {
