@@ -1,7 +1,7 @@
 ﻿using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Web;
-using Range = SemanticVersioning.Range;
-using Version = SemanticVersioning.Version;
+using Range=SemanticVersioning.Range;
+using Version=SemanticVersioning.Version;
 
 namespace ProgressiveBotSystem;
 
@@ -14,7 +14,7 @@ public record ModMetadata : IModMetadata, IModBlazorMetadata
     public string Name { get; init; } = "Acid's Progressive Bot System";
     public string Author { get; init; } = "acidphantasm";
     public List<string>? Contributors { get; init; }
-    public Version Version { get; init; } = new("2.4.0");
+    public Version Version { get; init; } = new("2.4.1");
     public Range SptVersion { get; init; } = new("~4.1.0");
     public List<string>? Incompatibilities { get; init; } = ["li.barlog.andern"];
     public Dictionary<string, Range>? ModDependencies { get; init; }
