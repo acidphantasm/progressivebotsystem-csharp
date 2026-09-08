@@ -13,7 +13,10 @@ namespace ProgressiveBotSystem.Utils;
 [Injectable(InjectionType.Singleton)]
 public class ApbsLogger
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        WriteIndented = true
+    };
     private readonly ConcurrentQueue<BotLogMessage> _botQueue = new();
     private readonly CancellationTokenSource _cts = new();
     private readonly ISptLogger<ApbsLogger> _logger;
@@ -47,13 +50,13 @@ public class ApbsLogger
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Debug + ".txt");
 
         EnqueueLog(
-            new LogMessage
-            {
-                Timestamp = DateTime.Now,
-                Level = "DEBUG",
-                FilePath = logFilePath,
-                Message = CreateMessage(Logging.Debug, message1, message2, message3, message4, message5, message6, message7, message8),
-            }
+        new LogMessage
+        {
+            Timestamp = DateTime.Now,
+            Level = "DEBUG",
+            FilePath = logFilePath,
+            Message = CreateMessage(Logging.Debug, message1, message2, message3, message4, message5, message6, message7, message8)
+        }
         );
     }
 
@@ -71,13 +74,13 @@ public class ApbsLogger
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Warning + ".txt");
 
         EnqueueLog(
-            new LogMessage
-            {
-                Timestamp = DateTime.Now,
-                Level = "WARNING",
-                FilePath = logFilePath,
-                Message = CreateMessage(Logging.Warning, message1, message2, message3, message4, message5, message6, message7, message8),
-            }
+        new LogMessage
+        {
+            Timestamp = DateTime.Now,
+            Level = "WARNING",
+            FilePath = logFilePath,
+            Message = CreateMessage(Logging.Warning, message1, message2, message3, message4, message5, message6, message7, message8)
+        }
         );
     }
 
@@ -95,13 +98,13 @@ public class ApbsLogger
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Error + ".txt");
 
         EnqueueLog(
-            new LogMessage
-            {
-                Timestamp = DateTime.Now,
-                Level = "ERROR",
-                FilePath = logFilePath,
-                Message = CreateMessage(Logging.Error, message1, message2, message3, message4, message5, message6, message7, message8),
-            }
+        new LogMessage
+        {
+            Timestamp = DateTime.Now,
+            Level = "ERROR",
+            FilePath = logFilePath,
+            Message = CreateMessage(Logging.Error, message1, message2, message3, message4, message5, message6, message7, message8)
+        }
         );
     }
 
@@ -119,13 +122,13 @@ public class ApbsLogger
         var logFilePath = Path.Combine(_pathToModFolder, "logs", LoggingFolders.Success + ".txt");
 
         EnqueueLog(
-            new LogMessage
-            {
-                Timestamp = DateTime.Now,
-                Level = "SUCCESS",
-                FilePath = logFilePath,
-                Message = CreateMessage(Logging.Success, message1, message2, message3, message4, message5, message6, message7, message8),
-            }
+        new LogMessage
+        {
+            Timestamp = DateTime.Now,
+            Level = "SUCCESS",
+            FilePath = logFilePath,
+            Message = CreateMessage(Logging.Success, message1, message2, message3, message4, message5, message6, message7, message8)
+        }
         );
     }
 
@@ -133,7 +136,11 @@ public class ApbsLogger
     {
         var logFilePath = Path.Combine(_pathToModFolder, "logs", logFolder + ".json");
 
-        EnqueueBotLog(new BotLogMessage { FilePath = logFilePath, Bot = botLogData });
+        EnqueueBotLog(new BotLogMessage
+        {
+            FilePath = logFilePath,
+            Bot = botLogData
+        });
     }
 
     private void EnqueueLog(LogMessage message)
@@ -155,9 +162,9 @@ public class ApbsLogger
                 try
                 {
                     await File.AppendAllTextAsync(
-                        message.FilePath,
-                        $"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{message.Level}] {message.Message}",
-                        cancellationToken
+                    message.FilePath,
+                    $"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{message.Level}] {message.Message}",
+                    cancellationToken
                     );
                 }
                 catch (Exception ex)
@@ -197,7 +204,12 @@ public class ApbsLogger
 
             bots.Add(message.Bot);
 
-            var output = JsonSerializer.Serialize(bots, _jsonOptions);
+            var trimmedBots = bots
+                .OrderByDescending(b => b.Timestamp)
+                .Take(1000)
+                .ToList();
+
+            var output = JsonSerializer.Serialize(trimmedBots, _jsonOptions);
 
             var tempFilePath = message.FilePath + ".tmp";
 
@@ -229,7 +241,17 @@ public class ApbsLogger
         string message8 = ""
     )
     {
-        var messageList = new List<string> { message1, message2, message3, message4, message5, message6, message7, message8 };
+        var messageList = new List<string>
+        {
+            message1,
+            message2,
+            message3,
+            message4,
+            message5,
+            message6,
+            message7,
+            message8
+        };
 
         var messages = string.Empty;
         var textFlag = string.Empty;

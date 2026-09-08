@@ -5,7 +5,8 @@
     "IsLatest": true,
     "NewFeatures": [],
     "Changes": [
-      "Loose Ammo chances and limits have been added to the WebConfig for people who run massive ammo stack sizes"
+      "Moved Loose Ammo chances and limits to the WebConfig for people who run massive ammo stack sizes",
+      "Added limits on new bot generation json since they no longer delete on server start"
     ],
     "BugFixes": [],
     "KnownIssues": []
