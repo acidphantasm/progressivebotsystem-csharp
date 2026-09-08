@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
+using System.Text.Json;
 using ProgressiveBotSystem.Constants;
 using ProgressiveBotSystem.Globals;
+using ProgressiveBotSystem.Models;
 using Spectre.Console;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
@@ -11,6 +13,8 @@ namespace ProgressiveBotSystem.Utils;
 [Injectable(InjectionType.Singleton)]
 public class ApbsLogger
 {
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private readonly ConcurrentQueue<BotLogMessage> _botQueue = new();
     private readonly CancellationTokenSource _cts = new();
     private readonly ISptLogger<ApbsLogger> _logger;
     private readonly string _pathToModFolder;
@@ -125,34 +129,21 @@ public class ApbsLogger
         );
     }
 
-    public void Bot(
-        string logFolder,
-        string message1,
-        string message2 = "",
-        string message3 = "",
-        string message4 = "",
-        string message5 = "",
-        string message6 = "",
-        string message7 = "",
-        string message8 = ""
-    )
+    public void Bot(string logFolder, BotLogData botLogData)
     {
-        var logFilePath = Path.Combine(_pathToModFolder, "logs", logFolder + ".txt");
+        var logFilePath = Path.Combine(_pathToModFolder, "logs", logFolder + ".json");
 
-        EnqueueLog(
-            new LogMessage
-            {
-                Timestamp = DateTime.Now,
-                Level = "BOT",
-                FilePath = logFilePath,
-                Message = CreateMessage(string.Empty, message1, message2, message3, message4, message5, message6, message7, message8),
-            }
-        );
+        EnqueueBotLog(new BotLogMessage { FilePath = logFilePath, Bot = botLogData });
     }
 
     private void EnqueueLog(LogMessage message)
     {
         _queue.Enqueue(message);
+    }
+
+    private void EnqueueBotLog(BotLogMessage message)
+    {
+        _botQueue.Enqueue(message);
     }
 
     private async Task ProcessLogQueue(CancellationToken cancellationToken)
@@ -165,7 +156,8 @@ public class ApbsLogger
                 {
                     await File.AppendAllTextAsync(
                         message.FilePath,
-                        $"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{message.Level}] {message.Message}"
+                        $"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{message.Level}] {message.Message}",
+                        cancellationToken
                     );
                 }
                 catch (Exception ex)
@@ -173,10 +165,49 @@ public class ApbsLogger
                     Console.WriteLine($"[APBS] Error writing log: {ex.Message}");
                 }
             }
-            else
+
+            if (_botQueue.TryDequeue(out var botMessage))
+            {
+                await WriteBotLog(botMessage, cancellationToken);
+            }
+
+            if (_queue.IsEmpty && _botQueue.IsEmpty)
             {
                 await Task.Delay(100, cancellationToken);
             }
+        }
+    }
+
+    private async Task WriteBotLog(BotLogMessage message, CancellationToken cancellationToken)
+    {
+        try
+        {
+            List<BotLogData> bots;
+
+            if (File.Exists(message.FilePath))
+            {
+                var json = await File.ReadAllTextAsync(message.FilePath, cancellationToken);
+
+                bots = string.IsNullOrWhiteSpace(json) ? [] : JsonSerializer.Deserialize<List<BotLogData>>(json, _jsonOptions) ?? [];
+            }
+            else
+            {
+                bots = [];
+            }
+
+            bots.Add(message.Bot);
+
+            var output = JsonSerializer.Serialize(bots, _jsonOptions);
+
+            var tempFilePath = message.FilePath + ".tmp";
+
+            await File.WriteAllTextAsync(tempFilePath, output, cancellationToken);
+
+            File.Move(tempFilePath, message.FilePath, true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[APBS] Error writing bot log: {ex.Message}");
         }
     }
 
@@ -268,4 +299,10 @@ public class LogMessage
     public required string Level { get; set; }
     public required string Message { get; set; }
     public required string FilePath { get; set; }
+}
+
+public class BotLogMessage
+{
+    public required string FilePath { get; set; }
+    public required BotLogData Bot { get; set; }
 }

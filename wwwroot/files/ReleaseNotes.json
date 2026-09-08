@@ -7,6 +7,7 @@
       "WebConfig toggle for Pmcs to use level overrides for Ground Zero",
       "WebConfig switch to use Weighted Tier Selection vs Level Delta (weighted system is enabled by default now)",
       "WebConfig toggles/sliders for Custom Weighted Level Deltas",
+      "WebConfig page for showing bot generation logs and details",
       "Bots have 25% chance to have loose ammo in Rig/Pockets",
       "Blacklisting got a much needed refresh",
       "Blacklisting can now bulk import comma delimited Item IDs and copy to other tiers",

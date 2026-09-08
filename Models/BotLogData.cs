@@ -1,31 +1,62 @@
-﻿namespace ProgressiveBotSystem.Models;
+﻿using ProgressiveBotSystem.Models.Enums;
+
+namespace ProgressiveBotSystem.Models;
 
 public class BotLogData
 {
+    public DateTime Timestamp { get; set; }
+
+    public BotLogType BotType { get; set; }
+
+    public bool IsApbsBot { get; set; }
+
     public int Tier { get; set; } = 0;
-    public bool PovertyBot { get; set; } = false;
+    public bool PovertyBot { get; set; }
+
     public string Role { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public int Level { get; set; } = 0;
+    public int Level { get; set; }
     public string Difficulty { get; set; } = string.Empty;
-    public string GameVersion { get; set; } = string.Empty;
-    public int PrestigeLevel { get; set; } = 0;
-    public string DogTagId { get; set; } = string.Empty;
-    public string PrimaryWeaponId { get; set; } = string.Empty;
-    public string PrimaryWeaponCaliber { get; set; } = string.Empty;
-    public string SecondaryWeaponId { get; set; } = string.Empty;
-    public string SecondaryWeaponCaliber { get; set; } = string.Empty;
-    public string HolsterWeaponId { get; set; } = string.Empty;
-    public string HolsterWeaponCaliber { get; set; } = string.Empty;
-    public string ScabbardId { get; set; } = string.Empty;
-    public string HelmetId { get; set; } = string.Empty;
-    public string NightVisionId { get; set; } = string.Empty;
-    public string EarPieceId { get; set; } = string.Empty;
-    public bool CanHavePlates { get; set; } = false;
-    public string ArmourVestId { get; set; } = string.Empty;
-    public string FrontPlateId { get; set; } = string.Empty;
-    public string BackPlateId { get; set; } = string.Empty;
-    public string LeftSidePlateId { get; set; } = string.Empty;
-    public string RightSidePlateId { get; set; } = string.Empty;
-    public int GrenadeCount { get; set; } = 0;
+    public string? GameVersion { get; set; }
+    public int PrestigeLevel { get; set; }
+    public string? DogTagId { get; set; }
+
+    public int GrenadeCount { get; set; }
+
+    public BotWeaponLog? Primary { get; set; }
+    public BotWeaponLog? Secondary { get; set; }
+    public BotWeaponLog? Holster { get; set; }
+    public BotWeaponLog? Melee { get; set; }
+
+    public BotEquipmentLog? Helmet { get; set; }
+    public BotEquipmentLog? NightVision { get; set; }
+    public BotEquipmentLog? EarPiece { get; set; }
+
+    public BotArmorLog? Armor { get; set; }
+}
+
+public class BotWeaponLog
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+
+    public string? CaliberId { get; set; }
+    public string? Caliber { get; set; }
+}
+
+public class BotEquipmentLog
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+}
+
+public class BotArmorLog
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+
+    public int? FrontPlateClass { get; set; }
+    public int? BackPlateClass { get; set; }
+    public int? LeftPlateClass { get; set; }
+    public int? RightPlateClass { get; set; }
 }

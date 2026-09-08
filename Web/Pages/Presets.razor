@@ -92,12 +92,9 @@
                                            Variant="Variant.Text"
                                            Class="mud-width-full">
 
-                                    @if (_folderNames != null)
+                                    @foreach (var folder in _folderNames)
                                     {
-                                        @foreach (var folder in _folderNames)
-                                        {
-                                            <MudSelectItem Value="@folder">@folder</MudSelectItem>
-                                        }
+                                        <MudSelectItem Value="@folder">@folder</MudSelectItem>
                                     }
 
                                 </MudSelect>
@@ -184,7 +181,7 @@
 
         if (result is not null && !result.Canceled)
         {
-            var folderName = (string)result.Data;
+            var folderName = (string)result.Data!;
             await CreateFolder(folderName);
         }
     }

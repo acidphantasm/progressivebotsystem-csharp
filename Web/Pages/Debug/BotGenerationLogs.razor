@@ -1,0 +1,453 @@
+﻿@page "/progressivebotsystem/botgenerationlogs"
+@using Microsoft.AspNetCore.Authorization
+@using ProgressiveBotSystem.Models
+@using ProgressiveBotSystem.Models.Enums
+@using ProgressiveBotSystem.Services
+@layout MainLayout
+@inject BotLogReaderService BotLogReaderService
+@attribute [Authorize(Policy = "Administrator")]
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+
+        <MudGrid Class="mb-4">
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4 mud-expansion-panels-borders" Elevation="0">
+                    <MudText Typo="Typo.overline">Total Bots</MudText>
+                    <MudText Typo="Typo.h4">@TotalBots</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4 mud-expansion-panels-borders" Elevation="0">
+                    <MudText Typo="Typo.overline">APBS Bots</MudText>
+                    <MudText Typo="Typo.h4">@ApbsBots</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4 mud-expansion-panels-borders" Elevation="0">
+                    <MudText Typo="Typo.overline">Vanilla Bots</MudText>
+                    <MudText Typo="Typo.h4">@VanillaBots</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudPaper Class="pa-4 mud-expansion-panels-borders" Elevation="0">
+                    <MudText Typo="Typo.overline">Poverty Bots</MudText>
+                    <MudText Typo="Typo.h4">@PovertyBots</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Tier Distribution" Expanded="true">
+            @if (_apbsTierSeries.Any(s => s.Data.Any(v => v > 0)))
+            {
+                <MudPaper Class="pa-4" Elevation="0">
+                    <MudChart T="double" ChartType="ChartType.Bar"
+                              ChartSeries="_apbsTierSeries"
+                              ChartLabels="@_tierLabels"
+                              Width="100%" Height="280px"
+                              CanHideSeries MatchBoundsToSize/>
+                </MudPaper>
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-2">
+                    @_chartCaption
+                </MudText>
+            }
+            else
+            {
+                <MudText Color="Color.Secondary">No bot data to chart yet.</MudText>
+            }
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Filters" Expanded="true">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudSelect T="BotLogType" Label="Bot Type" Value="_typeFilter" ValueChanged="OnTypeFilterChanged"
+                               Variant="Variant.Filled">
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Unknown">All</MudSelectItem>
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Pmc">PMC</MudSelectItem>
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Scav">Scav</MudSelectItem>
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Boss">Boss</MudSelectItem>
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Special">Special</MudSelectItem>
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Event">Event</MudSelectItem>
+                        <MudSelectItem T="BotLogType" Value="@BotLogType.Unhandled">Unhandled</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudSelect T="bool?" Label="Source" Value="_apbsFilter" ValueChanged="OnApbsFilterChanged" Variant="Variant.Filled">
+                        <MudSelectItem T="bool?" Value="@(null)">All</MudSelectItem>
+                        <MudSelectItem T="bool?" Value="@(true)">APBS</MudSelectItem>
+                        <MudSelectItem T="bool?" Value="@(false)">Vanilla</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudSelect T="BotSortField" Label="Sort By" Value="_sortField" ValueChanged="OnSortFieldChanged"
+                               Variant="Variant.Filled">
+                        <MudSelectItem T="BotSortField" Value="@BotSortField.Spawned">Spawned (newest first)</MudSelectItem>
+                        <MudSelectItem T="BotSortField" Value="@BotSortField.Level">Level (highest first)</MudSelectItem>
+                        <MudSelectItem T="BotSortField" Value="@BotSortField.Tier">Tier (highest first)</MudSelectItem>
+                        <MudSelectItem T="BotSortField" Value="@BotSortField.Name">Name (A-Z)</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="6">
+                    <MudTextField T="string" Value="_search" ValueChanged="OnSearchChanged" Label="Search"
+                                  Placeholder="Search name, role, or weapon..."
+                                  Variant="Variant.Filled" Immediate="true"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"/>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Primary" Style="color: black;"
+                               StartIcon="@Icons.Material.Filled.Refresh" OnClick="@LoadBots">
+                        Refresh Data
+                    </MudButton>
+                </MudItem>
+                <MudSpacer/>
+                <MudItem xs="12" sm="6" md="2">
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.DeleteForever" OnClick="@ConfirmClearLogs">
+                        Clear Logs
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="@($"Bots ({TotalBots})")" Expanded="true">
+
+            @if (_loading)
+            {
+                <MudProgressLinear Indeterminate="true" Class="my-4"/>
+            }
+            else if (!PagedBots.Any())
+            {
+                <MudText Class="pa-4" Color="Color.Secondary">No bots match the current filters.</MudText>
+            }
+            else
+            {
+                <MudGrid>
+                    @foreach (var bot in PagedBots)
+                    {
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <div style="@($"border-left: 4px solid {TierColor(bot)}; border-radius: 4px;")">
+                                <MudPaper Class="pa-3 cursor-pointer" Elevation="4" @onclick="@(() => OpenDetail(bot))">
+
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                        <div>
+                                            <MudText Typo="Typo.body1">@bot.Name</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">@bot.Role</MudText>
+                                        </div>
+                                        <MudStack Row="true" Spacing="1">
+                                            @if (!bot.IsApbsBot)
+                                            {
+                                                <MudTooltip Text="Vanilla bot (not generated by APBS)">
+                                                    <MudIcon Icon="@Icons.Material.Filled.CodeOff" Size="Size.Small"
+                                                             Color="Color.Secondary"/>
+                                                </MudTooltip>
+                                            }
+                                            else if (bot.PovertyBot)
+                                            {
+                                                <MudTooltip Text="Poverty bot">
+                                                    <MudIcon Icon="@Icons.Material.Filled.MoneyOff" Size="Size.Small"
+                                                             Color="Color.Warning"/>
+                                                </MudTooltip>
+                                            }
+                                        </MudStack>
+                                    </MudStack>
+
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-2">
+                                        <MudText Typo="Typo.body2">Lvl @bot.Level</MudText>
+                                        @if (bot.IsApbsBot)
+                                        {
+                                            <MudText Typo="Typo.body2">Tier @bot.Tier</MudText>
+                                        }
+                                    </MudStack>
+
+                                </MudPaper>
+                            </div>
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-4">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Showing @(_page * _pageSize + 1)–@(Math.Min((_page + 1) * _pageSize, TotalBots)) of @TotalBots
+                    </MudText>
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudSelect T="int" Value="_pageSize" ValueChanged="OnPageSizeChanged" Style="width:100px" Variant="Variant.Filled">
+                            <MudSelectItem T="int" Value="12">12</MudSelectItem>
+                            <MudSelectItem T="int" Value="24">24</MudSelectItem>
+                            <MudSelectItem T="int" Value="48">48</MudSelectItem>
+                            <MudSelectItem T="int" Value="96">96</MudSelectItem>
+                        </MudSelect>
+                        <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" Disabled="@(_page == 0)" OnClick="@(() => _page--)"/>
+                        <MudText Typo="Typo.body2">Page @(_page + 1) / @Math.Max(1, TotalPages)</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" Disabled="@(_page >= TotalPages - 1)"
+                                       OnClick="@(() => _page++)"/>
+                    </MudStack>
+                </MudStack>
+            }
+
+        </MudExpansionPanel>
+
+    </MudContainer>
+</MudMainContent>
+
+<BotDetailDialog @bind-Visible="_detailVisible" Bot="_selectedBot"/>
+
+@code {
+    [Inject] private IDialogService DialogService { get; set; } = null!;
+
+    private enum BotSortField
+    {
+        Spawned,
+        Level,
+        Tier,
+        Name
+    }
+
+    private const int modRoleClutterThreshold = 6;
+
+    private static readonly string[] TierColorPalette =
+    [
+        "rgba(76, 175, 80, 0.3)",
+        "rgba(139, 195, 74, 0.3)",
+        "rgba(205, 220, 57, 0.4)",
+        "rgba(255, 235, 59, 0.4)",
+        "rgba(255, 152, 0, 0.5)",
+        "rgba(255, 87, 34, 0.5)",
+        "rgba(244, 67, 54, 0.7)"
+    ];
+
+    private readonly string[] _tierLabels = ["T1", "T2", "T3", "T4", "T5", "T6", "T7"];
+    private string _chartCaption = "";
+    private List<ChartSeries<double>> _apbsTierSeries = [];
+
+    private List<BotLogData> _bots = [];
+
+    private string _search = string.Empty;
+    private BotLogType _typeFilter = BotLogType.Unknown;
+    private bool? _apbsFilter;
+    private BotSortField _sortField = BotSortField.Spawned;
+    private bool _loading;
+
+    private int _page;
+    private int _pageSize = 24;
+
+    private BotLogData? _selectedBot;
+    private bool _detailVisible;
+
+    private IEnumerable<BotLogData> FilteredBots
+    {
+        get
+        {
+            var query = _bots
+                .Where(bot => _typeFilter == BotLogType.Unknown || bot.BotType == _typeFilter)
+                .Where(bot => !_apbsFilter.HasValue || bot.IsApbsBot == _apbsFilter.Value)
+                .Where(MatchesSearch);
+
+            return _sortField switch
+            {
+                BotSortField.Level => query.OrderByDescending(b => b.Level),
+                BotSortField.Tier => query.OrderByDescending(b => b.Tier),
+                BotSortField.Name => query.OrderBy(b => b.Name),
+                _ => query.OrderByDescending(b => b.Timestamp)
+            };
+        }
+    }
+
+    private IEnumerable<BotLogData> PagedBots
+    {
+        get => FilteredBots.Skip(_page * _pageSize).Take(_pageSize);
+    }
+
+    private int TotalBots
+    {
+        get => FilteredBots.Count();
+    }
+    private int ApbsBots
+    {
+        get => FilteredBots.Count(b => b.IsApbsBot);
+    }
+    private int VanillaBots
+    {
+        get => FilteredBots.Count(b => !b.IsApbsBot);
+    }
+    private int PovertyBots
+    {
+        get => FilteredBots.Count(b => b is { IsApbsBot: true, PovertyBot: true });
+    }
+    private int TotalPages
+    {
+        get => (int)Math.Ceiling(TotalBots / (double)_pageSize);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBots();
+    }
+
+    private async Task LoadBots()
+    {
+        _loading = true;
+        _page = 0;
+
+        try
+        {
+            _bots = await BotLogReaderService.GetAllBotsAsync();
+            BuildChartSeries();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void BuildChartSeries()
+    {
+        var apbsBots = FilteredBots.Where(b => b.IsApbsBot).ToList();
+
+        double[] BucketByTier(IEnumerable<BotLogData> bucketBots)
+        {
+            var byTier = new double[7];
+            foreach (var bot in bucketBots)
+            {
+                if (bot.Tier is >= 1 and <= 7)
+                {
+                    byTier[bot.Tier - 1]++;
+                }
+            }
+            return byTier;
+        }
+
+        var series = new List<ChartSeries<double>>();
+
+        if (_typeFilter == BotLogType.Unknown)
+        {
+            var typesPresent = apbsBots
+                .GroupBy(b => b.BotType)
+                .Where(g => g.Any())
+                .OrderByDescending(g => g.Count());
+
+            foreach (var group in typesPresent)
+            {
+                var chartSeries = new ChartSeries<double> { Name = group.Key.ToString() };
+                chartSeries.Data = BucketByTier(group);
+                series.Add(chartSeries);
+            }
+
+            _chartCaption = "Bar height = number of APBS bots at each tier, split by bot type.";
+        }
+        else
+        {
+            var roleGroups = apbsBots
+                .GroupBy(b => b.Role)
+                .OrderByDescending(g => g.Count())
+                .ToList();
+
+            if (roleGroups.Count > modRoleClutterThreshold)
+            {
+                var chartSeries = new ChartSeries<double> { Name = _typeFilter.ToString() };
+                chartSeries.Data = BucketByTier(apbsBots);
+                series.Add(chartSeries);
+
+                _chartCaption = $"{roleGroups.Count} distinct roles found for {_typeFilter} — combined into a single series to avoid clutter.";
+            }
+            else
+            {
+                foreach (var group in roleGroups)
+                {
+                    var chartSeries = new ChartSeries<double> { Name = group.Key };
+                    chartSeries.Data = BucketByTier(group);
+                    series.Add(chartSeries);
+                }
+
+                _chartCaption = $"Bar height = number of {_typeFilter} bots at each tier, split by role.";
+            }
+        }
+
+        _apbsTierSeries = series;
+    }
+
+    private void OnTypeFilterChanged(BotLogType value)
+    {
+        _typeFilter = value;
+        _page = 0;
+        BuildChartSeries();
+    }
+
+    private void OnApbsFilterChanged(bool? value)
+    {
+        _apbsFilter = value;
+        _page = 0;
+        BuildChartSeries();
+    }
+
+    private void OnSortFieldChanged(BotSortField value)
+    {
+        _sortField = value;
+        _page = 0;
+    }
+
+    private void OnSearchChanged(string? value)
+    {
+        _search = value ?? string.Empty;
+        _page = 0;
+        BuildChartSeries();
+    }
+
+    private void OnPageSizeChanged(int value)
+    {
+        _pageSize = value;
+        _page = 0;
+    }
+
+    private void OpenDetail(BotLogData bot)
+    {
+        _selectedBot = bot;
+        _detailVisible = true;
+    }
+
+    private static string TierColor(BotLogData bot)
+    {
+        if (!bot.IsApbsBot || bot.Tier is < 1 or > 7)
+        {
+            return "rgba(117, 117, 117, 0.6)";
+        }
+
+        return TierColorPalette[bot.Tier - 1];
+    }
+
+    private bool MatchesSearch(BotLogData bot)
+    {
+        if (string.IsNullOrWhiteSpace(_search))
+        {
+            return true;
+        }
+
+        bool Contains(string? value) => value?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true;
+
+        return Contains(bot.Name)
+               || Contains(bot.Role)
+               || Contains(bot.Primary?.Name)
+               || Contains(bot.Secondary?.Name)
+               || Contains(bot.Holster?.Name)
+               || Contains(bot.Melee?.Name)
+               || Contains(bot.Armor?.Name)
+               || Contains(bot.Helmet?.Name);
+    }
+
+    private static string FormatArmorClass(int? armorClass) =>
+        armorClass.HasValue ? $"Class {armorClass.Value}" : "—";
+
+    private async Task ConfirmClearLogs()
+    {
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+        "Clear Bot Logs",
+        "This permanently deletes all bot generation logs on disk. This cannot be undone. Continue?",
+        "Clear", cancelText: "Cancel");
+
+        if (confirmed == true)
+        {
+            await BotLogReaderService.ClearLogsAsync();
+            await LoadBots();
+        }
+    }
+
+}

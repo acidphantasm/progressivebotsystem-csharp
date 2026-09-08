@@ -1,0 +1,169 @@
+﻿@using ProgressiveBotSystem.Models
+<MudDialog @bind-Visible="Visible" Options="_dialogOptions">
+    <TitleContent>
+        @if (Bot is not null)
+        {
+            <MudText Typo="Typo.h6">@Bot.Name</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@Bot.Role</MudText>
+        }
+    </TitleContent>
+    <DialogContent>
+        @if (Bot is not null)
+        {
+            var bot = Bot;
+
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Bot Information</MudText>
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Type</MudText>
+                    <MudText>@bot.BotType</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Source</MudText>
+                    <MudText>@(bot.IsApbsBot ? "APBS" : "Vanilla")</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Level</MudText>
+                    <MudText>@bot.Level</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Difficulty</MudText>
+                    <MudText>@bot.Difficulty</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Tier</MudText>
+                    <MudText>@(bot.IsApbsBot ? bot.Tier.ToString() : "—")</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Poverty Bot</MudText>
+                    <MudText>@(bot.IsApbsBot && bot.PovertyBot ? "Yes" : "No")</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Prestige Level</MudText>
+                    <MudText>@bot.PrestigeLevel</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.overline">Grenades</MudText>
+                    <MudText>@bot.GrenadeCount</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.overline">Game Version</MudText>
+                    <MudText>@(bot.GameVersion ?? "—")</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.overline">Dog Tag</MudText>
+                    <MudText>@(bot.DogTagId ?? "—")</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.overline">Spawned</MudText>
+                    <MudText>@bot.Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff")</MudText>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-4"/>
+
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Weapons</MudText>
+            <MudGrid>
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.overline">Primary</MudText>
+                    <MudText>@(bot.Primary?.Name ?? "—")</MudText>
+                    @if (!string.IsNullOrWhiteSpace(bot.Primary?.Caliber))
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@bot.Primary!.Caliber</MudText>
+                    }
+                </MudItem>
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.overline">Secondary</MudText>
+                    <MudText>@(bot.Secondary?.Name ?? "—")</MudText>
+                    @if (!string.IsNullOrWhiteSpace(bot.Secondary?.Caliber))
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@bot.Secondary!.Caliber</MudText>
+                    }
+                </MudItem>
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.overline">Holster</MudText>
+                    <MudText>@(bot.Holster?.Name ?? "—")</MudText>
+                    @if (!string.IsNullOrWhiteSpace(bot.Holster?.Caliber))
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@bot.Holster!.Caliber</MudText>
+                    }
+                </MudItem>
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.overline">Melee</MudText>
+                    <MudText>@(bot.Melee?.Name ?? "—")</MudText>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-4"/>
+
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Equipment</MudText>
+            <MudGrid>
+                <MudItem xs="6" sm="4">
+                    <MudText Typo="Typo.overline">Helmet</MudText>
+                    <MudText>@(bot.Helmet?.Name ?? "—")</MudText>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudText Typo="Typo.overline">Night Vision</MudText>
+                    <MudText>@(bot.NightVision?.Name ?? "—")</MudText>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudText Typo="Typo.overline">Earpiece</MudText>
+                    <MudText>@(bot.EarPiece?.Name ?? "—")</MudText>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-4"/>
+
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Armor</MudText>
+            @if (bot.Armor is not null)
+            {
+                <MudGrid>
+                    <MudItem xs="12" sm="4">
+                        <MudText Typo="Typo.overline">Armor</MudText>
+                        <MudText>@bot.Armor.Name</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudText Typo="Typo.overline">Front</MudText>
+                        <MudText>@FormatArmorClass(bot.Armor.FrontPlateClass)</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudText Typo="Typo.overline">Back</MudText>
+                        <MudText>@FormatArmorClass(bot.Armor.BackPlateClass)</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudText Typo="Typo.overline">Left</MudText>
+                        <MudText>@FormatArmorClass(bot.Armor.LeftPlateClass)</MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudText Typo="Typo.overline">Right</MudText>
+                        <MudText>@FormatArmorClass(bot.Armor.RightPlateClass)</MudText>
+                    </MudItem>
+                </MudGrid>
+            }
+            else
+            {
+                <MudText Color="Color.Secondary">No armor</MudText>
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Close" Variant="Variant.Filled" Color="Color.Tertiary">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public BotLogData? Bot { get; set; }
+
+    private readonly DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseOnEscapeKey = true };
+
+    private async Task Close()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync(false);
+    }
+
+    private static string FormatArmorClass(int? armorClass) =>
+        armorClass.HasValue ? $"Class {armorClass.Value}" : "—";
+}

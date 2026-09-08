@@ -43,12 +43,7 @@ public class StartUpService(IReadOnlyList<SptMod> installedMods, ModHelper modHe
         CreateLogFile(LoggingFolders.Warning, $"Warning Log Start - Acid's Progressive Bot System - Version: {version}\n");
         CreateLogFile(LoggingFolders.Error, $"Error Log Start - Acid's Progressive Bot System - Version: {version}\n");
         CreateLogFile(LoggingFolders.Success, $"Success Log Start - Acid's Progressive Bot System - Version: {version}\n");
-        CreateLogFile(LoggingFolders.Boss, $"Boss Log Start - Acid's Progressive Bot System - Version: {version}\n");
-        CreateLogFile(LoggingFolders.Event, $"Event Log Start - Acid's Progressive Bot System - Version: {version}\n");
-        CreateLogFile(LoggingFolders.Pmc, $"Pmc Log Start - Acid's Progressive Bot System - Version: {version}\n");
-        CreateLogFile(LoggingFolders.Scav, $"Scav Log Start - Acid's Progressive Bot System - Version: {version}\n");
-        CreateLogFile(LoggingFolders.Special, $"Special Log Start - Acid's Progressive Bot System - Version: {version}\n");
-        CreateLogFile(LoggingFolders.UnhandledBots, $"Unhandled Log Start - Acid's Progressive Bot System - Version: {version}\n");
+        DeleteLegacyBotLogs();
     }
 
     private void CreateLogFile(string logType, string logData)
@@ -68,6 +63,31 @@ public class StartUpService(IReadOnlyList<SptMod> installedMods, ModHelper modHe
         }
 
         File.WriteAllText(filePath, logData);
+    }
+
+    private void DeleteLegacyBotLogs()
+    {
+        var logDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "logs");
+
+        var botLogTypes = new[]
+        {
+            LoggingFolders.Boss,
+            LoggingFolders.Event,
+            LoggingFolders.Pmc,
+            LoggingFolders.Scav,
+            LoggingFolders.Special,
+            LoggingFolders.UnhandledBots,
+        };
+
+        foreach (var logType in botLogTypes)
+        {
+            var filePath = Path.Combine(logDirectory, $"{logType}.txt");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
     }
 
     private void CheckForMods()

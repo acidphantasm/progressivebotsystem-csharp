@@ -16,7 +16,7 @@
         <MudNavLink Href="/progressivebotsystem/follower" Match="NavLinkMatch.All">Followers</MudNavLink>
         <MudNavLink Href="/progressivebotsystem/special" Match="NavLinkMatch.All">Special</MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Presets" Expanded="true" Icon="@Icons.Material.Filled.CompareArrows">
+    <MudNavGroup Title="Presets" Expanded="false" Icon="@Icons.Material.Filled.CompareArrows">
         <MudNavLink Href="/progressivebotsystem/presets" Match="NavLinkMatch.All">Preset General</MudNavLink>
         <MudNavGroup Title="Tier 1" Expanded="false">
             <MudNavLink Href="/progressivebotsystem/presets/tier1/ammo" Match="NavLinkMatch.All">Ammo</MudNavLink>
@@ -74,6 +74,9 @@
             <MudNavLink Href="/progressivebotsystem/presets/tier7/equipment" Match="NavLinkMatch.All">Equipment
             </MudNavLink>
         </MudNavGroup>
+    </MudNavGroup>
+    <MudNavGroup Title="Debug" Expanded="true" Icon="@Icons.Material.Filled.BugReport">
+        <MudNavLink Href="/progressivebotsystem/botgenerationlogs" Match="NavLinkMatch.All">Bot Generation Logs</MudNavLink>
     </MudNavGroup>
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">SIC</MudNavLink>
 </MudNavMenu>
