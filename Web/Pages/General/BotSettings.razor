@@ -137,19 +137,22 @@
                                        AnchorOrigin="Origin.CenterLeft"
                                        Dense Clearable
                                        Disabled="!AllNormalizeHealthEnable">
-                                @foreach (var name in BotNames){
+                                @foreach (var name in BotNames)
+                                {
                                     <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (PresetStateService.PendingChanges.Contains("AllNormalizeHealthExcludedBots") && MainLayout.AppUndoButtonToggle){
+                        @if (PresetStateService.PendingChanges.Contains("AllNormalizeHealthExcludedBots") && MainLayout.AppUndoButtonToggle)
+                        {
                             <MudButton @onclick="UndoNormalizeHealthExcludedBots" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
                         }
-                        else if (AllNormalizeHealthExcludedBots.Count > 0 && MainLayout.AppDefaultButtonToggle){
+                        else if (AllNormalizeHealthExcludedBots.Count > 0 && MainLayout.AppDefaultButtonToggle)
+                        {
                             <MudButton @onclick="DefaultNormalizeHealthExcludedBots" Variant="Variant.Filled"
                                        Color="Color.Dark" Size="Size.Small">Default
                             </MudButton>
@@ -214,13 +217,17 @@
                         OnUndo="UndoPlayerScavBossEnable"
                         OnDefault="DefaultPlayerScavBossEnable"/>
 
-                    <MudSliderChildTT
+                    <MudSliderChildUndoDefaultTT
                         Label="Chance"
                         TooltipText="Chance of your player scav generating as a boss."
                         @bind-Value="PscavBossRegenerationChance"
                         Min="1"
                         Max="100"
-                        Disabled="@(!PscavEnableBossRegeneration)"/>
+                        Disabled="@(!PscavEnableBossRegeneration)"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("PscavBossRegenerationChance"))"
+                        IsNonDefault="@(PscavBossRegenerationChance != 5)"
+                        OnUndo="UndoPlayerScavBossChance"
+                        OnDefault="DefaultPlayerScavBossChance"/>
 
                     <MudSwitchTT
                         Label="Use Boss Health Values"
@@ -242,148 +249,27 @@
                                        AnchorOrigin="Origin.CenterLeft"
                                        Dense Clearable
                                        Disabled="!PscavEnableBossRegeneration">
-                                @foreach (var name in _bossNames){
+                                @foreach (var name in _bossNames)
+                                {
                                     <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        @if (PresetStateService.PendingChanges.Contains("PscavBossRegenerationAllowedBosses") && MainLayout.AppUndoButtonToggle){
+                        @if (PresetStateService.PendingChanges.Contains("PscavBossRegenerationAllowedBosses") && MainLayout.AppUndoButtonToggle)
+                        {
                             <MudButton @onclick="UndoPlayerScavBossAllowedBosses" Variant="Variant.Filled"
                                        Color="Color.Inherit" Size="Size.Small">Undo
                             </MudButton>
                         }
-                        else if (PscavBossRegenerationAllowedBosses.Count > 0 && MainLayout.AppDefaultButtonToggle){
+                        else if (PscavBossRegenerationAllowedBosses.Count > 0 && MainLayout.AppDefaultButtonToggle)
+                        {
                             <MudButton @onclick="DefaultPlayerScavBossAllowedBosses" Variant="Variant.Filled"
                                        Color="Color.Dark" Size="Size.Small">Default
                             </MudButton>
                         }
                     </MudItem>
-
-                </MudGrid>
-            </MudExpansionPanel>
-
-            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Map Weapon Selection Weighting"
-                               Expanded="true">
-                <MudGrid>
-
-                    <MapWeaponRangeWeighting
-                        Label="Customs"
-                        @bind-LongWeight="MapRangeWeightingCustomsLong"
-                        @bind-ShortWeight="MapRangeWeightingCustomsShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingCustomsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingCustomsShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingCustomsLong - 20) > 0.001 || Math.Abs(MapRangeWeightingCustomsShort - 80) > 0.001)"
-                        OnUndo="UndoCustomsWeaponRangeWeights"
-                        OnDefault="DefaultCustomsWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Reserve"
-                        @bind-LongWeight="MapRangeWeightingReserveLong"
-                        @bind-ShortWeight="MapRangeWeightingReserveShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingReserveLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingReserveShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingReserveLong - 20) > 0.001 || Math.Abs(MapRangeWeightingReserveShort - 80) > 0.001)"
-                        OnUndo="UndoReserveWeaponRangeWeights"
-                        OnDefault="DefaultReserveWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Labs"
-                        @bind-LongWeight="MapRangeWeightingLabsLong"
-                        @bind-ShortWeight="MapRangeWeightingLabsShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingLabsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingLabsShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingLabsLong - 10) > 0.001 || Math.Abs(MapRangeWeightingLabsShort - 90) > 0.001)"
-                        OnUndo="UndoLabsWeaponRangeWeights"
-                        OnDefault="DefaultLabsWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Factory Night"
-                        @bind-LongWeight="MapRangeWeightingFactoryNightLong"
-                        @bind-ShortWeight="MapRangeWeightingFactoryNightShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryNightLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryNightShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingFactoryNightLong - 5) > 0.001 || Math.Abs(MapRangeWeightingFactoryNightShort - 95) > 0.001)"
-                        OnUndo="UndoFactoryNightWeaponRangeWeights"
-                        OnDefault="DefaultFactoryNightWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Factory Day"
-                        @bind-LongWeight="MapRangeWeightingFactoryDayLong"
-                        @bind-ShortWeight="MapRangeWeightingFactoryDayShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryDayLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryDayShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingFactoryDayLong - 5) > 0.001 || Math.Abs(MapRangeWeightingFactoryDayShort - 95) > 0.001)"
-                        OnUndo="UndoFactoryDayWeaponRangeWeights"
-                        OnDefault="DefaultFactoryDayWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Interchange"
-                        @bind-LongWeight="MapRangeWeightingInterchangeLong"
-                        @bind-ShortWeight="MapRangeWeightingInterchangeShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingInterchangeLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingInterchangeShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingInterchangeLong - 20) > 0.001 || Math.Abs(MapRangeWeightingInterchangeShort - 80) > 0.001)"
-                        OnUndo="UndoInterchangeWeaponRangeWeights"
-                        OnDefault="DefaultInterchangeWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Ground Zero"
-                        @bind-LongWeight="MapRangeWeightingSandboxLong"
-                        @bind-ShortWeight="MapRangeWeightingSandboxShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingSandboxLong - 15) > 0.001 || Math.Abs(MapRangeWeightingSandboxShort - 85) > 0.001)"
-                        OnUndo="UndoSandboxWeaponRangeWeights"
-                        OnDefault="DefaultSandboxWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Ground Zero (21+)"
-                        @bind-LongWeight="MapRangeWeightingSandboxHighLong"
-                        @bind-ShortWeight="MapRangeWeightingSandboxHighShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxHighLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxHighShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingSandboxHighLong - 15) > 0.001 || Math.Abs(MapRangeWeightingSandboxHighShort - 85) > 0.001)"
-                        OnUndo="UndoSandboxHighWeaponRangeWeights"
-                        OnDefault="DefaultSandboxHighWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Woods"
-                        @bind-LongWeight="MapRangeWeightingWoodsLong"
-                        @bind-ShortWeight="MapRangeWeightingWoodsShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingWoodsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingWoodsShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingWoodsLong - 60) > 0.001 || Math.Abs(MapRangeWeightingWoodsShort - 40) > 0.001)"
-                        OnUndo="UndoWoodsWeaponRangeWeights"
-                        OnDefault="DefaultWoodsWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Shoreline"
-                        @bind-LongWeight="MapRangeWeightingShorelineLong"
-                        @bind-ShortWeight="MapRangeWeightingShorelineShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingShorelineLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingShorelineShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingShorelineLong - 50) > 0.001 || Math.Abs(MapRangeWeightingShorelineShort - 50) > 0.001)"
-                        OnUndo="UndoShorelineWeaponRangeWeights"
-                        OnDefault="DefaultShorelineWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Lighthouse"
-                        @bind-LongWeight="MapRangeWeightingLighthouseLong"
-                        @bind-ShortWeight="MapRangeWeightingLighthouseShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingLighthouseLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingLighthouseShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingLighthouseLong - 30) > 0.001 || Math.Abs(MapRangeWeightingLighthouseShort - 70) > 0.001)"
-                        OnUndo="UndoLighthouseWeaponRangeWeights"
-                        OnDefault="DefaultLighthouseWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="TarkovStreets"
-                        @bind-LongWeight="MapRangeWeightingTarkovStreetsLong"
-                        @bind-ShortWeight="MapRangeWeightingTarkovStreetsShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingTarkovStreetsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingTarkovStreetsShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingTarkovStreetsLong - 20) > 0.001 || Math.Abs(MapRangeWeightingTarkovStreetsShort - 80) > 0.001)"
-                        OnUndo="UndoTarkovStreetsWeaponRangeWeights"
-                        OnDefault="DefaultTarkovStreetsWeaponRangeWeights"/>
-
-                    <MapWeaponRangeWeighting
-                        Label="Labyrinth"
-                        @bind-LongWeight="MapRangeWeightingLabyrinthLong"
-                        @bind-ShortWeight="MapRangeWeightingLabyrinthShort"
-                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingLabyrinthLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingLabyrinthShort"))"
-                        IsNonDefault="@(Math.Abs(MapRangeWeightingLabyrinthLong - 5) > 0.001 || Math.Abs(MapRangeWeightingLabyrinthShort - 95) > 0.001)"
-                        OnUndo="UndoLabyrinthWeaponRangeWeights"
-                        OnDefault="DefaultLabyrinthWeaponRangeWeights"/>
 
                 </MudGrid>
             </MudExpansionPanel>
@@ -402,7 +288,40 @@
                         OnDefault="DefaultPerWeaponAttachmentRolls"/>
 
                     <MudSwitchTT
-                        Label="Large Capacity Magazine Limit"
+                        Label="Loose Ammo On Bots"
+                        TooltipText="Allows bots to have loose ammo in their pockets or rig."
+                        @bind-Value="AllLooseAmmoEnable"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("AllLooseAmmoEnable"))"
+                        IsNonDefault="@(!AllLooseAmmoEnable)"
+                        OnUndo="UndoAllLooseAmmoEnable"
+                        OnDefault="DefaultAllLooseAmmoEnable"/>
+
+                    <MudSliderChildUndoDefaultTT
+                        Label="Chance"
+                        TooltipText="The chance that a bot may have loose ammo in pockets or rig."
+                        @bind-Value="AllLooseAmmoChance"
+                        Min="1"
+                        Max="100"
+                        Disabled="@(!AllLooseAmmoEnable)"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("AllLooseAmmoChance"))"
+                        IsNonDefault="@(AllLooseAmmoChance != 33)"
+                        OnUndo="UndoAllLooseAmmoChance"
+                        OnDefault="DefaultAllLooseAmmoChance"/>
+
+                    <MudSliderChildUndoDefaultTT
+                        Label="Stack Limit"
+                        TooltipText="The maximum loose ammo stack size that can be found on a bot."
+                        @bind-Value="AllLooseAmmoStackLimit"
+                        Min="1"
+                        Max="100"
+                        Disabled="@(!AllLooseAmmoEnable)"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("AllLooseAmmoStackLimit"))"
+                        IsNonDefault="@(AllLooseAmmoStackLimit != 60)"
+                        OnUndo="UndoAllLooseAmmoStackLimit"
+                        OnDefault="DefaultAllLooseAmmoStackLimit"/>
+
+                    <MudSwitchTT
+                        Label="Large Capacity Magazine Limiter"
                         TooltipText="Limits the amount of large capacity (36 rounds or higher) magazines a bot can spawn with (per weapon)."
                         @bind-Value="AllWeaponLargeCapacityMagazineLimitEnabled"
                         HasPendingChanges="@(PresetStateService.PendingChanges.Contains("AllWeaponLargeCapacityMagazineLimitEnabled") ||
@@ -412,7 +331,7 @@
                         OnDefault="DefaultLargeCapacityMagazineLimit"/>
 
                     <MudSliderChildTT
-                        Label="Large Capacity Magazines Count"
+                        Label="Large Magazine Limit"
                         TooltipText="This is the count for the limit on the number of large capacity magazines a bot can have, individually, for each weapon."
                         @bind-Value="AllWeaponLargeCapacityMagazineCount"
                         Min="1"
@@ -554,6 +473,130 @@
                         Min="1"
                         Max="5"
                         Disabled="@(!AllWeaponAttachmentLimitEnabled)"/>
+
+                </MudGrid>
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Map Weapon Selection Weighting"
+                               Expanded="true">
+                <MudGrid>
+
+                    <MapWeaponRangeWeighting
+                        Label="Customs"
+                        @bind-LongWeight="MapRangeWeightingCustomsLong"
+                        @bind-ShortWeight="MapRangeWeightingCustomsShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingCustomsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingCustomsShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingCustomsLong - 20) > 0.001 || Math.Abs(MapRangeWeightingCustomsShort - 80) > 0.001)"
+                        OnUndo="UndoCustomsWeaponRangeWeights"
+                        OnDefault="DefaultCustomsWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Reserve"
+                        @bind-LongWeight="MapRangeWeightingReserveLong"
+                        @bind-ShortWeight="MapRangeWeightingReserveShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingReserveLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingReserveShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingReserveLong - 20) > 0.001 || Math.Abs(MapRangeWeightingReserveShort - 80) > 0.001)"
+                        OnUndo="UndoReserveWeaponRangeWeights"
+                        OnDefault="DefaultReserveWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Labs"
+                        @bind-LongWeight="MapRangeWeightingLabsLong"
+                        @bind-ShortWeight="MapRangeWeightingLabsShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingLabsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingLabsShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingLabsLong - 10) > 0.001 || Math.Abs(MapRangeWeightingLabsShort - 90) > 0.001)"
+                        OnUndo="UndoLabsWeaponRangeWeights"
+                        OnDefault="DefaultLabsWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Factory Night"
+                        @bind-LongWeight="MapRangeWeightingFactoryNightLong"
+                        @bind-ShortWeight="MapRangeWeightingFactoryNightShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryNightLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryNightShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingFactoryNightLong - 5) > 0.001 || Math.Abs(MapRangeWeightingFactoryNightShort - 95) > 0.001)"
+                        OnUndo="UndoFactoryNightWeaponRangeWeights"
+                        OnDefault="DefaultFactoryNightWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Factory Day"
+                        @bind-LongWeight="MapRangeWeightingFactoryDayLong"
+                        @bind-ShortWeight="MapRangeWeightingFactoryDayShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryDayLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingFactoryDayShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingFactoryDayLong - 5) > 0.001 || Math.Abs(MapRangeWeightingFactoryDayShort - 95) > 0.001)"
+                        OnUndo="UndoFactoryDayWeaponRangeWeights"
+                        OnDefault="DefaultFactoryDayWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Interchange"
+                        @bind-LongWeight="MapRangeWeightingInterchangeLong"
+                        @bind-ShortWeight="MapRangeWeightingInterchangeShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingInterchangeLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingInterchangeShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingInterchangeLong - 20) > 0.001 || Math.Abs(MapRangeWeightingInterchangeShort - 80) > 0.001)"
+                        OnUndo="UndoInterchangeWeaponRangeWeights"
+                        OnDefault="DefaultInterchangeWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Ground Zero"
+                        @bind-LongWeight="MapRangeWeightingSandboxLong"
+                        @bind-ShortWeight="MapRangeWeightingSandboxShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingSandboxLong - 15) > 0.001 || Math.Abs(MapRangeWeightingSandboxShort - 85) > 0.001)"
+                        OnUndo="UndoSandboxWeaponRangeWeights"
+                        OnDefault="DefaultSandboxWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Ground Zero (21+)"
+                        @bind-LongWeight="MapRangeWeightingSandboxHighLong"
+                        @bind-ShortWeight="MapRangeWeightingSandboxHighShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxHighLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingSandboxHighShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingSandboxHighLong - 15) > 0.001 || Math.Abs(MapRangeWeightingSandboxHighShort - 85) > 0.001)"
+                        OnUndo="UndoSandboxHighWeaponRangeWeights"
+                        OnDefault="DefaultSandboxHighWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Woods"
+                        @bind-LongWeight="MapRangeWeightingWoodsLong"
+                        @bind-ShortWeight="MapRangeWeightingWoodsShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingWoodsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingWoodsShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingWoodsLong - 60) > 0.001 || Math.Abs(MapRangeWeightingWoodsShort - 40) > 0.001)"
+                        OnUndo="UndoWoodsWeaponRangeWeights"
+                        OnDefault="DefaultWoodsWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Shoreline"
+                        @bind-LongWeight="MapRangeWeightingShorelineLong"
+                        @bind-ShortWeight="MapRangeWeightingShorelineShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingShorelineLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingShorelineShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingShorelineLong - 50) > 0.001 || Math.Abs(MapRangeWeightingShorelineShort - 50) > 0.001)"
+                        OnUndo="UndoShorelineWeaponRangeWeights"
+                        OnDefault="DefaultShorelineWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Lighthouse"
+                        @bind-LongWeight="MapRangeWeightingLighthouseLong"
+                        @bind-ShortWeight="MapRangeWeightingLighthouseShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingLighthouseLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingLighthouseShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingLighthouseLong - 30) > 0.001 || Math.Abs(MapRangeWeightingLighthouseShort - 70) > 0.001)"
+                        OnUndo="UndoLighthouseWeaponRangeWeights"
+                        OnDefault="DefaultLighthouseWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="TarkovStreets"
+                        @bind-LongWeight="MapRangeWeightingTarkovStreetsLong"
+                        @bind-ShortWeight="MapRangeWeightingTarkovStreetsShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingTarkovStreetsLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingTarkovStreetsShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingTarkovStreetsLong - 20) > 0.001 || Math.Abs(MapRangeWeightingTarkovStreetsShort - 80) > 0.001)"
+                        OnUndo="UndoTarkovStreetsWeaponRangeWeights"
+                        OnDefault="DefaultTarkovStreetsWeaponRangeWeights"/>
+
+                    <MapWeaponRangeWeighting
+                        Label="Labyrinth"
+                        @bind-LongWeight="MapRangeWeightingLabyrinthLong"
+                        @bind-ShortWeight="MapRangeWeightingLabyrinthShort"
+                        HasPendingChanges="@(PresetStateService.PendingChanges.Contains("MapRangeWeightingLabyrinthLong") || PresetStateService.PendingChanges.Contains("MapRangeWeightingLabyrinthShort"))"
+                        IsNonDefault="@(Math.Abs(MapRangeWeightingLabyrinthLong - 5) > 0.001 || Math.Abs(MapRangeWeightingLabyrinthShort - 95) > 0.001)"
+                        OnUndo="UndoLabyrinthWeaponRangeWeights"
+                        OnDefault="DefaultLabyrinthWeaponRangeWeights"/>
 
                 </MudGrid>
             </MudExpansionPanel>
@@ -972,7 +1015,8 @@
         {
             Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.Enable, nameof(PscavEnable));
             ModConfig.Config.PlayerScavConfig.Enable = value;
-            if (!value){
+            if (!value)
+            {
                 DefaultPlayerScavPmcSkills();
                 DefaultPlayerScavPmcSkillWriteback();
                 DefaultPlayerScavBossEnable();
@@ -1013,7 +1057,8 @@
         {
             Utils.UpdateView(value, ModConfig.OriginalConfig.PlayerScavConfig.AllowBossRegeneration, nameof(PscavEnableBossRegeneration));
             ModConfig.Config.PlayerScavConfig.AllowBossRegeneration = value;
-            if (!value){
+            if (!value)
+            {
                 DefaultPlayerScavBossHealthValues();
                 DefaultPlayerScavBossChance();
                 DefaultPlayerScavBossAllowedBosses();
@@ -1080,6 +1125,39 @@
     }
     private void UndoPerWeaponAttachmentRolls() => AllPerWeaponAttachmentRolls = ModConfig.OriginalConfig.GeneralConfig.EnablePerWeaponTypeAttachmentChances;
     private void DefaultPerWeaponAttachmentRolls() => AllPerWeaponAttachmentRolls = true;
+    private bool AllLooseAmmoEnable
+    {
+        get => ModConfig.Config.GeneralConfig.EnableLooseAmmoOnBots;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.EnableLooseAmmoOnBots, nameof(AllLooseAmmoEnable));
+            ModConfig.Config.GeneralConfig.EnableLooseAmmoOnBots = value;
+        }
+    }
+    private void UndoAllLooseAmmoEnable() => AllLooseAmmoEnable = ModConfig.OriginalConfig.GeneralConfig.EnableLooseAmmoOnBots;
+    private void DefaultAllLooseAmmoEnable() => AllLooseAmmoEnable = true;
+    private int AllLooseAmmoChance
+    {
+        get => ModConfig.Config.GeneralConfig.LooseAmmoChance;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.LooseAmmoChance, nameof(AllLooseAmmoChance));
+            ModConfig.Config.GeneralConfig.LooseAmmoChance = value;
+        }
+    }
+    private void UndoAllLooseAmmoChance() => AllLooseAmmoChance = ModConfig.OriginalConfig.GeneralConfig.LooseAmmoChance;
+    private void DefaultAllLooseAmmoChance() => AllLooseAmmoChance = 33;
+    private int AllLooseAmmoStackLimit
+    {
+        get => ModConfig.Config.GeneralConfig.LooseAmmoLimit;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.GeneralConfig.LooseAmmoLimit, nameof(AllLooseAmmoStackLimit));
+            ModConfig.Config.GeneralConfig.LooseAmmoLimit = value;
+        }
+    }
+    private void UndoAllLooseAmmoStackLimit() => AllLooseAmmoStackLimit = ModConfig.OriginalConfig.GeneralConfig.LooseAmmoLimit;
+    private void DefaultAllLooseAmmoStackLimit() => AllLooseAmmoStackLimit = 60;
     private bool AllWeaponLargeCapacityMagazineLimitEnabled
     {
         get => ModConfig.Config.GeneralConfig.EnableLargeCapacityMagazineLimit;

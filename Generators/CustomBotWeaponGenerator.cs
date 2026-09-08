@@ -94,46 +94,15 @@ public class CustomBotWeaponGenerator(
             var weaponTpl =
                 hasBothPrimary && botGenerationDetails.IsPmc
                     ? PickWeightedWeaponTemplateFromPoolWithBothPrimary(
-                        equipmentSlot,
-                        botTemplateInventory,
-                        botGenerationDetails.Role,
-                        tierNumber
+                    equipmentSlot,
+                    botTemplateInventory,
+                    botGenerationDetails.Role,
+                    tierNumber
                     )
                     : PickWeightedWeaponTemplateFromPool(equipmentSlot, botTemplateInventory, botGenerationDetails.Role, tierNumber);
             return GenerateWeaponByTpl(
-                sessionId,
-                weaponTpl,
-                equipmentSlot,
-                botTemplateInventory,
-                weaponParentId,
-                modChances,
-                botGenerationDetails,
-                tierNumber,
-                botLevel,
-                hasBothPrimary,
-                questData
-            );
-        }
-
-        var questWeaponTpl =
-            hasBothPrimary && botGenerationDetails.IsPmc
-                ? PickQuestWeightedWeaponTemplateFromPoolWithBothPrimary(
-                    equipmentSlot,
-                    botTemplateInventory,
-                    botGenerationDetails.Role,
-                    tierNumber,
-                    questData
-                )
-                : PickQuestWeightedWeaponTemplateFromPool(
-                    equipmentSlot,
-                    botTemplateInventory,
-                    botGenerationDetails.Role,
-                    tierNumber,
-                    questData
-                );
-        return GenerateWeaponByTpl(
             sessionId,
-            questWeaponTpl,
+            weaponTpl,
             equipmentSlot,
             botTemplateInventory,
             weaponParentId,
@@ -143,6 +112,37 @@ public class CustomBotWeaponGenerator(
             botLevel,
             hasBothPrimary,
             questData
+            );
+        }
+
+        var questWeaponTpl =
+            hasBothPrimary && botGenerationDetails.IsPmc
+                ? PickQuestWeightedWeaponTemplateFromPoolWithBothPrimary(
+                equipmentSlot,
+                botTemplateInventory,
+                botGenerationDetails.Role,
+                tierNumber,
+                questData
+                )
+                : PickQuestWeightedWeaponTemplateFromPool(
+                equipmentSlot,
+                botTemplateInventory,
+                botGenerationDetails.Role,
+                tierNumber,
+                questData
+                );
+        return GenerateWeaponByTpl(
+        sessionId,
+        questWeaponTpl,
+        equipmentSlot,
+        botTemplateInventory,
+        weaponParentId,
+        modChances,
+        botGenerationDetails,
+        tierNumber,
+        botLevel,
+        hasBothPrimary,
+        questData
         );
     }
 
@@ -162,7 +162,7 @@ public class CustomBotWeaponGenerator(
         if (equipmentSlot is "SecondPrimaryWeapon" or "FirstPrimaryWeapon")
         {
             var mapWeightings = ModConfig.Config.GeneralConfig.MapRangeWeighting[RaidInformation.RaidLocation].ToDictionary();
-            var rangeType = weightedRandomHelper.GetWeightedValue<string>(mapWeightings);
+            var rangeType = weightedRandomHelper.GetWeightedValue(mapWeightings);
 
             switch (botRole)
             {
@@ -227,7 +227,7 @@ public class CustomBotWeaponGenerator(
     )
     {
         var newEquipmentPool = new Dictionary<MongoId, double>();
-        foreach (var itemTpl in (List<string>)questData["PrimaryWeapon"])
+        foreach (var itemTpl in (List<string>) questData["PrimaryWeapon"])
         {
             newEquipmentPool.TryAdd(itemTpl, 1);
         }
@@ -247,7 +247,7 @@ public class CustomBotWeaponGenerator(
         {
             if (equipmentSlot is "SecondPrimaryWeapon")
             {
-                foreach (var itemTpl in (List<string>)questData["PrimaryWeapon"])
+                foreach (var itemTpl in (List<string>) questData["PrimaryWeapon"])
                 {
                     newEquipmentPool.TryAdd(itemTpl, 1);
                 }
@@ -271,7 +271,7 @@ public class CustomBotWeaponGenerator(
         }
         if (equipmentSlot is "FirstPrimaryWeapon")
         {
-            foreach (var itemTpl in (List<string>)questData["PrimaryWeapon"])
+            foreach (var itemTpl in (List<string>) questData["PrimaryWeapon"])
             {
                 newEquipmentPool.TryAdd(itemTpl, 1);
             }
@@ -375,11 +375,11 @@ public class CustomBotWeaponGenerator(
 
         // Create with just base weapon item
         var weaponWithModsArray = ConstructWeaponBaseList(
-                weaponTpl,
-                weaponParentId,
-                slotName,
-                weaponItemTemplate,
-                botGenerationDetails.RoleLowercase
+            weaponTpl,
+            weaponParentId,
+            slotName,
+            weaponItemTemplate,
+            botGenerationDetails.RoleLowercase
             )
             .ToList();
 
@@ -421,9 +421,9 @@ public class CustomBotWeaponGenerator(
 
             GenerateWeaponRequest generateWeaponModsRequest = new()
             {
-                Weapon = weaponWithModsArray, // Will become hydrated array of weapon + mods
+                Weapon = weaponWithModsArray,// Will become hydrated array of weapon + mods
                 ModPool = modPool,
-                WeaponId = weaponWithModsArray[0].Id, // Weapon root id
+                WeaponId = weaponWithModsArray[0].Id,// Weapon root id
                 ParentTemplate = weaponItemTemplate,
                 ModSpawnChances = weaponChances,
                 AmmoTpl = ammoTpl,
@@ -431,30 +431,30 @@ public class CustomBotWeaponGenerator(
                 {
                     Role = botGenerationDetails.RoleLowercase,
                     Level = botGenerationDetails.BotLevel,
-                    EquipmentRole = botEquipmentRole,
+                    EquipmentRole = botEquipmentRole
                 },
                 ModLimits = modLimits,
                 WeaponStats = new WeaponStats(),
-                ConflictingItemTpls = [],
+                ConflictingItemTpls = []
             };
             weaponWithModsArray = customBotEquipmentModGenerator.GenerateModsForWeapon(
-                sessionId,
-                generateWeaponModsRequest,
-                questData,
-                weaponTpl
+            sessionId,
+            generateWeaponModsRequest,
+            questData,
+            weaponTpl
             );
         }
 
         // Use weapon preset from globals.json if weapon isn't valid
         if (!IsWeaponValid(weaponWithModsArray, botGenerationDetails.RoleLowercase))
-        // Weapon is bad, fall back to weapons preset
+            // Weapon is bad, fall back to weapons preset
         {
             weaponWithModsArray = GetPresetWeaponMods(
-                weaponTpl,
-                slotName,
-                weaponParentId,
-                weaponItemTemplate,
-                botGenerationDetails.RoleLowercase
+            weaponTpl,
+            slotName,
+            weaponParentId,
+            weaponItemTemplate,
+            botGenerationDetails.RoleLowercase
             );
         }
 
@@ -497,7 +497,7 @@ public class CustomBotWeaponGenerator(
             ChosenAmmoTemplate = ammoTpl,
             ChosenUbglAmmoTemplate = ubglAmmoTpl,
             WeaponMods = modPool,
-            WeaponTemplate = weaponItemTemplate,
+            WeaponTemplate = weaponItemTemplate
         };
     }
 
@@ -517,21 +517,27 @@ public class CustomBotWeaponGenerator(
             {
                 // Not found, add new slot to weapon
                 weaponWithModsList.Add(
-                    new Item
+                new Item
+                {
+                    Id = new MongoId(),
+                    Template = ammoTemplate,
+                    ParentId = weaponWithModsList[0].Id,
+                    SlotId = slotId,
+                    Upd = new Upd
                     {
-                        Id = new MongoId(),
-                        Template = ammoTemplate,
-                        ParentId = weaponWithModsList[0].Id,
-                        SlotId = slotId,
-                        Upd = new Upd { StackObjectsCount = 1 },
+                        StackObjectsCount = 1
                     }
+                }
                 );
             }
             else
             {
                 // Already exists, update values
                 existingItemWithSlot.Template = ammoTemplate;
-                existingItemWithSlot.Upd = new Upd { StackObjectsCount = 1 };
+                existingItemWithSlot.Upd = new Upd
+                {
+                    StackObjectsCount = 1
+                };
             }
         }
     }
@@ -556,14 +562,14 @@ public class CustomBotWeaponGenerator(
     {
         return
         [
-            new()
+            new Item
             {
                 Id = new MongoId(),
                 Template = weaponTemplate,
                 ParentId = weaponParentId,
                 SlotId = equipmentSlot,
-                Upd = botGeneratorHelper.GenerateExtraPropertiesForItem(weaponItemTemplate, botRole),
-            },
+                Upd = botGeneratorHelper.GenerateExtraPropertiesForItem(weaponItemTemplate, botRole)
+            }
         ];
     }
 
@@ -586,7 +592,7 @@ public class CustomBotWeaponGenerator(
     {
         // Invalid weapon generated, fallback to preset
         logger.Warning(
-            serverLocalisationService.GetText("bot-weapon_generated_incorrect_using_default", $"{weaponTemplate} - {itemTemplate.Name}")
+        serverLocalisationService.GetText("bot-weapon_generated_incorrect_using_default", $"{weaponTemplate} - {itemTemplate.Name}")
         );
         List<Item> weaponMods = [];
 
@@ -651,16 +657,16 @@ public class CustomBotWeaponGenerator(
                 if (!slotItemLookup[(item.Id, requiredSlot.Name)].Any())
                 {
                     logger.Warning(
-                        serverLocalisationService.GetText(
-                            "bot-weapons_required_slot_missing_item",
-                            new
-                            {
-                                modSlot = requiredSlot.Name,
-                                modName = modTemplate.Name,
-                                slotId = item.SlotId,
-                                botRole,
-                            }
-                        )
+                    serverLocalisationService.GetText(
+                    "bot-weapons_required_slot_missing_item",
+                    new
+                    {
+                        modSlot = requiredSlot.Name,
+                        modName = modTemplate.Name,
+                        slotId = item.SlotId,
+                        botRole
+                    }
+                    )
                     );
 
                     return false;
@@ -715,13 +721,13 @@ public class CustomBotWeaponGenerator(
 
             return;
         }
-        if (randomUtil.GetChance100(33))
+        if (ModConfig.Config.GeneralConfig.EnableLooseAmmoOnBots && randomUtil.GetChance100(ModConfig.Config.GeneralConfig.LooseAmmoChance))
         {
             AddAmmoStackToInventory(
-                botId,
-                generatedWeaponResult.ChosenAmmoTemplate,
-                ammoTemplate.Value.Properties.StackMaxSize ?? 0,
-                inventory
+            botId,
+            generatedWeaponResult.ChosenAmmoTemplate,
+            ammoTemplate.Value.Properties.StackMaxSize ?? 0,
+            inventory
             );
         }
 
@@ -732,51 +738,62 @@ public class CustomBotWeaponGenerator(
         }
 
         var inventoryMagGenModel = new ApbsInventoryMagGen(
-            magWeights,
-            magTemplate,
-            weaponTemplate,
-            ammoTemplate.Value,
-            inventory,
-            botId,
-            botRole,
-            botLevel,
-            tier,
-            GetToploadConfig(botRole),
-            GetRerollConfig(botRole)
+        magWeights,
+        magTemplate,
+        weaponTemplate,
+        ammoTemplate.Value,
+        inventory,
+        botId,
+        botRole,
+        botLevel,
+        tier,
+        GetToploadConfig(botRole),
+        GetRerollConfig(botRole)
         );
 
         _inventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(inventoryMagGenModel)).Process(inventoryMagGenModel);
 
         // Add x stacks of bullets to SecuredContainer (bots use a magic mag packing skill to reload instantly)
         AddAmmoToSecureContainer(
-            botId,
-            botConfig.SecureContainerAmmoStackCount,
-            generatedWeaponResult.ChosenAmmoTemplate,
-            ammoTemplate.Value.Properties.StackMaxSize ?? 0,
-            inventory
+        botId,
+        botConfig.SecureContainerAmmoStackCount,
+        generatedWeaponResult.ChosenAmmoTemplate,
+        ammoTemplate.Value.Properties.StackMaxSize ?? 0,
+        inventory
         );
     }
 
     private void AddAmmoStackToInventory(MongoId botId, MongoId chosenAmmoTemplate, int propertiesStackMaxSize, BotBaseInventory inventory)
     {
-        var container = new HashSet<EquipmentSlots> { EquipmentSlots.TacticalVest, EquipmentSlots.Pockets };
+        var container = new HashSet<EquipmentSlots>
+        {
+            EquipmentSlots.TacticalVest,
+            EquipmentSlots.Pockets
+        };
         var min = propertiesStackMaxSize / 2;
         var stackSize = randomUtil.GetBiasedRandomNumber(min, propertiesStackMaxSize, 0, 2);
+        if (stackSize > ModConfig.Config.GeneralConfig.LooseAmmoLimit)
+        {
+            stackSize = ModConfig.Config.GeneralConfig.LooseAmmoLimit;
+        }
         var id = new MongoId();
         botGeneratorHelper.AddItemWithChildrenToEquipmentSlot(
-            botId,
-            container,
-            id,
-            chosenAmmoTemplate,
-            [
-                new Item
+        botId,
+        container,
+        id,
+        chosenAmmoTemplate,
+        [
+            new Item
+            {
+                Id = id,
+                Template = chosenAmmoTemplate,
+                Upd = new Upd
                 {
-                    Id = id,
-                    Template = chosenAmmoTemplate,
-                    Upd = new Upd { StackObjectsCount = stackSize },
-                },
-            ],
-            inventory
+                    StackObjectsCount = stackSize
+                }
+            }
+        ],
+        inventory
         );
     }
 
@@ -804,8 +821,16 @@ public class CustomBotWeaponGenerator(
         // Define min/max of how many grenades bot will have
         ApbsGenerationData ubglMinMax = new()
         {
-            Weights = new Dictionary<double, double> { { 1, 1 }, { 2, 1 } },
-            Whitelist = new Dictionary<MongoId, double>(),
+            Weights = new Dictionary<double, double>
+            {
+                {
+                    1, 1
+                },
+                {
+                    2, 1
+                }
+            },
+            Whitelist = new Dictionary<MongoId, double>()
         };
 
         // get ammo template from db
@@ -813,17 +838,17 @@ public class CustomBotWeaponGenerator(
 
         // Add grenades to bot inventory
         var ubglAmmoGenModel = new ApbsInventoryMagGen(
-            ubglMinMax,
-            ubglDbTemplate,
-            ubglDbTemplate,
-            ubglAmmoDbTemplate,
-            inventory,
-            botId,
-            botRole,
-            botLevel,
-            tier,
-            GetToploadConfig(botRole),
-            GetRerollConfig(botRole)
+        ubglMinMax,
+        ubglDbTemplate,
+        ubglDbTemplate,
+        ubglAmmoDbTemplate,
+        inventory,
+        botId,
+        botRole,
+        botLevel,
+        tier,
+        GetToploadConfig(botRole),
+        GetRerollConfig(botRole)
         );
         _inventoryMagGenComponents.FirstOrDefault(v => v.CanHandleInventoryMagGen(ubglAmmoGenModel)).Process(ubglAmmoGenModel);
 
@@ -841,24 +866,30 @@ public class CustomBotWeaponGenerator(
     /// <param name="inventory">Player inventory.</param>
     protected void AddAmmoToSecureContainer(MongoId botId, int stackCount, MongoId ammoTpl, int stackSize, BotBaseInventory inventory)
     {
-        var container = new HashSet<EquipmentSlots> { EquipmentSlots.SecuredContainer };
+        var container = new HashSet<EquipmentSlots>
+        {
+            EquipmentSlots.SecuredContainer
+        };
         for (var i = 0; i < stackCount; i++)
         {
             var id = new MongoId();
             botGeneratorHelper.AddItemWithChildrenToEquipmentSlot(
-                botId,
-                container,
-                id,
-                ammoTpl,
-                [
-                    new Item
+            botId,
+            container,
+            id,
+            ammoTpl,
+            [
+                new Item
+                {
+                    Id = id,
+                    Template = ammoTpl,
+                    Upd = new Upd
                     {
-                        Id = id,
-                        Template = ammoTpl,
-                        Upd = new Upd { StackObjectsCount = stackSize },
-                    },
-                ],
-                inventory
+                        StackObjectsCount = stackSize
+                    }
+                }
+            ],
+            inventory
             );
         }
     }
@@ -884,13 +915,17 @@ public class CustomBotWeaponGenerator(
 
             // log error if no magazine AND not a chamber loaded weapon (e.g. shotgun revolver)
             if (!weaponTemplate.Properties.IsChamberLoad ?? false)
-            // Shouldn't happen
+                // Shouldn't happen
             {
                 logger.Warning(
-                    serverLocalisationService.GetText(
-                        "bot-weapon_missing_magazine_or_chamber",
-                        new { weaponId = weaponTemplate.Id, botRole }
-                    )
+                serverLocalisationService.GetText(
+                "bot-weapon_missing_magazine_or_chamber",
+                new
+                {
+                    weaponId = weaponTemplate.Id,
+                    botRole
+                }
+                )
                 );
             }
 
@@ -899,7 +934,7 @@ public class CustomBotWeaponGenerator(
             if (logger.IsLogEnabled(LogLevel.Debug))
             {
                 logger.Debug(
-                    $"[{botRole}] Unable to find magazine for weapon: {weaponTemplate.Id} {weaponTemplate.Name}, using mag template default: {defaultMagTplId}."
+                $"[{botRole}] Unable to find magazine for weapon: {weaponTemplate.Id} {weaponTemplate.Name}, using mag template default: {defaultMagTplId}."
                 );
             }
 
@@ -923,15 +958,15 @@ public class CustomBotWeaponGenerator(
             if (logger.IsLogEnabled(LogLevel.Debug))
             {
                 logger.Debug(
-                    serverLocalisationService.GetText(
-                        "bot-no_caliber_data_for_weapon_falling_back_to_default",
-                        new
-                        {
-                            weaponId = weaponTemplate.Id,
-                            weaponName = weaponTemplate.Name,
-                            defaultAmmo = weaponTemplate.Properties.DefAmmo,
-                        }
-                    )
+                serverLocalisationService.GetText(
+                "bot-no_caliber_data_for_weapon_falling_back_to_default",
+                new
+                {
+                    weaponId = weaponTemplate.Id,
+                    weaponName = weaponTemplate.Name,
+                    defaultAmmo = weaponTemplate.Properties.DefAmmo
+                }
+                )
                 );
             }
 
@@ -947,7 +982,7 @@ public class CustomBotWeaponGenerator(
         // Get cartridges the weapons first chamber allow
         var compatibleCartridgesInTemplate = GetCompatibleCartridgesFromWeaponTemplate(weaponTemplate);
         if (compatibleCartridgesInTemplate.Count == 0)
-        // No chamber data found in weapon, send default
+            // No chamber data found in weapon, send default
         {
             return weaponTemplate.Properties.DefAmmo.Value;
         }
@@ -1032,7 +1067,7 @@ public class CustomBotWeaponGenerator(
         }
 
         var magazineTemplate = itemHelper.GetItem(
-            magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty()
+        magazineSlot.Properties?.Filters.FirstOrDefault()?.Filter?.FirstOrDefault() ?? MongoId.Empty()
         );
         if (!magazineTemplate.Key)
         {
@@ -1060,7 +1095,7 @@ public class CustomBotWeaponGenerator(
         }
 
         if (!string.IsNullOrEmpty(weaponTemplate.Properties.AmmoCaliber))
-        // 9x18pmm has a typo, should be Caliber9x18PM
+            // 9x18pmm has a typo, should be Caliber9x18PM
         {
             return weaponTemplate.Properties.AmmoCaliber == "Caliber9x18PMM" ? "Caliber9x18PM" : weaponTemplate.Properties.AmmoCaliber;
         }
@@ -1068,7 +1103,7 @@ public class CustomBotWeaponGenerator(
         if (!string.IsNullOrEmpty(weaponTemplate.Properties.LinkedWeapon))
         {
             var ammoInChamber = itemHelper.GetItem(
-                weaponTemplate.Properties.Chambers.First().Properties.Filters.First().Filter.FirstOrDefault()
+            weaponTemplate.Properties.Chambers.First().Properties.Filters.First().Filter.FirstOrDefault()
             );
             return !ammoInChamber.Key ? null : ammoInChamber.Value.Properties.Caliber;
         }
@@ -1117,14 +1152,17 @@ public class CustomBotWeaponGenerator(
     protected void FillUbgl(List<Item> weaponMods, Item ubglMod, MongoId ubglAmmoTpl)
     {
         weaponMods.Add(
-            new Item
+        new Item
+        {
+            Id = new MongoId(),
+            Template = ubglAmmoTpl,
+            ParentId = ubglMod.Id,
+            SlotId = "patron_in_weapon",
+            Upd = new Upd
             {
-                Id = new MongoId(),
-                Template = ubglAmmoTpl,
-                ParentId = ubglMod.Id,
-                SlotId = "patron_in_weapon",
-                Upd = new Upd { StackObjectsCount = 1 },
+                StackObjectsCount = 1
             }
+        }
         );
     }
 
@@ -1156,7 +1194,7 @@ public class CustomBotWeaponGenerator(
         itemHelper.FillMagazineWithCartridge(magazineWithCartridges, magazineTemplate, chosenAmmoTpl, 1);
 
         // Replace existing magazine with above array of mag + cartridge stacks
-        var magazineIndex = weaponWithMods.FindIndex(i => i.Id == magazine.Id); // magazineWithCartridges
+        var magazineIndex = weaponWithMods.FindIndex(i => i.Id == magazine.Id);// magazineWithCartridges
         if (magazineIndex == -1)
         {
             logger.Error($"Unable to add cartridges: {chosenAmmoTpl} to magazine: {magazine.Id} as none found");
@@ -1197,7 +1235,10 @@ public class CustomBotWeaponGenerator(
             }
             else
             {
-                camora.Upd = new Upd { StackObjectsCount = 1 };
+                camora.Upd = new Upd
+                {
+                    StackObjectsCount = 1
+                };
             }
         }
     }
@@ -1224,7 +1265,11 @@ public class CustomBotWeaponGenerator(
         {
             return ModConfig.Config.SpecialBots.RerollConfig;
         }
-        return new EnableChance { Enable = false, Chance = 0 };
+        return new EnableChance
+        {
+            Enable = false,
+            Chance = 0
+        };
     }
 
     private ToploadConfig GetToploadConfig(string botRole)
@@ -1254,7 +1299,7 @@ public class CustomBotWeaponGenerator(
         {
             Enable = false,
             Chance = 0,
-            Percent = 0,
+            Percent = 0
         };
     }
 }

@@ -91,6 +91,9 @@
   },
   "generalConfig": {
     "enablePerWeaponTypeAttachmentChances": true,
+    "enableLooseAmmoOnBots": true,
+    "looseAmmoChance": 33,
+    "looseAmmoLimit": 60,
     "enableLargeCapacityMagazineLimit": true,
     "largeCapacityMagazineCount": 2,
     "forceStock": false,

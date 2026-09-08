@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.4.1",
+    "ReleaseDate": "September 8, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Loose Ammo chances and limits have been added to the WebConfig for people who run massive ammo stack sizes"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.4.0",
     "ReleaseDate": "September 7, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "WebConfig toggle for Pmcs to use level overrides for Ground Zero",
       "WebConfig switch to use Weighted Tier Selection vs Level Delta (weighted system is enabled by default now)",

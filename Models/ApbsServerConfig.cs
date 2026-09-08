@@ -151,7 +151,7 @@ public class PmcBotData
             FoodRateMaxChance = 10,
             FoodRateUsagePercent = 33,
             MedRateMaxChance = 10,
-            MedRateUsagePercent = 33,
+            MedRateUsagePercent = 33
         };
 
     [JsonPropertyName("weaponDurability")]
@@ -164,7 +164,7 @@ public class PmcBotData
             MinDelta = 0,
             MaxDelta = 5,
             MinLimitPercent = 90,
-            EnhancementChance = 10,
+            EnhancementChance = 10
         };
 
     [JsonPropertyName("armourDurability")]
@@ -176,14 +176,22 @@ public class PmcBotData
             Max = 100,
             MinDelta = 0,
             MaxDelta = 5,
-            MinLimitPercent = 90,
+            MinLimitPercent = 90
         };
 
     [JsonPropertyName("lootConfig")]
-    public LootConfig LootConfig { get; set; } = new() { Enable = false, Blacklist = [] };
+    public LootConfig LootConfig { get; set; } = new()
+    {
+        Enable = false,
+        Blacklist = []
+    };
 
     [JsonPropertyName("rerollConfig")]
-    public EnableChance RerollConfig { get; set; } = new() { Enable = false, Chance = 50 };
+    public EnableChance RerollConfig { get; set; } = new()
+    {
+        Enable = false,
+        Chance = 50
+    };
 
     [JsonPropertyName("toploadConfig")]
     public ToploadConfig ToploadConfig { get; set; } =
@@ -191,7 +199,7 @@ public class PmcBotData
         {
             Enable = true,
             Chance = 30,
-            Percent = 30,
+            Percent = 30
         };
 
     [JsonPropertyName("skipBackPlateIfMissingFrontPlate")]
@@ -201,10 +209,18 @@ public class PmcBotData
     public bool LimitPlateClassToFrontPlateClass { get; set; } = true;
 
     [JsonPropertyName("questConfig")]
-    public EnableChance QuestConfig { get; set; } = new() { Enable = true, Chance = 5 };
+    public EnableChance QuestConfig { get; set; } = new()
+    {
+        Enable = true,
+        Chance = 5
+    };
 
     [JsonPropertyName("povertyConfig")]
-    public EnableChance PovertyConfig { get; set; } = new() { Enable = true, Chance = 5 };
+    public EnableChance PovertyConfig { get; set; } = new()
+    {
+        Enable = true,
+        Chance = 5
+    };
 
     [JsonPropertyName("additionalOptions")]
     public PmcSpecificConfig AdditionalOptions { get; set; } = new();
@@ -226,7 +242,7 @@ public class ScavBotData
             FoodRateMaxChance = 10,
             FoodRateUsagePercent = 10,
             MedRateMaxChance = 10,
-            MedRateUsagePercent = 10,
+            MedRateUsagePercent = 10
         };
 
     [JsonPropertyName("weaponDurability")]
@@ -239,7 +255,7 @@ public class ScavBotData
             MinDelta = 5,
             MaxDelta = 20,
             MinLimitPercent = 50,
-            EnhancementChance = 1,
+            EnhancementChance = 1
         };
 
     [JsonPropertyName("armourDurability")]
@@ -251,14 +267,22 @@ public class ScavBotData
             Max = 90,
             MinDelta = 5,
             MaxDelta = 20,
-            MinLimitPercent = 50,
+            MinLimitPercent = 50
         };
 
     [JsonPropertyName("lootConfig")]
-    public LootConfig LootConfig { get; set; } = new() { Enable = true, Blacklist = [] };
+    public LootConfig LootConfig { get; set; } = new()
+    {
+        Enable = true,
+        Blacklist = []
+    };
 
     [JsonPropertyName("rerollConfig")]
-    public EnableChance RerollConfig { get; set; } = new() { Enable = true, Chance = 50 };
+    public EnableChance RerollConfig { get; set; } = new()
+    {
+        Enable = true,
+        Chance = 50
+    };
 
     [JsonPropertyName("toploadConfig")]
     public ToploadConfig ToploadConfig { get; set; } =
@@ -266,7 +290,7 @@ public class ScavBotData
         {
             Enable = false,
             Chance = 30,
-            Percent = 30,
+            Percent = 30
         };
 
     [JsonPropertyName("skipBackPlateIfMissingFrontPlate")]
@@ -449,6 +473,15 @@ public class GeneralConfig
     [JsonPropertyName("enablePerWeaponTypeAttachmentChances")]
     public bool EnablePerWeaponTypeAttachmentChances { get; set; } = true;
 
+    [JsonPropertyName("enableLooseAmmoOnBots")]
+    public bool EnableLooseAmmoOnBots { get; set; } = true;
+
+    [JsonPropertyName("looseAmmoChance")]
+    public int LooseAmmoChance { get; set; } = 33;
+
+    [JsonPropertyName("looseAmmoLimit")]
+    public int LooseAmmoLimit { get; set; } = 60;
+
     [JsonPropertyName("enableLargeCapacityMagazineLimit")]
     public bool EnableLargeCapacityMagazineLimit { get; set; } = true;
 
@@ -513,43 +546,95 @@ public class GeneralConfig
 public class MapRangeWeights
 {
     [JsonPropertyName("bigmap")]
-    public LongShortRange Bigmap { get; set; } = new() { LongRange = 20, ShortRange = 80 };
+    public LongShortRange Bigmap { get; set; } = new()
+    {
+        LongRange = 20,
+        ShortRange = 80
+    };
 
     [JsonPropertyName("RezervBase")]
-    public LongShortRange RezervBase { get; set; } = new() { LongRange = 20, ShortRange = 80 };
+    public LongShortRange RezervBase { get; set; } = new()
+    {
+        LongRange = 20,
+        ShortRange = 80
+    };
 
     [JsonPropertyName("laboratory")]
-    public LongShortRange Laboratory { get; set; } = new() { LongRange = 10, ShortRange = 90 };
+    public LongShortRange Laboratory { get; set; } = new()
+    {
+        LongRange = 10,
+        ShortRange = 90
+    };
 
     [JsonPropertyName("factory4_night")]
-    public LongShortRange Factory4Night { get; set; } = new() { LongRange = 5, ShortRange = 95 };
+    public LongShortRange Factory4Night { get; set; } = new()
+    {
+        LongRange = 5,
+        ShortRange = 95
+    };
 
     [JsonPropertyName("factory4_day")]
-    public LongShortRange Factory4Day { get; set; } = new() { LongRange = 5, ShortRange = 95 };
+    public LongShortRange Factory4Day { get; set; } = new()
+    {
+        LongRange = 5,
+        ShortRange = 95
+    };
 
     [JsonPropertyName("Interchange")]
-    public LongShortRange Interchange { get; set; } = new() { LongRange = 20, ShortRange = 80 };
+    public LongShortRange Interchange { get; set; } = new()
+    {
+        LongRange = 20,
+        ShortRange = 80
+    };
 
     [JsonPropertyName("Sandbox")]
-    public LongShortRange Sandbox { get; set; } = new() { LongRange = 15, ShortRange = 85 };
+    public LongShortRange Sandbox { get; set; } = new()
+    {
+        LongRange = 15,
+        ShortRange = 85
+    };
 
     [JsonPropertyName("Sandbox_high")]
-    public LongShortRange SandboxHigh { get; set; } = new() { LongRange = 15, ShortRange = 85 };
+    public LongShortRange SandboxHigh { get; set; } = new()
+    {
+        LongRange = 15,
+        ShortRange = 85
+    };
 
     [JsonPropertyName("Woods")]
-    public LongShortRange Woods { get; set; } = new() { LongRange = 60, ShortRange = 40 };
+    public LongShortRange Woods { get; set; } = new()
+    {
+        LongRange = 60,
+        ShortRange = 40
+    };
 
     [JsonPropertyName("Shoreline")]
-    public LongShortRange Shoreline { get; set; } = new() { LongRange = 50, ShortRange = 50 };
+    public LongShortRange Shoreline { get; set; } = new()
+    {
+        LongRange = 50,
+        ShortRange = 50
+    };
 
     [JsonPropertyName("Lighthouse")]
-    public LongShortRange Lighthouse { get; set; } = new() { LongRange = 30, ShortRange = 70 };
+    public LongShortRange Lighthouse { get; set; } = new()
+    {
+        LongRange = 30,
+        ShortRange = 70
+    };
 
     [JsonPropertyName("TarkovStreets")]
-    public LongShortRange TarkovStreets { get; set; } = new() { LongRange = 20, ShortRange = 80 };
+    public LongShortRange TarkovStreets { get; set; } = new()
+    {
+        LongRange = 20,
+        ShortRange = 80
+    };
 
     [JsonPropertyName("Labyrinth")]
-    public LongShortRange Labyrinth { get; set; } = new() { LongRange = 5, ShortRange = 95 };
+    public LongShortRange Labyrinth { get; set; } = new()
+    {
+        LongRange = 5,
+        ShortRange = 95
+    };
 
     public LongShortRange this[string key]
     {
@@ -570,7 +655,7 @@ public class MapRangeWeights
                 "Lighthouse" => Lighthouse,
                 "TarkovStreets" => TarkovStreets,
                 "Labyrinth" => Labyrinth,
-                _ => throw new KeyNotFoundException($"Map '{key}' not found."),
+                _ => throw new KeyNotFoundException($"Map '{key}' not found.")
             };
         }
     }
@@ -591,7 +676,7 @@ public class MapRangeWeights
             ["Shoreline"] = Shoreline,
             ["Lighthouse"] = Lighthouse,
             ["TarkovStreets"] = TarkovStreets,
-            ["Labyrinth"] = Labyrinth,
+            ["Labyrinth"] = Labyrinth
         };
     }
 }
@@ -606,7 +691,11 @@ public class LongShortRange
 
     public Dictionary<string, double> ToDictionary()
     {
-        return new Dictionary<string, double>(2) { ["LongRange"] = LongRange, ["ShortRange"] = ShortRange };
+        return new Dictionary<string, double>(2)
+        {
+            ["LongRange"] = LongRange,
+            ["ShortRange"] = ShortRange
+        };
     }
 }
 
@@ -653,75 +742,75 @@ public class PlateClasses
         new()
         {
             Tier1 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 90,
-                    ["4"] = 10,
-                    ["5"] = 0,
-                    ["6"] = 0,
-                }
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 90,
+                ["4"] = 10,
+                ["5"] = 0,
+                ["6"] = 0
+            }
             ),
             Tier2 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 65,
-                    ["4"] = 33,
-                    ["5"] = 2,
-                    ["6"] = 0,
-                }
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 65,
+                ["4"] = 33,
+                ["5"] = 2,
+                ["6"] = 0
+            }
             ),
             Tier3 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 16,
-                    ["4"] = 75,
-                    ["5"] = 7,
-                    ["6"] = 2,
-                }
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 16,
+                ["4"] = 75,
+                ["5"] = 7,
+                ["6"] = 2
+            }
             ),
             Tier4 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 1,
-                    ["4"] = 50,
-                    ["5"] = 39,
-                    ["6"] = 10,
-                }
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 1,
+                ["4"] = 50,
+                ["5"] = 39,
+                ["6"] = 10
+            }
             ),
             Tier5 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 0,
-                    ["4"] = 20,
-                    ["5"] = 70,
-                    ["6"] = 10,
-                }
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 0,
+                ["4"] = 20,
+                ["5"] = 70,
+                ["6"] = 10
+            }
             ),
             Tier6 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 0,
-                    ["4"] = 10,
-                    ["5"] = 70,
-                    ["6"] = 20,
-                }
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 0,
+                ["4"] = 10,
+                ["5"] = 70,
+                ["6"] = 20
+            }
             ),
             Tier7 = DefaultPmcTier(
-                new Dictionary<string, double>
-                {
-                    ["2"] = 0,
-                    ["3"] = 0,
-                    ["4"] = 5,
-                    ["5"] = 75,
-                    ["6"] = 20,
-                }
-            ),
+            new Dictionary<string, double>
+            {
+                ["2"] = 0,
+                ["3"] = 0,
+                ["4"] = 5,
+                ["5"] = 75,
+                ["6"] = 20
+            }
+            )
         };
 
     [JsonPropertyName("scav")]
@@ -734,7 +823,7 @@ public class PlateClasses
             Tier4 = DefaultScavTier(),
             Tier5 = DefaultScavTier(),
             Tier6 = DefaultScavTier(),
-            Tier7 = DefaultScavTier(),
+            Tier7 = DefaultScavTier()
         };
 
     [JsonPropertyName("bossAndSpecial")]
@@ -747,7 +836,7 @@ public class PlateClasses
             Tier4 = DefaultBossTier(),
             Tier5 = DefaultBossTier(),
             Tier6 = DefaultBossTier(),
-            Tier7 = DefaultBossTier(),
+            Tier7 = DefaultBossTier()
         };
 
     private static Dictionary<string, Dictionary<string, double>> DefaultPmcTier(Dictionary<string, double> weights)
@@ -757,35 +846,35 @@ public class PlateClasses
             ["front_plate"] = weights,
             ["back_plate"] = weights,
             ["left_side_plate"] = weights,
-            ["right_side_plate"] = weights,
+            ["right_side_plate"] = weights
         };
     }
 
     private static Dictionary<string, Dictionary<string, double>> DefaultScavTier()
     {
         return DefaultPmcTier(
-            new Dictionary<string, double>
-            {
-                ["2"] = 0,
-                ["3"] = 85,
-                ["4"] = 9,
-                ["5"] = 5,
-                ["6"] = 1,
-            }
+        new Dictionary<string, double>
+        {
+            ["2"] = 0,
+            ["3"] = 85,
+            ["4"] = 9,
+            ["5"] = 5,
+            ["6"] = 1
+        }
         );
     }
 
     private static Dictionary<string, Dictionary<string, double>> DefaultBossTier()
     {
         return DefaultPmcTier(
-            new Dictionary<string, double>
-            {
-                ["2"] = 0,
-                ["3"] = 10,
-                ["4"] = 50,
-                ["5"] = 35,
-                ["6"] = 5,
-            }
+        new Dictionary<string, double>
+        {
+            ["2"] = 0,
+            ["3"] = 10,
+            ["4"] = 50,
+            ["5"] = 35,
+            ["6"] = 5
+        }
         );
     }
 }
@@ -935,7 +1024,7 @@ public class CustomLevelWeight
         [0, 10, 40, 100, 40, 10, 0],
         [0, 0, 10, 40, 100, 40, 10],
         [0, 0, 0, 10, 40, 100, 40],
-        [0, 0, 0, 0, 10, 40, 100],
+        [0, 0, 0, 0, 10, 40, 100]
     ];
 
     [JsonPropertyName("enable")]
@@ -975,7 +1064,7 @@ public class CustomLevelWeight
                 5 => Tier5,
                 6 => Tier6,
                 7 => Tier7,
-                _ => throw new KeyNotFoundException($"Tier '{tier}' not found."),
+                _ => throw new KeyNotFoundException($"Tier '{tier}' not found.")
             };
         }
         set
@@ -1016,7 +1105,11 @@ public class CustomLevelWeight
 
         for (var targetTier = 1; targetTier <= 7; targetTier++)
         {
-            result.Add(new WeightedTierChance { Tier = targetTier, Weight = weights[targetTier - 1] });
+            result.Add(new WeightedTierChance
+            {
+                Tier = targetTier,
+                Weight = weights[targetTier - 1]
+            });
         }
 
         return result;
@@ -1029,25 +1122,53 @@ public class CustomLevelDelta
     public bool Enable { get; set; } = false;
 
     [JsonPropertyName("tier1")]
-    public MinMax Tier1 { get; set; } = new() { Min = 10, Max = 5 };
+    public MinMax Tier1 { get; set; } = new()
+    {
+        Min = 10,
+        Max = 5
+    };
 
     [JsonPropertyName("tier2")]
-    public MinMax Tier2 { get; set; } = new() { Min = 10, Max = 5 };
+    public MinMax Tier2 { get; set; } = new()
+    {
+        Min = 10,
+        Max = 5
+    };
 
     [JsonPropertyName("tier3")]
-    public MinMax Tier3 { get; set; } = new() { Min = 15, Max = 7 };
+    public MinMax Tier3 { get; set; } = new()
+    {
+        Min = 15,
+        Max = 7
+    };
 
     [JsonPropertyName("tier4")]
-    public MinMax Tier4 { get; set; } = new() { Min = 20, Max = 10 };
+    public MinMax Tier4 { get; set; } = new()
+    {
+        Min = 20,
+        Max = 10
+    };
 
     [JsonPropertyName("tier5")]
-    public MinMax Tier5 { get; set; } = new() { Min = 30, Max = 15 };
+    public MinMax Tier5 { get; set; } = new()
+    {
+        Min = 30,
+        Max = 15
+    };
 
     [JsonPropertyName("tier6")]
-    public MinMax Tier6 { get; set; } = new() { Min = 40, Max = 20 };
+    public MinMax Tier6 { get; set; } = new()
+    {
+        Min = 40,
+        Max = 20
+    };
 
     [JsonPropertyName("tier7")]
-    public MinMax Tier7 { get; set; } = new() { Min = 50, Max = 20 };
+    public MinMax Tier7 { get; set; } = new()
+    {
+        Min = 50,
+        Max = 20
+    };
 
     public MinMax this[int tier]
     {
@@ -1062,7 +1183,7 @@ public class CustomLevelDelta
                 5 => Tier5,
                 6 => Tier6,
                 7 => Tier7,
-                _ => throw new KeyNotFoundException($"Tier '{tier}' not found."),
+                _ => throw new KeyNotFoundException($"Tier '{tier}' not found.")
             };
         }
         set
@@ -1311,7 +1432,7 @@ public class DeveloperNames
 
     [JsonPropertyName("nameList")]
     public List<string> NameList { get; set; } =
-    ["Chomp", "Dirtbikercj", "Clodan", "CWX", "DrakiaXYZ", "Kaeno", "Refringe", "Waffle", "AcidPhantasm", "Archangel"];
+        ["Chomp", "Dirtbikercj", "Clodan", "CWX", "DrakiaXYZ", "Kaeno", "Refringe", "Waffle", "AcidPhantasm", "Archangel"];
 }
 
 public class DeveloperLevels
