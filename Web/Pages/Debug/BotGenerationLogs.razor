@@ -1,11 +1,9 @@
 ﻿@page "/progressivebotsystem/botgenerationlogs"
-@using Microsoft.AspNetCore.Authorization
 @using ProgressiveBotSystem.Models
 @using ProgressiveBotSystem.Models.Enums
 @using ProgressiveBotSystem.Services
 @layout MainLayout
 @inject BotLogReaderService BotLogReaderService
-@attribute [Authorize(Policy = "Administrator")]
 
 <MudMainContent>
     <MudContainer Class="mb-20">
